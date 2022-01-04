@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/adrian154/blog#readme",
   "dependencies": {
-    "html-generator": "github:adrian154/html-generator"
+    "highlight.js": "^11.3.1",
+    "html-generator": "github:adrian154/html-generator",
+    "katex": "^0.15.1",
+    "marked": "^4.0.8"
   }
 }

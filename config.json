@@ -1,0 +1,5 @@
+{
+    "input": "blogposts",
+    "output": "generated-site",
+    "baseURL": "https://blog.bithole.dev/"
+}

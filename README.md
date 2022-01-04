@@ -1,3 +1,2 @@
 # blog
- 
-My blog.
+ Finally.
