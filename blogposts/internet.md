@@ -41,7 +41,7 @@ Back in the day, when everything was slightly worse, networks were often created
 * Since every device needs to be able to receive the data being transmitted by the hub, if one device was slower than the others, *every* link on the switch would be forced to operate at that speed.
 * Multiple devices trying to transmit at the same time would result in a garbled mess being transmitted (a condition known as a [collision](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_detection)), requiring the hub to detect the conflict and temporarily stop all transmissions. This obviously degraded network performance.
 
-Today, hubs have been made obsolete in favor of switches and are rarely used outside of special conditions. (Ironically enough, I have seen a couple in use at my school...)
+Today, hubs have been made obsolete in favor of switches and are rarely used outside of special conditions (though evidently my school's IT department hasn't gotten the memo). Even in the early days of Ethernet, it was apparent that collisions posed a challenging problem, so other protocols approached access control differently. For example, in Token Ring setups, there is no central switch or hub; nodes are connected in a ring, and transmission rights are passed around the ring. When one node is done transmitting, it passes the *token* to the next node. Hence the name, Token Ring. \*roll credits\*
 
 </div>
 
@@ -54,3 +54,7 @@ An overview of physical-layer protocols just wouldn't be complete without a ment
 In this situation, no router or switch is necessary to relay messages between devices on the same WLAN. In fact, any WiFi-capable transceiver can [broadcast a network](https://en.wikipedia.org/wiki/Wireless_ad_hoc_network); in fact, Windows [natively supports](https://answers.microsoft.com/en-us/windows/forum/all/how-do-i-set-up-an-ad-hoc-wifi-network-in-windows/0caa92d8-e02f-4e7f-aa5c-0abf10ed2039) this feature! Instead, your router plays the role of a [wireless access point](https://en.wikipedia.org/wiki/Wireless_access_point), aptly abbreviated to **WAP**. (In light of "WAP" becoming rather vulgar in recent years, I will use the more succinct abbreviation of just **AP** for the rest of this post.) The role of an AP is simple; it just serves as an interface between the wireless network and the regular wired network, which has access to the public Internet. Speaking of which...
 
 # Internet Layer
+
+We've finally reached the Internet layer of the Internet. This is where all the action happens! Buckle up, and let's explore how it works.
+
+At this point, the dirty details of the physical connections have all been abstracted away. IP knows nothing about Ethernet or .
