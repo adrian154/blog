@@ -1,0 +1,12 @@
+h1 {
+    display: inline-block;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    color: initial;
+}
+
+h1:hover {
+    text-decoration: underline;
+}

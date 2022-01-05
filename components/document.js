@@ -1,4 +1,5 @@
-const { html, head, meta, title, link, p, body, div, img } = require("html-generator");
+const { html, head, meta, title, link, p, body, a, img } = require("html-generator");
+const { stylesheet, raw } = require("./helpers");
 
 module.exports = (properties, ...content) => "<!DOCTYPE html>" + html(
     head(
@@ -12,13 +13,14 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html(
             meta({name: "description", content: properties.description})
         ],
         properties.canonicalURL && link({rel: "canonical", href: properties.canonicalURL}),
-        link({rel: "stylesheet", href: "static/stylesheets/main.css"}),
-        link({rel: "stylesheet", href: "static/stylesheets/highlight-style.css"}),
-        link({rel: "stylesheet", href: "https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"})
+        stylesheet("static/stylesheets/main.css"),
+        stylesheet("static/stylesheets/highlight-style.css"),
+        stylesheet("https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"),
+        properties.stylesheets?.map(stylesheet)
     ),
     body(
-        img({src: "static/images/banners/0.jpg"}),
+        a({href: "/"}, img({src: "static/images/banner0.jpg", alt: "blog banner"})),
         ...content,
-        p({class: "footnote"}, {html: "&copy; 2022 Adrian Zhang"})
+        p({class: "footnote"}, raw("&copy; 2022 Adrian Zhang &bull; "), a({href: "https://bithole.dev/"}, "about me"))
     )
 ).html;

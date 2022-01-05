@@ -1,7 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+
 body {
     max-width: 45em;
     margin: 3.0em auto;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    /*font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";*/
+    /*font-family: IBM Plex Sans, 'sans serif';*/
+    font-family: IBM Plex Sans;
 }
 
 p {
@@ -50,4 +55,19 @@ img {
 .footnote {
     font-size: 11pt;
     opacity: 75%;
+    margin-top: 2.0em;
+}
+
+.date {
+    opacity: 50%;
+    font-size: 10pt;
+    margin-top: 2.0em;
+    margin-bottom: 0;
+}
+
+blockquote {
+    border-left: 4px solid #888;
+    opacity: 80%;
+    padding: 0.1em 1.0em;
+    margin: 0;
 }
