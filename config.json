@@ -1,5 +1,11 @@
 {
     "input": "blogposts",
     "output": "generated-site",
-    "baseURL": "https://blog.bithole.dev/"
+    "baseURL": "https://blog.bithole.dev/",
+    "commentsSettings": {
+        "repo": "adrian154/blog",
+        "issue-term": "title",
+        "label": "blog-post-comments",
+        "theme": "github-light"
+    }
 }

@@ -1,5 +1,5 @@
 // --- deps
-const document = require("./components/document.js");
+const blogpost = require("./components/blogpost.js");
 const markdown = require("./components/markdown.js");
 const path = require("path");
 const fs = require("fs");
@@ -9,10 +9,11 @@ const config = require("./config.json");
 const DATA_DIR = path.join(__dirname, config.input);
 const OUTPUT_DIR = path.join(__dirname, config.output);
 
-// inform marked about our custom hijinks
-fs.readdirSync(DATA_DIR).filter(file => path.extname(file) === ".json").forEach(file => {
-    const id = path.basename(file, ".json");
-    const meta = require(path.join(DATA_DIR, file));
-    const rendered = document(meta, markdown(fs.readFileSync(path.join(DATA_DIR, id + ".md"), "utf-8")));
-    fs.writeFileSync(path.join(OUTPUT_DIR, id + ".html"), rendered, {encoding: "utf-8"});
-});
+// read blogposts
+const blogposts = fs.readdirSync(DATA_DIR).filter(file => path.extname(file) === ".json").map(file => require(path.join(DATA_DIR, file)));
+
+blogposts.forEach(meta => fs.writeFileSync(
+    path.join(OUTPUT_DIR, meta.id + ".html"),
+    blogpost(meta, markdown(fs.readFileSync(path.join(DATA_DIR, meta.id + ".md"), "utf-8"))),
+    {encoding: "utf-8"}
+));
