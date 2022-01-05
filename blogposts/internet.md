@@ -57,4 +57,12 @@ In this situation, no router or switch is necessary to relay messages between de
 
 We've finally reached the Internet layer of the Internet. This is where all the action happens! Buckle up, and let's explore how it works.
 
-At this point, the dirty details of the physical connections have all been abstracted away. IP knows nothing about Ethernet or .
+Relatively few protocols live in the Internet layer. Its primary inhabitants are the [Internet Protocol](https://en.wikipedia.org/wiki/Internet_Protocol) (IP) and [Internet Control Message Protocol](https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol) (ICMP). There are two currently deployed versions of IP, IPv4 and IPv6, which are generally very similar but vary in subtle yet important ways.
+
+In IP, every network interface (usually just one per computer) is associated with an IP address. In IPv4, this address is 32-bits long, and usually written as a series of four numbers (each corresponding to a byte of the IP address) separated by periods. For example, the IP of this blog at the time of writing is 142.93.26.121. Because IPv4 addresses are only 32 bits long, there can only be 2<sup>32</sup> = ~4 billion unique IPv4 addresses. That seems like a lot, but as early as the 90s the threat of [running out of IPv4 addresses](https://en.wikipedia.org/wiki/IPv4_address_exhaustion) has continually loomed over the Internet, made worse by the fact that many parts of IPv4 space are [reserved](https://en.wikipedia.org/wiki/Reserved_IP_addresses) for various purposes. To fix this issue, IPv6 was created. IPv6 addresses are 128 bits long, which is more than enough to serve humanity's needs at the moments. (If all IPv6 addresses were distributed equally among all living humans, every individual could have 47 octillion addresses. We won't be running out any time soon, especially because sadly a lot of the Internet is still stuck on IPv4.)
+
+<div class="info-box">
+
+*Why can't MAC addresses just be used for routing?*, you might ask. The biggest reason is that IP is meant to be mostly agnostic of the protocols used in the underlying link layer. Using MAC addresses would violate that principle; networks not running on IEEE 802 technologies wouldn't be able to join the Internet, which defeats its whole purpose of connecting numerous heterogeneous networks.
+
+</div>

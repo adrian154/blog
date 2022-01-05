@@ -34,7 +34,7 @@ td, th {
 }
 
 .section-link {
-    opacity: 40%;
+    opacity: 50%;
     font-weight: normal;
     visibility: hidden;
     cursor: pointer;
