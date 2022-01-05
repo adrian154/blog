@@ -69,3 +69,16 @@ blockquote {
     padding: 0.1em 1.0em;
     margin: 0;
 }
+
+a {
+    color: #2bc2ff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #a3a3a3;
+}
