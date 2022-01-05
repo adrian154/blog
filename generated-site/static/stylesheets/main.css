@@ -47,7 +47,9 @@ h1:hover .section-link, h2:hover .section-link {
 }
 
 img {
+    display: block;
     max-width: 100%;
+    margin: 3.0em auto;
 }
 
 .footnote {
@@ -80,5 +82,12 @@ a:hover {
 }
 
 a:visited {
-    color: #a3a3a3;
+    color: #aaa;
+}
+
+.info-box {
+    border-radius: 5px;
+    border: 1px solid #4287f5;
+    background-color: rgba(66, 135, 245, 15%);
+    padding: 0 1.0em;
 }
