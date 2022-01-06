@@ -222,11 +222,15 @@ ASNs were initially 16-bit, but eventually it became obvious that the supply was
 
 When you look at the Internet at the AS level, the illusion is truly stripped bare, and you can see the Internet for what it is: a bunch of servers, organized into ASes, with connections running between them.
 
-Routing between ASes is universally done via the [Border Gateway Protocol](https://en.wikipedia.org/wiki/Border_Gateway_Protocol), which is a [path vector routing protocol](https://en.wikipedia.org/wiki/Path-vector_routing_protocol) as opposed to a link state routing protocol. Routers running BGP (which reside at the edge between the internal network of an AS and the external Internet, hence 'border') connect to neighbors and broadcast the connections it has to routers from other ASes, known as *peers*. BGP routers also relay announcements they receive from their peers, propagating this information throughout the Internet and allowing border routers to create routing tables.
+Routing between ASes is universally done via the [Border Gateway Protocol](https://en.wikipedia.org/wiki/Border_Gateway_Protocol), which is a [path vector routing protocol](https://en.wikipedia.org/wiki/Path-vector_routing_protocol) as opposed to a link state routing protocol. The difference is path vector protocols broadcast nodes which they can route to and the path to neighbors, rather than the mere existence of a link. Routers running BGP (which reside at the edge between the internal network of an AS and the external Internet, hence 'border') connect to neighbors and broadcast the connections it has to routers from other ASes, known as *peers*. BGP routers also relay announcements they receive from their peers, propagating this information throughout the Internet and allowing border routers to create routing tables. To reduce network usage and routing table size, BGP routers may use heuristics to selectively reject routes, a process known as [route filtering](https://en.wikipedia.org/wiki/Route_filtering). (The side-effect of route filtering is that no router on the Internet has a complete view of *all* routes, so collecting statistics on the routing table requires careful observation from numerous viewpoints.)
 
 ![diagram of interaction between internal and external networks](static/images/routing-protocols.png)
 
 *Diagram of the various routing protocols found on the Internet. Internal links are highighted in red; border routers are highlighted in green.*
+
+The BGP routing itself looks just like the routing table you'd find on your router or computer, just *much bigger* (around 900,000 unique prefixes at the time of writing). Its functionality remains unchanged, though. When a border router receives a packet:
+* If the packet is destined to the internal network, it relays the packet based on whatever routing protocol the AS is using.
+* Otherwise, it consults its routing table, finds the best next hop, and relays the packet to that BGP peer.
 
 Not every AS is connected with each other; often, Internet packets will travel through networks belonging to several ASes until they reach their destination. You can see this for yourself using the [traceroute](https://linux.die.net/man/8/traceroute) utility. Here is the output of `traceroute` from my computer to [gnu.org](https://www.gnu.org/).
 
@@ -261,9 +265,49 @@ Broadly speaking, inter-AS connections can be categorized into two types:
 
 Note that peering and transit are the same thing from a technical standpoint. Also, *BGP peering* simply refers to the existence of a connection between two border routers. It doesn't necessarily mean that no settlement is involved. 
 
+Another staple of backbone routing is the [Internet Exchange Point](https://en.wikipedia.org/wiki/Internet_exchange_point) (IXP). IXPs are essentially a series of interconnected switches, usually managed by a non-profit organization, that allow many ASes to peer with each other without a huge number of cross-connections. 
 
+![picture of an internet exchange](static/images/internet-exchange.jpg)
+*A switch belonging to [AMS-IX](https://en.wikipedia.org/wiki/Amsterdam_Internet_Exchange), one of the world's biggest Internet exchanges.*
+
+IXPs are a pretty great thing for a number of reasons. They provide a way to peer with numerous other ASes, reducing latency for everyone, while avoiding the large number of physical connections that would be necessary to reach the same level of connectedness that would be necessary otherwise.
+
+![peering diagram](static/images/peering.png)
+
+*The benefit of an IXP.*
+
+If you are interested in internet exchanges, I encourage you to checkout the [Fremont Cabal Internet Exchange](https://fcix.net/), a burgeoning IXP based out of Fremont, California. (My hometown!) The [blogpost](https://blog.thelifeofkenneth.com/2018/04/creating-internet-exchange-for-even.html) about its creation is as informative as it is humorous.
+
+## Not All ASes Are Made Equal
+
+Some ASes are more connected than others. You may hear talk about so-called "tier 1" networks; generally speaking, tier 1 networks are ASes which don't need to pay for transit to reach any other AS on the Internet. They are [few and far between](https://en.wikipedia.org/wiki/Tier_1_network#List_of_Tier_1_networks), mostly because the Internet has grown to the point where it's very hard to reach *every* network without at least paying somewhere along the way. Historically, many tier 1 networks were primarily located in the US, resulting in a lot of traffic flowing through US networks. This trend has [slowly eroded](https://www.nytimes.com/2008/08/30/business/30pipes.html?pagewanted=all), however, as Internet infrastructure becomes more advanced in other countries. Conversely, the NSA [diverts American traffic](https://tcf.org/content/report/surveillance-without-borders-the-traffic-shaping-loophole-and-why-it-matters/) offshore so that it can legally perform surveillance.
+
+Tier 1 networks are followed by tier 2 (pay for transit to reach some ASes) and tier 3 (exclusively pay for transit). 
 
 ## BGP Mishaps
+
+BGP has a history of high-profile screwups with cascading consequences, often taking down large segments of the Internet. Just last year, Facebook suffered a [total outage](https://engineering.fb.com/2021/10/05/networking-traffic/outage-details/) due to what later turned out to be a BGP misconfiguration. BGP is in fact rather vulnerable to [hijacking attacks](https://en.wikipedia.org/wiki/BGP_hijacking), since any AS could announce a high-priority bogus route that could make affected network prefixes unroutable. [Resource Public Key Infrastructure](https://en.wikipedia.org/wiki/Resource_Public_Key_Infrastructure) (RPKI) was created to resolve this problem, but adoption still remains a challenge. Here are some notable BGP incidents:
+* February 2008: Pakistan Telecom (AS17557) [brought YouTube offline](https://www.ripe.net/publications/news/industry-developments/youtube-hijacking-a-ripe-ncc-ris-case-study) by broadcasting prefixes for YouTube IPs in a severely misguided attempt to block the website.
+* August 2014: Canadian hackers repeatedly [redirected traffic](https://www.secureworks.com/research/bgp-hijacking-for-cryptocurrency-profit) through their servers to steal cryptocurrency miners' earnings. 
+* December 2017: A Russian autonomous system (AS39523) [announced routes](https://bgpmon.net/popular-destinations-rerouted-to-russia/) for prefixes normally leading to services run by Apple, Facebook, Microsoft, and others. This came after years of no route announcements.
+
+BGP has faced other issues than hijacking, though. Though not a problem with the protocol itself, historically many border routers had a limit of 512K routes, so when the BGP routing table suddenly grew to above that threshold on August 12, 2014, numerous Internet companies [faced outage](https://www.theguardian.com/technology/2014/aug/14/internet-infrastructure-needs-updating-more-blackouts-will-happen) as BGP routing slowed to a crawl.
+
+# To Be Continued
+
+This blogpost is long enough already, so I will write the rest of it some other day. Here is a rough list of what I plan to include:
+* Transport-layer protocols
+    * TCP
+    * UDP
+* Application-layer
+    * HTTPS
+        * X.509 and TLS
+        * chain of trust
+    * DNS
+        * types of records
+        * rDNS
+
+If there is something which you think belongs in either this blogpost or the next, please let me know.
 
 # Further Reading / References
 * [What is BGP? - Cloudflare](https://www.cloudflare.com/learning/security/glossary/what-is-bgp/)
