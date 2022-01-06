@@ -91,4 +91,11 @@
 <div class="info-box">
 
 <p>Check out my <a href="https://bithole.dev/tools/cidr.html">CIDR calculator</a>, which performs a number of useful operations given a CIDR range.</p>
+</div>
+
+<h2 id="going-public">Going Public <a class="section-link" href="#going-public">&sect;</a></h2><p>So what happens when your computer encounters an IP that isn&#39;t on the LAN? Thankfully for your poor computer, handling the routing of this packet across the public Internet is mostly outside of its responsibilities. Your computer has a <a href="https://en.wikipedia.org/wiki/Default_route">default route</a>, which specifies who to contact to relay packets outside the local network. That device is called the <strong>default gateway</strong>, since it serves as a gateway to the rest of the world.</p>
+<div class="info-box">
+
+<p>Your computer uses the default gateway&#39;s IP (which can be printed via undefined on Windows or undefined on Linux) to figure out its MAC address. However, the IP packets sent to the default gateway still have the final recipient&#39;s IP address, since obviously the default gateway needs to know who to send it to.</p>
+<p>Many residential routers also serve a management page from the default gateway IP address. This is purely by convention. The router can distinguish traffic to the gateway itself and traffic to the public internet by looking at the destination address of incoming packets.</p>
 </div><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script><p class="footnote">&copy; 2022 Adrian Zhang &bull; <a href="https://bithole.dev/">about me</a> &bull; <a href="https://github.com/adrian154/blog">contribute</a></p></body></html>

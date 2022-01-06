@@ -150,3 +150,15 @@ Complementary to CIDR is the idea of a *netmask*. For a given classless network,
 Check out my [CIDR calculator](https://bithole.dev/tools/cidr.html), which performs a number of useful operations given a CIDR range.
 
 </div>
+
+## Going Public
+
+So what happens when your computer encounters an IP that isn't on the LAN? Thankfully for your poor computer, handling the routing of this packet across the public Internet is mostly outside of its responsibilities. Your computer has a [default route](https://en.wikipedia.org/wiki/Default_route), which specifies who to contact to relay packets outside the local network. That device is called the **default gateway**, since it serves as a gateway to the rest of the world.
+
+<div class="info-box">
+
+Your computer uses the default gateway's IP (which can be printed via `ipconfig` on Windows or `ip a` on Linux) to figure out its MAC address. However, the IP packets sent to the default gateway still have the final recipient's IP address, since obviously the default gateway needs to know who to send it to.
+
+Many residential routers also serve a management page from the default gateway IP address. This is purely by convention. The router can distinguish traffic to the gateway itself and traffic to the public internet by looking at the destination address of incoming packets.
+
+</div>
