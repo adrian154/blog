@@ -1,5 +1,7 @@
 Some time ago, it occurred to me that I didn't *really* understand what made the Internet work. Sure, I am all too familiar with what the user experience is like, and my adventures in web development have forced me to acquire a fair bit of networking knowledge, but between the bits of light there existed vast chasms of confusion. So I decided to do some reading, some soul-searching, and publish my findings in the form of a blog post.
 
+Please note that this post is by no means a comprehensive overview of *all* the technologies involved in the Internet; I only have one lifetime to waste, unfortunately. However, it does aim to at least touch on all of the most influential systems and organizations that allow the Internet to function. I probably won't cover the Internet's history in very much depth, either, though that is a fascinating topic that you should absolutely look into if you have any interest in networking.
+
 The word "internet" itself offers some hints about its architecture. "Internet" is short for *internetworking*, the act of connecting multiple computer networks so that they can communicate. That's essentially what the Internet is, a bunch of independently maintained networks that are connected such that any two computers on the Internet can reach each other.
 
 ## A Word on Layers
@@ -9,6 +11,12 @@ The Internet is powered by an ever-expanding family of technologies and protocol
 # Physical Layer
 
 Let's start from the very bottom. No Internet, no networks even. Consider two computers: how can digital data be transferred from one to another? The answer to this question is the **physical layer**, which describes how to transmit ones and zeroes over a physical transmission medium. On top of the physical layer lies the **link layer**, which leverages the physical layer's capabilities to transfer full *frames* of data over a network that may be more complicated than a single point-to-point link. (The link layer may also take on other responsibilities such as error correction and retransmission.)
+
+<div class="info-box">
+
+There isn't one idea of a "frame" since their implementation varies widly between protocols. However, for every network, there is a maximum frame size that it can accept, known as the [maximum transmission unit](https://en.wikipedia.org/wiki/Maximum_transmission_unit) or MTU.
+
+</div>
 
 The physical layer and link layer are generally tightly coupled (out of necessity), which is the source of endless frustration. For example, the term "Ethernet" might refer to the physical cable standard, but it could also refer to the Ethernet protocol used to transfer frames over those cables.
 
@@ -59,10 +67,55 @@ We've finally reached the Internet layer of the Internet. This is where all the 
 
 Relatively few protocols live in the Internet layer. Its primary inhabitants are the [Internet Protocol](https://en.wikipedia.org/wiki/Internet_Protocol) (IP) and [Internet Control Message Protocol](https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol) (ICMP). There are two currently deployed versions of IP, IPv4 and IPv6, which are generally very similar but vary in subtle yet important ways.
 
-In IP, every network interface (usually just one per computer) is associated with an IP address. In IPv4, this address is 32-bits long, and usually written as a series of four numbers (each corresponding to a byte of the IP address) separated by periods. For example, the IP of this blog at the time of writing is 142.93.26.121. Because IPv4 addresses are only 32 bits long, there can only be 2<sup>32</sup> = ~4 billion unique IPv4 addresses. That seems like a lot, but as early as the 90s the threat of [running out of IPv4 addresses](https://en.wikipedia.org/wiki/IPv4_address_exhaustion) has continually loomed over the Internet, made worse by the fact that many parts of IPv4 space are [reserved](https://en.wikipedia.org/wiki/Reserved_IP_addresses) for various purposes. To fix this issue, IPv6 was created. IPv6 addresses are 128 bits long, which is more than enough to serve humanity's needs at the moments. (If all IPv6 addresses were distributed equally among all living humans, every individual could have 47 octillion addresses. We won't be running out any time soon, especially because sadly a lot of the Internet is still stuck on IPv4.)
+In IP, every network interface (usually just one per computer) is associated with an IP address. In IPv4, this address is 32-bits long, and usually written as a series of four numbers (each corresponding to a byte of the IP address) separated by periods. For example, the IP of this blog at the time of writing is 142.93.26.121. IP addresses are managed by the [Internet Assigned Numbers Authority](https://en.wikipedia.org/wiki/Internet_Assigned_Numbers_Authority), which assigns blocks of IP addresses to the five [Regional Internet Registries](https://en.wikipedia.org/wiki/Regional_Internet_registry). The RIRs, in turn, deal with requests from individuals and businesses for IP allocations.
+
+## IPv4 Exhaustion
+
+Because IPv4 addresses are only 32 bits long, there can only be 2<sup>32</sup> = ~4 billion unique IPv4 addresses. That seems like a lot, but as early as the 90s the threat of [running out of IPv4 addresses](https://en.wikipedia.org/wiki/IPv4_address_exhaustion) has continually loomed over the Internet, made worse by the fact that many parts of IPv4 space are [reserved](https://en.wikipedia.org/wiki/Reserved_IP_addresses) for various purposes. To fix this issue, IPv6 was created. IPv6 addresses are 128 bits long, which is more than enough to serve humanity's needs at the moments. (If all IPv6 addresses were distributed equally among all living humans, every individual could have 47 octillion addresses. We won't be running out any time soon, especially because sadly a lot of the Internet is still stuck on IPv4.)
+
+![xkcd #195 internet map](static/images/xkcd-internet-map.jpg)
+
+*[xkcd 195](https://xkcd.com/195/): A map of IPv4 space circa 2006. Things have only gotten more crowded since then.*
 
 <div class="info-box">
 
 *Why can't MAC addresses just be used for routing?*, you might ask. The biggest reason is that IP is meant to be mostly agnostic of the protocols used in the underlying link layer. Using MAC addresses would violate that principle; networks not running on IEEE 802 technologies wouldn't be able to join the Internet, which defeats its whole purpose of connecting numerous heterogeneous networks.
+
+</div>
+
+## Packets
+
+One of the key innovations that made the Internet possible was [packet switching](https://en.wikipedia.org/wiki/Packet_switching), the idea of transferring digital data throughout a computer network by splitting it into chunks called *packets* and allowing nodes which receive packets to decide where to send the packet next so that it can reach the recipient. Thanks to its ubiquity, packet switching probably seems incredibly mundane and obvious to most programmers, but at the time (when the predominant paradigm for telecommunications was [circuit switching](https://en.wikipedia.org/wiki/Circuit_switching)), packet switching was revolutionary. Compared to circuit switching, packet switching allows for much more diverse network topologies, and does not require all the packets in a single data stream to travel to the recipient via the same route, making Internet routing incredibly dynamic. All of these attributes have helped the Internet scale to billions of connected devices.
+
+An IPv4 packet consists of two parts: a header, which provides information about the packet itself, and the data contained within the packet. Some of the info contained within the header includes:
+* The destination address
+* The length of the packet's data
+* The [type of data](https://en.wikipedia.org/wiki/Differentiated_services) in the packet, used by routers to determine how to best handle the packet (e.g. whether to prioritize latency or throughput)
+* A number identifying which protocol the underlying data is being used for; see the IANA [list of protocol numbers](https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml).
+* A [time to live](https://en.wikipedia.org/wiki/Time_to_live) value, an integer which is decremented each time the packet is retransmitted until it reaches zero, at which point the packet is dropped. Used to prevent unroutable packets from being circulated infinitely.
+* The checksum of the header, to detect whether it was corrupted during transit. Integrity of the packet payload is not handled by IP; that responsibility is delegated to whatever protocol is built on top of IP.
+* Fragmentation information. A router may break an IP packet into fragments for various reasons, usually to fit into the MTU of the link between the router and the next recipient. Packet fragments contain their offset within the original packet and a bitfield indicating whether there are more fragments, allowing for seamless reassembly along the packet's route.
+
+So how exactly do IP packets find their way to their final destination? That's a big question. Let's figure it out.
+
+## IP in the LAN
+
+Before concerning ourselves with the public Internet in all of its grandeur, let's consider how IP works on a single local network first. Let's check up on our little four-computer network from earlier.
+
+![diagram of an IP LAN](static/images/ip-lan.png)
+
+*Assume that each computer has been assigned a static IP address.*
+
+Suppose computer 10.0.0.2 wants to send a message to 10.0.0.3. In order to actually deliver a message to 10.0.0.3, our sender needs to know which MAC address to send packets to. It can obtain this information via the [Address Resolution Protocol](https://en.wikipedia.org/wiki/Address_Resolution_Protocol) (ARP).
+
+## Address Resolution Protocol
+
+ARP is a protocol that enables the resolution of IP addresses to MAC addresses on a network. It operates on the link-layer. When a computer needs to determine the MAC address given an IP address, it broadcasts an ARP request to the local network. This is done by sending frames to a MAC address of FF:FF:FF:FF:FF:FF, which signals to the switch that the message should be relayed to all connected devices. The device which has the corresponding IP responds to the request with its MAC and IP address. Both of these devices may cache each others' IP and MAC addresses to avoid needing to make another ARP request in the future.
+
+There also exists a second method for the discovery of IP-to-MAC mappings. Under certain circumstances, such as when a device joins a network or obtains a new IP address, it may publish an ARP announcement that prompts all other devices to update their ARP caches.
+
+<div class="info-box">
+
+One major weakness of ARP is its vulnerability to [spoofing attacks](https://en.wikipedia.org/wiki/ARP_spoofing), wherein a malicious device publishes an ARP announcement or responds to an ARP request not intended for them in order to masquerade as another device. For this reason, IPv6 uses [Neighbor Discovery Protocol](https://en.wikipedia.org/wiki/Neighbor_Discovery_Protocol) (NDP) instead of ARP. NDP seeks to address some of the security and usability problems which have traditionally affected ARP. To learn more, check out [this thread](https://superuser.com/questions/969831/why-is-arp-replaced-by-ndp-in-ipv6) on StackExchange.
 
 </div>
