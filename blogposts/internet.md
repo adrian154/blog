@@ -98,13 +98,22 @@ An IPv4 packet consists of two parts: a header, which provides information about
 
 So how exactly do IP packets find their way to their final destination? That's a big question. Let's figure it out.
 
-## IP in the LAN
+## Obtaining an IP address
 
-Before concerning ourselves with the public Internet in all of its grandeur, let's consider how IP works on a single local network first. Let's check up on our little four-computer network from earlier.
+In order to send or receive IP traffic, you first need an IP address. Your computer can obtain an IP address in one of several ways:
+* It has been configured to use a preset static IP address.
+* It receives an IP address while connecting to the network, via the [Dynamic Host Configuration Protocol](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol) (DHCP).
+* (some other more obscure and less straightforward schemes)
+
+Let's talk about DHCP. DHCP is built on top of UDP, which in turn resides above IP. It allows newly-connected clients to contact the local DHCP server and obtain an IP address. Right off the bat, there are two challenges:
+* How can the computer send/receive DHCP packets, which are carried via IP, if it doesn't have an IP address yet?
+* How does the computer discover the DHCP server?
+
+To solve the first problems, clients use a source IP of 0.0.0.0 in their initial DHCP requests. The DHCP server distinguishes incoming requests not by source IP but by MAC address. To discover the DHCP server, all DHCP requests are directed to a special IPv4 address, 255.255.255.255, which broadcasts the packets to all nodes on the network. By seeing which IP replies, a device can figure out which IP the DHCP server is running on.
+
+Okay, so we've obtained an IP address. Now what?
 
 ![diagram of an IP LAN](static/images/ip-lan.png)
-
-*Assume that each computer has been assigned a static IP address.*
 
 Suppose computer 10.0.0.2 wants to send a message to 10.0.0.3. In order to actually deliver a message to 10.0.0.3, our sender needs to know which MAC address to send packets to. It can obtain this information via the [Address Resolution Protocol](https://en.wikipedia.org/wiki/Address_Resolution_Protocol) (ARP).
 
@@ -162,3 +171,5 @@ Your computer uses the default gateway's IP (which can be printed via `ipconfig`
 Many residential routers also serve a management page from the default gateway IP address. This is purely by convention. The router can distinguish traffic to the gateway itself and traffic to the public internet by looking at the destination address of incoming packets.
 
 </div>
+
+Your router itself has a default gateway, too. In fact, your router's perspective isn't really different from that of your computer's: it too is just part of a bigger network, owned by your ISP instead of you. Other than that, pretty much all the other details stay the same; your router has a subnet mask, it performs ARP requests, and it relays packets which aren't on its network to the default gateway.

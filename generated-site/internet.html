@@ -62,9 +62,20 @@
 <li>Fragmentation information. A router may break an IP packet into fragments for various reasons, usually to fit into the MTU of the link between the router and the next recipient. Packet fragments contain their offset within the original packet and a bitfield indicating whether there are more fragments, allowing for seamless reassembly along the packet&#39;s route.</li>
 </ul>
 <p>So how exactly do IP packets find their way to their final destination? That&#39;s a big question. Let&#39;s figure it out.</p>
-<h2 id="ip-in-the-lan">IP in the LAN <a class="section-link" href="#ip-in-the-lan">&sect;</a></h2><p>Before concerning ourselves with the public Internet in all of its grandeur, let&#39;s consider how IP works on a single local network first. Let&#39;s check up on our little four-computer network from earlier.</p>
+<h2 id="obtaining-an-ip-address">Obtaining an IP address <a class="section-link" href="#obtaining-an-ip-address">&sect;</a></h2><p>In order to send or receive IP traffic, you first need an IP address. Your computer can obtain an IP address in one of several ways:</p>
+<ul>
+<li>It has been configured to use a preset static IP address.</li>
+<li>It receives an IP address while connecting to the network, via the <a href="https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol">Dynamic Host Configuration Protocol</a> (DHCP).</li>
+<li>(some other more obscure and less straightforward schemes)</li>
+</ul>
+<p>Let&#39;s talk about DHCP. DHCP is built on top of UDP, which in turn resides above IP. It allows newly-connected clients to contact the local DHCP server and obtain an IP address. Right off the bat, there are two challenges:</p>
+<ul>
+<li>How can the computer send/receive DHCP packets, which are carried via IP, if it doesn&#39;t have an IP address yet?</li>
+<li>How does the computer discover the DHCP server?</li>
+</ul>
+<p>To solve the first problems, clients use a source IP of 0.0.0.0 in their initial DHCP requests. The DHCP server distinguishes incoming requests not by source IP but by MAC address. To discover the DHCP server, all DHCP requests are directed to a special IPv4 address, 255.255.255.255, which broadcasts the packets to all nodes on the network. By seeing which IP replies, a device can figure out which IP the DHCP server is running on.</p>
+<p>Okay, so we&#39;ve obtained an IP address. Now what?</p>
 <p><img src="static/images/ip-lan.png" alt="diagram of an IP LAN"></p>
-<p><em>Assume that each computer has been assigned a static IP address.</em></p>
 <p>Suppose computer 10.0.0.2 wants to send a message to 10.0.0.3. In order to actually deliver a message to 10.0.0.3, our sender needs to know which MAC address to send packets to. It can obtain this information via the <a href="https://en.wikipedia.org/wiki/Address_Resolution_Protocol">Address Resolution Protocol</a> (ARP).</p>
 <h2 id="address-resolution-protocol">Address Resolution Protocol <a class="section-link" href="#address-resolution-protocol">&sect;</a></h2><p>ARP is a protocol that enables the resolution of IP addresses to MAC addresses on a network. It operates on the link-layer. When a computer needs to determine the MAC address given an IP address, it broadcasts an ARP request to the local network. This is done by sending frames to a MAC address of FF:FF:FF:FF:FF:FF, which signals to the switch that the message should be relayed to all connected devices. The device which has the corresponding IP responds to the request with its MAC and IP address. Both of these devices may cache each others&#39; IP and MAC addresses to avoid needing to make another ARP request in the future.</p>
 <p>There also exists a second method for the discovery of IP-to-MAC mappings. Under certain circumstances, such as when a device joins a network or obtains a new IP address, it may publish an ARP announcement that prompts all other devices to update their ARP caches.</p>
@@ -98,4 +109,7 @@
 
 <p>Your computer uses the default gateway&#39;s IP (which can be printed via undefined on Windows or undefined on Linux) to figure out its MAC address. However, the IP packets sent to the default gateway still have the final recipient&#39;s IP address, since obviously the default gateway needs to know who to send it to.</p>
 <p>Many residential routers also serve a management page from the default gateway IP address. This is purely by convention. The router can distinguish traffic to the gateway itself and traffic to the public internet by looking at the destination address of incoming packets.</p>
-</div><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script><p class="footnote">&copy; 2022 Adrian Zhang &bull; <a href="https://bithole.dev/">about me</a> &bull; <a href="https://github.com/adrian154/blog">contribute</a></p></body></html>
+</div>
+
+<p>Your router itself has a default gateway, too. In fact, your router&#39;s perspective isn&#39;t really different from that of your computer&#39;s: it too is just part of a bigger network, owned by your ISP instead of you. Other than that, pretty much all the other details stay the same; your router has a subnet mask, it performs ARP requests, and it relays packets which aren&#39;t on its network to the default gateway.</p>
+<script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script><p class="footnote">&copy; 2022 Adrian Zhang &bull; <a href="https://bithole.dev/">about me</a> &bull; <a href="https://github.com/adrian154/blog">contribute</a></p></body></html>
