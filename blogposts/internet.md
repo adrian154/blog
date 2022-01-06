@@ -201,3 +201,72 @@ The fact that the router must remember which port is associated with which local
 Finally, while NAT works reasonably well for consumers, it is for the most part fundamentally incompatible with server hosting, which requires listening on a *specific* well-defined port that often can't be changed. If you've ever tried to host a Minecraft server out of your home network, you're probably familiar with this struggle. This hasn't stopped Google from offering [cloud NAT](https://cloud.google.com/nat/docs/overview) for serving multiple unrelated services on different ports.
 
 NAT doesn't have to stop at the residential level, though. Under [carrier-grade NAT](https://en.wikipedia.org/wiki/Carrier-grade_NAT) (CGNAT), entire WANs are encapsulated under address translation, further reducing IPv4 address usage. IANA [allocated](https://datatracker.ietf.org/doc/html/rfc6598) the 100.64.0.0/10 block for use with CGNAT in 2012.
+
+# Where Does Internet Actually Come From?
+
+We've established that your router doesn't really do anything special, it just serves as a gateway between your LAN and your ISP's larger network. So how does your ISP get on the Internet? This is where things really start getting interesting.
+
+So far, our trusty little packet has faced some pretty tough trials. He was disassembled and reassembled when he crossed the NAT firewall, and now he's being bounced around the ISP's internal network. How does he find his way to the Promised Land, the destination IP?
+
+Routing within the ISP network may be driven by any one of several protocols. [Intermediate System to Intermediate System](https://en.wikipedia.org/wiki/IS-IS) (IS-IS) and [Open Shortest Path First](https://en.wikipedia.org/wiki/Open_Shortest_Path_First) (OSPF) are often used for internal routing, from what I gather, but information on the topology of ISP networks and how they manage their routes is scarce as expected. Both IS-IS and OSPF are [link state routing protocols](https://en.wikipedia.org/wiki/Link-state_routing_protocol), meaning that routers broadcast their links to the internal network, allowing other routers to build a map of the network and calculate the optimal route to each node using an algorithm such as [Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm).
+
+But what if the destination isn't in the ISP's network?
+
+At the very top level, the Internet is organized into [autonomous systems](https://en.wikipedia.org/wiki/Autonomous_system_(Internet)). Generally, all the IPs within an AS are controlled by one organization (usually a corporation) and can reach each other without leaving the AS. The AS is defined by the list of routing prefixes that lead to the AS, and each AS is assigned a number (an ASN) by our good friend IANA.
+
+<div class="info-box">
+
+ASNs were initially 16-bit, but eventually it became obvious that the supply was about to run out, so IANA started allocating [32-bit ASNs](https://datatracker.ietf.org/doc/html/rfc4893) in 2007.
+
+</div>
+
+When you look at the Internet at the AS level, the illusion is truly stripped bare, and you can see the Internet for what it is: a bunch of servers, organized into ASes, with connections running between them.
+
+Routing between ASes is universally done via the [Border Gateway Protocol](https://en.wikipedia.org/wiki/Border_Gateway_Protocol), which is a [path vector routing protocol](https://en.wikipedia.org/wiki/Path-vector_routing_protocol) as opposed to a link state routing protocol. Routers running BGP (which reside at the edge between the internal network of an AS and the external Internet, hence 'border') connect to neighbors and broadcast the connections it has to routers from other ASes, known as *peers*. BGP routers also relay announcements they receive from their peers, propagating this information throughout the Internet and allowing border routers to create routing tables.
+
+![diagram of interaction between internal and external networks](static/images/routing-protocols.png)
+
+*Diagram of the various routing protocols found on the Internet. Internal links are highighted in red; border routers are highlighted in green.*
+
+Not every AS is connected with each other; often, Internet packets will travel through networks belonging to several ASes until they reach their destination. You can see this for yourself using the [traceroute](https://linux.die.net/man/8/traceroute) utility. Here is the output of `traceroute` from my computer to [gnu.org](https://www.gnu.org/).
+
+```
+ 19   203 ms    85 ms    84 ms  be-5402-pe02.onesummer.ma.ibone.comcast.net [96.110.41.174]
+ 20    94 ms    85 ms    82 ms  ibr01-be-7922.bsn04.twdx.net [185.134.180.89]
+ 21    94 ms    85 ms    83 ms  bbr01-fh-0-2-0-7.bsn05.twdx.net [198.160.62.4]
+ 22    97 ms   104 ms    85 ms  dcr03-fh-0-10-0-19.bsn04.twdx.net [198.160.62.203]
+ 23    85 ms   104 ms    86 ms  FREE-SOFTWA.dcr03.bsn04.twdx.net [185.134.180.210]
+ 24    93 ms    86 ms    82 ms  wildebeest1p.org [209.51.188.116]
+```
+
+(I've omitted the previous Comcast hops for the sake of my own privacy. They were all within the same AS anyways.)
+
+Surprisingly enough, the FSF has its own AS. I guess for a bunch of folks obsessed with freedom and independence, it's only natural. Anyways, the packet travels through Comcast's network, makes a few hops through [TowardEX](https://www.towardex.com/), and finally reaches the FSF's servers. Not bad!
+
+<div class="info-box">
+
+The way `traceroute` works is really fascinating. Ever wonder how it figures out the route a packet takes between point A and point B when the Internet Protocol suite seemingly provides no such functionality? The answer is remarkably clever. It starts by sending a packet to the destination with a TTL of 1. This packet will travel down one hop along the route before the router sees that the TTL has reached zero, and sends an ICMP error message to the original sender. This reveals the first router along the path; a packet of TTL 2 will reveal the second router, and so on, until the destination IP is reached. 
+
+</div>
+
+## The Politics of Peering
+
+In the words of [Kenneth Finnegan](https://blog.thelifeofkenneth.com/), regarding BGP peering:
+
+> This is obviously where human networking becomes exceedingly important in computer networking.
+
+Broadly speaking, inter-AS connections can be categorized into two types:
+* **Peering** is an agreement between two ASes to share traffic, usually out of mutual benefit. Most commonly, "peering" refers to *settlement-free peering*, so no party is paying for the connection.
+* **Transit** is a paid service where an AS with a highly interconnected global network offers to peer with another AS in exchange for a free. 
+
+Note that peering and transit are the same thing from a technical standpoint. Also, *BGP peering* simply refers to the existence of a connection between two border routers. It doesn't necessarily mean that no settlement is involved. 
+
+
+
+## BGP Mishaps
+
+# Further Reading / References
+* [What is BGP? - Cloudflare](https://www.cloudflare.com/learning/security/glossary/what-is-bgp/)
+* [What is an Internet exchange point? - Cloudflare](https://www.cloudflare.com/learning/cdn/glossary/internet-exchange-point-ixp/)
+* [Creating an Autonomous System for Fun and Profit - The Life of Kenneth](https://blog.thelifeofkenneth.com/2017/11/creating-autonomous-system-for-fun-and.html)
+* [Creating an Internet Exchange for Even More Fun and Less Profit - The Life of Kenneth](https://blog.thelifeofkenneth.com/2018/04/creating-internet-exchange-for-even.html)

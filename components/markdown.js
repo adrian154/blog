@@ -35,10 +35,11 @@ const renderCodespan = (code) => {
     const display = code.match(/\$\$([^\$]+)\$\$/);
     if(display) return katex.renderToString(display[1], {throwOnError: false, displayMode: true});
     if(inline) return katex.renderToString(inline[1], {throwOnError: false});
+    return false;
 };
 
 // bug: markdown's highlight method does not include the `hljs` class, which breaks formatting
-const renderCodeblock = (src, language) => pre(code({class: "hljs"}, {html: language && hljs.highlight(src, {language}).value}) || hljs.highlightAuto(src)).html;
+const renderCodeblock = (src, language) => pre(code({class: "hljs"}, {html: language ? hljs.highlight(src, {language}).value : hljs.highlightAuto(src).value})).html;
 
 // --- setup marked
 marked.use({
