@@ -83,7 +83,7 @@ Because IPv4 addresses are only 32 bits long, there can only be 2<sup>32</sup> =
 
 ![xkcd #195 internet map](static/images/xkcd-internet-map.jpg)
 
-*[xkcd 195](https://xkcd.com/195/): A map of IPv4 space circa 2006. Things have only gotten more crowded since then. / [CC BY-NC](https://creativecommons.org/licenses/by-nc/2.5/)*
+*[xkcd 195](https://xkcd.com/195/): A map of IPv4 space circa 2006. Things have only gotten more crowded since then.*
 
 <div class="info-box">
 
@@ -232,7 +232,7 @@ ASNs were initially 16-bit, but eventually it became obvious that the supply was
 
 When you look at the Internet at the AS level, the illusion is truly stripped bare, and you can see the Internet for what it is: a bunch of servers, organized into ASes, with connections running between them.
 
-Routing between ASes is universally done via the [Border Gateway Protocol](https://en.wikipedia.org/wiki/Border_Gateway_Protocol), which is a [path vector routing protocol](https://en.wikipedia.org/wiki/Path-vector_routing_protocol) as opposed to a link state routing protocol. The difference is path vector protocols broadcast nodes which they can route to and the path to neighbors, rather than the mere existence of a link. Routers running BGP (which reside at the edge between the internal network of an AS and the external Internet, hence 'border') connect to neighbors and broadcast the connections it has to routers from other ASes, known as *peers*. BGP routers also relay announcements they receive from their peers, propagating this information throughout the Internet and allowing border routers to create routing tables. To reduce network usage and routing table size, BGP routers may use heuristics to selectively reject routes, a process known as [route filtering](https://en.wikipedia.org/wiki/Route_filtering). (The side-effect of route filtering is that no router on the Internet has a complete view of *all* routes, so collecting statistics on the routing table requires careful observation from numerous viewpoints.)
+Routing between ASes is universally done via the [Border Gateway Protocol](https://en.wikipedia.org/wiki/Border_Gateway_Protocol), which is a [path vector routing protocol](https://en.wikipedia.org/wiki/Path-vector_routing_protocol) as opposed to a link state routing protocol. Instead of broadcasting the existence of links throughout the network, BGP routers advertise which ASes they can reach and the path to take to their peers. This has the benefit of preventing the possibility of a loop, which would pose a serious problem at a global scale. In general, BGP is designed to reduce volatility in Internet routing. To reduce network usage and routing table size, BGP routers may use heuristics to selectively reject routes, a process known as [route filtering](https://en.wikipedia.org/wiki/Route_filtering). (The side-effect of route filtering is that no router on the Internet has a complete view of *all* routes, so collecting statistics on the routing table requires careful observation from numerous viewpoints.)
 
 ![diagram of interaction between internal and external networks](static/images/routing-protocols.png)
 
@@ -262,26 +262,27 @@ In the words of [Kenneth Finnegan](https://blog.thelifeofkenneth.com/), regardin
 
 Broadly speaking, inter-AS connections can be categorized into two types:
 * **Peering** is an agreement between two ASes to share traffic, usually out of mutual benefit. Most commonly, "peering" refers to *settlement-free peering*, so no party is paying for the connection.
-* **Transit** is a paid service where an AS with a highly interconnected global network offers to peer with another AS in exchange for a free. 
+* **Transit** is a paid service where an AS with a highly interconnected global network offers to peer with another AS in exchange for a fee. 
 
-Note that peering and transit are the same thing from a technical standpoint. Also, *BGP peering* simply refers to the existence of a connection between two border routers. It doesn't necessarily mean that no settlement is involved. 
+Note that peering and transit are the same thing from a technical standpoint. Also, *BGP peering* simply refers to the existence of a connection between two ASes. It doesn't necessarily mean that no settlement is involved. 
 
 Another staple of backbone routing is the [Internet Exchange Point](https://en.wikipedia.org/wiki/Internet_exchange_point) (IXP). IXPs are essentially a series of interconnected switches, usually managed by a non-profit organization, that allow many ASes to peer with each other without a huge number of cross-connections. 
 
 ![picture of an internet exchange](static/images/internet-exchange.jpg)
-*A switch belonging to [AMS-IX](https://en.wikipedia.org/wiki/Amsterdam_Internet_Exchange), one of the world's biggest Internet exchanges.*
+
+*A switch belonging to [AMS-IX](https://en.wikipedia.org/wiki/Amsterdam_Internet_Exchange), one of the world's biggest Internet exchanges. [Photo](https://en.wikipedia.org/wiki/File:AMS-IX_optical_patch_panel.jpg) by Fabienne Serriere / [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/deed.en)*
 
 IXPs are a pretty great thing for a number of reasons. They provide a way to peer with numerous other ASes, reducing latency for everyone, while avoiding the large number of physical connections that would be necessary to reach the same level of connectedness that would be necessary otherwise.
 
 ![peering diagram](static/images/peering.png)
 
-*The benefit of an IXP.*
-
-If you are interested in internet exchanges, I encourage you to checkout the [Fremont Cabal Internet Exchange](https://fcix.net/), a burgeoning IXP based out of Fremont, California. (My hometown!) The [blogpost](https://blog.thelifeofkenneth.com/2018/04/creating-internet-exchange-for-even.html) about its creation is as informative as it is humorous.
+If you are interested in internet exchanges, I encourage you to checkout the [Fremont Cabal Internet Exchange](https://fcix.net/), a burgeoning IXP based out of Fremont, California (which is also my hometown!) The [blogpost](https://blog.thelifeofkenneth.com/2018/04/creating-internet-exchange-for-even.html) about its creation is as informative as it is humorous.
 
 ## Not All ASes Are Made Equal
 
-Some ASes are more connected than others. You may hear talk about so-called "tier 1" networks; generally speaking, tier 1 networks are ASes which don't need to pay for transit to reach any other AS on the Internet. They are [few and far between](https://en.wikipedia.org/wiki/Tier_1_network#List_of_Tier_1_networks), mostly because the Internet has grown to the point where it's very hard to reach *every* network without at least paying somewhere along the way. Historically, many tier 1 networks were primarily located in the US, resulting in a lot of traffic flowing through US networks. This trend has [slowly eroded](https://www.nytimes.com/2008/08/30/business/30pipes.html?pagewanted=all), however, as Internet infrastructure becomes more advanced in other countries. Conversely, the NSA [diverts American traffic](https://tcf.org/content/report/surveillance-without-borders-the-traffic-shaping-loophole-and-why-it-matters/) offshore so that it can legally perform surveillance.
+Some ASes are more connected than others. You may hear talk about so-called "tier 1" networks; generally speaking, tier 1 networks are ASes which don't need to pay for transit to reach any other AS on the Internet. They are [few and far between](https://en.wikipedia.org/wiki/Tier_1_network#List_of_Tier_1_networks), mostly because the Internet has grown to the point where it's very hard to reach *every* network without at least paying somewhere along the way.
+
+Historically, many tier 1 networks were primarily located in the US, resulting in a lot of traffic flowing through US networks. This trend has [slowly eroded](https://www.nytimes.com/2008/08/30/business/30pipes.html?pagewanted=all), however, as Internet infrastructure becomes more advanced in other countries. Conversely, the NSA [diverts American traffic](https://tcf.org/content/report/surveillance-without-borders-the-traffic-shaping-loophole-and-why-it-matters/) offshore so that it can legally perform surveillance.
 
 Tier 1 networks are followed by tier 2 (pay for transit to reach some ASes) and tier 3 (exclusively pay for transit). 
 
@@ -293,6 +294,32 @@ BGP has a history of high-profile screwups with cascading consequences, often ta
 * December 2017: A Russian autonomous system (AS39523) [announced routes](https://bgpmon.net/popular-destinations-rerouted-to-russia/) for prefixes normally leading to services run by Apple, Facebook, Microsoft, and others. This came after years of no route announcements.
 
 BGP has faced other issues than hijacking, though. Though not a problem with the protocol itself, historically many border routers had a limit of 512K routes, so when the BGP routing table suddenly grew to above that threshold on August 12, 2014, numerous Internet companies [faced outage](https://www.theguardian.com/technology/2014/aug/14/internet-infrastructure-needs-updating-more-blackouts-will-happen) as BGP routing slowed to a crawl.
+
+# Multicast and Anycast
+
+So far, we've only discussed *unicast* traffic, where packets are routed from one host to the next. However, IP also supports alternative routing schemes.
+
+**Anycast routing** allows numerous geographically separate hosts to operate under the same IP. When you send a packet to an anycast address, it is delivered to the "closest" host as seen by the core routers along the path. This allows traffic to be automatically distributed between several servers, potentially reducing latency and increasing throughput. However, because IP is stateless, packets addressed to anycast packets are not guaranteed to arrive at the same host, which could potentially disrupt stateful protocols like TCP. As a result, anycast is most popular for scaling protocols where transactions are short-lived (and thus the odds of a connection being disrupted are low). In particular, many DNS services (such as all of the [root name servers](https://en.wikipedia.org/wiki/Root_name_server) and many popular DNS resolvers) are scaled using anycast.
+
+**Multicast routing** allows packets to be delivered to any hosts which have indicated that they are willing to participate in a given *multicast group*, managed by the [Internet Group Management Protocol](https://en.wikipedia.org/wiki/Internet_Group_Management_Protocol) (IGMP). All multicast packets have destination addresses in the 224.0.0.0/4 range as [reserved](https://datatracker.ietf.org/doc/html/rfc5771) by IANA. Senders of multicast periodically use IGMP to query the network for participants; hosts interested in receiving multicast packets on a specific address join that group by responding to the query. 
+
+One of the most common protocols that uses multicast routing is [multicast DNS](https://en.wikipedia.org/wiki/Multicast_DNS) (mDNS), which is essentially a variant of DNS that works over multicast. It is often used to discover devices on the LAN such as printers.
+
+![mdns traffic on my LAN](static/images/mdns-capture.png)
+
+*mDNS traffic on my LAN. I'm pretty sure it's from my printer.*
+
+Unlike anycast, multicast generally doesn't work outside of local networks; most providers do not route multicast traffic through their networks because it can potentially be used to amplify a [denial of service](https://en.wikipedia.org/wiki/Denial-of-service_attack) attack, flooding hosts' networks with packets and preventing users from accessing their services.
+
+# IPv6
+
+IPv6 is the successor of IPv4, created to solve various problems with the original Internet protocol (beyond just IPv4 exhaustion). However, it still fulfills the same role as IPv4, and as a result most protocols built on top of IP work fine with both protocols (though some modifications may be necessary to work with the longer addresses).
+
+One of IPv6's most attractive features is its longer address length (128 bits), meaning that every device can have its own IP address instead of resorting to ugly solutions such as NAT. This restores the end-to-end principle on the Internet.
+
+The headers of IPv6 have been considerably simplified to allow for faster processing by routers. One way this was accomplished was by removing the concept of fragmentation from IPv6. Instead, the sender is responsible for discovering the maximum MTU that a given route can accept (which is guaranteed to be at least [1280 bytes](https://datatracker.ietf.org/doc/html/rfc2460)).
+
+IPv6 also supports multicast traffic; in fact, broadcast is entirely supplanted by multicast. There are special addresses used for routig to all nodes or routers on a local network, but these are all implemented using [Multicast Listener Discover](https://datatracker.ietf.org/doc/html/rfc3810), IPv6's replacement for IGMP.
 
 # To Be Continued
 
