@@ -172,4 +172,20 @@ Many residential routers also serve a management page from the default gateway I
 
 </div>
 
-Your router itself has a default gateway, too. In fact, your router's perspective isn't really different from that of your computer's: it too is just part of a bigger network, owned by your ISP instead of you. Other than that, pretty much all the other details stay the same; your router has a subnet mask, it performs ARP requests, and it relays packets which aren't on its network to the default gateway.
+Your router itself has a default gateway, too. In fact, your router's view of the internet isn't really different from that of your computer's: it too is just part of a bigger network, owned by your ISP instead of you. Other than that, pretty much all the other details stay the same; your router has a subnet mask, it performs ARP requests, and it relays packets which aren't on its network to the default gateway. In fact, your router probably obtains its address from the ISP through DHCP as well. (That's why rebooting your router may result in your home network being assigned a new IP address. Realistically, however, most routers remember their previous IP address and simply request the same one when they boot up again.)
+
+<div class="info-box">
+
+Your ISP identifies subscribers who have Internet access based on the MAC address of their router. Because of this, if you choose to use your own router instead of your ISP's equipment, you may have to contact them so that they can add your router's MAC address to their records. Conversely, if you know the MAC address of a subscriber on the same WAN, you can spoof it to get free Internet access. Be warned, though, this is [fairly illegal...](https://www.techdirt.com/articles/20140616/06521227593/when-aaron-swartz-spoofed-his-mac-address-it-proved-he-was-criminal-when-apple-does-it-its-good-everyone.shtml)
+
+</div>
+
+## NAT: A Perpetual Annoyance
+
+Hey, remember IPv4 exhaustion? Yup. It's me again. Here to make your life slightly worse for the umpteenth time. *When will you learn?*
+
+As I write this blogpost, IPv6 will have been available for an entire decade in just a couple months, yet [IPv6 adoption](https://www.google.com/intl/en/ipv6/statistics.html) still languishes at around 35%. As it stands, the *majority* of the Internet is only available over IPv4, yet IANA allocated all of its IP addresses to the RIRs in [2011](https://itp.cdn.icann.org/en/files/announcements/release-03feb11-en.pdf) and [RIPE NCC](https://www.ripe.net/), one of the five RIRs, was the last to [run out of addresses](https://www.ripe.net/publications/news/about-ripe-ncc-and-ripe/the-ripe-ncc-has-run-out-of-ipv4-addresses) in 2019. Nowadays, if you want to get your hands onto some IPv4 addresses, you'll have to turn to the [IP aftermarket](https://auctions.ipv4.global/), where you'd be paying a price of anywhere from $40 to $120 per IP address. 
+
+This ever-worsening drought of IP addresses has forced the Internet's biggest players, the ISPs, to get creative. One solution that has been used to combat IPv4 exhaustion is [Network Address Translation](https://en.wikipedia.org/wiki/Network_address_translation) (NAT). NAT precludes the need to assign every device on a household network a unique IP address. Here's how it works.
+
+![diagram of NAT](static/images/nat.png)
