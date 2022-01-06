@@ -1,5 +1,5 @@
 // --- deps
-const { h1, h2, h3, h4, h5, h6, a, code, pre } = require("html-generator");
+const { h1, h2, h3, h4, h5, h6, a, code, pre, img } = require("html-generator");
 const hljs = require("highlight.js");
 const marked = require("marked");
 const katex = require("katex");
@@ -40,13 +40,15 @@ const renderCodespan = (code) => {
 
 // bug: markdown's highlight method does not include the `hljs` class, which breaks formatting
 const renderCodeblock = (src, language) => pre(code({class: "hljs"}, {html: language ? hljs.highlight(src, {language}).value : hljs.highlightAuto(src).value})).html;
+const renderImage = (href, title, text) => a({href, target: "_blank"}, img({src: href, alt: text})).html;
 
 // --- setup marked
 marked.use({
     renderer: {
         heading: renderHeading,
         codespan: renderCodespan,
-        code: renderCodeblock
+        code: renderCodeblock,
+        image: renderImage
     }
 });
 
