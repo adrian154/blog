@@ -315,11 +315,9 @@ Unlike anycast, multicast generally doesn't work outside of local networks; most
 
 IPv6 is the successor of IPv4, created to solve various problems with the original Internet protocol (beyond just IPv4 exhaustion). However, it still fulfills the same role as IPv4, and as a result most protocols built on top of IP work fine with both protocols (though some modifications may be necessary to work with the longer addresses).
 
-One of IPv6's most attractive features is its longer address length (128 bits), meaning that every device can have its own IP address instead of resorting to ugly solutions such as NAT. This restores the end-to-end principle on the Internet.
+One of IPv6's most attractive features is its longer address length (128 bits), meaning that every device can have its own IP address instead of resorting to ugly solutions such as NAT. This restores the end-to-end principle on the Internet. In addition, IPv6 packet headers have been considerably simplified, allowing for faster processing by routers. One way this was accomplished was by removing the concept of fragmentation from IPv6; instead, the sender is responsible for discovering the maximum MTU that a given route can accept (which is guaranteed to be at least [1280 bytes](https://datatracker.ietf.org/doc/html/rfc2460)).
 
-The headers of IPv6 have been considerably simplified to allow for faster processing by routers. One way this was accomplished was by removing the concept of fragmentation from IPv6. Instead, the sender is responsible for discovering the maximum MTU that a given route can accept (which is guaranteed to be at least [1280 bytes](https://datatracker.ietf.org/doc/html/rfc2460)).
-
-IPv6 also supports multicast traffic; in fact, broadcast is entirely supplanted by multicast. There are special addresses used for routig to all nodes or routers on a local network, but these are all implemented using [Multicast Listener Discover](https://datatracker.ietf.org/doc/html/rfc3810), IPv6's replacement for IGMP.
+IPv6 also supports multicast traffic; in fact, broadcast is entirely supplanted by multicast. There are special addresses used for routing packets to all nodes or routers on a local network, but these are all implemented using [Multicast Listener Discover](https://datatracker.ietf.org/doc/html/rfc3810), IPv6's replacement for IGMP.
 
 # To Be Continued
 
@@ -342,3 +340,5 @@ If there is something which you think belongs in either this blogpost or the nex
 * [What is an Internet exchange point? - Cloudflare](https://www.cloudflare.com/learning/cdn/glossary/internet-exchange-point-ixp/)
 * [Creating an Autonomous System for Fun and Profit - The Life of Kenneth](https://blog.thelifeofkenneth.com/2017/11/creating-autonomous-system-for-fun-and.html)
 * [Creating an Internet Exchange for Even More Fun and Less Profit - The Life of Kenneth](https://blog.thelifeofkenneth.com/2018/04/creating-internet-exchange-for-even.html)
+* [RFC 791 (IPv4) - IETF](https://datatracker.ietf.org/doc/html/rfc791)
+* [RFC 8200 (IPv6) - IETF](https://datatracker.ietf.org/doc/html/rfc8200)
