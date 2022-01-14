@@ -14,4 +14,4 @@ const blogposts = directory(DATA_DIR).sort((a, b) => b.timestamp - a.timestamp);
 blogposts.forEach(post => render(OUTPUT_DIR, post.id, blogpost, post, read(path.join(DATA_DIR, post.id + ".md"))));
 
 // generate index
-render(OUTPUT_DIR, "index", index, blogposts);
+render(OUTPUT_DIR, "index", index, blogposts.filter(blogpost => blogpost.publish));

