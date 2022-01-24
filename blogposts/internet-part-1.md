@@ -1,8 +1,8 @@
 Some time ago, it occurred to me that I didn't *really* understand what made the Internet work. Sure, I am all too familiar with what the user experience is like, and my adventures in web development have forced me to acquire a fair bit of networking knowledge, but between the bits of light there existed vast chasms of confusion. So I decided to do some reading, some soul-searching, and publish my findings in the form of a blog post.
 
-Please note that this post is by no means a comprehensive overview of *all* the technologies involved in the Internet; unfortunately, I only have one lifetime to waste, though I'll do my best to cover the important ones. I probably won't cover the Internet's history in very much depth, either (though that is a fascinating topic that I strongly encourage you to look into).
+Please note that this post is by no means a comprehensive overview of *all* the technologies involved in the Internet; that would require far more lifetimes than the one which I have to waste. I probably won't cover the Internet's history in very much depth, either, though that is a fascinating topic that I strongly encourage you to look into.
 
-The word "internet" itself offers some hints about its architecture. "Internet" is short for *internetworking*, the act of connecting multiple computer networks so that they can communicate. That's essentially what the Internet is, a bunch of independently maintained networks that are joined together such that any two computers on the Internet can reach each other.
+The word "internet" itself offers some hints about its architecture. "Internet" is short for *internetworking*, the act of unifying numerous computer networks under one protocol. That's essentially what the Internet is, a bunch of independently maintained networks that are joined together such that any two computers on the Internet can reach each other.
 
 ## A Word on Layers
 
@@ -10,30 +10,28 @@ The Internet is powered by an ever-expanding family of technologies and protocol
 
 # Physical Layer
 
-Let's start from the very bottom. No Internet, no networks even. Consider two computers: how can digital data be transferred from one to another? The answer to this question is the **physical layer**, which describes how to transmit ones and zeroes over a physical transmission medium. On top of the physical layer lies the **link layer**, which leverages the physical layer's capabilities to transfer full *frames* of data over a network that may be more complicated than a single point-to-point link. (The link layer may also take on other responsibilities such as error correction and retransmission.)
+Let's start from the very bottom. No Internet, no networks even. Consider two computers: how can digital data be transferred from one to another? The answer to this question is the **physical layer**, which describes how to transmit ones and zeroes over a physical transmission medium. This involves everything from the actual physical connectors or radio bands used for communication, to the [line codes](https://en.wikipedia.org/wiki/Line_code) which specify how to extract a bitstream from the measured values of a signal.
+
+The physical layer is closely tied to the **link layer**, which leverages the physical layer's capabilities to transfer full *frames* of data over a network that may be more complicated than a single point-to-point link. It may also take on responsibilities such as error correction and automatic retransmission.
 
 <div class="info-box">
 
-The idea of a "frame" is a little nebulous since their implementation varies wildly between protocols. However, for every network, there is a maximum frame size that it will accept, known as the [maximum transmission unit](https://en.wikipedia.org/wiki/Maximum_transmission_unit) or MTU. This is one of the few properties of the link-layer network that higher layers need to be aware of.
+The idea of a "frame" is a little vague since their implementation varies a great deal between different protocols. However, for every network, there is a maximum frame size that it can accept, known as the [maximum transmission unit](https://en.wikipedia.org/wiki/Maximum_transmission_unit) or MTU. This is an important property of the link-layer network that higher layers need to be aware of.
 
 </div>
 
 The physical layer and link layer are generally tightly coupled (out of necessity), which is the source of endless frustration. For example, the term "Ethernet" might refer to the physical cable standard, but it could also refer to the Ethernet protocol used to transfer frames over those cables. Which is it?
 
-The full answer is that Ethernet has many sublayers, which reside at varying levels within the physical and link layers. Twisted-pair Ethernet cables themselves are governed by a flock of partially agreeing standards; here's what [Wikipedia](https://en.wikipedia.org/wiki/Category_6_cable) has to say about it:
+The full answer is that Ethernet spans several network layers, because it supports a variety of physical transmission media. There's of course the classical [twisted pair cable](https://en.wikipedia.org/wiki/Category_6_cable), but Ethernet also works over coaxial cable and optical fiber. Each of these physical layers are managed by different standards, which are collectively maintained by [https://en.wikipedia.org/wiki/IEEE_802.3].
 
-> Confusion therefore arises because of the naming conventions and performance benchmarks laid down by the International ISO/IEC and American TIA/EIA standards, which in turn are different from the regional European standard, EN 50173-1. In broad terms, the ISO standard for Cat 6A is the most stringent, followed by the European standard, and then the American standard.
+Ethernet itself belongs to a bigger group of [IEEE 802](https://en.wikipedia.org/wiki/IEEE_802) technologies, which all support a link-layer interface called **medium access control** (MAC). MAC abstracts away some of the details of the physical layer, and allows devices on the same **local area network** (LAN) to communicate. Each device (specifically, each [interface](https://en.wikipedia.org/wiki/Network_interface_controller)) has a unique 48-bit identifier, known as a MAC address. These addresses are allocated by IEEE to manufacturers of network equipment, though some mobile devices simply generate a [random MAC address](https://support.apple.com/guide/security/wi-fi-privacy-secb9cb3140c/web) for privacy reasons. We'll see how MAC addresses are used in routing later.
 
-*That* is a mess that I have no interest in delving into. But Ethernet supports much more than just twisted-pair cables; it can be run over other physical media such as coaxial cable or  optical fiber. Those standards are managed by [IEEE 802.3](https://en.wikipedia.org/wiki/IEEE_802.3), which also handles the link-layer details of Ethernet. 
-
-Beyond Ethernet, there are no shortage of other ways to physically connect devices. Here are some prolific examples:
+Beyond Ethernet, there are no shortage of other physical and link-layer technologies. Here are some prolific examples:
 * WiFi ([IEEE 802.11](https://en.wikipedia.org/wiki/IEEE_802.11))
 * Cable ([DOCSIS](https://en.wikipedia.org/wiki/DOCSIS))
 * [LTE](https://en.wikipedia.org/wiki/LTE_(telecommunication))
 
-For every surviving technology, there are probably around ten dead ones. One example is [Token Ring](https://en.wikipedia.org/wiki/Token_Ring), IBM's Ethernet competitor, which was famously vanquished around the turn of the century.
-
-One thing that all [IEEE 802](https://en.wikipedia.org/wiki/IEEE_802) technologies have in common is **medium access control** (**MAC**), which enables communication between devices on the same **local area network** (**LAN**). Each device (more accurately, each [interface](https://en.wikipedia.org/wiki/Network_interface_controller)) is given a unique 48-bit address. These addresses are allocated by the IEEE to equipment manufacturers, though some mobile devices simply generate a [random MAC address](https://support.apple.com/guide/security/wi-fi-privacy-secb9cb3140c/web) when connecting to a network to avoid being tracked. 
+There are also plenty of obscure and dead LAN technologies. One example is [Token Ring](https://en.wikipedia.org/wiki/Token_Ring), IBM's Ethernet competitor, which was famously vanquished around the turn of the century.
 
 # Switches
 
@@ -47,17 +45,17 @@ Devices called [network switches](https://en.wikipedia.org/wiki/Network_switch) 
 
 *In case you can't tell, I'm not exactly the best at making diagrams.*
 
-Ethernet frames are fairly simple in structure. As expected, each frame contains the source MAC address and destination MAC address (along with some other fields such as a checksum) before the payload, so that the frame can be routed to the correct recipient. 
+Ethernet frames are fairly simple in structure. As expected, each frame contains the source MAC address and destination MAC address (along with other fields such as a checksum) before the payload, so that the frame can be routed to the correct recipient. 
 
 When computer A wants to send a message to computer B, it sends a frame to the switch with computer B's MAC address. However, the switch doesn't know which physical port the connection to computer B is located on, so it relays the frame to all connected computers, hoping that one of them is the intended recipient. When computer B receives the frame, it might reply with another frame. That frame would contain computer B's MAC address as the source, allowing the switch to internally associate the connection it received the frame on with computer B. In the future, when the switch receives a frame with computer B as its destination, it can simply relay the frame on the correct link instead of *flooding*.
 
 <div class="info-box">
 
-Back in the day, when everything was slightly worse, networks were often created using [hubs](https://en.wikipedia.org/wiki/Ethernet_hub) instead of switches. Hubs are much simpler devices which simply retransmit everything that it receives to all other devices. Because of their relative lack of sophistication, hubs suffer from a littany of problems:
+Back in the day, when everything was slightly worse, networks were often created using [hubs](https://en.wikipedia.org/wiki/Ethernet_hub) instead of switches. Hubs are much simpler devices which simply retransmit everything that it receives on every port. Because of their relative lack of sophistication, hubs suffer from a littany of problems:
 * Since every device needs to be able to receive the data being transmitted by the hub, if one device was slower than the others, *every* link on the switch would be forced to operate at that speed.
-* Multiple devices trying to transmit at the same time would result in a garbled mess being transmitted (a condition known as a [collision](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_detection)), requiring the hub to detect the conflict and temporarily stop all transmissions. This obviously degraded network performance.
+* Multiple devices trying to transmit at the same time would result in both devices talking over each other (a condition known as a [collision](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_detection)), requiring them to detect the conflict and stop transmitting. This strategy known as [Carrier-Sense Multiple Access with Collision Detection](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_detection), or CSMA/CD. "Carrier-Sense" refers to how transmitting devices were responsible for detecting a colliding signal and deferring their transmission. This resulted in degraded network performance as more devices were attached to the hub.
 
-Today, hubs have been made obsolete in favor of switches and are rarely used outside of special conditions (though evidently my school's IT department hasn't gotten the memo). Even in the early days of Ethernet, it was apparent that collisions posed a challenging problem, so other protocols approached access control differently. For example, in Token Ring setups, there is no central switch or hub; nodes are connected in a ring, and transmission rights are passed around the ring. When one node is done transmitting, it passes the *token* to the next node. Hence the name, Token Ring. \*roll credits\*
+Today, hubs have been made obsolete in favor of switches and are rarely used outside of special conditions (though evidently my school's IT department hasn't gotten the memo). Even in the early days of Ethernet, it was apparent that collisions posed a challenging problem, so other protocols approached access control differently. For example, in Token Ring setups, there is no central switch or hub; nodes are connected in a ring, and transmission rights are passed around the ring, so no collisions were possible. When one node was done transmitting, it passed the *token* to the next node, hence the name "Token Ring". \*roll credits\*
 
 </div>
 
@@ -65,9 +63,11 @@ Switches are one of the most ubiquitous building blocks of computer networks, so
 
 ## WiFi
 
-An overview of physical-layer protocols just wouldn't be complete without a mention to WiFi, standardized by [IEEE 802.11](https://en.wikipedia.org/wiki/IEEE_802.11). The idea of a point-to-point link starts to break down when it comes to wireless communications because radio signals will propagate to every connected device whether you like it or not. Thus, WiFi networks use an algorithm called [Multiple Access with Collision Avoidance](https://en.wikipedia.org/wiki/Multiple_Access_with_Collision_Avoidance) to ensure that only one device tries to transmit data at a time. Receiving frames is simpler; devices simply decode all incoming frames and pick out the ones that are actually destined for their MAC address. In this way, a WiFi network functions more closely to an Ethernet hub than a switch.
+Ethernet is *the* most common standard for wired communications, but most people access their network wirelessly when at home. So let's talk about WiFi, which is standardized by [IEEE 802.11](https://en.wikipedia.org/wiki/IEEE_802.11). The biggest difference in wireless networking is that for the purposes of a residential LAN, point-to-point links don't exist. Instead, devices communicate with the LAN by broadcasting on a predetermined frequency. All devices on the LAN receive and decode incoming frames, and simply filter out the ones which aren't intended for them.
 
-In this situation, no router or switch is necessary to relay messages between devices on the same WLAN. In fact, any WiFi-capable transceiver can [broadcast a network](https://en.wikipedia.org/wiki/Wireless_ad_hoc_network); Windows even [natively supports](https://answers.microsoft.com/en-us/windows/forum/all/how-do-i-set-up-an-ad-hoc-wifi-network-in-windows/0caa92d8-e02f-4e7f-aa5c-0abf10ed2039) this feature. Instead, your router plays the role of a [wireless access point](https://en.wikipedia.org/wiki/Wireless_access_point), aptly abbreviated to **WAP**. (In light of "WAP" becoming rather vulgar in recent years, I will use the more succinct abbreviation of just **AP** for the rest of this post.) The role of an AP is simple; it just serves as an interface between the wireless network and the regular wired network, which has access to the public Internet. Speaking of which...
+However, this comes with the pitfall that only one device can transmit at a given time per channel. If you've ever heard a faint broadcast from a different station while listening to the radio, you've experienced this effect; however, unlike humans, computers cannot distinguish two simultaneous transmissions, so algorithms like [Carrier-Sense Multiple Access with Collision Avoidance](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_avoidance) are necessary. WiFi can't use CSMA/CD because CSMA/CD relies on transmitters being able to listen for a colliding signal while transmitting; that's easy for wired network devices, which transmit and receive on physically isolated wires, but WiFi transceivers have to stop receiving while transmitting, or they'd only be able to hear their own signal. Thus, collision *avoidance* is used, where transceivers wait until the network has been quiet for some time before starting to transmit. Optionally, channel access can be explicitly mediated through messages that indicate when a node intends to begin transmitting, a scheme called [RTS/CTS](https://en.wikipedia.org/wiki/IEEE_802.11_RTS/CTS).
+
+We established that in the case of wired networks, your router is directly responsible for routing frames between physical links, but that's unnecessary in the case of WiFi. In fact, any device with a WiFi transceiver can [broadcast its own network](https://en.wikipedia.org/wiki/Wireless_ad_hoc_network); Windows even [natively supports](https://answers.microsoft.com/en-us/windows/forum/all/how-do-i-set-up-an-ad-hoc-wifi-network-in-windows/0caa92d8-e02f-4e7f-aa5c-0abf10ed2039) this feature. Instead, your router plays the role of a [wireless access point](https://en.wikipedia.org/wiki/Wireless_access_point), aptly abbreviated to **WAP**. (In light of "WAP" becoming rather vulgar in recent years, I will use the more succinct abbreviation of just **AP** for the rest of this post.) The job of an AP is simple; it just serves as an interface between the wireless network and the *gateway*, which has access to the public Internet. Speaking of which...
 
 # Internet Layer
 
@@ -321,19 +321,7 @@ IPv6 also supports multicast traffic; in fact, broadcast is entirely supplanted 
 
 # To Be Continued
 
-This blogpost is long enough already, so I will write the rest of it some other day. Here is a rough list of what I plan to include:
-* Transport-layer protocols
-    * TCP
-    * UDP
-* Application-layer
-    * HTTPS
-        * X.509 and TLS
-        * chain of trust
-    * DNS
-        * types of records
-        * rDNS
-
-If there is something which you think belongs in either this blogpost or the next, please let me know.
+We made it to the end. Congratulations.
 
 # Further Reading / References
 * [What is BGP? - Cloudflare](https://www.cloudflare.com/learning/security/glossary/what-is-bgp/)

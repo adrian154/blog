@@ -1,3 +1,9 @@
+**Prologue:** If you are here because you have been exposed to a Log4Shell attack or want to know how to protect your server, TL;DR:
+* **Patch. Your. Server.** That's it. There is no better way. Fixes have been backported to pretty much every relevant version of Forge, Fabric, Spigot, Paper, etc. 
+* **Whitelist doesn't help.** Minecraft still logs (among other things) the username of every single login attempt, even if the username is way too long or contains illegal characters. If your server isn't patched, someone could execute an attack on it without even having a Minecraft account.
+* **Hiding your IP doesn't help.** Just because you didn't tell anyone your server's IP doesn't mean malicious actors can't find it.
+* Last but not least, **patch your freakin' server!** 
+
 In case you haven't heard, there's been a bit of an illness going around. No, not COVID. I'm talking about [Log4Shell](https://en.wikipedia.org/wiki/Log4Shell), possibly one of the worst zero-day vulnerabilities in the history of cybersecurity. It originates from [Log4j2](https://logging.apache.org/log4j/2.x/), the premier logging framework for modern Java, which can be found in thousands of applications (including Minecraft). The power of Log4Shell cannot be understated; an attacker may be able to get remote code execution simply by making a vulnerable server simply log a specific string.
 
 Today I checked the Discord server for my SMP, and was greeted with a rather unexpected surprsie:
