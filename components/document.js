@@ -21,6 +21,6 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
     body(
         a({href: "/"}, img({src: "static/images/banner0.jpg", alt: "blog banner"})),
         ...content,
-        p({class: "footnote"}, raw("&copy; 2022 Adrian Zhang &bull; "), a({href: "https://bithole.dev/"}, "homepage"), raw(" &bull; "), a({href: "rss.xml"}, "rss"), raw(" &bull; "), a({href: "https://github.com/adrian154/blog"}, "contribute"), raw(" &bull; "), a({href: "https://creativecommons.org/licenses/by-sa/3.0/legalcode"}, "CC BY-SA 3.0"))
+        p({class: "footnote"}, raw("&copy; 2022 "), a({href: "https://bithole.dev/"}, "Adrian Zhang"), raw(" &bull; "), a({href: "rss.xml"}, "rss"), raw(" &bull; "), a({href: "https://github.com/adrian154/blog"}, "contribute"), raw(" &bull; "), a({href: "https://creativecommons.org/licenses/by-sa/3.0/legalcode"}, "CC BY-SA 3.0"))
     )
 ).html;

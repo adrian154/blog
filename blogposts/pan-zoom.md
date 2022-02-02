@@ -1,0 +1,5 @@
+Panning and zooming. You've probably done it thousands of times, but have you ever thought about the math that goes into it? Of course you haven't. No one has. No one wants to... until they have to.
+
+This blogpost serves as a chronicle of my adventures in implementing comfortable panning and zooming controls. The issue first arose when I was working on the first iteration of my r/place clone, [Pixels] (warning: possibly NSFW). I implemented zooming and panning in a very na&iuml;ve way, and it *kinda* worked, but something irked me. Whenever you zoomed in, it would zoom towards the center of the canvas. This meant that if you wanted to view a specific section of the canvas up close, it wasn't enough to just scroll. You'd have to keep dragging the canvas and re-centering the part you were interested in, and nobody likes that. And so, I set out on my journey to find a better way...
+
+I'll skip the details of my painful struggle, and cut right to the chase. First, we need to understand the relationship between the two coordinate spaces that we will be working with, world space and screen space. This relationship is generally described using a *matrix*.

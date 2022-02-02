@@ -15,12 +15,19 @@ Each zone within a domain is serviced by its own *authoritative nameserver*, whi
 * If the nameserver is authoritative for the domain in question, it indicates that by setting a flag in the response message, and returns any available records that answer the query.
 * If the nameserver is not authoritative, it tries to refer the requester to a nameserver which will bring them closer to the authoritative nameserver for the domain.
 
-Talk is cheap, so let's manually resolve a domain by actually making requests to some nameservers. The details of the various bitfields involved in the DNS protocol are out of the scope of this blogpost (go read [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) if you're interested), but here's the gist: you can conduct a DNS transaction with a nameserver via several different transport mechanisms. The oldest way involves communicating with the server using UDP packets on port 53. However, the RFC 1035 places a rather strict limitation of up to 512 bytes per message, which simply isn't enough for some queries. If the nameserver indicated that it couldn't fit the entire response into 512 bytes, clients are supposed to retry the query over TCP on port 53. Today, [EDNS](https://en.wikipedia.org/wiki/Extension_Mechanisms_for_DNS) allows clients to signal to servers that they are capable of accepting larger responses, though it is entirely up to the server to honor this request. DNS can also be transported over [TLS](https://en.wikipedia.org/wiki/DNS_over_TLS) or [HTTPS](https://en.wikipedia.org/wiki/DNS_over_HTTPS) for increased security.
-
-I'm not exactly interested in building a robust or performant DNS resolver, so for the purpose of this blogpost I chose to stick with DNS over TCP to avoid dealing with truncation.
-
 <div class="info-box">
+
+While there are only 13 IPs representing the root nameservers, requests are distributed via [IP Anycast](https://en.wikipedia.org/wiki/Anycast) to hundreds of physical servers.
+
 </div>
+
+Ultimately, there's no better way to understand something than seeing it in action, so let's get our hands dirty by acting like a DNS resolver and sending some queries. You can follow along using [dig](https://linux.die.net/man/1/dig), a CLI tool for making DNS requests, though I also made a [web-based tool](TODO) for making raw DNS queries.
+
+# Iterative DNS
+
+# Recursive Resolvers
+
+# Reverse DNS
 
 # Further Reading / References
 * [RFC 1034, 1035 (DNS) - IETF](https://datatracker.ietf.org/doc/html/rfc1034)
