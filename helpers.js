@@ -8,7 +8,7 @@ const directory = dir => fs.readdirSync(dir).filter(file => path.extname(file) =
 
 const render = (destDir, name, template, ...args) => {
     const begin = Date.now();
-    fs.writeFileSync(path.join(destDir, name + ".html"), template(...args), {encoding: "utf-8"});
+    fs.writeFileSync(path.join(destDir, name), template(...args), {encoding: "utf-8"});
     console.log(`Rendered document ${name} in ${Date.now() - begin}ms`);
 };
 
