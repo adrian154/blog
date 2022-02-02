@@ -1,7 +1,7 @@
 const { html, head, meta, title, link, p, body, a, img } = require("html-generator");
 const { stylesheet, raw } = require("./helpers");
 
-module.exports = (properties, ...content) => "<!DOCTYPE html>" + html(
+module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en"},
     head(
         meta({charset: "utf-8"}),
         meta({name: "viewport", content: "width=device-width, initial-scale=1"}),
