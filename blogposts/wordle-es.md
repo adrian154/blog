@@ -2,21 +2,7 @@ My friend recently sent me a [Spanish version](https://wordle.danielfrg.com/) of
 
 # First Impressions
 
-The site appears to be built using [Next.js](https://nextjs.org/), so the source code is a frightening nightmare. Looking at the source, there's a piece of script sent along with the webpage that appears important.
-
-```js
-(function () {
-    window['__CF$cv$params'] = {
-        r: '6d896d400cd59450',
-        m: '5EPFU1FmlNSH_hjSJkdRx9lE5_0c8H5pqc6zJyNVesk-1644035671-0-AUNM63OowGUzDsEJsdBE03Nyoyhum2aCVewdVwQo3GfH6NrSWDSsFpr3LwJECLR4q807WjCDPC1AQVdI2/JQx8U9wP+GTjRTuQmnQEcYg6oYDsrGPQvVYUrP/OihJtRUAg==',
-        s: [0x4271d96856, 0x0f8ab574ad],
-        u: '/cdn-cgi/challenge-platform/h/g'
-    }
-})();
-```
-*Prettified here for your viewing pleasure.*
-
-Looks kind of like a password hash, but I doubt it's a real hash since then the code wouldn't be able to let us know which of our guessed letters were correct. Visiting [https://wordle.danielfrg.com/cdn-cgi/challenge-platform/h/g](https://wordle.danielfrg.com/cdn-cgi/challenge-platform/h/g) yields nothing. There's two obfuscated scripts ([here](/static/wordle-invisible.js) and [here](/static/wordle-app.js)) that appears to implement the logic for the game. 
+The site appears to be built using [Next.js](https://nextjs.org/), so the source code is a frightening nightmare. There's two obfuscated scripts ([here](/static/wordle-invisible.js) and [here](/static/wordle-app.js)) that appears to implement the logic for the game. 
 
 # Experimentation
 
