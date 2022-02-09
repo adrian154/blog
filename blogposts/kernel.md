@@ -3,7 +3,7 @@ It's that time of year again. Yes. After a 14-month drought of commits on my [op
 I've gone ahead and dumped what egg-kernel is currently capable of to serve as a sort of roadmap for future development.
 
 egg-kernel starts when its bootsector is loaded. The bootsector loads the bootloader, which...
-
+ 
 * enables the A20 line
 * retrieves a map of available memory using the BIOS
 * loads the kernel into memory
