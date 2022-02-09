@@ -29,9 +29,9 @@ Fundamentally, the point of a hypothesis test is to calculate the probability of
 
 If you are comparing a sample proportion to a population proportion, it is possible to characterize the sampling distribution of the population precisely. We have already established that the sampling distribution is normal; the mean &mu; is also given, and standard deviation `$\sigma$` can be found using the formula `$\sigma = \sqrt{\frac{\pi(1-\pi)}{n}}$`. The next steps are fairly simple: determine the *z*-score representing the experiment's outcome using `$\frac{p - \pi}{\sigma}$`, and calculate the likelihood of the outcome using normalCDF.
 
-TODO: Hypothesis testing for a sample mean
-
 TODO: Discuss 1-PropZTest
+
+If you are testing a sample mean, the process is different since the population standard deviation is generally not known in this situation. TODO: Explain t-test
 
 ## Draw a conclusion
 
@@ -43,7 +43,7 @@ If H<sub>0</sub> could not be rejected, **do not say "evidence suggests"** or an
 
 You may be asked to explain the meaning of a type I and type II error in the context of the hypothesis test you just performed. Remember these definitions:
 * A **type I error** is rejecting H<sub>0</sub> and concluding that H<sub>a</sub> is true when it's actually false.
-* A **type II error** is failing to reject H<sub>0</sub> and condluding that H<sub>a</sub> is false when it's actually true.
+* A **type II error** is failing to reject H<sub>0</sub> and concluding that H<sub>a</sub> is false when it's actually true.
 
 # Example
 
@@ -61,4 +61,8 @@ Let's say we picked a random sample of Mission students and tested how many know
     * *n* is less than 10% of the population (there are about 2,000 students at Mission)
     * All the assumptions were met, so we can proceed with our hypothesis test.
 * Perform our calculations.
-* TODO
+    * Calculate the *z*-score (*z* &asymp; 0.734)
+    * Find the area to the right of the curve (A &asymp; 0.2314)
+* Fail to reject H<sub>0</sub> at &alpha; = 0.05. There is not enough evidence to conclude that more than 38% of MSJHS students know the identity.
+* **Type I Error**: Concluding that >38% of MSJHS students know the identity when only 38% know it.
+* **Type II Error**: Concluding that 38% of MSJHS students know the identity when in reality >38% know it.

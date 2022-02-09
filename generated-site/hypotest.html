@@ -25,14 +25,14 @@ c26.7,-32.7,52,-63,76,-91s52,-60,52,-60s208,722,208,722
 c56,-175.3,126.3,-397.3,211,-666c84.7,-268.7,153.8,-488.2,207.5,-658.5
 c53.7,-170.3,84.5,-266.8,92.5,-289.5z
 M1001 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.5225em;"><span></span></span></span></span></span></span></span></span>. The next steps are fairly simple: determine the <em>z</em>-score representing the experiment&#39;s outcome using <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>p</mi><mo>−</mo><mi>π</mi></mrow><mi>σ</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{p - \pi}{\sigma}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1994em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8544em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">σ</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.4461em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mbin mtight">−</span><span class="mord mathnormal mtight" style="margin-right:0.03588em;">π</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>, and calculate the likelihood of the outcome using normalCDF.</p>
-<p>TODO: Hypothesis testing for a sample mean</p>
 <p>TODO: Discuss 1-PropZTest</p>
+<p>If you are testing a sample mean, the process is different since the population standard deviation is generally not known in this situation. TODO: Explain t-test</p>
 <h2 id="draw-a-conclusion">Draw a conclusion <a class="section-link" href="#draw-a-conclusion">&sect;</a></h2><p>The significance level &alpha; determines what probability is sufficient to reject H<sub>0</sub>. If the probability value is below &alpha;, H<sub>0</sub> can be rejected. Otherwise you &quot;failed to reject&quot; H<sub>0</sub>.</p>
 <p>If H<sub>0</sub> could not be rejected, <strong>do not say &quot;evidence suggests&quot;</strong> or any variant thereof! The fact that you were unable to reject the null hypothesis implies that the evidence did not really suggest anything. Instead, state that there &quot;isn&#39;t enough evidence&quot; to conclude that H<sub>a</sub> is true.</p>
 <h2 id="identify-the-type-i-and-type-ii-errors">Identify the type I and type II errors <a class="section-link" href="#identify-the-type-i-and-type-ii-errors">&sect;</a></h2><p>You may be asked to explain the meaning of a type I and type II error in the context of the hypothesis test you just performed. Remember these definitions:</p>
 <ul>
 <li>A <strong>type I error</strong> is rejecting H<sub>0</sub> and concluding that H<sub>a</sub> is true when it&#39;s actually false.</li>
-<li>A <strong>type II error</strong> is failing to reject H<sub>0</sub> and condluding that H<sub>a</sub> is false when it&#39;s actually true.</li>
+<li>A <strong>type II error</strong> is failing to reject H<sub>0</sub> and concluding that H<sub>a</sub> is false when it&#39;s actually true.</li>
 </ul>
 <h1 id="example">Example <a class="section-link" href="#example">&sect;</a></h1><p>Let&#39;s say we picked a random sample of Mission students and tested how many know the identity sin(2<em>x</em>) = 2sin(<em>x</em>)cos(<em>x</em>). We found that 72 out of 177 students knew the identity. Our theory is that more Mission students know the identity than the mean, which is 38%.</p>
 <ul>
@@ -51,7 +51,13 @@ M1001 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">�
 <li>All the assumptions were met, so we can proceed with our hypothesis test.</li>
 </ul>
 </li>
-<li>Perform our calculations.</li>
-<li>TODO</li>
+<li>Perform our calculations.<ul>
+<li>Calculate the <em>z</em>-score (<em>z</em> &asymp; 0.734)</li>
+<li>Find the area to the right of the curve (A &asymp; 0.2314)</li>
+</ul>
+</li>
+<li>Fail to reject H<sub>0</sub> at &alpha; = 0.05. There is not enough evidence to conclude that more than 38% of MSJHS students know the identity.</li>
+<li><strong>Type I Error</strong>: Concluding that &gt;38% of MSJHS students know the identity when only 38% know it.</li>
+<li><strong>Type II Error</strong>: Concluding that 38% of MSJHS students know the identity when in reality &gt;38% know it.</li>
 </ul>
 <noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script><p class="footnote">&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">contribute</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></body></html>
