@@ -29,9 +29,7 @@ Fundamentally, the point of a hypothesis test is to calculate the probability of
 
 If you are comparing a sample proportion to a population proportion, it is possible to characterize the sampling distribution of the population precisely. We have already established that the sampling distribution is normal; the mean &mu; is also given, and standard deviation `$\sigma$` can be found using the formula `$\sigma = \sqrt{\frac{\pi(1-\pi)}{n}}$`. The next steps are fairly simple: determine the *z*-score representing the experiment's outcome using `$\frac{p - \pi}{\sigma}$`, and calculate the likelihood of the outcome using normalCDF.
 
-TODO: Discuss 1-PropZTest
-
-If you are testing a sample mean, the process is different since the population standard deviation is generally not known in this situation. TODO: Explain t-test
+If you are testing a sample mean, the process is different since the population standard deviation is generally not known in this situation. **Coming soon**: *t*-tests.
 
 ## Draw a conclusion
 
