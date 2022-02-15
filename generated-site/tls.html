@@ -107,7 +107,7 @@
 </div>
 <div class="hex-data" data-hex="0100">
 
-<h2 id="legacy-compression-methods">Legacy Compression Methods <a class="section-link" href="#legacy-compression-methods">&sect;</a></h2><p>Previously, compression methods were listed here. In TLS 1.3, this field is no longer used, so it just contains a single null byte.</p>
+<h2 id="legacy-compression-methods">Legacy Compression Methods <a class="section-link" href="#legacy-compression-methods">&sect;</a></h2><p>Previously, compression methods were listed here. In TLS 1.3, compression is no longer supported due to security vulnerabilities, so this field contains a single null byte.</p>
 <ul>
 <li><code>01</code>: field length</li>
 <li><code>00</code>: null</li>
@@ -198,15 +198,57 @@
 <li><code>04 01</code>: rsa_pkcs1_sha256</li>
 <li><code>05 01</code>: rsa_pkcs1_sha384</li>
 <li><code>06 01</code>: rsa_pkcs1_sha512</li>
-<li><code>03 03</code>: undefined</li>
+<li><code>03 03</code>: SHA224 ECDSA</li>
 <li><code>02 03</code>: ecdsa_sha1</li>
-<li><code>03 01</code>: undefined</li>
+<li><code>03 01</code>: SHA224 RSA</li>
 <li><code>02 01</code>: rsa_pkcs1_sha1</li>
-<li><code>03 02</code>: undefined</li>
-<li><code>02 02</code>: Reserved for backward compatibility</li>
-<li><code>04 02</code>: Reserved for backward compatibility</li>
-<li><code>05 02</code>: Reserved for backward compatibility</li>
-<li><code>06 02</code>: Reserved for backward compatibility</li>
+<li><code>03 02</code>: SHA224 DSA</li>
+<li><code>02 02</code>: SHA1 DSA</li>
+<li><code>04 02</code>: SHA256 DSA</li>
+<li><code>05 02</code>: SHA384 DSA</li>
+<li><code>06 02</code>: SHA512 DSA</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="hex-data" data-hex="002b00050403040303">
+
+<h2 id="extension-supportedversions">Extension: supported_versions <a class="section-link" href="#extension-supportedversions">&sect;</a></h2><p>This extension lists the TLS versions which the client supports.</p>
+<ul>
+<li><code>00 2b</code>: extension type (43 for supported_versions)</li>
+<li><code>00 05</code>: data length (5 bytes)<ul>
+<li><code>04</code>: length of version list (4 bytes)<ul>
+<li><code>03 04</code>: TLS 1.3</li>
+<li><code>03 03</code>: TLS 1.2</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="hex-data" data-hex="002d00020101">
+
+<h2 id="extension-pskkeyexchangemodes">Extension: psk_key_exchange_modes <a class="section-link" href="#extension-pskkeyexchangemodes">&sect;</a></h2><p>This extension lists the supported key exchange modes for pre-shared keys. (This session doesn&#39;t use preshared keys, so we won&#39;t be seeing any of these methods in action.)</p>
+<ul>
+<li><code>00 2d</code>: extension type (45 for psk_key_exchange_modes)</li>
+<li><code>00 02</code>: data length (2 bytes)<ul>
+<li><code>01 01</code>: PSK with (EC)DHE key establishment</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="hex-data" data-hex="003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a">
+
+<h2 id="extension-keyshare">Extension: key_share <a class="section-link" href="#extension-keyshare">&sect;</a></h2><p>The client sends its public keys to the server in this extension. If the server supports the algorithm of the key sent in the handshake, all messages following the ClientHello can be encrypted.</p>
+<ul>
+<li><code>00 33</code>: extension type (51 for key_share)</li>
+<li><code>00 26</code>: data length (38 bytes)<ul>
+<li><code>00 24</code>: length of key share list<ul>
+<li><code>00 1d</code>: the key is to be used with the x25519 signature algorithm</li>
+<li><code>00 20</code>: key length (32 bytes)</li>
+<li><code>44 07 06 ... 01 24 3a</code>: public key</li>
 </ul>
 </li>
 </ul>
@@ -215,21 +257,7 @@
 </div>
 </div>
 
-<p>1603010154
-01000150
-0303
-f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f
-20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1
-0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff
-0100
-0091
-000b000403000102
-000a000c000a001d0017001e00190018
-00230000
-00160000
-00170000
-000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602
-002b00050403040303002d00020101003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a</p>
+
 <h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><ul>
 <li><a href="https://datatracker.ietf.org/doc/html/rfc8446">RFC 8446: TLS 1.3 Specification (IETF)</a></li>
 </ul>

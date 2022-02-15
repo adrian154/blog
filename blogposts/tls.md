@@ -127,7 +127,7 @@ TLS 1.3 only recommends five cipher suites, of which three are listed: TLS_AES_2
 
 ## Legacy Compression Methods
 
-Previously, compression methods were listed here. In TLS 1.3, this field is no longer used, so it just contains a single null byte.
+Previously, compression methods were listed here. In TLS 1.3, compression is no longer supported due to security vulnerabilities, so this field contains a single null byte.
 
 * `01`: field length
 * `00`: null
@@ -236,25 +236,45 @@ This extension allows clients to declare which digital signature algorithms they
 
 </div>
 <div class="hex-data" data-hex="002b00050403040303">
+
+## Extension: supported_versions
+
+This extension lists the TLS versions which the client supports.
+
+* `00 2b`: extension type (43 for supported_versions)
+* `00 05`: data length (5 bytes)
+    * `04`: length of version list (4 bytes)
+        * `03 04`: TLS 1.3
+        * `03 03`: TLS 1.2
+
+</div>
+<div class="hex-data" data-hex="002d00020101">
+
+## Extension: psk_key_exchange_modes
+
+This extension lists the supported key exchange modes for pre-shared keys. (This session doesn't use preshared keys, so we won't be seeing any of these methods in action.)
+
+* `00 2d`: extension type (45 for psk_key_exchange_modes)
+* `00 02`: data length (2 bytes)
+    * `01 01`: PSK with (EC)DHE key establishment
+
+</div>
+<div class="hex-data" data-hex="003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a">
+
+## Extension: key_share
+
+The client sends its public keys to the server in this extension. If the server supports the algorithm of the key sent in the handshake, all messages following the ClientHello can be encrypted.
+
+* `00 33`: extension type (51 for key_share)
+* `00 26`: data length (38 bytes)
+    * `00 24`: length of key share list
+        * `00 1d`: the key is to be used with the x25519 signature algorithm
+        * `00 20`: key length (32 bytes)
+        * `44 07 06 ... 01 24 3a`: public key
+
 </div>
 </div>
 
-1603010154
-01000150
-0303
-f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f
-20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1
-0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff
-0100
-0091
-000b000403000102
-000a000c000a001d0017001e00190018
-00230000
-00160000
-00170000
-000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602
-002b00050403040303
-002d00020101003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a
 
 # Further Reading
 
