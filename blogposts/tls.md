@@ -210,7 +210,32 @@ This extension allows clients to declare which digital signature algorithms they
 * `00 0d`: extension type (13 for signature_algorithms)
 * `00 30`: data length (48 bytes)
     * `00 2e`: length of signature algorithms list (46 bytes)
+        * `04 03`: ecdsa_secp256r1_sha256
+        * `05 03`: ecdsa_secp384r1_sha384
+        * `06 03`: ecdsa_secp521r1_sha512
+        * `08 07`: ed25519
+        * `08 08`: ed448
+        * `08 09`: rsa_pss_pss_sha256
+        * `08 0a`: rsa_pss_pss_sha384
+        * `08 0b`: rsa_pss_pss_sha512
+        * `08 04`: rsa_pss_rsae_sha256
+        * `08 05`: rsa_pss_rsae_sha384
+        * `08 06`: rsa_pss_rsae_sha512
+        * `04 01`: rsa_pkcs1_sha256
+        * `05 01`: rsa_pkcs1_sha384
+        * `06 01`: rsa_pkcs1_sha512
+        * `03 03`: SHA224 ECDSA
+        * `02 03`: ecdsa_sha1
+        * `03 01`: SHA224 RSA
+        * `02 01`: rsa_pkcs1_sha1
+        * `03 02`: SHA224 DSA
+        * `02 02`: SHA1 DSA
+        * `04 02`: SHA256 DSA
+        * `05 02`: SHA384 DSA
+        * `06 02`: SHA512 DSA
 
+</div>
+<div class="hex-data" data-hex="002b00050403040303">
 </div>
 </div>
 
@@ -228,7 +253,8 @@ f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f
 00160000
 00170000
 000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602
-002b00050403040303002d00020101003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a
+002b00050403040303
+002d00020101003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a
 
 # Further Reading
 

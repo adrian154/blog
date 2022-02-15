@@ -37,10 +37,10 @@
 </div>
 <div class="hex-data" data-hex="0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff">
 
-<h2 id="cipher-suites">Cipher Suites <a class="section-link" href="#cipher-suites">&sect;</a></h2><p>In this section of the handshake, the client lists all the cipher suites which it supports. </p>
+<h2 id="cipher-suites">Cipher Suites <a class="section-link" href="#cipher-suites">&sect;</a></h2><p>In this section of the handshake, the client lists all the cipher suites which it supports. Each cipher is identified by a two-byte number assigned by <a href="https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4">IANA</a>.</p>
 <ul>
 <li><code>00 76</code>: length of cipher suite list (118 bytes)</li>
-<li><code>13 02 13 ... 2f 00 ff</code>: list of ciphers in order of preference. Each cipher is identified by a two-byte number assigned by <a href="https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4">IANA</a>.<ul>
+<li><code>13 02 13 ... 2f 00 ff</code>: list of ciphers in order of preference.<ul>
 <li><code>13 02</code>: TLS_AES_256_GCM_SHA384</li>
 <li><code>13 03</code>: TLS_CHACHA20_POLY1305_SHA256</li>
 <li><code>13 01</code>: TLS_AES_128_GCM_SHA256</li>
@@ -103,7 +103,7 @@
 </ul>
 </li>
 </ul>
-<p>However, 56 other cipher suites are listed. They are present for backwards compatibility, but using these ciphers is discouraged.</p>
+<p>TLS 1.3 only recommends five cipher suites, of which three are listed: TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256, and TLS_AES_128_GCM_SHA256. However, 56 other cipher suites are listed. They are present for backwards compatibility, but using these ciphers is discouraged. Prior to TLS 1.3, the cipher suite also included the key exchange and signature algorithm, creating many possible permutations of algorithms. In TLS 1.3, many vulnerable ciphers are completely removed, signature algorithms are determined by the signature_algorithms extension, and there are fewer key exchange algorithms, so far fewer cipher suites are necessary.</p>
 </div>
 <div class="hex-data" data-hex="0100">
 
@@ -181,7 +181,36 @@
 
 <h2 id="extension-signaturealgorithms">Extension: signature_algorithms <a class="section-link" href="#extension-signaturealgorithms">&sect;</a></h2><p>This extension allows clients to declare which digital signature algorithms they support.</p>
 <ul>
-<li>``</li>
+<li><code>00 0d</code>: extension type (13 for signature_algorithms)</li>
+<li><code>00 30</code>: data length (48 bytes)<ul>
+<li><code>00 2e</code>: length of signature algorithms list (46 bytes)<ul>
+<li><code>04 03</code>: ecdsa_secp256r1_sha256</li>
+<li><code>05 03</code>: ecdsa_secp384r1_sha384</li>
+<li><code>06 03</code>: ecdsa_secp521r1_sha512</li>
+<li><code>08 07</code>: ed25519</li>
+<li><code>08 08</code>: ed448</li>
+<li><code>08 09</code>: rsa_pss_pss_sha256</li>
+<li><code>08 0a</code>: rsa_pss_pss_sha384</li>
+<li><code>08 0b</code>: rsa_pss_pss_sha512</li>
+<li><code>08 04</code>: rsa_pss_rsae_sha256</li>
+<li><code>08 05</code>: rsa_pss_rsae_sha384</li>
+<li><code>08 06</code>: rsa_pss_rsae_sha512</li>
+<li><code>04 01</code>: rsa_pkcs1_sha256</li>
+<li><code>05 01</code>: rsa_pkcs1_sha384</li>
+<li><code>06 01</code>: rsa_pkcs1_sha512</li>
+<li><code>03 03</code>: undefined</li>
+<li><code>02 03</code>: ecdsa_sha1</li>
+<li><code>03 01</code>: undefined</li>
+<li><code>02 01</code>: rsa_pkcs1_sha1</li>
+<li><code>03 02</code>: undefined</li>
+<li><code>02 02</code>: Reserved for backward compatibility</li>
+<li><code>04 02</code>: Reserved for backward compatibility</li>
+<li><code>05 02</code>: Reserved for backward compatibility</li>
+<li><code>06 02</code>: Reserved for backward compatibility</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
