@@ -40,10 +40,66 @@
 <h2 id="cipher-suites">Cipher Suites <a class="section-link" href="#cipher-suites">&sect;</a></h2><p>In this section of the handshake, the client lists all the cipher suites which it supports. </p>
 <ul>
 <li><code>00 76</code>: length of cipher suite list (118 bytes)</li>
-<li><code>13 02 13 ... 2f 00 ff</code>: list of ciphers in order of preference. Each cipher a two-byte magic number whose possible values are listed in the <a href="https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.4">RFC</a>. Note that TLS 1.3 only recommends five cipher suites, three of which are supported by this client:<ul>
-<li><code>13 02</code>: TLS_AES_128_GCM_SHA256</li>
-<li><code>13 03</code>: TLS_AES_256_GCM_SHA384 </li>
-<li><code>13 01</code>: TLS_CHACHA20_POLY1305_SHA256</li>
+<li><code>13 02 13 ... 2f 00 ff</code>: list of ciphers in order of preference. Each cipher is identified by a two-byte number assigned by <a href="https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4">IANA</a>.<ul>
+<li><code>13 02</code>: TLS_AES_256_GCM_SHA384</li>
+<li><code>13 03</code>: TLS_CHACHA20_POLY1305_SHA256</li>
+<li><code>13 01</code>: TLS_AES_128_GCM_SHA256</li>
+<li><code>c0 2f</code>: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256</li>
+<li><code>c0 2b</code>: TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</li>
+<li><code>c0 30</code>: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</li>
+<li><code>c0 2c</code>: TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</li>
+<li><code>00 9e</code>: TLS_DHE_RSA_WITH_AES_128_GCM_SHA256</li>
+<li><code>c0 27</code>: TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256</li>
+<li><code>00 67</code>: TLS_DHE_RSA_WITH_AES_128_CBC_SHA256</li>
+<li><code>c0 28</code>: TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384</li>
+<li><code>00 6b</code>: TLS_DHE_RSA_WITH_AES_256_CBC_SHA256</li>
+<li><code>00 a3</code>: TLS_DHE_DSS_WITH_AES_256_GCM_SHA384</li>
+<li><code>00 9f</code>: TLS_DHE_RSA_WITH_AES_256_GCM_SHA384</li>
+<li><code>cc a9</code>: TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256</li>
+<li><code>cc a8</code>: TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256</li>
+<li><code>cc aa</code>: TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256</li>
+<li><code>c0 af</code>: TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8</li>
+<li><code>c0 ad</code>: TLS_ECDHE_ECDSA_WITH_AES_256_CCM</li>
+<li><code>c0 a3</code>: TLS_DHE_RSA_WITH_AES_256_CCM_8</li>
+<li><code>c0 9f</code>: TLS_DHE_RSA_WITH_AES_256_CCM</li>
+<li><code>c0 5d</code>: TLS_ECDHE_ECDSA_WITH_ARIA_256_GCM_SHA384</li>
+<li><code>c0 61</code>: TLS_ECDHE_RSA_WITH_ARIA_256_GCM_SHA384</li>
+<li><code>c0 57</code>: TLS_DHE_DSS_WITH_ARIA_256_GCM_SHA384</li>
+<li><code>c0 53</code>: TLS_DHE_RSA_WITH_ARIA_256_GCM_SHA384</li>
+<li><code>00 a2</code>: TLS_DHE_DSS_WITH_AES_128_GCM_SHA256</li>
+<li><code>c0 ae</code>: TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8</li>
+<li><code>c0 ac</code>: TLS_ECDHE_ECDSA_WITH_AES_128_CCM</li>
+<li><code>c0 a2</code>: TLS_DHE_RSA_WITH_AES_128_CCM_8</li>
+<li><code>c0 9e</code>: TLS_DHE_RSA_WITH_AES_128_CCM</li>
+<li><code>c0 5c</code>: TLS_ECDHE_ECDSA_WITH_ARIA_128_GCM_SHA256</li>
+<li><code>c0 60</code>: TLS_ECDHE_RSA_WITH_ARIA_128_GCM_SHA256</li>
+<li><code>c0 56</code>: TLS_DHE_DSS_WITH_ARIA_128_GCM_SHA256</li>
+<li><code>c0 52</code>: TLS_DHE_RSA_WITH_ARIA_128_GCM_SHA256</li>
+<li><code>c0 24</code>: TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384</li>
+<li><code>00 6a</code>: TLS_DHE_DSS_WITH_AES_256_CBC_SHA256</li>
+<li><code>c0 23</code>: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</li>
+<li><code>00 40</code>: TLS_DHE_DSS_WITH_AES_128_CBC_SHA256</li>
+<li><code>c0 0a</code>: TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA</li>
+<li><code>c0 14</code>: TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA</li>
+<li><code>00 39</code>: TLS_DHE_RSA_WITH_AES_256_CBC_SHA</li>
+<li><code>00 38</code>: TLS_DHE_DSS_WITH_AES_256_CBC_SHA</li>
+<li><code>c0 09</code>: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA</li>
+<li><code>c0 13</code>: TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA</li>
+<li><code>00 33</code>: TLS_DHE_RSA_WITH_AES_128_CBC_SHA</li>
+<li><code>00 32</code>: TLS_DHE_DSS_WITH_AES_128_CBC_SHA</li>
+<li><code>00 9d</code>: TLS_RSA_WITH_AES_256_GCM_SHA384</li>
+<li><code>c0 a1</code>: TLS_RSA_WITH_AES_256_CCM_8</li>
+<li><code>c0 9d</code>: TLS_RSA_WITH_AES_256_CCM</li>
+<li><code>c0 51</code>: TLS_RSA_WITH_ARIA_256_GCM_SHA384</li>
+<li><code>00 9c</code>: TLS_RSA_WITH_AES_128_GCM_SHA256</li>
+<li><code>c0 a0</code>: TLS_RSA_WITH_AES_128_CCM_8</li>
+<li><code>c0 9c</code>: TLS_RSA_WITH_AES_128_CCM</li>
+<li><code>c0 50</code>: TLS_RSA_WITH_ARIA_128_GCM_SHA256</li>
+<li><code>00 3d</code>: TLS_RSA_WITH_AES_256_CBC_SHA256</li>
+<li><code>00 3c</code>: TLS_RSA_WITH_AES_128_CBC_SHA256</li>
+<li><code>00 35</code>: TLS_RSA_WITH_AES_256_CBC_SHA</li>
+<li><code>00 2f</code>: TLS_RSA_WITH_AES_128_CBC_SHA</li>
+<li><code>00 ff</code>: TLS_EMPTY_RENEGOTIATION_INFO_SCSV</li>
 </ul>
 </li>
 </ul>
@@ -121,7 +177,12 @@
 <li><code>00 00</code>: data length (none)</li>
 </ul>
 </div>
-<div class="hex-data" data-hex="">
+<div class="hex-data" data-hex="000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602">
+
+<h2 id="extension-signaturealgorithms">Extension: signature_algorithms <a class="section-link" href="#extension-signaturealgorithms">&sect;</a></h2><p>This extension allows clients to declare which digital signature algorithms they support.</p>
+<ul>
+<li>``</li>
+</ul>
 </div>
 </div>
 
@@ -138,7 +199,8 @@ f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f
 00230000
 00160000
 00170000
-000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602002b00050403040303002d00020101003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a</p>
+000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602
+002b00050403040303002d00020101003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a</p>
 <h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><ul>
 <li><a href="https://datatracker.ietf.org/doc/html/rfc8446">RFC 8446: TLS 1.3 Specification (IETF)</a></li>
 </ul>

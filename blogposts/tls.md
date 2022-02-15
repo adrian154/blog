@@ -56,15 +56,71 @@ Previously, this value was used to identify clients across sessions. However, si
 
 ## Cipher Suites
 
-In this section of the handshake, the client lists all the cipher suites which it supports. 
+In this section of the handshake, the client lists all the cipher suites which it supports. Each cipher is identified by a two-byte number assigned by [IANA](https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4).
 
 * `00 76`: length of cipher suite list (118 bytes)
-* `13 02 13 ... 2f 00 ff`: list of ciphers in order of preference. Each cipher a two-byte magic number whose possible values are listed in the [RFC](https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.4). Note that TLS 1.3 only recommends five cipher suites, three of which are supported by this client:
-    * `13 02`: TLS_AES_128_GCM_SHA256
-    * `13 03`: TLS_AES_256_GCM_SHA384 
-    * `13 01`: TLS_CHACHA20_POLY1305_SHA256
+* `13 02 13 ... 2f 00 ff`: list of ciphers in order of preference.
+    * `13 02`: TLS_AES_256_GCM_SHA384
+    * `13 03`: TLS_CHACHA20_POLY1305_SHA256
+    * `13 01`: TLS_AES_128_GCM_SHA256
+    * `c0 2f`: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+    * `c0 2b`: TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+    * `c0 30`: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+    * `c0 2c`: TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+    * `00 9e`: TLS_DHE_RSA_WITH_AES_128_GCM_SHA256
+    * `c0 27`: TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+    * `00 67`: TLS_DHE_RSA_WITH_AES_128_CBC_SHA256
+    * `c0 28`: TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
+    * `00 6b`: TLS_DHE_RSA_WITH_AES_256_CBC_SHA256
+    * `00 a3`: TLS_DHE_DSS_WITH_AES_256_GCM_SHA384
+    * `00 9f`: TLS_DHE_RSA_WITH_AES_256_GCM_SHA384
+    * `cc a9`: TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+    * `cc a8`: TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    * `cc aa`: TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    * `c0 af`: TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8
+    * `c0 ad`: TLS_ECDHE_ECDSA_WITH_AES_256_CCM
+    * `c0 a3`: TLS_DHE_RSA_WITH_AES_256_CCM_8
+    * `c0 9f`: TLS_DHE_RSA_WITH_AES_256_CCM
+    * `c0 5d`: TLS_ECDHE_ECDSA_WITH_ARIA_256_GCM_SHA384
+    * `c0 61`: TLS_ECDHE_RSA_WITH_ARIA_256_GCM_SHA384
+    * `c0 57`: TLS_DHE_DSS_WITH_ARIA_256_GCM_SHA384
+    * `c0 53`: TLS_DHE_RSA_WITH_ARIA_256_GCM_SHA384
+    * `00 a2`: TLS_DHE_DSS_WITH_AES_128_GCM_SHA256
+    * `c0 ae`: TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8
+    * `c0 ac`: TLS_ECDHE_ECDSA_WITH_AES_128_CCM
+    * `c0 a2`: TLS_DHE_RSA_WITH_AES_128_CCM_8
+    * `c0 9e`: TLS_DHE_RSA_WITH_AES_128_CCM
+    * `c0 5c`: TLS_ECDHE_ECDSA_WITH_ARIA_128_GCM_SHA256
+    * `c0 60`: TLS_ECDHE_RSA_WITH_ARIA_128_GCM_SHA256
+    * `c0 56`: TLS_DHE_DSS_WITH_ARIA_128_GCM_SHA256
+    * `c0 52`: TLS_DHE_RSA_WITH_ARIA_128_GCM_SHA256
+    * `c0 24`: TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+    * `00 6a`: TLS_DHE_DSS_WITH_AES_256_CBC_SHA256
+    * `c0 23`: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256
+    * `00 40`: TLS_DHE_DSS_WITH_AES_128_CBC_SHA256
+    * `c0 0a`: TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA
+    * `c0 14`: TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA
+    * `00 39`: TLS_DHE_RSA_WITH_AES_256_CBC_SHA
+    * `00 38`: TLS_DHE_DSS_WITH_AES_256_CBC_SHA
+    * `c0 09`: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA
+    * `c0 13`: TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA
+    * `00 33`: TLS_DHE_RSA_WITH_AES_128_CBC_SHA
+    * `00 32`: TLS_DHE_DSS_WITH_AES_128_CBC_SHA
+    * `00 9d`: TLS_RSA_WITH_AES_256_GCM_SHA384
+    * `c0 a1`: TLS_RSA_WITH_AES_256_CCM_8
+    * `c0 9d`: TLS_RSA_WITH_AES_256_CCM
+    * `c0 51`: TLS_RSA_WITH_ARIA_256_GCM_SHA384
+    * `00 9c`: TLS_RSA_WITH_AES_128_GCM_SHA256
+    * `c0 a0`: TLS_RSA_WITH_AES_128_CCM_8
+    * `c0 9c`: TLS_RSA_WITH_AES_128_CCM
+    * `c0 50`: TLS_RSA_WITH_ARIA_128_GCM_SHA256
+    * `00 3d`: TLS_RSA_WITH_AES_256_CBC_SHA256
+    * `00 3c`: TLS_RSA_WITH_AES_128_CBC_SHA256
+    * `00 35`: TLS_RSA_WITH_AES_256_CBC_SHA
+    * `00 2f`: TLS_RSA_WITH_AES_128_CBC_SHA
+    * `00 ff`: TLS_EMPTY_RENEGOTIATION_INFO_SCSV
 
-However, 56 other cipher suites are listed. They are present for backwards compatibility, but using these ciphers is discouraged.
+TLS 1.3 only recommends five cipher suites, of which three are listed: TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256, and TLS_AES_128_GCM_SHA256. However, 56 other cipher suites are listed. They are present for backwards compatibility, but using these ciphers is discouraged. Prior to TLS 1.3, the cipher suite also included the key exchange and signature algorithm, creating many possible permutations of algorithms. In TLS 1.3, many vulnerable ciphers are completely removed, signature algorithms are determined by the signature_algorithms extension, and there are fewer key exchange algorithms, so far fewer cipher suites are necessary.
 
 </div>
 <div class="hex-data" data-hex="0100">
@@ -145,7 +201,16 @@ This extension indicates that the client supports [extended master secrets](http
 * `00 00`: data length (none)
 
 </div>
-<div class="hex-data" data-hex="">
+<div class="hex-data" data-hex="000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602">
+
+## Extension: signature_algorithms
+
+This extension allows clients to declare which digital signature algorithms they support.
+
+* `00 0d`: extension type (13 for signature_algorithms)
+* `00 30`: data length (48 bytes)
+    * `00 2e`: length of signature algorithms list (46 bytes)
+
 </div>
 </div>
 
@@ -162,7 +227,8 @@ f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f
 00230000
 00160000
 00170000
-000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602002b00050403040303002d00020101003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a
+000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602
+002b00050403040303002d00020101003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a
 
 # Further Reading
 
