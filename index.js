@@ -25,8 +25,6 @@ blogposts.forEach(post => {
     if((renderTimes[post.id] || 0) < fs.statSync(mdPath).mtimeMs) {
         render(OUTPUT_DIR, post.id + ".html", blogpost, post, read(mdPath));
         renderTimes[post.id] = Date.now();
-    } else {
-        console.log(`${post.id} not modified, skipping...`);
     }
 });
 

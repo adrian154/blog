@@ -31,7 +31,7 @@ If you are comparing a sample proportion to a population proportion, it is possi
 
 TODO: Discuss 1-PropZTest
 
-If you are testing a sample mean, the process is different since the population standard deviation is generally not known in this situation. TODO: Explain t-test
+If you are testing a sample mean, the process is different. We don't know the population standard deviation, so we have to approximate using the *t*-distribution.  
 
 ## Draw a conclusion
 
@@ -45,7 +45,7 @@ You may be asked to explain the meaning of a type I and type II error in the con
 * A **type I error** is rejecting H<sub>0</sub> and concluding that H<sub>a</sub> is true when it's actually false.
 * A **type II error** is failing to reject H<sub>0</sub> and concluding that H<sub>a</sub> is false when it's actually true.
 
-# Example
+# Example: Z-Test
 
 Let's say we picked a random sample of Mission students and tested how many know the identity sin(2*x*) = 2sin(*x*)cos(*x*). We found that 72 out of 177 students knew the identity. Our theory is that more Mission students know the identity than the mean, which is 38%.
 

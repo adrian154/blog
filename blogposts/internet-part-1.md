@@ -324,9 +324,9 @@ IPv6 also supports multicast traffic; in fact, broadcast is entirely supplanted 
 We made it to the end. Congratulations.
 
 # Further Reading / References
-* [What is BGP? - Cloudflare](https://www.cloudflare.com/learning/security/glossary/what-is-bgp/)
-* [What is an Internet exchange point? - Cloudflare](https://www.cloudflare.com/learning/cdn/glossary/internet-exchange-point-ixp/)
-* [Creating an Autonomous System for Fun and Profit - The Life of Kenneth](https://blog.thelifeofkenneth.com/2017/11/creating-autonomous-system-for-fun-and.html)
-* [Creating an Internet Exchange for Even More Fun and Less Profit - The Life of Kenneth](https://blog.thelifeofkenneth.com/2018/04/creating-internet-exchange-for-even.html)
-* [RFC 791 (IPv4) - IETF](https://datatracker.ietf.org/doc/html/rfc791)
-* [RFC 8200 (IPv6) - IETF](https://datatracker.ietf.org/doc/html/rfc8200)
+* [What is BGP? (Cloudflare)](https://www.cloudflare.com/learning/security/glossary/what-is-bgp/)
+* [What is an Internet exchange point? (Cloudflare)](https://www.cloudflare.com/learning/cdn/glossary/internet-exchange-point-ixp/)
+* [Creating an Autonomous System for Fun and Profit (The Life of Kenneth)](https://blog.thelifeofkenneth.com/2017/11/creating-autonomous-system-for-fun-and.html)
+* [Creating an Internet Exchange for Even More Fun and Less Profit (The Life of Kenneth)](https://blog.thelifeofkenneth.com/2018/04/creating-internet-exchange-for-even.html)
+* [RFC 791: IPv4 (IETF)](https://datatracker.ietf.org/doc/html/rfc791)
+* [RFC 8200: IPv6 (IETF)](https://datatracker.ietf.org/doc/html/rfc8200)

@@ -183,9 +183,15 @@ If you prefer GUIs, you can use an [online tool](https://bithole.dev/tools/dns/)
 
 </div>
 
+As a quick aside: for all intents and purposes, a top-level domain such as ".com" functions just like a regular domain. ICANN has [stated](https://www.icann.org/en/announcements/details/new-gtld-dotless-domain-names-prohibited-30-8-2013-en) that TLDs should never have A or AAAA records, but this hasn't stopped some TLDs like [.ai](http://ai./) from doing so.
+
 # Recursive Resolvers
 
-Generally speaking, your computer never performs iterative queries by itself. That job is instead offloaded to a special server called a **recursive resolver**, which actually contacts authoritative nameservers. Recursive resolvers are also responsible for caching records, which is an essential part of how DNS reduces latency and prevents excessive network traffic. Caching is regulated by the **time-to-live** (TTL) value of each record, which indicates the maximum duration which that record can be cached in seconds. As a result, DNS changes often take some time to propagate throughout the system.
+Generally speaking, your computer never performs iterative queries by itself. That job is instead offloaded to a special server called a **recursive resolver**. When your computer needs to resolve a domain, it contacts the resolver through the DNS protocol; in turn, the resolver contacts the appropriate nameservers and returns and answer to your machine. This has the benefit of enabling resolvers to cache records for many clients, which is an essential part of how DNS reduces latency and reduces network traffic.
+
+Caching is regulated by the **time-to-live** (TTL) value of each record, which indicates the maximum age of the cached record before it should be considered expired and re-retrieved from the authoritative nameserver. Setting the TTL involves a tradeoff: a value which is too low will result in more unnecessary requests, potentially increasing latency for users. On the other hand, if the TTL is set very high, it could take hours or even days for changes to the DNS records to propagate globally, since it would take a long time before the old cached records expired.
+
+In recent times sysadmins appear to have opted for the former disadvantage in the name of increased flexibility and faster failover. A [2019 analysis](https://blog.apnic.net/2019/11/12/stop-using-ridiculously-low-dns-ttls/) found that nearly half of all domains had TTLs of under a minute.
 
 Your computer probably uses a resolver hosted by your ISP for its customers, though there are also similar, publicly-available services like Cloudflare's [1.1.1.1](https://1.1.1.1/) and Google's [8.8.8.8](https://developers.google.com/speed/public-dns) resolvers.
 
@@ -203,9 +209,9 @@ Thanks to DNS's ubiquity, it is constantly under attack from all sides, meaning 
 * Users may not notice that HTTPS is not available, and continue to the spoofed site over unsecured HTTP.
 * The spoofed site may discreetly redirect the user to a similar domain which the attacker has a valid TLS certificate for, fooling users into believing that their connection is secured.
 
-Mitigations exist at every level to prevent attacks of this type. For example, many browsers have adopted [HSTS Preload](https://hstspreload.org/https://hstspreload.org/), which automatically prevents users from using HTTP for certain domains. However, since we're talking about DNS today, we will talk about the DNS's own solution for security, [DNSSEC](https://datatracker.ietf.org/doc/html/rfc4033).
+Mitigations exist at several level to prevent attacks of this type from succeeding. At the application layer, many browsers have adopted [HSTS Preload](https://hstspreload.org/https://hstspreload.org/), which automatically prevents users from using HTTP for certain domains. However, since we're talking about DNS today, let's learn about [DNSSEC](https://datatracker.ietf.org/doc/html/rfc4033).
 
 # Further Reading / References
-* [RFC 1034 (DNS Concepts) - IETF](https://datatracker.ietf.org/doc/html/rfc1034)
-* [RFC 1035 (DNS Protocol) - IETF](https://datatracker.ietf.org/doc/html/rfc1035)
-* [RFC 2317 (Classless Reverse DNS) - IETF](https://datatracker.ietf.org/doc/html/rfc2317)
+* [RFC 1034: DNS Concepts (IETF)](https://datatracker.ietf.org/doc/html/rfc1034)
+* [RFC 1035: DNS Protocol (IETF)](https://datatracker.ietf.org/doc/html/rfc1035)
+* [RFC 2317: Classless Reverse DNS (IETF)](https://datatracker.ietf.org/doc/html/rfc2317)

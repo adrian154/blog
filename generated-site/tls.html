@@ -1,0 +1,127 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Transport Layer Security</title><meta property="og:title" content="Transport Layer Security"><meta property="og:type" content="website"><meta property="og:description" content="How does your computer verify the identity of a remote server in a trustable way and communicate with it securely? Let's find out."><meta name="description" content="How does your computer verify the identity of a remote server in a trustable way and communicate with it securely? Let's find out."><link rel="canonical" href="https://blog.bithole.dev/tls.html"><link rel="stylesheet" href="static/stylesheets/main.css"><link rel="stylesheet" href="static/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"></head><body><a href="/"><img src="static/images/banner0.jpg" alt="blog banner"></a><p id="date" class="date">January 23, 2022</p><h1 style="margin-top: 0">Transport Layer Security</h1><p><noscript><b>If you are reading this message, JavaScript is not enabled. Unfortunately, this page relies on JS to dynamically generate content which you may not be able to view.</b></noscript></p>
+<p>You can download the full packet capture of the exchange <a href="static/tls-capture.pcapng">here</a>. You&#39;ll also need the <a href="tls-keylog.txt">keylog</a> to decrypt the capture.</p>
+<h1 id="c--s-client-hello">C → S: Client Hello <a class="section-link" href="#c--s-client-hello">&sect;</a></h1><p>TLS handshakes begin with the Client Hello message, where the client declares to the server its capabilities, e.g. TLS version and supported ciphers.</p>
+<div class="packet">
+<div class="hex-data" data-hex="1603010154">
+
+<h2 id="record-header">Record Header <a class="section-link" href="#record-header">&sect;</a></h2><p>All records begin with a <a href="https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.1">header</a> that gives information about the content of the record.</p>
+<ul>
+<li><code>16</code>: record type (22 for handshake)</li>
+<li><code>03 01</code>: protocol version (TLS 1.0 for backwards compatibility)</li>
+<li><code>01 54</code>: length of payload (340 bytes)</li>
+</ul>
+</div>
+<div class="hex-data" data-hex="01000150">
+
+<h2 id="handshake-header">Handshake Header <a class="section-link" href="#handshake-header">&sect;</a></h2><p>The <a href="https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.3">Handshake</a> record begins with a four-byte header describing the contained data.</p>
+<ul>
+<li><code>01</code>: message type (1 for ClientHello)</li>
+<li><code>00 01 50</code>: message length (336 bytes)</li>
+</ul>
+</div>
+<div class="hex-data" data-hex="0303">
+
+<h2 id="clienthello-version">ClientHello Version <a class="section-link" href="#clienthello-version">&sect;</a></h2><p>In TLS 1.2 and below, this field indicated the highest version supported by the client. However, using this field for version negotiation has been deprecated in favor of the <code>supported_versions</code> extension, so in TLS 1.3 this field <em>must</em> be set to <code>0x0303</code> (TLS 1.2).</p>
+</div>
+<div class="hex-data" data-hex="f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f">
+
+<h2 id="random">Random <a class="section-link" href="#random">&sect;</a></h2><p>The client provides 32 bytes of randomness that are used in {TODO} later in the handshake.</p>
+</div>
+<div class="hex-data" data-hex="20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1">
+
+<h2 id="legacy-session-id">Legacy Session ID <a class="section-link" href="#legacy-session-id">&sect;</a></h2><p>Previously, this value was used to identify clients across sessions. However, since this functionality is now handled by pre-shared keys in TLS 1.3, clients just generate a random session ID each time to avoid confusing intermediate clients which may only support TLS 1.2.</p>
+<ul>
+<li><code>20</code>: length of the session ID (between 0 and 32)</li>
+<li><code>ba da 4a ... b0 45 a1</code>: session id</li>
+</ul>
+</div>
+<div class="hex-data" data-hex="0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff">
+
+<h2 id="cipher-suites">Cipher Suites <a class="section-link" href="#cipher-suites">&sect;</a></h2><p>In this section of the handshake, the client lists all the cipher suites which it supports. </p>
+<ul>
+<li><code>00 76</code>: length of cipher suite list (118 bytes)</li>
+<li><code>13 02 13 ... 2f 00 ff</code>: list of ciphers in order of preference. Each cipher a two-byte magic number whose possible values are listed in the <a href="https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.4">RFC</a>. Note that TLS 1.3 only recommends five cipher suites, three of which are supported by this client:<ul>
+<li><code>13 02</code>: TLS_AES_128_GCM_SHA256</li>
+<li><code>13 03</code>: TLS_AES_256_GCM_SHA384 </li>
+<li><code>13 01</code>: TLS_CHACHA20_POLY1305_SHA256</li>
+</ul>
+</li>
+</ul>
+<p>However, 56 other cipher suites are listed. They are present for backwards compatibility, but using these ciphers is discouraged.</p>
+</div>
+<div class="hex-data" data-hex="0100">
+
+<h2 id="legacy-compression-methods">Legacy Compression Methods <a class="section-link" href="#legacy-compression-methods">&sect;</a></h2><p>Previously, compression methods were listed here. In TLS 1.3, this field is no longer used, so it just contains a single null byte.</p>
+<ul>
+<li><code>01</code>: field length</li>
+<li><code>00</code>: null</li>
+</ul>
+</div>
+<div class="hex-data" data-hex="0091">
+
+<h2 id="extensions">Extensions <a class="section-link" href="#extensions">&sect;</a></h2><p>The extensions section contains records providing more information about the client. A full list of extensions and their respective RFCs can be found <a href="https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml">here</a>.</p>
+<ul>
+<li><code>00 91</code>: length of extensions (145 bytes)</li>
+</ul>
+</div>
+<div class="hex-data" data-hex="000b000403000102">
+
+<h2 id="extension-ecpointformats">Extension: ec_point_formats <a class="section-link" href="#extension-ecpointformats">&sect;</a></h2><p>This extension lists the <a href="https://en.wikipedia.org/wiki/Elliptic-curve_cryptography">elliptic curve</a> encodings that the client can parse.</p>
+<ul>
+<li><code>00 0b</code>: extension type (11 for ec_point_formats)</li>
+<li><code>00 04</code>: extension data length (4 bytes)<ul>
+<li><code>03</code>: length of format list (3 bytes)<ul>
+<li><code>00</code>: uncompressed points are supported</li>
+<li><code>01 02</code>: deprecated formats (<a href="https://standards.globalspec.com/std/1955141/ANSI%20X9.62">X.962</a>) which clients must still declare support for, as specified in <a href="https://www.rfc-editor.org/rfc/rfc8422.html#section-5.1.2">RFC 8422</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="hex-data" data-hex="000a000c000a001d0017001e00190018">
+
+<h2 id="extension-supportedgroups">Extension: supported_groups <a class="section-link" href="#extension-supportedgroups">&sect;</a></h2><p>This extension lists the elliptic curves which the client supports, in order of preference. </p>
+<ul>
+<li><code>00 0a</code>: extension type (10 for supported_groups)</li>
+<li><code>00 0c</code>: extension data length (12 bytes)<ul>
+<li><code>00 0a</code>: length of curve list (10 bytes)<ul>
+<li><code>00 1d</code>: x25519</li>
+<li><code>00 17</code>: secp256r1</li>
+<li><code>00 1e</code>: x448</li>
+<li><code>00 19</code>: secp512r1</li>
+<li><code>00 18</code>: secp384r1</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="hex-data" data-hex="00230000">
+
+<h2 id="extension-sessionticket">Extension: session_ticket <a class="section-link" href="#extension-sessionticket">&sect;</a></h2><p>This extension identifies the client for <a href="https://www.rfc-editor.org/rfc/rfc5077.html">TLS session resumption</a>. In this case, the client signals that it does not have a session ticket yet but is ready to receive one by sending a ticket of length zero.</p>
+<ul>
+<li><code>00 23</code>: extension type (35 for session_ticket)</li>
+<li><code>00 00</code>: data length (none)</li>
+</ul>
+</div>
+<div>
+</div>
+</div>
+
+<p>1603010154
+01000150
+0303
+f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f
+20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1
+0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff
+0100
+0091
+000b000403000102
+000a000c000a001d0017001e00190018
+00230000
+0016000000170000000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602002b00050403040303002d00020101003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a</p>
+<h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><ul>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc8446">RFC 8446: TLS 1.3 Specification (IETF)</a></li>
+</ul>
+<noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script><p class="footnote">&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">contribute</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></body></html>
