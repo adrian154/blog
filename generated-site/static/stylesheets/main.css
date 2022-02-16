@@ -136,8 +136,6 @@ button {
 
     /* styling */
     font-size: 10pt;
-    background-color: #000000;
-    color: #ffffff;
     font-family: sans-serif;
     font-weight: bold;
     border-radius: 5px;
@@ -149,7 +147,20 @@ button {
     background-color: #a2e6a1;
 }
 
+/* show label on hover/highlight */
 .hex-segment:hover + .label-outer, .highlighted .label-outer {
     display: initial;
     opacity: 1;
+}
+
+/* on higlight, make black */
+.highlighted .hex-segment-label {
+    background-color: #000000 !important;
+    color: #ffffff !important; /* i got a little lazy, so... take an !important :) */
+}
+
+/* on hover, make orange */
+.hex-segment:hover + .label-outer .hex-segment-label {
+    background-color: #ffad08;
+    color: #000000;
 }

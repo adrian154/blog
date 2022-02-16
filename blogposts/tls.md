@@ -110,7 +110,7 @@ In this section of the handshake, the client lists all the cipher suites which i
     * `00 2f`: TLS_RSA_WITH_AES_128_CBC_SHA
     * `00 ff`: TLS_EMPTY_RENEGOTIATION_INFO_SCSV
 
-TLS 1.3 only recommends five cipher suites, of which three are listed: TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256, and TLS_AES_128_GCM_SHA256. However, 56 other cipher suites are listed. They are present for backwards compatibility, but using these ciphers is discouraged. Prior to TLS 1.3, the cipher suite also included the key exchange and signature algorithm, creating many possible permutations of algorithms. In TLS 1.3, many vulnerable ciphers are completely removed, signature algorithms are determined by the signature_algorithms extension, and there are fewer key exchange algorithms, so far fewer cipher suites are necessary.
+TLS 1.3 only recommends five cipher suites, of which three are listed: TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256, and TLS_AES_128_GCM_SHA256. However, 56 other cipher suites are listed. They are present for backwards compatibility, but using these ciphers is discouraged. 
 
 </div>
 <div class="hex-data" data-hex="0100" data-name="Legacy Compression Methods">
