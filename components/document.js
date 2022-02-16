@@ -1,4 +1,4 @@
-const { html, head, meta, title, link, p, body, a, img } = require("html-generator");
+const { html, head, meta, title, link, p, body, a, img, script } = require("html-generator");
 const { stylesheet, raw } = require("./helpers");
 
 module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en"},
@@ -16,7 +16,8 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
         stylesheet("static/stylesheets/main.css"),
         stylesheet("static/stylesheets/highlight-style.css"),
         stylesheet("https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"),
-        properties.stylesheets?.map(stylesheet)
+        properties.stylesheets?.map(stylesheet),
+        properties.scripts?.map(scriptSrc => script({defer: "null", src: scriptSrc}))
     ),
     body(
         a({href: "/"}, img({src: "static/images/banner0.jpg", alt: "blog banner"})),

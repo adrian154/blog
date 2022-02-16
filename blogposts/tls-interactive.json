@@ -2,5 +2,7 @@
     "title": "Annotated TLS Session",
     "description": "Ever wanted to understand the significance of every byte exchanged in a TLS session? You can now.",
     "timestamp": 1643000114865,
-    "publish": false
+    "publish": false,
+    "scripts": ["static/scripts/packetview.js"],
+    "stylesheets": ["static/stylesheets/packetview.css"]
 }

@@ -11,25 +11,19 @@ const config = require("./config.json");
 const DATA_DIR = path.join(__dirname, config.input);
 const OUTPUT_DIR = path.join(__dirname, config.output);
 
-// regenerate blogposts as necessary
-let renderTimes;
-try {
-    renderTimes = require("./render-times.json");
-} catch(err) {
-    renderTimes = {};
-}
-
+// re-render blogposts only if they were modified
 const blogposts = directory(DATA_DIR).sort((a, b) => b.timestamp - a.timestamp);
 blogposts.forEach(post => {
-    const mdPath = path.join(DATA_DIR, post.id + ".md");
-    if((renderTimes[post.id] || 0) < fs.statSync(mdPath).mtimeMs) {
-        render(OUTPUT_DIR, post.id + ".html", blogpost, post, read(mdPath));
-        renderTimes[post.id] = Date.now();
-    }
-});
 
-// save render times
-fs.writeFileSync("render-times.json", JSON.stringify(renderTimes));
+    // paths
+    const mdPath = path.join(DATA_DIR, post.id + ".md");
+    const destPath = path.join(OUTPUT_DIR, post.id + ".html");
+
+    if(!fs.existsSync(destPath) || fs.statSync(destPath).mtimeMs < fs.statSync(mdPath).mtimeMs || process.argv[2] === "all") {
+        render(OUTPUT_DIR, post.id + ".html", blogpost, post, read(mdPath));
+    }
+
+});
 
 // generate index and feeds
 const published = blogposts.filter(blogpost => blogpost.publish);

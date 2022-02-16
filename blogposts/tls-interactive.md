@@ -242,5 +242,3 @@ The client sends its public keys to the server in this extension. If the server 
 
 </div>
 </div>
-
-<script src="static/scripts/packetview.js"></script>

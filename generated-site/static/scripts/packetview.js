@@ -3,20 +3,37 @@ document.querySelectorAll(".packet").forEach(packet => {
     // create packet view
     const packetHex = document.createElement("div");
     packetHex.classList.add("packet-hex");
+    packet.prepend(packetHex);
+
+    // create show-all button
+    const showAllCheckbox = document.createElement("input");
+    showAllCheckbox.type = "checkbox";
+    showAllCheckbox.addEventListener("input", () => {
+        for(const container of containers) {
+            if(showAllCheckbox.checked) {
+                container.classList.add("shown");
+            } else if(container != selected) {
+                container.classList.remove("shown");
+            }
+        }
+    });
+    packet.prepend(showAllCheckbox);
 
     // store state about which section is selected
     let selected = null, selectedContent = null;
     const hide = () => {
-        selected?.classList.remove("shown");
+        if(!showAllCheckbox.checked) selected?.classList.remove("shown");
         selectedContent?.classList.remove("highlighted");
     };
 
+    const containers = [];
     document.querySelectorAll(".hex-data").forEach(section => {
 
         // clone node and create header
         const container = document.createElement("div");
         container.classList.add("container");
         container.style.position = "relative";
+        containers.push(container);
 
         const content = section.cloneNode(true);
 
@@ -62,7 +79,5 @@ document.querySelectorAll(".packet").forEach(packet => {
         packetHex.append(spanOuter, " ");
 
     });
-
-    packet.prepend(packetHex);
 
 });
