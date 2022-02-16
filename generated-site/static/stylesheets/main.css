@@ -5,6 +5,7 @@ body {
     padding: 1.0em;
     margin: 1.0em auto;
     font-family: IBM Plex Sans, 'sans serif';
+    overflow-x: hidden;
 }
 
 p {
@@ -97,7 +98,19 @@ code {
     font-size: 11pt;
 }
 
+button {
+    cursor: pointer;
+}
+
 /* ----- packetview stuff ----- */
+.hex-data {
+    display: none;
+}
+
+.shown {
+    display: block;
+}
+
 .packet-hex {
     font-family: monospace;
     font-size: 11pt;
@@ -110,35 +123,46 @@ code {
     background-color: #e6e6e6;
     border-radius: 3px;
     cursor: pointer;
-    transition: 0.1s;
+    transition: 0.3s;
 }
 
-.hex-segment div {
+.label-outer {
     position: absolute;
     left: 0;
     top: -2.0em;
-    width: 100vw;
+    width: 100vw; /* hack to prevent shenanigans */
+    opacity: 0;
+    display: none;
+    transition: 0.3s;
 }
 
 .hex-segment-label {
-
-    display: none;
 
     /* styling */
     font-size: 10pt;
     background-color: #000000;
     color: #ffffff;
     font-family: sans-serif;
+    font-weight: bold;
     border-radius: 5px;
     padding: 5px;
-    transition: 0.1s;
 
 }
 
-.hex-segment:hover {
+.hex-segment:hover, .highlighted .hex-segment {
     background-color: #a2e6a1;
 }
 
-.hex-segment:hover .hex-segment-label {
+.hex-segment:hover + .label-outer, .highlighted .label-outer {
     display: initial;
+    opacity: 1;
+}
+
+.expand-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: none;
+    background: none;
+    font-size: 1.5em;
 }

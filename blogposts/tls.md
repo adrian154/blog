@@ -34,7 +34,7 @@ In TLS 1.2 and below, this field indicated the highest version supported by the 
 The client provides 32 bytes of randomness that are used in {TODO} later in the handshake.
 
 </div>
-<div class="hex-data" data-hex="20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1" data-name="Legay Session ID">
+<div class="hex-data" data-hex="20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1" data-name="Legacy Session ID">
 
 Previously, this value was used to identify clients across sessions. However, since this functionality is now handled by pre-shared keys in TLS 1.3, clients just generate a random session ID each time to avoid confusing intermediate clients which may only support TLS 1.2.
 
@@ -209,8 +209,6 @@ This extension allows clients to declare which digital signature algorithms they
 </div>
 <div class="hex-data" data-hex="002b00050403040303" data-name="Extension: supported_versions">
 
-<button class="extend"></button>
-
 This extension lists the TLS versions which the client supports.
 
 * `00 2b`: extension type (43 for supported_versions)
@@ -242,10 +240,5 @@ The client sends its public keys to the server in this extension. If the server 
 
 </div>
 </div>
-
-
-# Further Reading
-
-* [RFC 8446: TLS 1.3 Specification (IETF)](https://datatracker.ietf.org/doc/html/rfc8446)
 
 <script src="static/scripts/packetview.js"></script>
