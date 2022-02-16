@@ -103,13 +103,9 @@ button {
 }
 
 /* ----- packetview stuff ----- */
-.hex-data {
-    display: none;
-}
-
-.shown {
-    display: block;
-}
+.hex-data { display: none; }
+.container { display: none; }
+.shown, .shown .hex-data { display: block; }
 
 .packet-hex {
     font-family: monospace;
@@ -156,13 +152,4 @@ button {
 .hex-segment:hover + .label-outer, .highlighted .label-outer {
     display: initial;
     opacity: 1;
-}
-
-.expand-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: none;
-    background: none;
-    font-size: 1.5em;
 }

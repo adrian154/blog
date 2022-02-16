@@ -6,11 +6,17 @@ document.querySelectorAll(".packet").forEach(packet => {
 
     // store state about which section is selected
     let selected = null, selectedContent = null;
+    const hide = () => {
+        selected?.classList.remove("shown");
+        selectedContent?.classList.remove("highlighted");
+    };
 
+    document.addEventListener("click", hide);
     document.querySelectorAll(".hex-data").forEach(section => {
 
         // clone node and create header
         const container = document.createElement("div");
+        container.classList.add("container");
         container.style.position = "relative";
 
         const content = section.cloneNode(true);
@@ -18,25 +24,17 @@ document.querySelectorAll(".packet").forEach(packet => {
         // create header
         const header = document.createElement("h2");
         header.textContent = section.dataset.name;
-
-        // create button
-        const button = document.createElement("button");
-        button.textContent = "+";
-        button.classList.add("expand-button");
         
-        const toggle = () => {
-            if(content.classList.toggle("shown")) {
-                button.textContent = "\u2212";
-                return true;
-            }
-            button.textContent = "+";
-            return false;
+        const show = () => {
+            hide();
+            container.classList.add("shown");
+            spanOuter.classList.add("highlighted");
+            selected = container;
+            selectedContent = spanOuter;
         };
 
-        button.addEventListener("click", toggle);
-
         // set up container
-        container.append(header, button, content);
+        container.append(header, content);
         section.remove();
         packet.append(container);
 
@@ -48,16 +46,9 @@ document.querySelectorAll(".packet").forEach(packet => {
         span.textContent = section.dataset.hex.match(/../g).join(" ");
         spanOuter.append(span);
 
-        span.addEventListener("click", () => {
-            if(toggle()) {
-                selected?.classList.remove("highlighted");
-                selectedContent.classList.remove("shown");
-                spanOuter.classList.add("highlighted");
-                selected = spanOuter;
-                selectedContent = content;
-            } else {
-                spanOuter.classList.remove("highlighted");
-            }
+        span.addEventListener("click", event => {
+            show();
+            event.stopPropagation();
         });
 
         // create label
