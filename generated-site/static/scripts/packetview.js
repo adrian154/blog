@@ -11,7 +11,6 @@ document.querySelectorAll(".packet").forEach(packet => {
         selectedContent?.classList.remove("highlighted");
     };
 
-    document.addEventListener("click", hide);
     document.querySelectorAll(".hex-data").forEach(section => {
 
         // clone node and create header
@@ -27,10 +26,12 @@ document.querySelectorAll(".packet").forEach(packet => {
         
         const show = () => {
             hide();
-            container.classList.add("shown");
-            spanOuter.classList.add("highlighted");
-            selected = container;
-            selectedContent = spanOuter;
+            if(selected != container) {
+                container.classList.add("shown");
+                spanOuter.classList.add("highlighted");
+                selected = container;
+                selectedContent = spanOuter;
+            }
         };
 
         // set up container
@@ -46,10 +47,7 @@ document.querySelectorAll(".packet").forEach(packet => {
         span.textContent = section.dataset.hex.match(/../g).join(" ");
         spanOuter.append(span);
 
-        span.addEventListener("click", event => {
-            show();
-            event.stopPropagation();
-        });
+        span.addEventListener("click", show);
 
         // create label
         const div = document.createElement("div");
