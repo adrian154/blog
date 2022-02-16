@@ -1,5 +1,7 @@
-.hex-data { display: none; }
+/* hide segments by default */
+.segment { display: none; }
 
+/* container for segment description */
 .container {
     display: none;
     background-color: #d6ffd4;
@@ -8,7 +10,7 @@
     margin-top: 1.0em;
 }
 
-.shown, .shown .hex-data { display: block; }
+.shown { display: block; }
 
 .packet-hex {
     font-family: monospace;
@@ -29,7 +31,7 @@
     position: absolute;
     left: 0;
     top: -2.2em;
-    width: 100vw; /* hack to prevent span from getting squished */
+    width: 30em; /* hack to prevent span from getting squished */
     opacity: 0;
     transition: 0.3s;
     pointer-events: none; /* don't block clicks */

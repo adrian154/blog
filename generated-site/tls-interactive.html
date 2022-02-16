@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Annotated TLS Session</title><meta property="og:title" content="Annotated TLS Session"><meta property="og:type" content="website"><meta property="og:description" content="Ever wanted to understand the significance of every byte exchanged in a TLS session? You can now."><meta name="description" content="Ever wanted to understand the significance of every byte exchanged in a TLS session? You can now."><link rel="canonical" href="https://blog.bithole.dev/tls-interactive.html"><link rel="stylesheet" href="static/stylesheets/main.css"><link rel="stylesheet" href="static/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="static/stylesheets/packetview.css"><script defer="null" src="static/scripts/packetview.js"></script></head><body><a href="/"><img src="static/images/banner0.jpg" alt="blog banner"></a><p id="date" class="date">January 23, 2022</p><h1 style="margin-top: 0">Annotated TLS Session</h1><p><noscript><b>If you are reading this message, JavaScript is not enabled. Unfortunately, this page relies on JS to dynamically generate content which you may not be able to view.</b></noscript></p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Annotated TLS Session</title><meta property="og:title" content="Annotated TLS Session"><meta property="og:type" content="website"><meta property="og:description" content="Ever wanted to understand the significance of every byte exchanged in a TLS session? You can now."><meta name="description" content="Ever wanted to understand the significance of every byte exchanged in a TLS session? You can now."><link rel="canonical" href="https://blog.bithole.dev/tls-interactive.html"><link rel="stylesheet" href="static/stylesheets/main.css"><link rel="stylesheet" href="static/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="static/stylesheets/packetview.css"><script defer src="static/scripts/packetview.js"></script></head><body><a href="/"><img src="static/images/banner0.jpg" alt="blog banner"></a><p id="date" class="date">January 23, 2022</p><h1 style="margin-top: 0">Annotated TLS Session</h1><p><noscript><b>If you are reading this message, JavaScript is not enabled. Unfortunately, this page relies on JS to dynamically generate content which you may not be able to view.</b></noscript></p>
 <p>You can download the full packet capture of the exchange <a href="static/tls-capture.pcapng">here</a>. You&#39;ll also need the <a href="static/tls-keylog.txt">keylog</a> to decrypt the capture.</p>
 <h1 id="c--s-client-hello">C → S: Client Hello <a class="section-link" href="#c--s-client-hello">&sect;</a></h1><p>TLS handshakes begin with the Client Hello message, where the client declares to the server its capabilities, e.g. TLS version and supported ciphers.</p>
 <p><strong>Hint</strong>: Click on a section of the packet to see a description of what it does.</p>
 <div class="packet">
-<div class="hex-data" data-hex="1603010154" data-name="Record Header">
+<div class="segment" data-hex="1603010154" data-name="Record Header">
 
 <p>All records begin with a <a href="https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.1">header</a> that gives information about the content of the record.</p>
 <ul>
@@ -12,7 +12,7 @@
 <li><code>01 54</code>: length of payload (340 bytes)</li>
 </ul>
 </div>
-<div class="hex-data" data-hex="01000150" data-name="Handshake Header">
+<div class="segment" data-hex="01000150" data-name="Handshake Header">
 
 <p>The <a href="https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.3">Handshake</a> record begins with a four-byte header describing the contained data.</p>
 <ul>
@@ -20,15 +20,15 @@
 <li><code>00 01 50</code>: message length (336 bytes)</li>
 </ul>
 </div>
-<div class="hex-data" data-hex="0303" data-name="ClientHello Version">
+<div class="segment" data-hex="0303" data-name="ClientHello Version">
 
 <p>In TLS 1.2 and below, this field indicated the highest version supported by the client. However, using this field for version negotiation has been deprecated in favor of the <code>supported_versions</code> extension, so in TLS 1.3 this field <em>must</em> be set to <code>0x0303</code> (TLS 1.2).</p>
 </div>
-<div class="hex-data" data-hex="f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f" data-name="Random">
+<div class="segment" data-hex="f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f" data-name="Random">
 
 <p>The client provides 32 bytes of randomness that are used in {TODO} later in the handshake.</p>
 </div>
-<div class="hex-data" data-hex="20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1" data-name="Legacy Session ID">
+<div class="segment" data-hex="20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1" data-name="Legacy Session ID">
 
 <p>Previously, this value was used to identify clients across sessions. However, since this functionality is now handled by pre-shared keys in TLS 1.3, clients just generate a random session ID each time to avoid confusing intermediate clients which may only support TLS 1.2.</p>
 <ul>
@@ -36,7 +36,7 @@
 <li><code>ba da 4a ... b0 45 a1</code>: session id</li>
 </ul>
 </div>
-<div class="hex-data" data-hex="0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff" data-name="Cipher Suites">
+<div class="segment" data-hex="0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff" data-name="Cipher Suites">
 
 <p>In this section of the handshake, the client lists all the cipher suites which it supports. Each cipher is identified by a two-byte number assigned by <a href="https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4">IANA</a>.</p>
 <ul>
@@ -106,7 +106,7 @@
 </ul>
 <p>TLS 1.3 only recommends five cipher suites, of which three are listed: TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256, and TLS_AES_128_GCM_SHA256. However, 56 other cipher suites are listed. They are present for backwards compatibility, but using these ciphers is discouraged. </p>
 </div>
-<div class="hex-data" data-hex="0100" data-name="Legacy Compression Methods">
+<div class="segment" data-hex="0100" data-name="Legacy Compression Methods">
 
 <p>Previously, compression methods were listed here. In TLS 1.3, compression is no longer supported due to security vulnerabilities, so this field contains a single null byte.</p>
 <ul>
@@ -114,14 +114,14 @@
 <li><code>00</code>: null</li>
 </ul>
 </div>
-<div class="hex-data" data-hex="0091" data-name="Extensions">
+<div class="segment" data-hex="0091" data-name="Extensions">
 
 <p>The extensions section contains records providing more information about the client. A full list of extensions and their respective RFCs can be found <a href="https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml">here</a>.</p>
 <ul>
 <li><code>00 91</code>: length of extensions (145 bytes)</li>
 </ul>
 </div>
-<div class="hex-data" data-hex="000b000403000102" data-name="Extension: ec_point_formats">
+<div class="segment" data-hex="000b000403000102" data-name="Extension: ec_point_formats">
 
 <p>This extension lists the <a href="https://en.wikipedia.org/wiki/Elliptic-curve_cryptography">elliptic curve</a> encodings that the client can parse.</p>
 <ul>
@@ -136,7 +136,7 @@
 </li>
 </ul>
 </div>
-<div class="hex-data" data-hex="000a000c000a001d0017001e00190018" data-name="Extension: supported_groups">
+<div class="segment" data-hex="000a000c000a001d0017001e00190018" data-name="Extension: supported_groups">
 
 <p>This extension lists the elliptic curves which the client supports, in order of preference. </p>
 <ul>
@@ -154,7 +154,7 @@
 </li>
 </ul>
 </div>
-<div class="hex-data" data-hex="00230000" data-name="Extension: session_ticket">
+<div class="segment" data-hex="00230000" data-name="Extension: session_ticket">
 
 <p>This extension identifies the client for <a href="https://www.rfc-editor.org/rfc/rfc5077.html">TLS session resumption</a>. In this case, the client signals that it does not have a session ticket yet but is ready to receive one by sending a ticket of length zero.</p>
 <ul>
@@ -162,7 +162,7 @@
 <li><code>00 00</code>: data length (none)</li>
 </ul>
 </div>
-<div class="hex-data" data-hex="00160000" data-name="Extension: encrypt_then_mac">
+<div class="segment" data-hex="00160000" data-name="Extension: encrypt_then_mac">
 
 <p>This extension indicates that the client supports the <a href="https://www.rfc-editor.org/rfc/rfc7366.html">encrypt-then-MAC</a> scheme, which aims to fix the security issues inherent to MAC-then-encrypt.</p>
 <ul>
@@ -170,7 +170,7 @@
 <li><code>00 00</code>: data length (none)</li>
 </ul>
 </div>
-<div class="hex-data" data-hex="00170000" data-name="Extension: extended_master_secret">
+<div class="segment" data-hex="00170000" data-name="Extension: extended_master_secret">
 
 <p>This extension indicates that the client supports <a href="https://www.rfc-editor.org/rfc/rfc7627.html">extended master secrets</a>, which hardens TLS sessions against man-in-the-middle attacks by calculating the master secret using the hash of prior handshake messages.</p>
 <ul>
@@ -178,7 +178,7 @@
 <li><code>00 00</code>: data length (none)</li>
 </ul>
 </div>
-<div class="hex-data" data-hex="000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602" data-name="Extension: signature_algorithms">
+<div class="segment" data-hex="000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602" data-name="Extension: signature_algorithms">
 
 <p>This extension allows clients to declare which digital signature algorithms they support.</p>
 <ul>
@@ -214,7 +214,7 @@
 </li>
 </ul>
 </div>
-<div class="hex-data" data-hex="002b00050403040303" data-name="Extension: supported_versions">
+<div class="segment" data-hex="002b00050403040303" data-name="Extension: supported_versions">
 
 <p>This extension lists the TLS versions which the client supports.</p>
 <ul>
@@ -229,7 +229,7 @@
 </li>
 </ul>
 </div>
-<div class="hex-data" data-hex="002d00020101" data-name="Extension: psk_key_exchange_modes">
+<div class="segment" data-hex="002d00020101" data-name="Extension: psk_key_exchange_modes">
 
 <p>This extension lists the supported key exchange modes for pre-shared keys. (This session doesn&#39;t use preshared keys, so we won&#39;t be seeing any of these methods in action.)</p>
 <ul>
@@ -240,7 +240,7 @@
 </li>
 </ul>
 </div>
-<div class="hex-data" data-hex="003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a" data-name="Extension: key_share">
+<div class="segment" data-hex="003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a" data-name="Extension: key_share">
 
 <p>The client sends its public keys to the server in this extension. If the server supports the algorithm of the key sent in the handshake, all messages following the ClientHello can be encrypted.</p>
 <ul>

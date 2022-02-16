@@ -17,7 +17,7 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
         stylesheet("static/stylesheets/highlight-style.css"),
         stylesheet("https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"),
         properties.stylesheets?.map(stylesheet),
-        properties.scripts?.map(scriptSrc => script({defer: "null", src: scriptSrc}))
+        properties.scripts?.map(scriptSrc => script({defer: null, src: scriptSrc}))
     ),
     body(
         a({href: "/"}, img({src: "static/images/banner0.jpg", alt: "blog banner"})),

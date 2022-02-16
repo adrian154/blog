@@ -1,6 +1,7 @@
+// for each packet...
 document.querySelectorAll(".packet").forEach(packet => {
 
-    // create packet view
+    // create packet hex
     const packetHex = document.createElement("div");
     packetHex.classList.add("packet-hex");
     packet.prepend(packetHex);
@@ -17,6 +18,7 @@ document.querySelectorAll(".packet").forEach(packet => {
             }
         }
     });
+
     packet.prepend(showAllCheckbox);
 
     // store state about which section is selected
@@ -27,7 +29,7 @@ document.querySelectorAll(".packet").forEach(packet => {
     };
 
     const containers = [];
-    document.querySelectorAll(".hex-data").forEach(section => {
+    document.querySelectorAll(".segment").forEach(section => {
 
         // clone node and create header
         const container = document.createElement("div");
