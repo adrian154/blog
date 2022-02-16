@@ -96,3 +96,49 @@ a:visited {
 code {
     font-size: 11pt;
 }
+
+/* ----- packetview stuff ----- */
+.packet-hex {
+    font-family: monospace;
+    font-size: 11pt;
+    line-height: 1.9em;
+}
+
+.hex-segment {
+    position: relative;
+    padding: 3px 0;
+    background-color: #e6e6e6;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+.hex-segment div {
+    position: absolute;
+    left: 0;
+    top: -2.0em;
+    width: 100vw;
+}
+
+.hex-segment-label {
+
+    display: none;
+
+    /* styling */
+    font-size: 10pt;
+    background-color: #000000;
+    color: #ffffff;
+    font-family: sans-serif;
+    border-radius: 5px;
+    padding: 5px;
+    transition: 0.1s;
+
+}
+
+.hex-segment:hover {
+    background-color: #a2e6a1;
+}
+
+.hex-segment:hover .hex-segment-label {
+    display: initial;
+}

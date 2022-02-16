@@ -1,6 +1,6 @@
 {
-    "title": "Transport Layer Security",
-    "description": "How does your computer verify the identity of a remote server in a trustable way and communicate with it securely? Let's find out.",
+    "title": "Annotated TLS Session",
+    "description": "Ever wanted to understand the significance of every byte exchanged in a TLS session? You can now.",
     "timestamp": 1643000114865,
     "publish": false
 }
