@@ -1,3 +1,7 @@
+// TODO:
+// * next,prev buttons for mobile
+// * when user clicks preview, corresponding segment is highlighted
+
 // for each packet...
 document.querySelectorAll(".packet").forEach(packet => {
 
@@ -38,6 +42,7 @@ document.querySelectorAll(".packet").forEach(packet => {
         containers.push(container);
 
         const content = section.cloneNode(true);
+        content.style.display = "block";
 
         // create header
         const header = document.createElement("h2");
@@ -50,6 +55,9 @@ document.querySelectorAll(".packet").forEach(packet => {
                 spanOuter.classList.add("highlighted");
                 selected = container;
                 selectedContent = spanOuter;
+            }
+            if(showAllCheckbox.checked) {
+                selected.scrollIntoView();
             }
         };
 
@@ -65,6 +73,10 @@ document.querySelectorAll(".packet").forEach(packet => {
         span.classList.add("hex-segment");
         span.textContent = section.dataset.hex.match(/../g).join(" ");
         spanOuter.append(span);
+
+        const preview = span.cloneNode(true);
+        preview.classList.add("preview");
+        container.append(preview);
 
         span.addEventListener("click", show);
 

@@ -1,8 +1,10 @@
+
 /* hide segments by default */
 .segment { display: none; }
 
 /* container for segment description */
 .container {
+    position: relative;
     display: none;
     background-color: #d6ffd4;
     padding: 1.0em;
@@ -12,10 +14,10 @@
 
 .shown { display: block; }
 
-.packet-hex {
+.packet-hex, .preview {
     font-family: monospace;
-    font-size: 11pt;
     line-height: 1.9em;
+    font-size: 11pt;
 }
 
 .hex-segment {
@@ -25,6 +27,15 @@
     border-radius: 3px;
     cursor: pointer;
     transition: 0.3s;
+}
+
+.preview {
+    position: absolute;
+    top: 0;
+    right: calc(100% + 1.0em);
+    width: calc(24ch - 8px);
+    text-align: right;
+    padding: 3px 8px;
 }
 
 .label-outer {
