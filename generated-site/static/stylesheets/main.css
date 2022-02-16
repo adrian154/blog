@@ -125,7 +125,7 @@ button {
 .label-outer {
     position: absolute;
     left: 0;
-    top: -2.0em;
+    top: -2.2em;
     width: 100vw; /* hack to prevent shenanigans */
     opacity: 0;
     display: none;
