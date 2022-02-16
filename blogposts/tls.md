@@ -6,6 +6,8 @@ You can download the full packet capture of the exchange [here](static/tls-captu
 
 TLS handshakes begin with the Client Hello message, where the client declares to the server its capabilities, e.g. TLS version and supported ciphers.
 
+**Hint**: Click on a section of the packet to see a description of what it does.
+
 <div class="packet">
 <div class="hex-data" data-hex="1603010154" data-name="Record Header">
 
