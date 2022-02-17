@@ -6,7 +6,6 @@
 .container {
     position: relative;
     display: none;
-    background-color: #d6ffd4;
     padding: 1.0em;
     border-radius: 5px;
     margin-top: 1.0em;
@@ -60,9 +59,11 @@
 
 }
 
-.hex-segment:hover, .highlighted .hex-segment {
-    background-color: #a2e6a1;
-}
+/* server/client color schemes */
+.client .container { background-color: #d6ffd4; }
+.client .hex-segment:hover, .client .highlighted .hex-segment { background-color: #a2e6a1; }
+.server .container { background-color: #ffd4d4; }
+.server .hex-segment:hover, .server .highlighted .hex-segment { background-color: #e6a1a1; }
 
 /* show label on hover/highlight */
 .hex-segment:hover + .label-outer, .highlighted .label-outer {

@@ -36,7 +36,7 @@ document.querySelectorAll(".packet").forEach(packet => {
     };
 
     const containers = [];
-    document.querySelectorAll(".segment").forEach(section => {
+    packet.querySelectorAll(".segment").forEach(section => {
 
         // clone node and create header
         const container = document.createElement("div");
