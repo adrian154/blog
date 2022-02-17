@@ -30,6 +30,7 @@ document.querySelectorAll(".packet").forEach(packet => {
     // store state about which section is selected
     let selected = null, selectedContent = null;
     const hide = () => {
+        console.log("h");
         if(!showAllCheckbox.checked) selected?.classList.remove("shown");
         selectedContent?.classList.remove("highlighted");
     };
@@ -64,6 +65,9 @@ document.querySelectorAll(".packet").forEach(packet => {
                 spanOuter.classList.add("highlighted");
                 selected = container;
                 selectedContent = spanOuter;
+            } else {
+                selected = null;
+                selectedContent = null;
             }
             if(showAllCheckbox.checked) {
                 selected.scrollIntoView();
