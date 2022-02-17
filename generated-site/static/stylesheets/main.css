@@ -81,6 +81,7 @@ blockquote {
 a {
     color: #2bc2ff;
     text-decoration: none;
+    cursor: pointer;
 }
 
 a:hover {

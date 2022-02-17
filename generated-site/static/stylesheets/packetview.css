@@ -23,7 +23,7 @@
 .hex-segment {
     position: relative;
     padding: 3px 0;
-    background-color: #e6e6e6;
+    background-color: #f0f0f0;
     border-radius: 3px;
     cursor: pointer;
     transition: 0.3s;

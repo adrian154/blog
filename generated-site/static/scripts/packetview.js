@@ -23,7 +23,9 @@ document.querySelectorAll(".packet").forEach(packet => {
         }
     });
 
-    packet.prepend(showAllCheckbox);
+    const showAllLabel = document.createElement("label");
+    showAllLabel.textContent = "show all";
+    packet.prepend(showAllCheckbox, showAllLabel);
 
     // store state about which section is selected
     let selected = null, selectedContent = null;
@@ -47,6 +49,13 @@ document.querySelectorAll(".packet").forEach(packet => {
         // create header
         const header = document.createElement("h2");
         header.textContent = section.dataset.name;
+
+        // create top link
+        const backToTopLink = document.createElement("a");
+        backToTopLink.textContent = "Back to top...";
+        backToTopLink.addEventListener("click", () => {
+            packetHex.scrollIntoView();
+        });
         
         const show = () => {
             hide();
@@ -62,7 +71,7 @@ document.querySelectorAll(".packet").forEach(packet => {
         };
 
         // set up container
-        container.append(header, content);
+        container.append(header, content, backToTopLink);
         section.remove();
         packet.append(container);
 
