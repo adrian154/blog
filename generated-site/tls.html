@@ -4,37 +4,37 @@
 <h1 id="c--s-client-hello">C → S: Client Hello <a class="section-link" href="#c--s-client-hello">&sect;</a></h1><p>TLS handshakes begin with the Client Hello message, where the client declares its capabilities to the server. Most importantly, it lists the TLS versions it understands as well as a list of supported ciphers for encryption.</p>
 <p><strong>Guide</strong>: Click on a section of the packet to see a description of its significance. Click the hex preview on the left to return to the top. Try enabling &quot;show all&quot; if you want to read all the section descriptions.</p>
 <div class="client packet">
-<div class="segment" data-hex="1603010154" data-name="Record Header">
+<div class="segment" data-hex="1603010158" data-name="Record Header">
 
 <p>Messages in a TLS session are exchanged in the form of <em>records</em>. All records begin with a <a href="https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.1">header</a> that gives information about the content of the record.</p>
 <ul>
 <li><code>16</code>: record type (22 for handshake)</li>
 <li><code>03 01</code>: protocol version (TLS 1.0 for backwards compatibility)</li>
-<li><code>01 54</code>: length of payload (340 bytes)</li>
+<li><code>01 58</code>: length of payload (344 bytes)</li>
 </ul>
 </div>
-<div class="segment" data-hex="01000150" data-name="Handshake Header">
+<div class="segment" data-hex="01000154" data-name="Handshake Header">
 
 <p>The <a href="https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.3">Client Hello</a> message begins with a four-byte header describing the contained data.</p>
 <ul>
 <li><code>01</code>: message type (1 for ClientHello)</li>
-<li><code>00 01 50</code>: message length (336 bytes)</li>
+<li><code>00 01 54</code>: message length (340 bytes)</li>
 </ul>
 </div>
 <div class="segment" data-hex="0303" data-name="ClientHello Version">
 
 <p>In TLS 1.2 and below, this field indicated the highest version supported by the client. However, using this field for version negotiation has been deprecated in favor of the <code>supported_versions</code> extension, so in TLS 1.3 this field is set to <code>0x0303</code> (TLS 1.2) to support older servers.</p>
 </div>
-<div class="segment" data-hex="f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f" data-name="Random">
+<div class="segment" data-hex="f188ccbfa2d775240ed62fd5c8573dbaf119d10b9da0bf0c15691fb353b65340" data-name="Random">
 
 <p>The client shares 32 bytes of randomness that are used later in the handshake process.</p>
 </div>
-<div class="segment" data-hex="20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1" data-name="Legacy Session ID">
+<div class="segment" data-hex="203d6dd18b2c21c47914165344d016d885c82941c4d6e0a1fd92901f9abc04ebb0" data-name="Legacy Session ID">
 
 <p>Previously, this value was used to identify clients across sessions. However, since this functionality is now handled using pre-shared keys in TLS 1.3, clients just generate a random session ID each time to avoid confusing intermediate clients which may only support TLS 1.2.</p>
 <ul>
 <li><code>20</code>: length of the session ID (between 0 and 32)</li>
-<li><code>ba da 4a ... b0 45 a1</code>: session ID</li>
+<li><code>3d 6d d1 ... 04 eb b0</code>: session ID</li>
 </ul>
 </div>
 <div class="segment" data-hex="0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff" data-name="Cipher Suites">
@@ -115,11 +115,11 @@
 <li><code>00</code>: no compression</li>
 </ul>
 </div>
-<div class="segment" data-hex="0091" data-name="Extensions">
+<div class="segment" data-hex="0095" data-name="Extensions">
 
 <p>The extensions section contains records providing more information about the client. A full list of extensions and their respective RFCs can be found <a href="https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml">here</a>.</p>
 <ul>
-<li><code>00 91</code>: length of extensions (145 bytes)</li>
+<li><code>00 95</code>: length of extensions (149 bytes)</li>
 </ul>
 </div>
 <div class="segment" data-hex="000b000403000102" data-name="Extension: ec_point_formats">
@@ -137,18 +137,23 @@
 </li>
 </ul>
 </div>
-<div class="segment" data-hex="000a000c000a001d0017001e00190018" data-name="Extension: supported_groups">
+<div class="segment" data-hex="000a00160014001d0017001e0019001801000101010201030104" data-name="Extension: supported_groups">
 
 <p>This extension lists the elliptic curves which the client supports, in order of preference. </p>
 <ul>
 <li><code>00 0a</code>: extension type (10 for supported_groups)</li>
-<li><code>00 0c</code>: extension data length (12 bytes)<ul>
-<li><code>00 0a</code>: length of curve list (10 bytes)<ul>
+<li><code>00 16</code>: extension data length (22 bytes)<ul>
+<li><code>00 14</code>: length of curve list (20 bytes)<ul>
 <li><code>00 1d</code>: x25519</li>
 <li><code>00 17</code>: secp256r1</li>
 <li><code>00 1e</code>: x448</li>
 <li><code>00 19</code>: secp512r1</li>
 <li><code>00 18</code>: secp384r1</li>
+<li><code>01 00</code>: ffdhe2048</li>
+<li><code>01 01</code>: ffdhe3072</li>
+<li><code>01 02</code>: ffdhe4096</li>
+<li><code>01 03</code>: ffdhe6144</li>
+<li><code>01 04</code>: ffdhe8192</li>
 </ul>
 </li>
 </ul>
@@ -184,8 +189,8 @@
 <p>This extension allows clients to declare which digital signature algorithms they support. Since clients rely on these algorithms to verify the server&#39;s identity, the server may take these values into account later in the handshake process.</p>
 <ul>
 <li><code>00 0d</code>: extension type (13 for signature_algorithms)</li>
-<li><code>00 30</code>: data length (48 bytes)<ul>
-<li><code>00 2e</code>: length of signature algorithms list (46 bytes)<ul>
+<li><code>00 2a</code>: data length (42 bytes)<ul>
+<li><code>00 28</code>: length of signature algorithms list (40 bytes)<ul>
 <li><code>04 03</code>: ecdsa_secp256r1_sha256</li>
 <li><code>05 03</code>: ecdsa_secp384r1_sha384</li>
 <li><code>06 03</code>: ecdsa_secp521r1_sha512</li>
@@ -201,11 +206,8 @@
 <li><code>05 01</code>: rsa_pkcs1_sha384</li>
 <li><code>06 01</code>: rsa_pkcs1_sha512</li>
 <li><code>03 03</code>: SHA224 ECDSA</li>
-<li><code>02 03</code>: ecdsa_sha1</li>
 <li><code>03 01</code>: SHA224 RSA</li>
-<li><code>02 01</code>: rsa_pkcs1_sha1</li>
 <li><code>03 02</code>: SHA224 DSA</li>
-<li><code>02 02</code>: SHA1 DSA</li>
 <li><code>04 02</code>: SHA256 DSA</li>
 <li><code>05 02</code>: SHA384 DSA</li>
 <li><code>06 02</code>: SHA512 DSA</li>
@@ -241,7 +243,7 @@
 </li>
 </ul>
 </div>
-<div class="segment" data-hex="003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a" data-name="Extension: key_share">
+<div class="segment" data-hex="003300260024001d0020de2919be20eef6bbb624d4627b312aa59046e0feef7adc010b59241b935bb46e" data-name="Extension: key_share">
 
 <p>The client sends its public keys to the server in this extension. If the server supports the algorithm of the key sent in the handshake, all messages following the ClientHello can be encrypted. If the server doesn&#39;t support any of the key share algorithms, it may ask the client to resend the ClientHello message via a <a href="https://datatracker.ietf.org/doc/html/rfc8446#section-4.1.4">Hello Retry Request</a>, </p>
 <ul>
@@ -250,7 +252,7 @@
 <li><code>00 24</code>: length of key share list<ul>
 <li><code>00 1d</code>: key exchange curve (x25519) </li>
 <li><code>00 20</code>: key length (32 bytes)</li>
-<li><code>44 07 06 ... 01 24 3a</code>: public key</li>
+<li><code>de 29 19 ... 5b b4 6e</code>: public key</li>
 </ul>
 </li>
 </ul>

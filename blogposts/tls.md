@@ -13,21 +13,21 @@ TLS handshakes begin with the Client Hello message, where the client declares it
 **Guide**: Click on a section of the packet to see a description of its significance. Click the hex preview on the left to return to the top. Try enabling "show all" if you want to read all the section descriptions.
 
 <div class="client packet">
-<div class="segment" data-hex="1603010154" data-name="Record Header">
+<div class="segment" data-hex="1603010158" data-name="Record Header">
 
 Messages in a TLS session are exchanged in the form of *records*. All records begin with a [header](https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.1) that gives information about the content of the record.
 
 * `16`: record type (22 for handshake)
 * `03 01`: protocol version (TLS 1.0 for backwards compatibility)
-* `01 54`: length of payload (340 bytes)
+* `01 58`: length of payload (344 bytes)
 
 </div>
-<div class="segment" data-hex="01000150" data-name="Handshake Header">
+<div class="segment" data-hex="01000154" data-name="Handshake Header">
 
 The [Client Hello](https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.3) message begins with a four-byte header describing the contained data.
 
 * `01`: message type (1 for ClientHello)
-* `00 01 50`: message length (336 bytes)
+* `00 01 54`: message length (340 bytes)
 
 </div>
 <div class="segment" data-hex="0303" data-name="ClientHello Version">
@@ -35,17 +35,17 @@ The [Client Hello](https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.3) m
 In TLS 1.2 and below, this field indicated the highest version supported by the client. However, using this field for version negotiation has been deprecated in favor of the `supported_versions` extension, so in TLS 1.3 this field is set to `0x0303` (TLS 1.2) to support older servers.
 
 </div>
-<div class="segment" data-hex="f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f" data-name="Random">
+<div class="segment" data-hex="f188ccbfa2d775240ed62fd5c8573dbaf119d10b9da0bf0c15691fb353b65340" data-name="Random">
 
 The client shares 32 bytes of randomness that are used later in the handshake process.
 
 </div>
-<div class="segment" data-hex="20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1" data-name="Legacy Session ID">
+<div class="segment" data-hex="203d6dd18b2c21c47914165344d016d885c82941c4d6e0a1fd92901f9abc04ebb0" data-name="Legacy Session ID">
 
 Previously, this value was used to identify clients across sessions. However, since this functionality is now handled using pre-shared keys in TLS 1.3, clients just generate a random session ID each time to avoid confusing intermediate clients which may only support TLS 1.2.
 
 * `20`: length of the session ID (between 0 and 32)
-* `ba da 4a ... b0 45 a1`: session ID
+* `3d 6d d1 ... 04 eb b0`: session ID
 
 </div>
 <div class="segment" data-hex="0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff" data-name="Cipher Suites">
@@ -125,11 +125,11 @@ Previously, compression methods were listed here. However, it was discovered tha
 * `00`: no compression
 
 </div>
-<div class="segment" data-hex="0091" data-name="Extensions">
+<div class="segment" data-hex="0095" data-name="Extensions">
 
 The extensions section contains records providing more information about the client. A full list of extensions and their respective RFCs can be found [here](https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml).
 
-* `00 91`: length of extensions (145 bytes)
+* `00 95`: length of extensions (149 bytes)
 
 </div>
 <div class="segment" data-hex="000b000403000102" data-name="Extension: ec_point_formats">
@@ -143,18 +143,23 @@ This extension lists the [elliptic curve](https://en.wikipedia.org/wiki/Elliptic
         * `01 02`: deprecated formats ([X.962](https://standards.globalspec.com/std/1955141/ANSI%20X9.62)) which clients must still declare support for, as specified in [RFC 8422](https://www.rfc-editor.org/rfc/rfc8422.html#section-5.1.2)
 
 </div>
-<div class="segment" data-hex="000a000c000a001d0017001e00190018" data-name="Extension: supported_groups">
+<div class="segment" data-hex="000a00160014001d0017001e0019001801000101010201030104" data-name="Extension: supported_groups">
 
 This extension lists the elliptic curves which the client supports, in order of preference. 
 
 * `00 0a`: extension type (10 for supported_groups)
-* `00 0c`: extension data length (12 bytes)
-    * `00 0a`: length of curve list (10 bytes)
+* `00 16`: extension data length (22 bytes)
+    * `00 14`: length of curve list (20 bytes)
         * `00 1d`: x25519
         * `00 17`: secp256r1
         * `00 1e`: x448
         * `00 19`: secp512r1
         * `00 18`: secp384r1
+        * `01 00`: ffdhe2048
+        * `01 01`: ffdhe3072
+        * `01 02`: ffdhe4096
+        * `01 03`: ffdhe6144
+        * `01 04`: ffdhe8192
 
 </div>
 <div class="segment" data-hex="00230000" data-name="Extension: session_ticket">
@@ -186,8 +191,8 @@ This extension indicates that the client supports [extended master secrets](http
 This extension allows clients to declare which digital signature algorithms they support. Since clients rely on these algorithms to verify the server's identity, the server may take these values into account later in the handshake process.
 
 * `00 0d`: extension type (13 for signature_algorithms)
-* `00 30`: data length (48 bytes)
-    * `00 2e`: length of signature algorithms list (46 bytes)
+* `00 2a`: data length (42 bytes)
+    * `00 28`: length of signature algorithms list (40 bytes)
         * `04 03`: ecdsa_secp256r1_sha256
         * `05 03`: ecdsa_secp384r1_sha384
         * `06 03`: ecdsa_secp521r1_sha512
@@ -203,11 +208,8 @@ This extension allows clients to declare which digital signature algorithms they
         * `05 01`: rsa_pkcs1_sha384
         * `06 01`: rsa_pkcs1_sha512
         * `03 03`: SHA224 ECDSA
-        * `02 03`: ecdsa_sha1
         * `03 01`: SHA224 RSA
-        * `02 01`: rsa_pkcs1_sha1
         * `03 02`: SHA224 DSA
-        * `02 02`: SHA1 DSA
         * `04 02`: SHA256 DSA
         * `05 02`: SHA384 DSA
         * `06 02`: SHA512 DSA
@@ -233,7 +235,7 @@ This extension lists the supported key exchange modes for pre-shared keys. This 
     * `01 01`: PSK with (EC)DHE key establishment
 
 </div>
-<div class="segment" data-hex="003300260024001d002044070648c76db55ef1d560a2e70a10c620432748a134b3065802d08cc801243a" data-name="Extension: key_share">
+<div class="segment" data-hex="003300260024001d0020de2919be20eef6bbb624d4627b312aa59046e0feef7adc010b59241b935bb46e" data-name="Extension: key_share">
 
 The client sends its public keys to the server in this extension. If the server supports the algorithm of the key sent in the handshake, all messages following the ClientHello can be encrypted. If the server doesn't support any of the key share algorithms, it may ask the client to resend the ClientHello message via a [Hello Retry Request](https://datatracker.ietf.org/doc/html/rfc8446#section-4.1.4), 
 
@@ -242,7 +244,7 @@ The client sends its public keys to the server in this extension. If the server 
     * `00 24`: length of key share list
         * `00 1d`: key exchange curve (x25519) 
         * `00 20`: key length (32 bytes)
-        * `44 07 06 ... 01 24 3a`: public key
+        * `de 29 19 ... 5b b4 6e`: public key
 
 </div>
 </div>
@@ -364,13 +366,22 @@ index 7b46074232..bd765f43f0 100644
 You can download the full packet capture of the exchange which this page is based on [here](static/tls-tcpdump.txt). You'll also need the [keylog](static/tls-keylog.txt) to decrypt the capture. Alternatively, you can make your own using the [code](https://gist.github.com/adrian154/5dd6a3231d49f3783688b176afd025e7). 
 
 ```plaintext
-X25519 Private-Key:
-priv:
-    68:ed:33:c2:fc:06:2c:84:76:ec:d7:95:36:f6:31:
-    cb:26:57:12:58:75:3d:a1:72:96:9d:94:83:3d:a4:
-    cb:58
-pub:
-    de:29:19:be:20:ee:f6:bb:b6:24:d4:62:7b:31:2a:
-    a5:90:46:e0:fe:ef:7a:dc:01:0b:59:24:1b:93:5b:
-    b4:6e
+ X25519 Private-Key:
+ priv:
+     18:6b:7a:9d:af:38:55:fa:09:0b:f2:9a:69:39:1d:
+     c1:ee:78:83:93:f2:db:a5:8a:23:ca:b0:f6:b9:6d:
+     63:55
+ pub:
+     4b:65:e1:78:8c:19:99:35:0d:0a:44:f5:06:46:a7:
+     5c:39:25:84:73:5d:96:d6:d0:b3:5b:61:c2:f9:37:
+     59:31
+ X25519 Private-Key:
+ priv:
+     d8:b3:91:6b:7e:1e:d8:d6:fa:07:c7:81:0e:ef:53:
+     63:9b:77:e5:1e:0f:d8:e0:44:c1:c9:e1:18:6f:d6:
+     3c:49
+ pub:
+     01:1b:5d:f0:90:00:6e:81:4a:b8:db:60:f6:a2:76:
+     5c:b9:0f:e7:fc:e7:35:59:e9:14:79:6d:af:e6:71:
+     9c:40
 ```
