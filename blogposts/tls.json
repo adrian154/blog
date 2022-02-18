@@ -1,6 +1,6 @@
 {
-    "title": "Annotated TLS Session",
-    "description": "Ever wanted to understand the significance of every byte exchanged in a TLS session? You can now.",
+    "title": "Transport Layer Security",
+    "description": "In this article, we examine the gory details of a TLS session, down to every byte exchanged.",
     "timestamp": 1643000114865,
     "publish": false,
     "scripts": ["static/scripts/packetview.js"],

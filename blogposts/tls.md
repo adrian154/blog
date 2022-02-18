@@ -1,17 +1,25 @@
 <noscript><b>If you are reading this message, JavaScript is not enabled. Unfortunately, this page relies on JS to dynamically generate content which you may not be able to view.</b></noscript>
 
-You can download the full packet capture of the exchange [here](static/tls-capture.pcapng). You'll also need the [keylog](static/tls-keylog.txt) to decrypt the capture.
+TODO: intro
+
+# Conceptual Overview
+
+TODO
+
+# Interactive Example
+
+You can download the full packet capture of the exchange which this page is based on [here](static/tls-capture.pcapng). You'll also need the [keylog](static/tls-keylog.txt) to decrypt the capture. Alternatively, you can make your own using the [code](https://gist.github.com/adrian154/5dd6a3231d49f3783688b176afd025e7).
 
 # C → S: Client Hello
 
-TLS handshakes begin with the Client Hello message, where the client declares to the server its capabilities, e.g. TLS version and supported ciphers.
+TLS handshakes begin with the Client Hello message, where the client declares its capabilities to the server. Most importantly, it lists the TLS versions it understands as well as a list of supported ciphers for encryption.
 
-**Hint**: Click on a section of the packet to see a description of what it does.
+**Guide**: Click on a section of the packet to see a description of its significance. Click the hex preview on the left to return to the top. Try enabling "show all" if you want to read all the section descriptions.
 
 <div class="client packet">
 <div class="segment" data-hex="1603010154" data-name="Record Header">
 
-All records begin with a [header](https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.1) that gives information about the content of the record.
+Messages in a TLS session are exchanged in the form of *records*. All records begin with a [header](https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.1) that gives information about the content of the record.
 
 * `16`: record type (22 for handshake)
 * `03 01`: protocol version (TLS 1.0 for backwards compatibility)
@@ -20,7 +28,7 @@ All records begin with a [header](https://datatracker.ietf.org/doc/html/rfc8446#
 </div>
 <div class="segment" data-hex="01000150" data-name="Handshake Header">
 
-The [Handshake](https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.3) record begins with a four-byte header describing the contained data.
+The [Client Hello](https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.3) message begins with a four-byte header describing the contained data.
 
 * `01`: message type (1 for ClientHello)
 * `00 01 50`: message length (336 bytes)
@@ -28,28 +36,28 @@ The [Handshake](https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.3) reco
 </div>
 <div class="segment" data-hex="0303" data-name="ClientHello Version">
 
-In TLS 1.2 and below, this field indicated the highest version supported by the client. However, using this field for version negotiation has been deprecated in favor of the `supported_versions` extension, so in TLS 1.3 this field *must* be set to `0x0303` (TLS 1.2).
+In TLS 1.2 and below, this field indicated the highest version supported by the client. However, using this field for version negotiation has been deprecated in favor of the `supported_versions` extension, so in TLS 1.3 this field is set to `0x0303` (TLS 1.2) to support older servers.
 
 </div>
 <div class="segment" data-hex="f70d1790e5eb5b81c70815f47bf41703165542f3b734f609924fb0e4f16a7c6f" data-name="Random">
 
-The client provides 32 bytes of randomness that are used in {TODO} later in the handshake.
+The client shares 32 bytes of randomness that are used later in the handshake process.
 
 </div>
 <div class="segment" data-hex="20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1" data-name="Legacy Session ID">
 
-Previously, this value was used to identify clients across sessions. However, since this functionality is now handled by pre-shared keys in TLS 1.3, clients just generate a random session ID each time to avoid confusing intermediate clients which may only support TLS 1.2.
+Previously, this value was used to identify clients across sessions. However, since this functionality is now handled using pre-shared keys in TLS 1.3, clients just generate a random session ID each time to avoid confusing intermediate clients which may only support TLS 1.2.
 
 * `20`: length of the session ID (between 0 and 32)
-* `ba da 4a ... b0 45 a1`: session id
+* `ba da 4a ... b0 45 a1`: session ID
 
 </div>
 <div class="segment" data-hex="0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff" data-name="Cipher Suites">
 
-In this section of the handshake, the client lists all the cipher suites which it supports. Each cipher is identified by a two-byte number assigned by [IANA](https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4).
+In this section of the handshake, the client lists all the cipher suites which it supports. Each cipher is identified by a two-byte number assigned by [IANA](https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4). The server uses this info to find a preferable cipher that both sides support.
 
 * `00 76`: length of cipher suite list (118 bytes)
-* `13 02 13 ... 2f 00 ff`: list of ciphers in order of preference.
+* `13 02 13 ... 2f 00 ff`: list of ciphers in order of preference
     * `13 02`: TLS_AES_256_GCM_SHA384
     * `13 03`: TLS_CHACHA20_POLY1305_SHA256
     * `13 01`: TLS_AES_128_GCM_SHA256
@@ -110,12 +118,12 @@ In this section of the handshake, the client lists all the cipher suites which i
     * `00 2f`: TLS_RSA_WITH_AES_128_CBC_SHA
     * `00 ff`: TLS_EMPTY_RENEGOTIATION_INFO_SCSV
 
-TLS 1.3 only recommends five cipher suites, of which three are listed: TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256, and TLS_AES_128_GCM_SHA256. However, 56 other cipher suites are listed. They are present for backwards compatibility, but using these ciphers is discouraged. 
+TLS 1.3 only recommends five cipher suites, of which three are listed: TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256, and TLS_AES_128_GCM_SHA256. However, 56 other cipher suites were sent in this message. They are present for backwards compatibility, but using these ciphers is discouraged.
 
 </div>
 <div class="segment" data-hex="0100" data-name="Legacy Compression Methods">
 
-Previously, compression methods were listed here. In TLS 1.3, compression is no longer supported due to security vulnerabilities, so this field contains a single null byte.
+Previously, compression methods were listed here. However, it was discovered that through carefully crafted messages, an attacker could infer properties about the encrypted data in a TLS connection by analyzing the size of the compressed data, an attack that has since been dubbed [CRIME](https://en.wikipedia.org/wiki/CRIME). In TLS 1.3, compression is no longer supported, so this field contains a single supported compression method (none).
 
 * `01`: length of compression methods list
 * `00`: no compression
@@ -130,7 +138,7 @@ The extensions section contains records providing more information about the cli
 </div>
 <div class="segment" data-hex="000b000403000102" data-name="Extension: ec_point_formats">
 
-This extension lists the [elliptic curve](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) encodings that the client can parse.
+This extension lists the [elliptic curve](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) encodings that the client can parse, in order of preference.
 
 * `00 0b`: extension type (11 for ec_point_formats)
 * `00 04`: extension data length (4 bytes)
@@ -307,10 +315,6 @@ The server acknowledges the public key shared in the ClientHello message by resp
     * `61 43 7c ... 0a e7 33`: public key
 
 </div>
-</div>
-
-<div class="server packet">
-<div class="segment" data-hex=""></div>
 </div>
 
 # S → C: Change Cipher Spec

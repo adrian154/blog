@@ -1,7 +1,3 @@
-// TODO:
-// * next,prev buttons for mobile
-// * when user clicks preview, corresponding segment is highlighted
-
 // for each packet...
 document.querySelectorAll(".packet").forEach(packet => {
 
@@ -30,7 +26,6 @@ document.querySelectorAll(".packet").forEach(packet => {
     // store state about which section is selected
     let selected = null, selectedContent = null;
     const hide = () => {
-        console.log("h");
         if(!showAllCheckbox.checked) selected?.classList.remove("shown");
         selectedContent?.classList.remove("highlighted");
     };
@@ -50,15 +45,8 @@ document.querySelectorAll(".packet").forEach(packet => {
         // create header
         const header = document.createElement("h2");
         header.textContent = section.dataset.name;
-
-        // create top link
-        const backToTopLink = document.createElement("a");
-        backToTopLink.textContent = "Back to top...";
-        backToTopLink.addEventListener("click", () => {
-            packetHex.scrollIntoView();
-        });
         
-        const show = () => {
+        const show = (options) => {
             hide();
             if(selected != container) {
                 container.classList.add("shown");
@@ -69,13 +57,15 @@ document.querySelectorAll(".packet").forEach(packet => {
                 selected = null;
                 selectedContent = null;
             }
-            if(showAllCheckbox.checked) {
+            if(options?.reverse) {
+                label.scrollIntoView();
+            } else if(showAllCheckbox.checked) {
                 selected.scrollIntoView();
             }
         };
 
         // set up container
-        container.append(header, content, backToTopLink);
+        container.append(header, content);
         section.remove();
         packet.append(container);
 
@@ -91,6 +81,7 @@ document.querySelectorAll(".packet").forEach(packet => {
         preview.classList.add("preview");
         container.append(preview);
 
+        preview.addEventListener("click", () => show({reverse: true}));
         span.addEventListener("click", show);
 
         // create label
