@@ -22,15 +22,19 @@ Ultimately, what makes this scheme secure is that separating the paints is infea
 * It is easy to compute `F(x, y)`, but very difficult to retrieve `x` and `y` given the output of the function. (Examples of such functions will be discussed later).
 * `F` is associative, i.e. `F(x, F(y, z)) = F(y, F(x, z))`.
 
-Now, we're ready to do the key exchange. Alice generates a random secret `A`, and Bob generates a random secret `B`. Alice sends Bob `F(A, C)` and Bob sends Alice `F(B, C)`. Now, both can compute the value of `F(A, F(B, C))` and `F(B, F(A, C))`, respectively. Because `F` is associative, Alice and Bob arrive at the same value. An attacker who knows the common value and the values sent over the network doesn't have enough information to calculate the secret, however. The attacker needs to know either `A` or `B` to calculate the secret, but because it is infeasible to reverse `F`, the attacker is unable to retrieve the secret values or determine the shared secret.
+Now, we're ready to do the key exchange. Alice generates a random secret `A`, and Bob generates a random secret `B`. Alice sends Bob `F(A, C)` and Bob sends Alice `F(B, C)`. Now, both can compute the value of `F(A, F(B, C))` and `F(B, F(A, C))`, respectively. Because `F` is associative, Alice and Bob arrive at the same value, which they can now use as the key to a symmetric cipher. However, an attacker who knows the common value and the values sent over the network still doesn't have enough information to calculate the secret. The attacker needs to know either `A` or `B` to calculate the secret, but because it is difficult to reverse `F`, the attacker is unable to retrieve the secret values and can't determine the shared secret.
 
 <div class="info-box">
 
-The Diffie-Hellman "function" is my simplified way of explaining operations over elements of an [algebraic group](https://en.wikipedia.org/wiki/Group_(mathematics)), which comes with the guarantee that the operations will be associative. For example, [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) uses a [multiplicative group](https://en.wikipedia.org/wiki/Multiplicative_group_of_integers_modulo_n) where the modulus is a large semiprime; its security is derived from the difficulty of [integer factorization](https://en.wikipedia.org/wiki/Integer_factorization). Today, [elliptic curve groups](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) have become popular since they offer similar security to RSA with much smaller keys. They are based on the difficulty of finding the discrete logarithm of an elliptic curve point.
+The function `F` is my simplified way of explaining operations over elements of an [algebraic group](https://en.wikipedia.org/wiki/Group_(mathematics)), which comes with the guarantee that the operations will be associative. For example, [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) uses a [multiplicative group](https://en.wikipedia.org/wiki/Multiplicative_group_of_integers_modulo_n) where the modulus is a large semiprime; its security is derived from the difficulty of [integer factorization](https://en.wikipedia.org/wiki/Integer_factorization). Today, cryptosystems based on [elliptic curve groups](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) have become popular since they offer similar security to RSA with much smaller and thus more convenient keys. They are based on the difficulty of finding the discrete logarithm of an elliptic curve point.
 
 </div>
 
 ## Authentication
+
+Confidentiality is worthless if you can't ensure that the person on the other end of the line is who you actually *intend* to talk to. One of TLS's central goals is to prevent impersonation by enabling clients to securely verify the identity of the remote server, a process known as **authentication**. It accomplishes this with the help of digital signatures.
+
+So what is a digital signature? Essentially, digital signatures provide a way to 
 
 # C → S: Client Hello
 
@@ -274,8 +278,6 @@ The client sends its public keys to the server in this extension. If the server 
 
 </div>
 </div>
-
-<br>
 
 <div class="info-box">
 
