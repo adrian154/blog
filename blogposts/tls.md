@@ -34,7 +34,19 @@ The function `F` is my simplified way of explaining operations over elements of 
 
 Confidentiality is worthless if you can't ensure that the person on the other end of the line is who you actually *intend* to talk to. One of TLS's central goals is to prevent impersonation by enabling clients to securely verify the identity of the remote server, a process known as **authentication**. It accomplishes this with the help of digital signatures.
 
-So what is a digital signature? Essentially, digital signatures provide a way to 
+To create a digital signature, you need to first create a keypair. The details of this process depend on which digital signature algorithm you're using. Once you've got a keypair, you can use the signing algorithm to create a digital signature from the data which you want to sign and your private key. Then, anyone can use the verification algorithm to confirm that *you* (or whoever has your private keys) created that signature by providing it the signature, the data, and your public key. This way, only you can create valid signatures, but anyone can prove their validity.
+
+One can imagine a scheme involving a trusted third party that leverages the power of digital signatures to perform authentication. If Bob wanted to prove his identity to Alice, he could combine his public key and name into a *certificate*, and then get Carol to sign it. Carol is a very well-trusted member of society, so everyone already knows her public key. Now, to prove his identity to anyone, Bob can simply present his certificate signed by Carol, and prove that he controls the private key corresponding to the public key in the certificate by creating a valid signature with it. Essentially, this method establishes a chain of trust back to Carol.
+
+![chain of trust diagram](static/images/certificate-chain-of-trust.png)
+
+*A rough diagram showing how a verifiable chain of trust is created using digital signatures. [Image](https://en.wikipedia.org/wiki/File:Chain_Of_Trust.svg) by Yukhih / [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/deed.en)*
+
+This is essentially how TLS performs authentication. The trusted organization which signs certificates is known as a [certificate authority](https://en.wikipedia.org/wiki/Certificate_authority), and instead of including human names, most certificates contain the bearer's domain name. If you're on Chrome, you can click the padlock icon next to the URL of this page to view the SSL certificate of the webserver running this blog. Here's what you might expect to see:
+
+![picture of the ssl cert for this site](static/images/windows-cert-view.png)
+
+This shows the chain of trust that your browser followed to verify that the server it was talking to actually represented `blog.bithole.dev`. During the TLS handshake process, all three of these certificates were sent from my server to your browser. The first certificate named `bithole.dev` contains my server's public key, as well as a signature that your browser can use to validate my certificate by looking at `R3`'s public key. In turn, `R3` is signed by `ISRG Root X1`, whose fingerprint is hardcoded into your browser as one of several trusted **root certificates**. By presenting this chain of certificates and then showing that it has ownership over the private keys for the identifying certificate (`bithole.dev`), my webserver was able to prove its identity to your browser.
 
 # C → S: Client Hello
 
