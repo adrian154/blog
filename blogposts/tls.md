@@ -1,10 +1,36 @@
 <noscript><b>If you are reading this message, JavaScript is not enabled. Unfortunately, this page relies on JS to dynamically generate content which you may not be able to view.</b></noscript>
 
-TODO: intro
+The Internet is, by default, not secure. In TCP and below, everything is transferred in plaintext, meaning an attacker could read your communications or masquerade as the person you *think* you're talking with in order to steal your credentials or gain access to privileged systems. Yet today, most individuals will never fall prey to such man-in-the-middle attacks. What changed? The answer is the **Transport Layer Security (TLS)** protocol, which transparently secures much of the modern-day web. How does it pull off this seemingly impossible feat? Let's find out.
 
 # Conceptual Overview
 
-TODO
+TLS solves two cryptographic problems: **confidentiality**, **authentication**, and **integrity**. All three properties are necessary for most applications requiring a secure channel of communication, but each one has a distinct meaning. 
+
+## Confidentiality
+
+Confidentiality is simple enough; you don't want a third party to be able to read your communications, because that would obviously compromise your security. Nobody wants their passwords and private information broadcast for the whole Internet to see. The solution is to encrypt your data with a cipher, an algorithm which accepts a plaintext and a key and produces a ciphertext, such that it is only feasible to retrieve the plaintext if you have the key. When a cipher uses the same key to encrypt and decrypt data, it is called a [symmetric cipher](https://en.wikipedia.org/wiki/Symmetric-key_algorithm).
+
+Symmetric ciphers are preferred for the bulk encryption of data because they are much faster than their asymmetric counterparts, but they have one fatal flaw: key exchange. The two communicating parties need to figure out a way to share a single key in order to read each other's messages, but this creates a bit of a chicken-and-egg situation: how do you transmit the key if the channel isn't secure? This is one of the fundamental problems in cryptography, and it is known as **key exchange**.
+
+Today, the most widely used key exchange method (which is also preferred by TLS) is a scheme called [Diffie-Hellman Key Exchange](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange). It enables a client and a server to generate the same secret value while only exchanging publicly knowable data.
+
+![DHKE diagram using paint analogy](static/images/DHKE-paint-analogy.png)
+
+<br>
+
+Ultimately, what makes this scheme secure is that separating the paints is infeasible for an attacker. We can make this model a little more rigorous by replacing the paints with numerical values. Suppose `C` is some common value that both Alice and Bob know. The paint-combining function can be modeled as a function `F`, with the following properties:
+* It is easy to compute `F(x, y)`, but very difficult to retrieve `x` and `y` given the output of the function. (Examples of such functions will be discussed later).
+* `F` is associative, i.e. `F(x, F(y, z)) = F(y, F(x, z))`.
+
+Now, we're ready to do the key exchange. Alice generates a random secret `A`, and Bob generates a random secret `B`. Alice sends Bob `F(A, C)` and Bob sends Alice `F(B, C)`. Now, both can compute the value of `F(A, F(B, C))` and `F(B, F(A, C))`, respectively. Because `F` is associative, Alice and Bob arrive at the same value. An attacker who knows the common value and the values sent over the network doesn't have enough information to calculate the secret, however. The attacker needs to know either `A` or `B` to calculate the secret, but because it is infeasible to reverse `F`, the attacker is unable to retrieve the secret values or determine the shared secret.
+
+<div class="info-box">
+
+The Diffie-Hellman "function" is my simplified way of explaining operations over elements of an [algebraic group](https://en.wikipedia.org/wiki/Group_(mathematics)), which comes with the guarantee that the operations will be associative. For example, [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) uses a [multiplicative group](https://en.wikipedia.org/wiki/Multiplicative_group_of_integers_modulo_n) where the modulus is a large semiprime; its security is derived from the difficulty of [integer factorization](https://en.wikipedia.org/wiki/Integer_factorization). Today, [elliptic curve groups](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) have become popular since they offer similar security to RSA with much smaller keys. They are based on the difficulty of finding the discrete logarithm of an elliptic curve point.
+
+</div>
+
+## Authentication
 
 # C → S: Client Hello
 
@@ -278,12 +304,12 @@ Similar to the previous message, the server also claims that the message version
 * `03 03`: version (this field must be set to TLS 1.2 as per the TLS 1.3 spec)
 
 </div>
-<div class="segment" data-hex="1c304968e774647efaabc5ec4381ad903510aba9206a0a3c1de417787c8ce406" data-name="Random">
+<div class="segment" data-hex="0303b21fc7065806a4d46abbc3efea46c59d664440debce77c19305ec080430ae7b8" data-name="Random">
 
 Like the client, the server also provides 32 bytes of randomness, which is used later in the handshake.
 
 </div>
-<div class="segment" data-hex="20bada4ab837b92b32c76ca330c0b859485f7eac0ead4c4fba4c440cf3c3b045a1" data-name="Legacy Session ID">
+<div class="segment" data-hex="20cce0a325341c9485b11e794e263fe3c3399204aaec8dc73eb996cd79f973d1b2" data-name="Legacy Session ID">
 
 The server resends the session ID found in the Client Hello message, because this field is not used in TLS 1.3.
 
@@ -298,9 +324,9 @@ This field indicates that the server has chosen to use TLS_AES_256_GCM_SHA384 as
 The only compression method which TLS 1.3 clients are allowed to offer is `00` (no compression), so the server selects that method.
 
 </div>
-<div class="segment" data-hex="00002e" data-name="Extensions Length">
+<div class="segment" data-hex="002e" data-name="Extensions Length">
 
-* `00 00 2e`: length of extensions (46 byte)
+* `00 2e`: length of extensions (46 byte)
 
 </div>
 <div class="segment" data-hex="002b00020304" data-name="Extension: supported_versions">
@@ -310,7 +336,7 @@ The only compression method which TLS 1.3 clients are allowed to offer is `00` (
 * `03 04`: selected TLS version (TLS 1.3)
 
 </div>
-<div class="segment" data-hex="00330024001d002061437c0eb479c516fdae53858a930a6804a8f9b4d9b24ba6c339ff175c0ae733" data-name="Extension: key_share">
+<div class="segment" data-hex="00330024001d0020011b5df090006e814ab8db60f6a2765cb90fe7fce73559e914796dafe6719c40" data-name="Extension: key_share">
 
 The server acknowledges the public key shared in the ClientHello message by responding with a public key using the same cipher. 
 
@@ -318,7 +344,7 @@ The server acknowledges the public key shared in the ClientHello message by resp
 * `00 24`: data length (36 bytes)
     * `00 1d`: key exchange curve (x25519)
     * `00 20`: key length (32 bytes)
-    * `61 43 7c ... 0a e7 33`: public key
+    * `01 1b 5d ... 71 9c 40`: public key
 
 </div>
 </div>
@@ -340,7 +366,6 @@ Next, the server sends the Change Cipher Spec message. This isn't used in TLS 1.
 
 # S → C: Change Cipher Spec
 
-1703030017b613b9fdc12da1f74f70c90d0e32aa221bfef5103bbefd1703030fde1c3a0f8471cd65ddcd2a362c02ce0c1dd009cc0bec8f8bc0a9939684da74ba629519948c750943abe35105fab319c8e53a8a721a3eb4ae9825f6dfeb0f329f62f29a8e47902c3b69c4dd174bc1121218c071f55a87e448fcdf5c76276e27336c24592c11687b7e8c3e69cef2d432deef8ada5eeb68fa1c0072094595b35195b33ddd9f3b23f382ac927985531eac6d168b8c7057a6c52680d8c926dd4eb6b782b6337f91e96c3a3556aa4dc705e84a191efecc86901ada3962231eeff5701ca15e8c7510a4a6209da3f6ee56ba4df21e23794d164bf861150f3f708895b1d71535d67041a6f061d0fb30eeee4499d18e3238f0fabf37e1e16dadf2ba0270bf7da26f9c77ee0acc9c233bae182f28e4ca6ae59fb812ebcfda275b4842eafeaddb96beec7909d88197aa4bf18b67e9f609e2a4fcee6e5b0485fe2f8d3a309e9a8b117733c2ca8c375cd1f4d697ccbd08332e91928786faacb7d482393d6d2de3adf46bdc56e01d7e7c7ba3885ab09608cfc7342f4a077bfc6acde25e15fc565054f21283e07449500e86776516085d81c97e4565390456fe6f0c9028c39d0ccacff2b57ecfa075778cc46842af2f364b5437381a4181ec56d9901fd6fffc4961d1b7c9eba37bcb71088f3720f298d5075023cfa6b2b5fbd9e6b8447646ea00a125c2516b935102e9ef892357c71c61b1648dbdcca6ae1c467e4cb5abe795d54be92d3b246c1f113c83547530f21a215fc59cdad10a60753e82295d3952e3701326e1f56dcfb978693cf67fdf22d58ba8197a2795fb7cbdd85de306fc8b11ed97c94c3e17914cd08ce984ee18f9167e8cb212406abf8fb3a7a9e700f8f74147a6383493d35f8db3a7655422fdefd929faa535ed5377e693f1f7e5e62d4ce9f6cda09be61b74af59a352b0e5dc142489284098e2f187a231efee43e2cdecf9379b603049075d534c1f08f939938ea5553ff5852cbc08cfc295ffdfa21575d587c2a13ad7fa1c11fc96979e5b6dc853b2827fa0b39280ff967aedd6b485d580ec7e0a640673f212d34ce10f7dc88b595052ebc58effca59d6aacbfcab52b2a1cd35bc56c59df58d70afbcd669351397209420d632743f54f0b86ef11fa081dd632f3c05aa8579a9393db8d2d62cbfcfccffe881e1404ab4054052127f3a8d4b3046551f6e75e9705b3da06c6f63db0dc2907a735ac27e85f3a2f5c777a76cfff24aa23626a7053beab012391a4187c73be16a6041e810d34ef6e7a58faa2f7f680cde7683347549dbd601aa247f79786a62585e68568626629c53158b3bf13a5fedb90f12de3f1c0e5f37890ec8fcc616f4a1ab3249f416deb55f0dd96da08466cec87228e67b5217cc0c89a8acf8f65a1ab2ded04bbdc3ca86fa2ca87199b865797f750244db2a4a2c440cd95ecc7bbdd13cdfd46bd32786485d10368dce0a4aceef981a630e8fa545494e1ea178cebcd052efe973f488af2b42f1899840625cef5ccf1369339207531de1a8d4651f3200359c150a3028f5501e1ac0cbc000cf0eb8f8baa2c4cb41143b57c3657030e7f8e0a61ad20fc220f84620ee7345f22a6be0749556454d898fe76e25123eb68462e3c05db0c2abd2bc6ad7df2f71691b2b48c0df7d0a2e0cea397e5cf4061a45d89a7bf70cd3a01854575092ab2e1ae77c2135c33406cc4b4eed64823dcd25c34bc440e1c2ca0e6bc2a10fef49b14cc8f7a398d3cfb8f8710f0abc96ac19908f7f61d478c72371170a67ce294c45681df93cbe641a27a2771a78bb1c9809fe002a7b8a5206b64c16816382d70d26c4e99b60852266b1677cb382cb3474a5d2de395a5cfe7dc6266187fd5a6f0e796e32818fd3f12ba0472dc5bf681f4b1ab654e42b5710d35d5c1a73893b258678f6b51e83e283a05d5ec31307cbbd7a9e4639e2e643aa63510fbed8bf12880a5e603a8758d842add7150086d26715df24ffec46587a64ff2fc66d40976f25b826d82b84a073bd46d4744f81d169dbf940ac17a8d46b461467128e900cc06dff40da9eb468a546e1b4066a090830486ed17eff036274f8922eb6263311fd706cb473848480c88526edce7e5340991fe667c2be8edd14a6af63b0261cf9fe84a79a97cd70c27bd91ca4406fae488c92a871074ed7616e4cda33bcd53d92cd441274df51bfa5a971488ba6c17872affa12d7a7d9b6c8b3ee1e5916f7771b3e80f44be0844f12c3138e16ab1e06320d455e0438aa48d915b49b75eb3bee50cb178e5c8dbfc69ead0b8ec3c8a0a886e82185de7a1e9f440305c025a5e78e6bcdcd848cd043eaa98cdf452b1fe15dbe32d473bd8b8338e72a8b011148c07a811b77f1920a388ad01b4ef568da61b35fc9580aeb330a2921c9d23ef87d8e578a30af712b242bd4f4811bc9b97aab630d1fb529a6652244394336d08b48c6f26debd242e928f44413ff4c1de7171ce2e4a60f872d05a58681da9e510a206a126efb57cec0c0c4c4798927f9a2a8b998a727c8b1cdc480d811f1f7b4f861d0b0c13e08e188c0399357478840eacaa49c7b6b1226fc15757742c87577cd19c305dac95854efd38dbe23a8ba1f361ec428f981e446ae683298d5f83b60d7967c0a80519831e063abf4823fd0baf0c769a2adb045a92bbed22ff1a5bae3dc24965eeed65f5c290b695edd5ef39ee614e0cfb159314bf13fc5c2b7dc828a229cc169d42fb23a05d308f91d812b0141ce242cb4ed01176ab1393ea3638e168061d632c4690f335e4030085e50cfa53eaa8051a58930eec97462d9b239cb783ec2e559094c9aac672d3d01e64c766ec6e9da07401be9f859c1272e08c76e221d2476ebd66baa021a525b93ca91f59cf96090f18181997266bf3fa334b9b00264937805fafcd1acac5d16c6d62439559a3fac45715776a61aaa307ea710307d4fe26d2c5bb628a1cc1680c20c03ab8938d9762e146b62519b5001dc066964af9b495ab0aa4a87635ca6195c0da78c4b6c78d7a57a0ec2e62a7df6e56b54aeaee4ffcf23e8ab1724af1b9e6a6658ed3a9c08602307f6a18dccf4914589740a5004f309ee21469daee53b9ffb3d36cfdc7e76808b51304552eec731cd52a23783baf1ab14b45ce2c9d9f46ad8d211ca5b8236406718cabfb4ab6d837f1678c4ca21ced4be04be6c23177bb990a483fdcb2826efaf25201ddfe9ecab737fbc1474f14d58bac022b006c72953a7a90190209f7eeaf5c0558baa6ada32fa7e362524279c94873f5269005a366562da7352bf3dda93f4f4d18f077fdc78a8ef6fe75f9f9681b95e689f31f2cb35ef877616b0ff8ad02127dc6be1d5bcf4cd67bf7c0e9b2e4cfa59cdbb89c39e748a7920bb2b3b415b0966bf85777fe21ec32bb5a8fafd5b92f2a518c4313460bdb673305e528b60dddd637e1bd4f42b5e3770d0f255dfb1a6d454d01a56135c2ef5d4d49bc82a538ee660034027ce81857ebbebc29a2d11880e2730b6405a3bf72f0e8f1c2179f26e8ecd56ac3a4b302b82d52db85db9b3ed89163aca978f0d335fc06255584cf1762da854c3f959471a9f534dec1d3a72cb472f7b5552e3e101dceca739d38655cd2df75e801371eceb9fcd01517ffbd4b848ce4bc547285bb50e8d9e6399de9887874dd76c08f39898dfa8290ed5223a34f131709ca33c01ffad7c4014a084daded06a9437b162dee5abb74cf1656e8e08460d1b1e1ba28abc65da550f834341bf07f3f811e2792ad287c285d9bc9d0a6c86fdfcea1d358346e5e0866b59f900fb7f205f8ebe6094c8bd0d93fe03824dcbad448bc0626de269cdcda3d1119001d83e85b8ca8ea07daeb87d4b61526b36d4c59c58ab26d813ca03e32000386c6122dbf66b5329a5cd7f007809eed7c9122283b57edca42660ae2f711d06e7e84f0e636736c2163680a8ecd7afed47bba0a50fe0c34a0ff03a4dd2a39ffe51d6854b3dc809204031552b3805a0fc6a4aa33ef19e9f50046e5e27a2b785cb38906ebe2a0cb9a2d2e0cc4979bd2b647635cd264ad2a81e6689eb18cf84bcabac90f6df2069ff4a238d74bd79b1222d2de4661041eae3d82046cd3fc0007b6d867cbdefe2322d65194ec6c2e660f9ebd5ae880f00ce0e466dd53fe5cc493b7ec7f0b1dc4afc1c816ec39550620b5baa08e51f62cd98ac97aab456c80c10021bf786035a73dd1033672ba98b01604e0bc9d515d7a70a0d465e6ed03bc9504271bd1945c0a1f0021dbfc181b9dac1aca3408d78547a39e5c64d1a82d798edea9787e4c15cd3110823817b528f836f03a3af10cf5dfe6c42387bc775a76763ef142c7e5b04bdc3e3d8167f8b001c4967efb175834b8bc2f0b63066cc4f40671a90f68db0a421565634d766a56cea41944eff860b3e52d6d02d422011c446067424726a7aab1d1c80e55124c66233a89720c7860e451cdf49f3622074fbdee0c173b822795163dc02409ff83e4bae01e222073303fdb559db62f87b7d7be5bed0ee4a114014b27cfc2273fbd1b14b9673fc97f3082ed6288abcdbe2853edeea1392ffe4f0c643ec9d067bab13bfc38044cf5b3d9d5ad2c5fd3291eb2d7b73a9d58865e6d55988a5e585489a9d620d5f65c31fe81f8da03631aa7539fc2f629a8e8b5d8e0fc9bd051cc26181e0ec7558379a85bad4fe9429ac75bb0655f0a4866cb59c94afebce90dfa344aba4256629f2676dcf125d63d4a4f47a12ca091ac3d99b18c8a8aa6be4a68682f19495cbaa6f69b790f9c6ca24d35f2dfe12eee074d095a2336b81108df319b0c82abf6183e71763d9a15bf7eb288cab6b8679a61698adfbcc2e4ca80cdc8777b62584a756176ea019ee07aff7e6c0bcf079eb9bc0fcd4ae9dd2dc67d9899ad01b3f164e56aeb6e8bff2f93356fd5472e0988ecfa0ff28bfc1779bc49aace27dfe55a7775e9edab77ce0fe0f0983867a0339ce328d9f60ccbcd6048c6406f8117b345efbd9c32fa60e512c0b09d23695f92fd192c6832fcbe57b5c599898ceee3a9822756edab1b322fcd0b6931f8fbca45aad4cf537c88e69653a78c65ed390037ec4605fea700e35efa6b7d7fca86fa2198ce4ff15685f8f99dc435101aa2ee101e5456c93673f980ed401648d76b6bc6bddca3a3b99705be530b56844e511693402f3fa29cba361826059a72bd9575c2d7519ceb093fae3aba75f631273aac6d1ab38c2e0431e7779b966462b1e8b423a63aa2c62409de4109a6c879c13f2dc6e4af2ffe4d28cb1c2e1a650eab1671f2cb5f9aa357b0ff5a38c23c54b0761012b0d15bf8cf22a3a3c7a9d981f68a2e979de60a4da6771de7bf8a23a1a3df42d1826063dee8893162c57641967e393b9f71787dc66b2a27f35fe6bb068925af27481ddfa2b39739893ad047674d026fb6f07836191be5303926125ef7da83af9bf870e904d0b66687cfde775bc17e3918a02d5749c91ee069103ca5499560af5f2de52c79db9139192da8cc11873e1b65565e4e4fb656a77e3382d08d3b335cc7b313f203cc9dbf643a903f233f126bb13971358fd6d93eb3774e65186a714bc2dd21fecac290ece58a207b33857e6fa6c0f0b9306a5743ad5edfbd11aacb5a51731694403818e860a99fe03e3863cc5bee6bfa6c70e7754460f047e5a68be5880a1f7dcbfa3a2531ecdebf2b2fe5bae99e79b8bb86c67bcb0b509c3353ba76e7697142bbe1f9fb8283d03c50e6e78b4ca54b5bd73dd31264b68d1f83679a95323be93370be762c42d904f7bcc9127f9dbed17030301190e5a646de9c86f5c37102168e28e08cafa74447d6075c9dd1fe082762c3fcb07fa086b9ddc082d7aa11a9dbf93665d12b56d45c78a45358d4b65eca056f72fe25b86902272b3c70b3c872cc1253c5d3828bfefc401f88066bdcadbe186e95af73ffc83ce9a2bdc1c45375529c787a4eb8324408694d754203442803b794601f3d7f8665ed1955448d8752188e10f665bf1de0da5c64cf44808bb52bd04ddcd3d288623501e95bfe836353182f28cedb7d4887ca183cbb33bb3e0f165432f63fd57dc4373a0519ecc0ea81dfb5356f41ac316f6ae5e8d62260aba49b083401f9556d7bc237b3f4e7169355bba4dc439ded999cd408238cfda5ab75fe39f49ed737c024d001df7fdeb485af0b8a387aa1434bb4f8581daa1c76d1703030045739a5a9f6ebe8cd4e3d3d01818b656c6ee5892083e8de4b6212e8fbc3703d2c45378e419f9d1d72ecfa91c8a247707fa82bf99bf2a07c1266849ea0d87dab8c0ded3049d85
 
 # Behind the Scenes 
 
@@ -382,7 +407,7 @@ index 0b6e843e8a..757c49190c 100644
 
 ```
 
-You can download the full packet capture of the exchange which this page is based on [here](static/tls-tcpdump.txt). You'll also need the [keylog](static/tls-keylog.txt) to decrypt the capture. Alternatively, you can make your own using the [code](https://gist.github.com/adrian154/5dd6a3231d49f3783688b176afd025e7). 
+You can download the full packet capture of the exchange which this page is based on [here](static/tls-capture.pcap). You'll also need the [keylog](static/tls-keylog.txt) to decrypt the capture. Alternatively, you can make your own using the [code](https://gist.github.com/adrian154/5dd6a3231d49f3783688b176afd025e7). 
 
 ```plaintext
  X25519 Private-Key:
@@ -404,3 +429,6 @@ You can download the full packet capture of the exchange which this page is base
      5c:b9:0f:e7:fc:e7:35:59:e9:14:79:6d:af:e6:71:
      9c:40
 ```
+
+# Further Reading
+* [Cloudflare Fundamentals - TLS](https://developers.cloudflare.com/fundamentals/internet/protocols/tls)
