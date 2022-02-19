@@ -5,5 +5,5 @@ I've decided to split the sequel to my previous Internet post into several blogp
 * Reliable Streams with Transmission Control Protocol
 * Low-Latency Messaging with User Datagram Protocol
 * HTTP and the World Wide Web
-* Securing HTTP with TLS
+* [Transport Layer Security](tls.html)
 * [The Domain Name System](dns.html)

@@ -54,6 +54,8 @@ Even if you have authenticated with a server and established a secure channel, t
 
 ## Perfect Forward Secrecy
 
+TODO
+
 # C → S: Client Hello
 
 TLS handshakes begin with the Client Hello message, where the client declares its capabilities to the server. Most importantly, it lists the TLS versions it understands as well as a list of supported ciphers for encryption.
@@ -299,7 +301,7 @@ The client sends its public keys to the server in this extension. If the server 
 
 <div class="info-box">
 
-If all the mismatching TLS versions scattered throughout the packet are confusing, don't worry. There's a whole section in the TLS 1.3 RFC describing the various backwards compatibility measures taken to avoid confusing intermediate nodes, something they've termed [middlebox compatibiliy mode](https://datatracker.ietf.org/doc/html/rfc8446#appendix-D.4).
+If all the mismatching TLS versions scattered throughout the packet are confusing, don't worry. There's a whole section in the TLS 1.3 RFC describing the various backwards compatibility measures taken to avoid confusing intermediate nodes, something they've termed [middlebox compatibility mode](https://datatracker.ietf.org/doc/html/rfc8446#appendix-D.4).
 
 </div>
 
