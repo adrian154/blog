@@ -30,7 +30,7 @@ The function `F` is my simplified way of explaining operations over elements of 
 
 </div>
 
-## Authentication
+## Authenticity
 
 Confidentiality is worthless if you can't ensure that the person on the other end of the line is who you actually *intend* to talk to. One of TLS's central goals is to prevent impersonation by enabling clients to securely verify the identity of the remote server, a process known as **authentication**. It accomplishes this with the help of digital signatures.
 
@@ -47,6 +47,12 @@ This is essentially how TLS performs authentication. The trusted organization wh
 ![picture of the ssl cert for this site](static/images/windows-cert-view.png)
 
 This shows the chain of trust that your browser followed to verify that the server it was talking to actually represented `blog.bithole.dev`. During the TLS handshake process, all three of these certificates were sent from my server to your browser. The first certificate named `bithole.dev` contains my server's public key, as well as a signature that your browser can use to validate my certificate by looking at `R3`'s public key. In turn, `R3` is signed by `ISRG Root X1`, whose fingerprint is hardcoded into your browser as one of several trusted **root certificates**. By presenting this chain of certificates and then showing that it has ownership over the private keys for the identifying certificate (`bithole.dev`), my webserver was able to prove its identity to your browser.
+
+## Integrity
+
+Even if you have authenticated with a server and established a secure channel, there still remains a problem: an attacker who controls the network between you and your destination can still modify the ciphertext messages being exchanged. Even if they are doing so blindly, it still presents a vulnerability. Ideally, we would also want some strong cryptographic guarantee that the message wasn't tampered with in transit. TLS accomplishes this using [authenticated encryption](https://en.wikipedia.org/wiki/Authenticated_encryption).
+
+## Perfect Forward Secrecy
 
 # C → S: Client Hello
 
