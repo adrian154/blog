@@ -30,8 +30,13 @@ document.querySelectorAll(".packet").forEach(packet => {
         selectedContent?.classList.remove("highlighted");
     };
 
+    // for debugging purposes
+    let hexstream = "";
+    
     const containers = [];
     packet.querySelectorAll(".segment").forEach(section => {
+
+        hexstream += section.dataset.hex;
 
         // clone node and create header
         const container = document.createElement("div");
@@ -97,5 +102,7 @@ document.querySelectorAll(".packet").forEach(packet => {
         packetHex.append(spanOuter, " ");
 
     });
+
+    console.log(hexstream);
 
 });

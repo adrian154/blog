@@ -35,17 +35,17 @@ The [Client Hello](https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.3) m
 In TLS 1.2 and below, this field indicated the highest version supported by the client. However, using this field for version negotiation has been deprecated in favor of the `supported_versions` extension, so in TLS 1.3 this field is set to `0x0303` (TLS 1.2) to support older servers.
 
 </div>
-<div class="segment" data-hex="f188ccbfa2d775240ed62fd5c8573dbaf119d10b9da0bf0c15691fb353b65340" data-name="Random">
+<div class="segment" data-hex="035735d60c9512c61134349e99999105922738a7ee2110b0692817ec961a21dd" data-name="Random">
 
 The client shares 32 bytes of randomness that are used later in the handshake process.
 
 </div>
-<div class="segment" data-hex="203d6dd18b2c21c47914165344d016d885c82941c4d6e0a1fd92901f9abc04ebb0" data-name="Legacy Session ID">
+<div class="segment" data-hex="20cce0a325341c9485b11e794e263fe3c3399204aaec8dc73eb996cd79f973d1b2" data-name="Legacy Session ID">
 
 Previously, this value was used to identify clients across sessions. However, since this functionality is now handled using pre-shared keys in TLS 1.3, clients just generate a random session ID each time to avoid confusing intermediate clients which may only support TLS 1.2.
 
 * `20`: length of the session ID (between 0 and 32)
-* `3d 6d d1 ... 04 eb b0`: session ID
+* `cc ce 0a ... 73 d1 b2`: session ID
 
 </div>
 <div class="segment" data-hex="0076130213031301c02fc02bc030c02c009ec0270067c028006b00a3009fcca9cca8ccaac0afc0adc0a3c09fc05dc061c057c05300a2c0aec0acc0a2c09ec05cc060c056c052c024006ac0230040c00ac01400390038c009c01300330032009dc0a1c09dc051009cc0a0c09cc050003d003c0035002f00ff" data-name="Cipher Suites">
@@ -186,7 +186,7 @@ This extension indicates that the client supports [extended master secrets](http
 * `00 00`: data length (none)
 
 </div>
-<div class="segment" data-hex="000d0030002e040305030603080708080809080a080b080408050806040105010601030302030301020103020202040205020602" data-name="Extension: signature_algorithms">
+<div class="segment" data-hex="000d002a0028040305030603080708080809080a080b080408050806040105010601030303010302040205020602" data-name="Extension: signature_algorithms">
 
 This extension allows clients to declare which digital signature algorithms they support. Since clients rely on these algorithms to verify the server's identity, the server may take these values into account later in the handshake process.
 
@@ -235,7 +235,7 @@ This extension lists the supported key exchange modes for pre-shared keys. This 
     * `01 01`: PSK with (EC)DHE key establishment
 
 </div>
-<div class="segment" data-hex="003300260024001d0020de2919be20eef6bbb624d4627b312aa59046e0feef7adc010b59241b935bb46e" data-name="Extension: key_share">
+<div class="segment" data-hex="003300260024001d00204b65e1788c1999350d0a44f50646a75c392584735d96d6d0b35b61c2f9375931" data-name="Extension: key_share">
 
 The client sends its public keys to the server in this extension. If the server supports the algorithm of the key sent in the handshake, all messages following the ClientHello can be encrypted. If the server doesn't support any of the key share algorithms, it may ask the client to resend the ClientHello message via a [Hello Retry Request](https://datatracker.ietf.org/doc/html/rfc8446#section-4.1.4), 
 
@@ -244,7 +244,7 @@ The client sends its public keys to the server in this extension. If the server 
     * `00 24`: length of key share list
         * `00 1d`: key exchange curve (x25519) 
         * `00 20`: key length (32 bytes)
-        * `de 29 19 ... 5b b4 6e`: public key
+        * `4b 65 e1 ... 37 59 31`: public key
 
 </div>
 </div>
