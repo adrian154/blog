@@ -17,25 +17,24 @@ const hkdfExpand = (PRK, info, L) => {
     return Buffer.concat(T).slice(0, L);
 };
 
-// Derive-Secret as defined in RFC8446
-const deriveSecret = (secret, label, context) => {
+// HDKF-Expand-Label and Derive-Secret as defined in RFC8446
+const HDKFExpandLabel = (secret, label, context, length) => {
 
-    const contextHash = crypto.createHash(HASH).update(context).digest();
     const labelBytes = Buffer.from("tls13 " + label, "utf-8");
 
     // create hkdf-label
     const hdkfLabel = Buffer.concat([
-        Buffer.from([HASHLEN >> 8, HASHLEN & 0xff, labelBytes.length]),
+        Buffer.from([length >> 8, length & 0xff, labelBytes.length]),
         labelBytes,
-        Buffer.from([contextHash.length]),
-        contextHash
+        Buffer.from([context.length]),
+        context
     ]);
 
-    console.log([...hdkfLabel].map(byte => byte.toString(16).padStart(2, '0')).join(' '));
-
-    return hkdfExpand(secret, hdkfLabel, HASHLEN);
+    return hkdfExpand(secret, hdkfLabel, length);
 
 };
+
+const deriveSecret = (secret, label, context) => HDKFExpandLabel(secret, label, crypto.createHash(HASH).update(context).digest(), HASHLEN);
 
 // session values
 const sharedSecret = Buffer.from("4c75e186e47a2627bb4501955a051d516653d9570f34c660e623d26e2175b956", "hex");
@@ -57,6 +56,11 @@ clientHandshakeTrafficSecret = deriveSecret(handshakeSecret, "c hs traffic", han
 // server side
 serverHandshakeTrafficSecret = deriveSecret(handshakeSecret, "s hs traffic", handshakeContext);
 
-console.log(clientHandshakeTrafficSecret, serverHandshakeTrafficSecret);
+// client side
+clientHandshakeKey = HDKFExpandLabel(clientHandshakeTrafficSecret, "key", Buffer.alloc(0), 32);
+clientHandshakeIV = HDKFExpandLabel(clientHandshakeTrafficSecret, "iv", Buffer.alloc(0), 16);
 
 // --- end illustrative part
+
+console.log(clientHandshakeTrafficSecret, serverHandshakeTrafficSecret);
+console.log(clientHandshakeKey, clientHandshakeIV);

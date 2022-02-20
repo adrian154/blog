@@ -395,7 +395,7 @@ The server resends the session ID found in the Client Hello message, because thi
 </div>
 <div class="segment" data-hex="1302" data-name="Cipher Suite">
 
-This field indicates that the server has chosen to use TLS_AES_256_GCM_SHA384 as the cipher suite for this session.
+This field indicates that the server has chosen to use TLS_AES_256_GCM_SHA384 as the cipher suite for this session. This means that messages will be encrypted using [AES-256](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard), and all operations involving cryptographic hashes will use [SHA-384](https://en.wikipedia.org/wiki/SHA-2).
 
 </div>
 <div class="segment" data-hex="00" data-name="Legacy Compression Methods">
@@ -454,7 +454,7 @@ The key schedule begins with the calculation of an "early secret". This is norma
 
 ```js
 earlySecret = hkdfExtract(
-    Buffer.from([0]),      // initial salt is zero 
+    Buffer.alloc(HASHLEN), // initial salt is zero 
     Buffer.alloc(HASHLEN)  // replace PSK with string of zeroes of the same length
 );
 ```
@@ -468,14 +468,15 @@ derivedSecret = deriveSecret(earlySecret, "derived", Buffer.alloc(0));
 Create the handshake secret using the shared value from key exchange and the derived secret from the previous step.
 
 ```js
-handshakeSecret = hkdfExtract(derivedSecret, sharedSecret); // sharedSecret = 4c 75 e1 ...
+// sharedSecret = 4c 75 e1 ...
+handshakeSecret = hkdfExtract(derivedSecret, sharedSecret);
 ```
 
 For the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to `deriveSecret` in a parameter called the *context*. This is why the Random field is included in the Hello messages: to prevent replay attacks. The Random fields change between handshakes, and thus, so does the context. This prevents an attacker from simply recording and replaying a TLS session in an attempt to repeat a request: the server will send a new Random field, creating a different context with a different secret key.
 
 `handshakeContext` is created by applying a cryptographic hash function to the raw data of the ClientHello and Server Hello messages, excluding the record header.
 
-```
+```js
 // client side
 clientHandshakeTrafficSecret = deriveSecret(handshakeSecret, "c hs traffic", handshakeContext);
 
@@ -483,7 +484,12 @@ clientHandshakeTrafficSecret = deriveSecret(handshakeSecret, "c hs traffic", han
 serverHandshakeTrafficSecret = deriveSecret(handshakeSecret, "s hs traffic", handshakeContext);
 ```
 
+From here, we just need to calculate two additional values that we can feed to our actual cipher, the **key** and the **IV**. This is where AEAD comes in: {TODO}.
 
+```js
+// client side
+const clientHandshakeKey = deriveSecret(clientHandshakeTrafficSecret, "key", )
+```
 
 # S → C: Change Cipher Spec
 
@@ -520,6 +526,10 @@ All encrypted messages are contained within application data records, which prov
 
 </div>
 </div>
+
+# Epilogue
+
+This article only shows part of what makes TLS tick. There's much more beneath the surface; things like session resumption, 0-RTT messages, client authentication, the list goes on. To learn more, the RFC is your best friend. Skip ahead to the Further Reading section for some good references.
 
 # Behind the Scenes 
 
@@ -593,4 +603,7 @@ secureSocket.on("secureConnect", () => {
 You can download the full packet capture of the exchange which this page is based on [here](static/tls-capture.pcap). You'll also need the [keylog](static/tls-keylog.txt) to decrypt the capture.
 
 # Further Reading
+* [TLS 1.3 Illustrated](https://tls13.ulfheim.net/)
+* [IETF - RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3](https://datatracker.ietf.org/doc/html/rfc8446)
+* [IETF - RFC 5869: HMAC-based Extract-and-Expand Key Derivation Function (HKDF)](https://datatracker.ietf.org/doc/html/rfc5869)
 * [Cloudflare Fundamentals - TLS](https://developers.cloudflare.com/fundamentals/internet/protocols/tls)
