@@ -1,21 +1,23 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Transport Layer Security</title><meta property="og:title" content="Transport Layer Security"><meta property="og:type" content="website"><meta property="og:description" content="In this article, we examine the gory details of a TLS session, down to every byte exchanged. If you've ever wondered how the Web is secured, this one's for you."><meta name="description" content="In this article, we examine the gory details of a TLS session, down to every byte exchanged. If you've ever wondered how the Web is secured, this one's for you."><link rel="canonical" href="https://blog.bithole.dev/tls.html"><link rel="stylesheet" href="static/stylesheets/main.css"><link rel="stylesheet" href="static/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="static/stylesheets/packetview.css"><script defer src="static/scripts/packetview.js"></script></head><body><a href="/"><img src="static/images/banner0.jpg" alt="blog banner"></a><p id="date" class="date">January 23, 2022</p><h1 style="margin-top: 0">Transport Layer Security</h1><p><noscript><b>If you are reading this message, JavaScript is not enabled. Unfortunately, this page relies on JS to dynamically generate content which you may not be able to view.</b></noscript></p>
-<p>The Internet is, by default, not secure. In TCP and below, everything is transferred in plaintext, meaning an attacker could read your communications or masquerade as the person you <em>think</em> you&#39;re talking with in order to steal your credentials or gain access to privileged systems. Yet today, most individuals will never fall prey to such man-in-the-middle attacks. What changed? The answer is the <strong>Transport Layer Security (TLS)</strong> protocol, which transparently secures much of the modern-day web. How does it pull off this seemingly impossible feat? Let&#39;s find out.</p>
-<h1 id="conceptual-overview">Conceptual Overview <a class="section-link" href="#conceptual-overview">&sect;</a></h1><p>TLS solves two cryptographic problems: <strong>confidentiality</strong>, <strong>authentication</strong>, and <strong>integrity</strong>. All three properties are necessary for most applications requiring a secure channel of communication, but each one has a distinct meaning. </p>
-<h2 id="confidentiality">Confidentiality <a class="section-link" href="#confidentiality">&sect;</a></h2><p>Confidentiality is simple enough; you don&#39;t want a third party to be able to read your communications, because that would obviously compromise your security. Nobody wants their passwords and private information broadcast for the whole Internet to see. The solution is to encrypt your data with a cipher, an algorithm which accepts a plaintext and a key and produces a ciphertext, such that it is only feasible to retrieve the plaintext if you have the key. When a cipher uses the same key to encrypt and decrypt data, it is called a <a href="https://en.wikipedia.org/wiki/Symmetric-key_algorithm">symmetric cipher</a>.</p>
-<p>Symmetric ciphers are preferred for the bulk encryption of data because they are much faster than their asymmetric counterparts, but they have one fatal flaw: key exchange. The two communicating parties need to figure out a way to share a single key in order to read each other&#39;s messages, but this creates a bit of a chicken-and-egg situation: how do you transmit the key if the channel isn&#39;t secure? This is one of the fundamental problems in cryptography, and it is known as <strong>key exchange</strong>.</p>
-<p>Today, the most widely used key exchange method (which is also preferred by TLS) is a scheme called <a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">Diffie-Hellman Key Exchange</a>. It enables a client and a server to generate the same secret value while only exchanging publicly knowable data.</p>
+<p>The Internet is, by default, not secure. In TCP and below, everything is transferred in plaintext, meaning an attacker could read your communications or masquerade as the person you <em>think</em> you&#39;re talking to in order to steal your credentials or gain access to privileged systems. Yet today, most individuals will never fall prey to such a man-in-the-middle attack. What changed? The answer is the <strong>Transport Layer Security (TLS)</strong> protocol, which transparently secures much of the modern-day web. How does it pull off this seemingly impossible feat? Let&#39;s find out.</p>
+<h1 id="conceptual-overview">Conceptual Overview <a class="section-link" href="#conceptual-overview">&sect;</a></h1><p>TLS solves three cryptographic problems: <strong>confidentiality</strong>, <strong>authentication</strong>, and <strong>integrity</strong>. These three properties go hand in hand, but each one has a distinct meaning. </p>
+<h2 id="confidentiality">Confidentiality <a class="section-link" href="#confidentiality">&sect;</a></h2><p>It&#39;s pretty easy to see why confidentiality is important. Nobody wants a third party to be able to read your communications, because that would obviously compromise your security. The solution is to encrypt your data with a cipher, an algorithm which accepts a plaintext and a key and produces a ciphertext, such that it is only feasible to retrieve the plaintext if you have the key. When a cipher uses the same key to encrypt and decrypt data, it is called a <a href="https://en.wikipedia.org/wiki/Symmetric-key_algorithm">symmetric cipher</a>.</p>
+<p>Symmetric ciphers are preferred for the bulk encryption of data because they are much faster than their asymmetric counterparts, but they have one fatal flaw: key exchange. The two communicating parties need to figure out a way to share a single key in order to read each other&#39;s messages, but this creates a bit of a chicken-and-egg situation: how do you transmit the key if the channel isn&#39;t secure? To solve this problem, we need to get a little more clever.</p>
+<p>Enter the <a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">Diffie-Hellman Key Exchange</a>. It enables a client and a server to generate the same secret value while only exchanging publicly knowable data, which sounds impossible until you take a look at how it works. Here&#39;s a diagram that explains the Diffie-Hellman key exchange process using colors of paint as a stand-in for cryptographic keys.</p>
 <p><a href="static/images/DHKE-paint-analogy.png" target="_blank"><img src="static/images/DHKE-paint-analogy.png" alt="DHKE diagram using paint analogy"></a></p>
 <br>
 
-<p>Ultimately, what makes this scheme secure is that separating the paints is infeasible for an attacker. We can make this model a little more rigorous by replacing the paints with numerical values. Suppose <code>C</code> is some common value that both Alice and Bob know. The paint-combining function can be modeled as a function <code>F</code>, with the following properties:</p>
+<p>We can make this model a little more rigorous by replacing the paints with variables. Suppose <code>C</code> is some common value that both Alice and Bob know. The paint-mixing operation can be modeled as a function <code>F</code>, with the following properties:</p>
 <ul>
 <li>It is easy to compute <code>F(x, y)</code>, but very difficult to retrieve <code>x</code> and <code>y</code> given the output of the function. (Examples of such functions will be discussed later).</li>
 <li><code>F</code> is associative, i.e. <code>F(x, F(y, z)) = F(y, F(x, z))</code>.</li>
 </ul>
-<p>Now, we&#39;re ready to do the key exchange. Alice generates a random secret <code>A</code>, and Bob generates a random secret <code>B</code>. Alice sends Bob <code>F(A, C)</code> and Bob sends Alice <code>F(B, C)</code>. Now, both can compute the value of <code>F(A, F(B, C))</code> and <code>F(B, F(A, C))</code>, respectively. Because <code>F</code> is associative, Alice and Bob arrive at the same value, which they can now use as the key to a symmetric cipher. However, an attacker who knows the common value and the values sent over the network still doesn&#39;t have enough information to calculate the secret. The attacker needs to know either <code>A</code> or <code>B</code> to calculate the secret, but because it is difficult to reverse <code>F</code>, the attacker is unable to retrieve the secret values and can&#39;t determine the shared secret.</p>
+<p>Now, we&#39;re ready to do the key exchange. Alice generates a random secret <code>A</code>, and Bob generates a random secret <code>B</code>. Alice sends Bob <code>F(A, C)</code> and Bob sends Alice <code>F(B, C)</code>. Now, Alice can compute <code>F(A, F(B, C))</code> and Bob can compute <code>F(B, F(A, C))</code>. Because <code>F</code> is associative, Alice and Bob arrive at the same value, which they can now use as the key to a symmetric cipher. However, an attacker who only has the common value and the values sent over the network still doesn&#39;t have enough information to break the scheme. The attacker needs to know either <code>A</code> or <code>B</code> to calculate the secret, but because it is difficult to reverse <code>F</code>, the attacker is unable to retrieve the individual secrets and can&#39;t determine the shared secret.</p>
 <div class="info-box">
 
-<p>The function <code>F</code> is my simplified way of explaining operations over elements of an <a href="https://en.wikipedia.org/wiki/Group_(mathematics)">algebraic group</a>, which comes with the guarantee that the operations will be associative. For example, <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">RSA</a> uses a <a href="https://en.wikipedia.org/wiki/Multiplicative_group_of_integers_modulo_n">multiplicative group</a> where the modulus is a large semiprime; its security is derived from the difficulty of <a href="https://en.wikipedia.org/wiki/Integer_factorization">integer factorization</a>. Today, cryptosystems based on <a href="https://en.wikipedia.org/wiki/Elliptic-curve_cryptography">elliptic curve groups</a> have become popular since they offer similar security to RSA with much smaller and thus more convenient keys. They are based on the difficulty of finding the discrete logarithm of an elliptic curve point.</p>
+<p>Here, I use the function <code>F</code> as simplified way of explaining operations over elements of a <a href="https://en.wikipedia.org/wiki/Cyclic_group">finite cyclic group</a>. Groups are an especially useful when it comes to Diffie-Hellman key exchange since it is guaranteed that the group operation is associative. For example, <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">RSA</a> uses a <a href="https://en.wikipedia.org/wiki/Multiplicative_group_of_integers_modulo_n">multiplicative group of integers modulo <em>n</em></a> where the modulus is a large semiprime; its security relies on the difficulty of <a href="https://en.wikipedia.org/wiki/Integer_factorization">integer factorization</a>.</p>
+<p>Today, cryptosystems based on <a href="https://en.wikipedia.org/wiki/Elliptic-curve_cryptography">elliptic curve groups</a> have become popular since they offer similar security to RSA with much smaller and thus more convenient keys. Elliptic curve cryptograph is secured by the elliptic curve discrete logarithm problem. Essentially, given a point <em>P</em> and integer <em>n</em>, it is very difficult to retrieve <em>n</em> (the discrete logarithm) knowing <em>nP</em> and <em>P</em> alone.</p>
+<p>I&#39;m really terrible at explaining group theory, so if you want to learn more check out this <a href="https://math.mit.edu/~jwellens/Group%20Theory%20Forum.pdf">short introduction</a>.</p>
 </div>
 
 <h2 id="authenticity">Authenticity <a class="section-link" href="#authenticity">&sect;</a></h2><p>Confidentiality is worthless if you can&#39;t ensure that the person on the other end of the line is who you actually <em>intend</em> to talk to. One of TLS&#39;s central goals is to prevent impersonation by enabling clients to securely verify the identity of the remote server, a process known as <strong>authentication</strong>. It accomplishes this with the help of digital signatures.</p>
@@ -25,10 +27,35 @@
 <p><em>A rough diagram showing how a verifiable chain of trust is created using digital signatures. <a href="https://en.wikipedia.org/wiki/File:Chain_Of_Trust.svg">Image</a> by Yukhih / <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA</a></em></p>
 <p>This is essentially how TLS performs authentication. The trusted organization which signs certificates is known as a <a href="https://en.wikipedia.org/wiki/Certificate_authority">certificate authority</a>, and instead of including human names, most certificates contain the bearer&#39;s domain name. If you&#39;re on Chrome, you can click the padlock icon next to the URL of this page to view the SSL certificate of the webserver running this blog. Here&#39;s what you might expect to see:</p>
 <p><a href="static/images/windows-cert-view.png" target="_blank"><img src="static/images/windows-cert-view.png" alt="picture of the ssl cert for this site"></a></p>
-<p>This shows the chain of trust that your browser followed to verify that the server it was talking to actually represented <code>blog.bithole.dev</code>. During the TLS handshake process, all three of these certificates were sent from my server to your browser. The first certificate named <code>bithole.dev</code> contains my server&#39;s public key, as well as a signature that your browser can use to validate my certificate by looking at <code>R3</code>&#39;s public key. In turn, <code>R3</code> is signed by <code>ISRG Root X1</code>, whose fingerprint is hardcoded into your browser as one of several trusted <strong>root certificates</strong>. By presenting this chain of certificates and then showing that it has ownership over the private keys for the identifying certificate (<code>bithole.dev</code>), my webserver was able to prove its identity to your browser.</p>
+<p>During the TLS handshake process, all three of these certificates were sent from my server to your browser. The first certificate named <code>bithole.dev</code> contains my server&#39;s public key, as well as a signature that your browser can use to validate my certificate by looking at <code>R3</code>&#39;s public key. In turn, <code>R3</code> is signed by <code>ISRG Root X1</code>, whose fingerprint is hardcoded into your browser as one of several trusted <strong>root certificates</strong>. Your browser can follow this chain of signatures and verify that the certificate is valid.</p>
+<p>My webserver also signed the public key generated during the Diffie-Hellman key exchange process earlier in the handshake, which an attacker could never do without somehow gaining ownership of the certificate&#39;s private key. This guarantees to your browser that the server it was talking to earlier was actually <code>blog.bithole.dev</code> and not an attacker.</p>
+<p>Ultimately, your trust is figuratively and <em>literally</em> rooted in the legitimacy of these organizations. For the most part, they are all sufficiently strict about only issuing certificates to people who can actually prove ownership of a domain&mdash;for example, Let&#39;s Encrypt checks if a specific DNS record has been deployed for verification&mdash;but ultimately you cannot be 100% sure that these entities will not try to attack your TLS connections. For this reason, some organizations choose to run their own internal CA and issue their own certificates. This removes the dependence on an external entity, but requires that all users manually add the CA&#39;s root certificate to their computer&#39;s list of trusted certificates. As a result, it&#39;s only really feasible to secure closed systems like enterprise environments this way.</p>
+<p>Here&#39;s a conversational example of everything that&#39;s happened so far in the TLS handshake.</p>
+<table class="conversation">
+    <tr>
+        <th>Client</th>
+        <th>Server</th>
+    </tr>
+    <tr>
+        <td>Hello, here are the cipher suites I support, as well as a public key I have generated for this session.</td><td></td>
+    </tr>
+    <tr>
+        <td></td><td>Let's use <...> as the cipher suite for this connection. Here is the public key I have generated for this session. We can now calculate a shared secret value.</td>
+    </tr>
+    <tr>
+        <td></td><td>Here is my certificate. It is signed by R3, which is signed by ISRG Root X1 (which is hopefully in your trusted certificates list). In addition, here is a digital signature of the public key I sent earlier, which you can verify using the public key contained within my certificate.</td>
+    </tr>
+    <tr>
+        <td>Your certificate appears valid, and so does the signature of your public key. I can now send you sensitive data encrypted using the shared secret we established earlier via Diffie-Hellman key exchange.</td><td></td>
+    </tr>
+</table>
+
 <h2 id="integrity">Integrity <a class="section-link" href="#integrity">&sect;</a></h2><p>Even if you have authenticated with a server and established a secure channel, there still remains a problem: an attacker who controls the network between you and your destination can still modify the ciphertext messages being exchanged. Even if they are doing so blindly, it still presents a vulnerability. Ideally, we would also want some strong cryptographic guarantee that the message wasn&#39;t tampered with in transit. TLS accomplishes this using <a href="https://en.wikipedia.org/wiki/Authenticated_encryption">authenticated encryption</a>.</p>
-<h2 id="perfect-forward-secrecy">Perfect Forward Secrecy <a class="section-link" href="#perfect-forward-secrecy">&sect;</a></h2><p>TODO</p>
-<h1 id="c--s-client-hello">C → S: Client Hello <a class="section-link" href="#c--s-client-hello">&sect;</a></h1><p>TLS handshakes begin with the Client Hello message, where the client declares its capabilities to the server. Most importantly, it lists the TLS versions it understands as well as a list of supported ciphers for encryption.</p>
+<p>In TLS 1.3, integrity is handled by only using ciphers which include <strong>authenticated encryption with associated data (AEAD)</strong>. AEAD ensures that no one can read the plaintext without the key, of course, but it also allows recipients to reject messages which have been modified <em>without</em> leaking any information about the plaintext (which was the source of several vulnerabilities in TLS 1.2). The &quot;associated data&quot; part means that the integrity of unencrypted data (such as the record header fields) can be ensured as well. This is accomplished with the help of <a href="https://en.wikipedia.org/wiki/Message_authentication_code">message authentication codes</a>. We will explore AEAD in depth later when we actually observe how messages are decrypted.</p>
+<p>With all of that being said, let&#39;s actually examine a recorded TLS session and see how all of these cryptographic concepts are implemented.</p>
+<h1 id="client-handshake-key-generation">Client Handshake Key Generation <a class="section-link" href="#client-handshake-key-generation">&sect;</a></h1><p>Before the client even begins the handshake, it first generates an <a href="https://cr.yp.to/ecdh.html">x25519</a> keypair for use in key exchange later down the road. The private key is simply generated by generating 32 bytes of random data. Here is the client&#39;s private key, which is never sent over the network:</p>
+<pre><code class="hljs">186b7a9daf3855fa090bf29a69391dc1ee788393f2dba58a23cab0f6b96d6355</code></pre><p>The public key is generated by multiplying the fixed starting point (x = 9) by the private key. The elliptic-curve discrete logarithm problem prevents attackers from calculating the private key from the starting point and the public key. This is the public key, which you will see later in the exchange:</p>
+<pre><code class="hljs">4b65e1788c1999350d0a44f50646a75c392584735d96d6d0b35b61c2f9375931</code></pre><h1 id="c--s-client-hello">C → S: Client Hello <a class="section-link" href="#c--s-client-hello">&sect;</a></h1><p>TLS handshakes begin with the Client Hello message, where the client declares its capabilities to the server. Most importantly, it lists the TLS versions it understands as well as a list of supported ciphers for encryption.</p>
 <p><strong>Guide</strong>: Click on a section of the packet to see a description of its significance. Click the hex preview on the left to return to the top. Try enabling &quot;show all&quot; if you want to read all the section descriptions.</p>
 <div class="client packet">
 <div class="segment" data-hex="1603010158" data-name="Record Header">
@@ -279,7 +306,7 @@
 <li><code>00 24</code>: length of key share list<ul>
 <li><code>00 1d</code>: key exchange curve (x25519) </li>
 <li><code>00 20</code>: key length (32 bytes)</li>
-<li><code>4b 65 e1 ... 37 59 31</code>: public key</li>
+<li><code>4b 65 e1 ... 37 59 31</code>: public key, which was derived <a href="#client-handshake-key-generation">earlier</a></li>
 </ul>
 </li>
 </ul>
@@ -293,7 +320,9 @@
 <p>If all the mismatching TLS versions scattered throughout the packet are confusing, don&#39;t worry. There&#39;s a whole section in the TLS 1.3 RFC describing the various backwards compatibility measures taken to avoid confusing intermediate nodes, something they&#39;ve termed <a href="https://datatracker.ietf.org/doc/html/rfc8446#appendix-D.4">middlebox compatibility mode</a>.</p>
 </div>
 
-<h1 id="s--c-server-hello">S → C: Server Hello <a class="section-link" href="#s--c-server-hello">&sect;</a></h1><p>The server responds to Client Hello with connection parameters such as the TLS version it has chosen to use, the session ID, and its own public key in response to the key_shares sent by the client.</p>
+<h1 id="server-handshake-key-generation">Server Handshake Key Generation <a class="section-link" href="#server-handshake-key-generation">&sect;</a></h1><p>The server uses the same process as the client to generate its keypair. It starts by generating a private key:</p>
+<pre><code class="hljs">d8b3916b7e1ed8d6fa07c7810eef53639b77e51e0fd8e044c1c9e1186fd63c49</code></pre><p>From this, the public key is derived.</p>
+<pre><code class="hljs">011b5df090006e814ab8db60f6a2765cb90fe7fce73559e914796dafe6719c40</code></pre><h1 id="s--c-server-hello">S → C: Server Hello <a class="section-link" href="#s--c-server-hello">&sect;</a></h1><p>The server responds to Client Hello with connection parameters such as the TLS version it has chosen to use, the session ID, and its own public key in response to the key_shares sent by the client.</p>
 <div class="server packet">
 <div class="segment" data-hex="160303007a" data-name="Record Header">
 
@@ -350,13 +379,22 @@
 <li><code>00 24</code>: data length (36 bytes)<ul>
 <li><code>00 1d</code>: key exchange curve (x25519)</li>
 <li><code>00 20</code>: key length (32 bytes)</li>
-<li><code>01 1b 5d ... 71 9c 40</code>: public key</li>
+<li><code>01 1b 5d ... 71 9c 40</code>: public key, which was derived <a href="#server-handshake-key-generation">earlier</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
+<h1 id="handshake-key-exchange">Handshake Key Exchange <a class="section-link" href="#handshake-key-exchange">&sect;</a></h1><p>At this point, both the client and the server are ready to perform the key exchange calculations necessary to secure the rest of the handshake. First, each party generates a shared secret by multiplying the shared secret by the other party&#39;s public key (from the key_share). On the client&#39;s side:</p>
+<pre><code class="hljs">client_privkey x server_pubkey = shared_secret
+186b7a9daf3855fa090bf29a69391dc1ee788393f2dba58a23cab0f6b96d6355 x
+011b5df090006e814ab8db60f6a2765cb90fe7fce73559e914796dafe6719c40 =
+4c75e186e47a2627bb4501955a051d516653d9570f34c660e623d26e2175b956</code></pre><p>On the server&#39;s side:</p>
+<pre><code class="hljs">server_privkey x client_pubkey = shared_secret
+d8b3916b7e1ed8d6fa07c7810eef53639b77e51e0fd8e044c1c9e1186fd63c49 x
+4b65e1788c1999350d0a44f50646a75c392584735d96d6d0b35b61c2f9375931 = 
+4c75e186e47a2627bb4501955a051d516653d9570f34c660e623d26e2175b956</code></pre><p>From here, TLS uses a process known as the <a href="https://datatracker.ietf.org/doc/html/rfc8446#section-7.1">key schedule</a> to derive a set of keys from the shared secret. </p>
 <h1 id="s--c-change-cipher-spec">S → C: Change Cipher Spec <a class="section-link" href="#s--c-change-cipher-spec">&sect;</a></h1><p>Next, the server sends the Change Cipher Spec message. This isn&#39;t used in TLS 1.3, but to avoid confusing intermediate nodes, this message is still sent. From this point on, the rest of the handshake is encrypted.</p>
 <div class="server packet">
 <div class="segment" data-hex="140303000101" data-name="Record Header">
@@ -370,7 +408,25 @@
 </div>
 </div>
 
-<h1 id="s--c-change-cipher-spec">S → C: Change Cipher Spec <a class="section-link" href="#s--c-change-cipher-spec">&sect;</a></h1><h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session was a bizarre experience that turned out to be surprisingly treacherous. It turns out, I have a penchant for doing things the wrong way. In this case, it involved modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
+<h1 id="s--c-encrypted-extensions">S → C: Encrypted Extensions <a class="section-link" href="#s--c-encrypted-extensions">&sect;</a></h1><p>Our first encrypted message! Here, additional TLS extensions that aren&#39;t essential for key negotation are declared, so that minimal information about the session is leaked to eavesdroppers. There aren&#39;t any additional extensions in this session, so this message is empty.</p>
+<p>All encrypted messages are contained within application data records, which provide the necessary info to decrypt the data. For all messages after this one, we will simply be showing the decrypted payload. However, for the sake of completeness, this message will be shown in its entirety.</p>
+<div class="server packet">
+<div class="segment" data-hex="1703030017" data-name="Record Header">
+
+<ul>
+<li><code>17</code>: record type (23 for Application Data)</li>
+<li><code>03 03</code>: protocol version (TLS 1.2 for backwards compatibility)</li>
+<li><code>00 17</code>: length of payload (23 bytes)</li>
+</ul>
+</div>
+<div class="segment" data-hex="bf687d10e2f209661418d92aaf3626dfe5670f3127d6ed" data-name="Encrypted Data">
+
+
+
+</div>
+</div>
+
+<h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session turned out to be surprisingly treacherous. In this case, it involved modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
 <pre><code class="hljs"><span class="hljs-comment">diff --git a/deps/openssl/openssl/ssl/statem/extensions_clnt.c b/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>
 <span class="hljs-comment">index 7b46074232..bd765f43f0 100644</span>
 <span class="hljs-comment">--- a/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>
@@ -403,25 +459,32 @@
          /* Generate encoding of server key */
          encoded_pt_len = EVP_PKEY_get1_encoded_public_key(skey, &amp;encodedPoint);
          if (encoded_pt_len == 0) {
-</code></pre><p>You can download the full packet capture of the exchange which this page is based on <a href="static/tls-capture.pcap">here</a>. You&#39;ll also need the <a href="static/tls-keylog.txt">keylog</a> to decrypt the capture. Alternatively, you can make your own using the <a href="https://gist.github.com/adrian154/5dd6a3231d49f3783688b176afd025e7">code</a>. </p>
-<pre><code class="hljs"> X25519 Private-Key:
- priv:
-     18:6b:7a:9d:af:38:55:fa:09:0b:f2:9a:69:39:1d:
-     c1:ee:78:83:93:f2:db:a5:8a:23:ca:b0:f6:b9:6d:
-     63:55
- pub:
-     4b:65:e1:78:8c:19:99:35:0d:0a:44:f5:06:46:a7:
-     5c:39:25:84:73:5d:96:d6:d0:b3:5b:61:c2:f9:37:
-     59:31
- X25519 Private-Key:
- priv:
-     d8:b3:91:6b:7e:1e:d8:d6:fa:07:c7:81:0e:ef:53:
-     63:9b:77:e5:1e:0f:d8:e0:44:c1:c9:e1:18:6f:d6:
-     3c:49
- pub:
-     01:1b:5d:f0:90:00:6e:81:4a:b8:db:60:f6:a2:76:
-     5c:b9:0f:e7:fc:e7:35:59:e9:14:79:6d:af:e6:71:
-     9c:40</code></pre><h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><ul>
+</code></pre><p>After that, it was a simple matter of using NodeJS to create a TLS client and server, then capturing the exchange using <code>tcpdump</code>. Here&#39;s the client/server code.</p>
+<pre><code class="hljs"><span class="hljs-comment">// run with --tls-keylog=...</span>
+
+<span class="hljs-keyword">const</span> tls = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;tls&quot;</span>);
+<span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;fs&quot;</span>);
+
+<span class="hljs-keyword">const</span> port = <span class="hljs-number">8443</span>, host = <span class="hljs-string">&quot;test.bithole.dev&quot;</span>;
+
+<span class="hljs-keyword">const</span> server = tls.<span class="hljs-title function_">createServer</span>({
+    <span class="hljs-attr">cert</span>: fs.<span class="hljs-title function_">readFileSync</span>(<span class="hljs-string">&quot;fullchain.pem&quot;</span>, <span class="hljs-string">&quot;utf-8&quot;</span>),
+    <span class="hljs-attr">key</span>: fs.<span class="hljs-title function_">readFileSync</span>(<span class="hljs-string">&quot;privkey.pem&quot;</span>, <span class="hljs-string">&quot;utf-8&quot;</span>)
+});
+
+server.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;secureConnection&quot;</span>, <span class="hljs-function"><span class="hljs-params">tlsSocket</span> =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;connection&quot;</span>);
+    tlsSocket.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;data&quot;</span>, <span class="hljs-function"><span class="hljs-params">data</span> =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;data received:&quot;</span>, data));
+});
+
+server.<span class="hljs-title function_">listen</span>(port, <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Started listening&quot;</span>));
+
+<span class="hljs-keyword">const</span> secureSocket = tls.<span class="hljs-title function_">connect</span>({host, port});
+secureSocket.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;secureConnect&quot;</span>, <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;client connected&quot;</span>);
+    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> secureSocket.<span class="hljs-title function_">write</span>(<span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>([<span class="hljs-number">0xde</span>,<span class="hljs-number">0xad</span>,<span class="hljs-number">0xbe</span>,<span class="hljs-number">0xef</span>])), <span class="hljs-number">1000</span>);
+});</code></pre><p>You can download the full packet capture of the exchange which this page is based on <a href="static/tls-capture.pcap">here</a>. You&#39;ll also need the <a href="static/tls-keylog.txt">keylog</a> to decrypt the capture.</p>
+<h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><ul>
 <li><a href="https://developers.cloudflare.com/fundamentals/internet/protocols/tls">Cloudflare Fundamentals - TLS</a></li>
 </ul>
 <noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script><p class="footnote">&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">contribute</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></body></html>
