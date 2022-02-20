@@ -36,23 +36,23 @@ const sharedSecret = Buffer.from("4c75e186e47a2627bb4501955a051d516653d9570f34c6
 
 // --- illustrative part
 
-// the key schedule begins with the early secret
-// this is normally used to involve the pre-shared key in the key schedule
-// since we don't have a PSK, this part is mostly irrelevant
-// however, we still have to do it, just with dummy values
+// The key schedule begins with the calculation of an "early secret". This is normally used to include the pre-shared key in the key schedule. Since we don't have a PSK, this part is mostly irrelevant. However, we still have to do it, just with dummy values
 earlySecret = hkdfExtract(
     Buffer.from([0]),      // initial salt is zero 
     Buffer.alloc(HASHLEN)  // replace PSK with string of zeroes of the same length
 );
 
-// calculate derived secret from the early secret
+// Next, calculate a derived secret from the early secret.
 derivedSecret = deriveSecret(earlySecret, "derived", Buffer.alloc(0));
 
-// create the handshake secret using the shared value from key exchange + derived secret
+// Create the handshake secret using the shared value from key exchange + derived secret
 handshakeSecret = hkdfExtract(derivedSecret, sharedSecret); // sharedSecret = 4c 75 e1 ...
 
-// for the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to deriveSecret()
-// this is why the `random` field is included in the Hello messages: it hardens HTTPS against replay attacks
+// For the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to deriveSecret()
+// this is why the `random` field is included in the Hello messages: to prevent replay attacks
+// bceause the hash will change each time, all secrets derived in this context are bound to the handshake
+// this prevents an attacker from simply *replaying* a TLS session to, say, repeat a request
+// 
 clientHandshakeTrafficSecret = deriveSecret(handshakeSecret, "c hs traffic", )
 
 // --- end illustrative part

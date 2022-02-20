@@ -448,7 +448,42 @@ d8b3916b7e1ed8d6fa07c7810eef53639b77e51e0fd8e044c1c9e1186fd63c49 x
 4c75e186e47a2627bb4501955a051d516653d9570f34c660e623d26e2175b956
 ```
 
-From here, TLS uses a process known as the [key schedule](https://datatracker.ietf.org/doc/html/rfc8446#section-7.1) to derive a set of keys from the shared secret. 
+From here, TLS uses a process known as the [key schedule](https://datatracker.ietf.org/doc/html/rfc8446#section-7.1) to derive a set of keys from the shared secret. The code used to explain this section is available [here](static/tls-key-schedule.js).
+
+The key schedule begins with the calculation of an "early secret". This is normally used to include the pre-shared key in the key schedule. Since we don't have a PSK, this part is mostly irrelevant. However, we still have to do it, just with dummy values.
+
+```js
+earlySecret = hkdfExtract(
+    Buffer.from([0]),      // initial salt is zero 
+    Buffer.alloc(HASHLEN)  // replace PSK with string of zeroes of the same length
+);
+```
+
+Next, calculate a derived secret from the early secret.
+
+```js
+derivedSecret = deriveSecret(earlySecret, "derived", Buffer.alloc(0));
+```
+
+Create the handshake secret using the shared value from key exchange and the derived secret from the previous step.
+
+```js
+handshakeSecret = hkdfExtract(derivedSecret, sharedSecret); // sharedSecret = 4c 75 e1 ...
+```
+
+For the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to `deriveSecret` in a parameter called the *context*. This is why the Random field is included in the Hello messages: to prevent replay attacks. The Random fields change between handshakes, and thus, so does the context. This prevents an attacker from simply recording and replaying a TLS session in an attempt to repeat a request: the server will send a new Random field, creating a different context with a different secret key.
+
+`context` is created by applying a cryptographic hash function to the raw data of the ClientHello and Server Hello messages, excluding the record header.
+
+```
+// client side
+clientHandshakeTrafficSecret = deriveSecret(handshakeSecret, "c hs traffic", context);
+
+// server side
+serverHandshakeTrafficSecret = deriveSecret(handshakeSecret, "s hs traffic", context);
+```
+
+
 
 # S → C: Change Cipher Spec
 
