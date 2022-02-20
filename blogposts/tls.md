@@ -56,7 +56,7 @@ My webserver also signed the public key generated during the Diffie-Hellman key 
 
 Ultimately, your trust is figuratively and *literally* rooted in the legitimacy of these organizations. For the most part, they are all sufficiently strict about only issuing certificates to people who can actually prove ownership of a domain&mdash;for example, Let's Encrypt checks if a specific DNS record has been deployed for verification&mdash;but ultimately you cannot be 100% sure that these entities will not try to attack your TLS connections. For this reason, some organizations choose to run their own internal CA and issue their own certificates. This removes the dependence on an external entity, but requires that all users manually add the CA's root certificate to their computer's list of trusted certificates. As a result, it's only really feasible to secure closed systems like enterprise environments this way.
 
-Here's a conversational example of everything that's happened so far in the TLS handshake.
+Here's a conversational illustration of all these concepts at play in a TLS handshake.
 
 <table class="conversation">
     <tr>
@@ -64,16 +64,16 @@ Here's a conversational example of everything that's happened so far in the TLS 
         <th>Server</th>
     </tr>
     <tr>
-        <td>Hello, here are the cipher suites I support, as well as a public key I have generated for this session.</td><td></td>
+        <td class="client-says">Hello, here are the cipher suites I support, as well as a public key I have generated for this session.</td><td></td>
     </tr>
     <tr>
-        <td></td><td>Let's use <...> as the cipher suite for this connection. Here is the public key I have generated for this session. We can now calculate a shared secret value.</td>
+        <td></td><td class="server-says">Let's use <...> as the cipher suite for this connection. Here is the public key I have generated for this session. We can now calculate a shared secret value.</td>
     </tr>
     <tr>
-        <td></td><td>Here is my certificate. It is signed by R3, which is signed by ISRG Root X1 (which is hopefully in your trusted certificates list). In addition, here is a digital signature of the public key I sent earlier, which you can verify using the public key contained within my certificate.</td>
+        <td></td><td class="server-says">Here is my certificate. It is signed by R3, which is signed by ISRG Root X1 (which is hopefully in your trusted certificates list). In addition, here is a digital signature of the public key I sent earlier, which you can verify using the public key contained within my certificate.</td>
     </tr>
     <tr>
-        <td>Your certificate appears valid, and so does the signature of your public key. I can now send you sensitive data encrypted using the shared secret we established earlier via Diffie-Hellman key exchange.</td><td></td>
+        <td class="client-says">Your certificate appears valid, and so does the signature of your public key. I can now send you sensitive data encrypted using the shared secret we established earlier via Diffie-Hellman key exchange.</td><td></td>
     </tr>
 </table>
 

@@ -121,10 +121,12 @@ button {
     border-bottom: 1px solid #aaa;
 }
 
-.conversation td:first-child, th:first-child {
+.client-says {
     text-align: left;
+    color: #ff0000;
 }
 
-.conversation td:last-child, th:last-child {
+.server-says {
     text-align: right;
+    color: #00bf00;
 }
