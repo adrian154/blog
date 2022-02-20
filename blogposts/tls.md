@@ -273,7 +273,7 @@ This extension indicates that the client supports the [encrypt-then-MAC](https:/
 </div>
 <div class="segment" data-hex="00170000" data-name="Extension: extended_master_secret">
 
-This extension indicates that the client supports [extended master secrets](https://www.rfc-editor.org/rfc/rfc7627.html), which hardens TLS sessions against man-in-the-middle attacks by calculating the master secret using the hash of prior handshake messages.
+This extension indicates that the client supports [extended master secrets](https://www.rfc-editor.org/rfc/rfc7627.html), a TLS 1.2 extension which seeks to harden the session against man-in-the-middle attacks by calculating the master secret using the hash of prior handshake messages. This is not relevant for TLS 1.3, as you will see later.
 
 * `00 17`: extension type (23 for extended_master_secret)
 * `00 00`: data length (none)
