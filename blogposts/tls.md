@@ -473,14 +473,14 @@ handshakeSecret = hkdfExtract(derivedSecret, sharedSecret); // sharedSecret = 4c
 
 For the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to `deriveSecret` in a parameter called the *context*. This is why the Random field is included in the Hello messages: to prevent replay attacks. The Random fields change between handshakes, and thus, so does the context. This prevents an attacker from simply recording and replaying a TLS session in an attempt to repeat a request: the server will send a new Random field, creating a different context with a different secret key.
 
-`context` is created by applying a cryptographic hash function to the raw data of the ClientHello and Server Hello messages, excluding the record header.
+`handshakeContext` is created by applying a cryptographic hash function to the raw data of the ClientHello and Server Hello messages, excluding the record header.
 
 ```
 // client side
-clientHandshakeTrafficSecret = deriveSecret(handshakeSecret, "c hs traffic", context);
+clientHandshakeTrafficSecret = deriveSecret(handshakeSecret, "c hs traffic", handshakeContext);
 
 // server side
-serverHandshakeTrafficSecret = deriveSecret(handshakeSecret, "s hs traffic", context);
+serverHandshakeTrafficSecret = deriveSecret(handshakeSecret, "s hs traffic", handshakeContext);
 ```
 
 
