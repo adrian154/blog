@@ -448,7 +448,7 @@ d8b3916b7e1ed8d6fa07c7810eef53639b77e51e0fd8e044c1c9e1186fd63c49 x
 4c75e186e47a2627bb4501955a051d516653d9570f34c660e623d26e2175b956
 ```
 
-From here, TLS uses a process known as the [key schedule](https://datatracker.ietf.org/doc/html/rfc8446#section-7.1) to derive a set of keys from the shared secret. The code used to explain this section is available [here](static/tls-key-schedule.js).
+From here, TLS uses a process known as the [key schedule](https://datatracker.ietf.org/doc/html/rfc8446#section-7.1) to derive a set of keys from the shared secret. Essentially, it uses a set of cryptographic operations to take several "sources of entropy without context" (as the RFC calls it) and combine them into one state that can be used to generate new keys as needed. The importance of context will be explained in just a moment.
 
 The key schedule begins with the calculation of an "early secret". This is normally used to include the pre-shared key in the key schedule. Since we don't have a PSK, this part is mostly irrelevant. However, we still have to do it, just with dummy values.
 
@@ -484,12 +484,14 @@ clientHandshakeTrafficSecret = deriveSecret(handshakeSecret, "c hs traffic", han
 serverHandshakeTrafficSecret = deriveSecret(handshakeSecret, "s hs traffic", handshakeContext);
 ```
 
-From here, we just need to calculate two additional values that we can feed to our actual cipher, the **key** and the **IV**. This is where AEAD comes in: {TODO}.
+From here, we just need to calculate two additional values that we can feed to our actual cipher. In this case, our client and server settled on AES-256, so we'll need a **key** and an unpredictable **IV**.
 
 ```js
 // client side
 const clientHandshakeKey = deriveSecret(clientHandshakeTrafficSecret, "key", )
 ```
+
+The code used to explain this section is available [here](static/tls-key-schedule.js). 
 
 # S → C: Change Cipher Spec
 

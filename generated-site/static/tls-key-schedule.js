@@ -60,7 +60,15 @@ serverHandshakeTrafficSecret = deriveSecret(handshakeSecret, "s hs traffic", han
 clientHandshakeKey = HDKFExpandLabel(clientHandshakeTrafficSecret, "key", Buffer.alloc(0), 32);
 clientHandshakeIV = HDKFExpandLabel(clientHandshakeTrafficSecret, "iv", Buffer.alloc(0), 16);
 
+serverHandshakeKey = HDKFExpandLabel(serverHandshakeTrafficSecret, "key", Buffer.alloc(0), 32);
+serverHandshakeIV = HDKFExpandLabel(serverHandshakeTrafficSecret, "iv", Buffer.alloc(0), 32);
+
 // --- end illustrative part
 
-console.log(clientHandshakeTrafficSecret, serverHandshakeTrafficSecret);
-console.log(clientHandshakeKey, clientHandshakeIV);
+// TEST: see if we can decipher the Finished message
+const packet = Buffer.from("bf687d10e2f209661418d92aaf3626dfe5670f3127d6ed", "hex");
+const decipher = crypto.createDecipheriv("aes-256-gcm", serverHandshakeKey, serverHandshakeIV);
+decipher.setAAD(Buffer.from("1703030017", "hex")); // RFC8446 5.3 describes aead tag format
+decipher.setAuthTag(packet.slice(0, 12));
+decipher.update(packet.slice(12));
+console.log(decipher.final());
