@@ -110,23 +110,41 @@ button {
 /* "conversation" tables */
 .conversation {
     width: 100%;
-    table-layout: fixed;
+    display: flex;
+    flex-direction: column;
 }
 
-.conversation td, th {
-    border: none;
+/* rows */
+.conversation > div {
+    display: flex;
+    flex-direction: row;
 }
 
-.conversation th {
+/* float text */
+.conversation-header div:last-child {
+    text-align: right;
+}
+
+.conversation-header div {
     border-bottom: 1px solid #aaa;
 }
 
-.client-says {
-    text-align: left;
-    color: #ff0000;
+.conversation div div {
+    flex-grow: 1;
+    padding: 1.0em;
 }
 
-.server-says {
-    text-align: right;
-    color: #00bf00;
+.conversation div div:first-child { text-align: left; }
+.conversation div div:last-child { text-align: right; }
+
+.client-says, .server-says {
+    flex-basis: 60%;
+}
+
+.client-says { color: #00bf00; }
+.server-says { color: #ff0000; }
+
+.conversation-center {
+    flex-basis: 100%;
+    text-align: center !important; /* too lazy to grok the priorities at play  here */
 }
