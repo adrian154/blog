@@ -165,7 +165,7 @@
 </ul>
 </li>
 </ul>
-<p>TLS 1.3 only recommends five cipher suites, of which three are listed: TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256, and TLS_AES_128_GCM_SHA256. However, 56 other cipher suites were sent in this message. They are present for backwards compatibility, but using these ciphers is discouraged.</p>
+<p>TLS 1.3 only recommends five cipher suites, of which three are listed: TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256, and TLS_AES_128_GCM_SHA256. However, 56 other cipher suites were sent in this message. They are present for backwards compatibility (since the client does not know whether the server supports TLS 1.3 yet), but these are not available in TLS 1.3.</p>
 </div>
 <div class="segment" data-hex="0100" data-name="Legacy Compression Methods">
 
@@ -414,9 +414,15 @@ handshakeSecret = <span class="hljs-title function_">hkdfExtract</span>(derivedS
 clientHandshakeTrafficSecret = <span class="hljs-title function_">deriveSecret</span>(handshakeSecret, <span class="hljs-string">&quot;c hs traffic&quot;</span>, handshakeContext);
 
 <span class="hljs-comment">// server side</span>
-serverHandshakeTrafficSecret = <span class="hljs-title function_">deriveSecret</span>(handshakeSecret, <span class="hljs-string">&quot;s hs traffic&quot;</span>, handshakeContext);</code></pre><p>From here, we just need to calculate two additional values that we can feed to our actual cipher. In this case, our client and server settled on AES-256, so we&#39;ll need a <strong>key</strong> and an unpredictable <strong>IV</strong>.</p>
-<pre><code class="hljs"><span class="hljs-comment">// client side</span>
-<span class="hljs-keyword">const</span> clientHandshakeKey = <span class="hljs-title function_">deriveSecret</span>(clientHandshakeTrafficSecret, <span class="hljs-string">&quot;key&quot;</span>, )</code></pre><p>The code used to explain this section is available <a href="static/tls-key-schedule.js">here</a>. </p>
+serverHandshakeTrafficSecret = <span class="hljs-title function_">deriveSecret</span>(handshakeSecret, <span class="hljs-string">&quot;s hs traffic&quot;</span>, handshakeContext);</code></pre><p>From here, we just need to calculate two additional values that we can feed to our actual cipher. In this case, our client and server settled on AES-256, so we&#39;ll need a <strong>key</strong> and an unpredictable <strong>initialization vector</strong>.</p>
+<pre><code class="hljs"><span class="hljs-comment">// client credentials</span>
+clientHandshakeKey = <span class="hljs-title function_">hkdfExpandLabel</span>(clientHandshakeTrafficSecret, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">32</span>);
+clientHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(clientHandshakeTrafficSecret, <span class="hljs-string">&quot;iv&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">12</span>);
+
+<span class="hljs-comment">// server credentials</span>
+serverHandshakeKey = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">32</span>);
+serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;iv&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">12</span>);</code></pre><p>The initialization vector (IV) ensures that even if the same piece of data is encrypted, a different ciphertext will result. We will explore this in a moment when we actually get to decrypting messages.</p>
+<p>The code used to explain this section is available <a href="static/tls-key-schedule.js">here</a>. </p>
 <h1 id="s--c-change-cipher-spec">S → C: Change Cipher Spec <a class="section-link" href="#s--c-change-cipher-spec">&sect;</a></h1><p>Next, the server sends the Change Cipher Spec message. This isn&#39;t used in TLS 1.3, but to avoid confusing intermediate nodes, this message is still sent. From this point on, the rest of the handshake is encrypted.</p>
 <div class="server packet">
 <div class="segment" data-hex="140303000101" data-name="Record Header">
@@ -441,15 +447,37 @@ serverHandshakeTrafficSecret = <span class="hljs-title function_">deriveSecret</
 <li><code>00 17</code>: length of payload (23 bytes)</li>
 </ul>
 </div>
-<div class="segment" data-hex="bf687d10e2f209661418d92aaf3626dfe5670f3127d6ed" data-name="Encrypted Data">
+<div class="segment" data-hex="bf687d10e2f209" data-name="Encrypted Data">
 
+<p>The TLS plaintext, encrypted using the server&#39;s key and the initialization vector derived in the key schedule (XOR&#39;d by the sequence number of the record&mdash;a counter starting from 0 that is increased every time a record is read&mdash;to prevent any information leakage).</p>
+</div>
+<div class="segment" data-hex="661418d92aaf3626dfe5670f3127d6ed" data-name="Authentication Tag">
 
-
+<p>The cipher outputs not only a ciphertext but also an authentication tag, which allows recipients to verify that the ciphertext was not modified while not disclosing any info about the plaintext to attackers.</p>
 </div>
 </div>
+
+<p>Here&#39;s the result that we get after decryption:</p>
+<p>08000002000016</p>
+<div class="server packet">
+<div class="segment" data-hex="080000020000" data-name="Encrypted Extensions">
+
+<p>All extensions not necessary for performing key exchange should only be sent here to avoid divulging information to an attacker.</p>
+<ul>
+<li><code>08</code>: message type (8 for EncryptedExtensions)</li>
+<li><code>00 00 02</code>: message length (2 bytes)</li>
+<li><code>00 00</code>: length of the extensions list (0 bytes)</li>
+</ul>
+</div>
+<div class="segment" data-hex="16" data-name="Data Type">
+
+<p>The last byte denotes the actual record type (22 for handshake).</p>
+</div>
+</div>
+
 
 <h1 id="epilogue">Epilogue <a class="section-link" href="#epilogue">&sect;</a></h1><p>This article only shows part of what makes TLS tick. There&#39;s much more beneath the surface; things like session resumption, 0-RTT messages, client authentication, the list goes on. To learn more, the RFC is your best friend. Skip ahead to the Further Reading section for some good references.</p>
-<h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session turned out to be surprisingly treacherous. In this case, it involved modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
+<h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session turned out to be surprisingly treacherous. I ended up developing a perverse affection towards TLS that left me waking up in the middle of night, sweating profusely, in a delirious state as my sleep-addled brain tried to comprehend AEAD. In this case, it involved modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
 <pre><code class="hljs"><span class="hljs-comment">diff --git a/deps/openssl/openssl/ssl/statem/extensions_clnt.c b/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>
 <span class="hljs-comment">index 7b46074232..bd765f43f0 100644</span>
 <span class="hljs-comment">--- a/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>
@@ -510,6 +538,7 @@ secureSocket.<span class="hljs-title function_">on</span>(<span class="hljs-stri
 <h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><ul>
 <li><a href="https://tls13.ulfheim.net/">TLS 1.3 Illustrated</a></li>
 <li><a href="https://datatracker.ietf.org/doc/html/rfc8446">IETF - RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc8448">IETF - RFC 8448: Example Handshake Traces for TLS 1.3</a></li>
 <li><a href="https://datatracker.ietf.org/doc/html/rfc5869">IETF - RFC 5869: HMAC-based Extract-and-Expand Key Derivation Function (HKDF)</a></li>
 <li><a href="https://developers.cloudflare.com/fundamentals/internet/protocols/tls">Cloudflare Fundamentals - TLS</a></li>
 </ul>

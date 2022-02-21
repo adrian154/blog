@@ -494,12 +494,19 @@ clientHandshakeTrafficSecret = deriveSecret(handshakeSecret, "c hs traffic", han
 serverHandshakeTrafficSecret = deriveSecret(handshakeSecret, "s hs traffic", handshakeContext);
 ```
 
-From here, we just need to calculate two additional values that we can feed to our actual cipher. In this case, our client and server settled on AES-256, so we'll need a **key** and an unpredictable **IV**.
+From here, we just need to calculate two additional values that we can feed to our actual cipher. In this case, our client and server settled on AES-256, so we'll need a **key** and an unpredictable **initialization vector**.
 
 ```js
-// client side
-const clientHandshakeKey = deriveSecret(clientHandshakeTrafficSecret, "key", )
+// client credentials
+clientHandshakeKey = hkdfExpandLabel(clientHandshakeTrafficSecret, "key", Buffer.alloc(0), 32);
+clientHandshakeIV = hkdfExpandLabel(clientHandshakeTrafficSecret, "iv", Buffer.alloc(0), 12);
+
+// server credentials
+serverHandshakeKey = hkdfExpandLabel(serverHandshakeTrafficSecret, "key", Buffer.alloc(0), 32);
+serverHandshakeIV = hkdfExpandLabel(serverHandshakeTrafficSecret, "iv", Buffer.alloc(0), 12);
 ```
+
+The initialization vector (IV) ensures that even if the same piece of data is encrypted, a different ciphertext will result. We will explore this in a moment when we actually get to decrypting messages.
 
 The code used to explain this section is available [here](static/tls-key-schedule.js). 
 
@@ -532,12 +539,39 @@ All encrypted messages are contained within application data records, which prov
 * `00 17`: length of payload (23 bytes)
 
 </div>
-<div class="segment" data-hex="bf687d10e2f209661418d92aaf3626dfe5670f3127d6ed" data-name="Encrypted Data">
+<div class="segment" data-hex="bf687d10e2f209" data-name="Encrypted Data">
 
+The TLS plaintext, encrypted using the server's key and the initialization vector derived in the key schedule (XOR'd by the sequence number of the record&mdash;a counter starting from 0 that is increased every time a record is read&mdash;to prevent any information leakage).
 
+</div>
+<div class="segment" data-hex="661418d92aaf3626dfe5670f3127d6ed" data-name="Authentication Tag">
+
+The cipher outputs not only a ciphertext but also an authentication tag, which allows recipients to verify that the ciphertext was not modified while not disclosing any info about the plaintext to attackers.
 
 </div>
 </div>
+
+Here's the result that we get after decryption:
+
+08000002000016
+
+<div class="server packet">
+<div class="segment" data-hex="080000020000" data-name="Encrypted Extensions">
+
+All extensions not necessary for performing key exchange should only be sent here to avoid divulging information to an attacker.
+
+* `08`: message type (8 for EncryptedExtensions)
+* `00 00 02`: message length (2 bytes)
+* `00 00`: length of the extensions list (0 bytes)
+
+</div>
+<div class="segment" data-hex="16" data-name="Data Type">
+
+The last byte denotes the actual record type (22 for handshake).
+
+</div>
+</div>
+
 
 # Epilogue
 
