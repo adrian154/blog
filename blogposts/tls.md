@@ -575,7 +575,7 @@ The last byte denotes the actual record type (22 for handshake).
 
 # Epilogue
 
-This article only shows part of what makes TLS tick. There's much more beneath the surface; things like session resumption, 0-RTT messages, client authentication, the list goes on. To learn more, the RFC is your best friend. Skip ahead to the Further Reading section for some good references.
+This article only shows part of what makes TLS tick. There's much more beneath the surface; things like session resumption, 0-RTT messages, client authentication, SNI, ALPN, the list goes on. To learn more, the RFC is your best friend. Skip ahead to the Further Reading section for some good references.
 
 # Behind the Scenes 
 
@@ -645,6 +645,8 @@ secureSocket.on("secureConnect", () => {
     setTimeout(() => secureSocket.write(Buffer.from([0xde,0xad,0xbe,0xef])), 1000);
 });
 ```
+
+I created a subdomain `test.bithole.dev` resolving to `127.0.0.1` and grabbed a certificate through Let's Encrypt to make this example a little more realistic.
 
 You can download the full packet capture of the exchange which this page is based on [here](static/tls-capture.pcap). You'll also need the [keylog](static/tls-keylog.txt) to decrypt the capture.
 
