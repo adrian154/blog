@@ -131,7 +131,7 @@ button {
 
 .conversation div div {
     flex-grow: 1;
-    padding: 1.0em;
+    padding: 1.0em 0;
 }
 
 .conversation div div:first-child { text-align: left; }
