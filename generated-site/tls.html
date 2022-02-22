@@ -44,7 +44,7 @@
 <p><a href="static/images/windows-cert-view.png" target="_blank"><img src="static/images/windows-cert-view.png" alt="picture of the ssl cert for this site"></a></p>
 <p>During the TLS handshake process, all three of these certificates were sent from my server to your browser. The first certificate named <code>bithole.dev</code> contains my server&#39;s public key, as well as a reference to <code>R3</code>&#39;s public key and a signature made with that public key. In turn, <code>R3</code> is signed by <code>ISRG Root X1</code>, whose fingerprint is hardcoded into your browser as one of several trusted <strong>root certificates</strong>. Your browser can follow this chain of signatures and verify that each certificate is valid.</p>
 <p>Simply receiving a valid certificate doesn&#39;t prevent man-in-the-middle attacks, though. Certificates are public knowledge; my webserver has to actually prove ownership of the corresponding private key somehow. TLS makes the server sign the hash of all the messages sent before certificate verification. This assures the client that at no point during the handshake did an attacker mingle in their communications.</p>
-<p><em>Couldn&#39;t the root CA issue a certificate to anyone for a website, and my computer would blindly trust it?</em> you might ask. The answer is, unfortunately, yes. That&#39;s why there are so few root CAs, which are audited frequently. This is also why most sites&#39; certificates aren&#39;t directly signed by the root certificate. The root certificate is kept offline for maximum security, and all signing is done with an intermediate signed by the root instead. In the event that the intermediate certificate is compromised, things are <em>bad</em> but not <em>really bad</em>; the CA can simply issue a new intermediate instead of trying to get every user to adopt a new root certificate.</p>
+<p><em>If a CA issued a certificate to a hacker, wouldn&#39;t my computer blindly trust it?</em> you might ask. The answer is yes, unfortunately. That&#39;s why there are so few root CAs, which are audited frequently. This is also why most sites&#39; certificates aren&#39;t directly signed by the root certificate. The root certificate is kept offline for maximum security, and all signing is done with an intermediate signed by the root instead. In the event that the intermediate certificate is compromised, things are <em>bad</em> but not <em>really bad</em>; the CA can simply issue a new intermediate instead of trying to get every user to adopt a new root certificate.</p>
 <p>In theory, a trusted CA should ony issue certificates to people who can actually prove ownership of a domain&mdash;for example, Let&#39;s Encrypt checks if a specific DNS record has been deployed for verification&mdash;but ultimately you cannot be 100% sure that these entities will not try to attack your TLS connections. In response, some organizations choose to run their own internal CA and issue their own certificates. This removes the dependence on an external entity, but requires that all users manually add the CA&#39;s root certificate to their computer&#39;s list of trusted certificates. As a result, it&#39;s only really feasible to secure closed systems like enterprise environments this way.</p>
 <p>Here&#39;s a conversational illustration of all these concepts at play in a TLS handshake.</p>
 <div class="conversation">
@@ -62,15 +62,16 @@
         <div class="conversation-center"><i>Both sides calculate the shared secret.</i></div>
     </div>
     <div>
-        <div></div><div class="server-says">Here is my certificate. It is signed by R3, which is signed by ISRG Root X1 (which is hopefully in your trusted certificates list). In addition, here is a digital signature of the public key I sent earlier for key exchange, which you can verify using the public key contained within my certificate.</div>
+        <div></div><div class="server-says">Here is my certificate. It is signed by R3, which is signed by ISRG Root X1 (which is hopefully in your trusted certificates list). In addition, here is a digital signature of all the messages I've sent so far, which you can verify using the public key contained within my certificate.</div>
     </div>
     <div>
-        <div class="client-says">Your certificate appears valid, and so does the signature of the DH public key. I am now convinced of your identity and will start sending encrypted data.</div><div></div>
+        <div class="client-says">Your certificate appears valid, and so does the signature. I am now convinced of your identity and will start sending encrypted data.</div><div></div>
     </div>
 </div>
 
-<h2 id="integrity">Integrity <a class="section-link" href="#integrity">&sect;</a></h2><p>Even if you have authenticated with a server and established a secure channel, there still remains a problem: an attacker who controls the network between you and your destination can still modify the ciphertext messages being exchanged. Even if they are doing so blindly, it still presents a vulnerability. Ideally, we would also want some strong cryptographic guarantee that the message wasn&#39;t tampered with in transit. TLS accomplishes this using <a href="https://en.wikipedia.org/wiki/Authenticated_encryption">authenticated encryption</a>.</p>
-<p>In TLS 1.3, integrity is handled by only using ciphers which include <strong>authenticated encryption with associated data (AEAD)</strong>. AEAD ensures that no one can read the plaintext without the key, of course, but it also allows recipients to reject messages which have been modified <em>without</em> leaking any information about the plaintext (which was the source of several vulnerabilities in TLS 1.2). The &quot;associated data&quot; part means that the integrity of unencrypted data (such as the record header fields) can be ensured as well. This is accomplished with the help of <a href="https://en.wikipedia.org/wiki/Message_authentication_code">message authentication codes</a>. We will explore AEAD in depth later when we actually observe how messages are decrypted.</p>
+<h2 id="integrity">Integrity <a class="section-link" href="#integrity">&sect;</a></h2><p>Even if you have authenticated with a server and established a secure channel, there still remains a problem: an attacker who controls the network between you and your destination can still modify the ciphertext messages being exchanged. The attacker doesn&#39;t need to be able to decipher the messages; for example, simply resending the same ciphertext could result in a request being repeated if the proper protections aren&#39;t in place. This is known as a <a href="https://en.wikipedia.org/wiki/Replay_attack">replay attack</a>.</p>
+<p>A system vulnerable to such an attack would be unacceptable for many applications. Ideally, we also want some strong cryptographic guarantee that the message wasn&#39;t tampered with in transit. TLS accomplishes this using <a href="https://en.wikipedia.org/wiki/Authenticated_encryption">authenticated encryption</a>.</p>
+<p>In TLS 1.3, integrity is handled by only using ciphers which include <strong>authenticated encryption with associated data (AEAD)</strong>. When encrypting data using an AEAD cipher, an authentication tag is produced in addition to the ciphertext. The auth tag allows clients to verify that the plaintext matches what was originally encrypted. In addition, the auth tag can also guarantee the validity of some associated data not included within the ciphertext. All of this is done without leaking any information about the encrypted data itself.</p>
 <p>With all of that being said, let&#39;s actually examine a recorded TLS session and see how all of these cryptographic concepts are implemented.</p>
 <h1 id="client-handshake-key-generation">Client Handshake Key Generation <a class="section-link" href="#client-handshake-key-generation">&sect;</a></h1><p>Before the client even begins the handshake, it first generates an <a href="https://cr.yp.to/ecdh.html">x25519</a> keypair for use in key exchange later down the road. The private key is simply generated by generating 32 bytes of random data. Here is the client&#39;s private key, which is never sent over the network:</p>
 <pre><code class="hljs">186b7a9daf3855fa090bf29a69391dc1ee788393f2dba58a23cab0f6b96d6355</code></pre><p>The public key is generated by multiplying the fixed starting point (x = 9) by the private key. The elliptic-curve discrete logarithm problem prevents attackers from calculating the private key from the starting point and the public key. This is the public key, which you will see later in the exchange:</p>
@@ -600,7 +601,7 @@ serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(se
 <li><code>13 02 55 53</code>: string (&quot;US&quot;)</li>
 </ul>
 </div>
-<div class="segment" data-hex="3116301413025553130d4c6574277320456e6372797074" data-name="Issuer Organization Name">
+<div class="segment" data-hex="31163014060355040a130d4c6574277320456e6372797074" data-name="Issuer Organization Name">
 
 <p>This field identifies the name of the issuer&#39;s organization</p>
 <ul>
@@ -776,11 +777,76 @@ serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(se
 </li>
 </ul>
 </div>
+<div class="segment" data-hex="301b0603551d11041430128210746573742e626974686f6c652e646576" data-name="Extension: Subject Alternative Names">
 
+<p>This extension allows the certificate to identify other hostnames in addition to the subject name field which the subject may authenticate as. This certificate just serves one domain, <code>test.bithole.dev</code>, so this extension isn&#39;t very interesting.</p>
+<ul>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>1b</code>: data length (27 bytes)</li>
+<li><code>06 03 55 1d 11</code>: 2.5.29.17, the object identifier for <code>id-ce-subjectAltName</code></li>
+<li><code>04</code>: datatype (octet string)</li>
+<li><code>14</code>: data length (20 bytes)</li>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>12</code>: data length (18 bytes)</li>
+<li><code>82 10 74 ... 64 65 76</code>: string (&quot;test.bithole.dev&quot;)</li>
+</ul>
+</div>
+<div class="segment" data-hex="304c0603551d20044530433008060667810c0102013037060b2b0601040182df130101013028302606082b06010505070201161a687474703a2f2f6370732e6c657473656e63727970742e6f7267" data-name="Extension: Policy Information">
+
+<p>This extension describes where to access the issuer&#39;s Certificate Practice Statement, which describes the CA&#39;s policy for issuing certificates.</p>
+<ul>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>4c</code>: data length (76 bytes)</li>
+<li><code>06 03 55 1d 20</code>: 2.5.29.32, the object identifier for <code>id-ce-certificatePolicies</code></li>
+<li><code>04</code>: datatype (octet string)</li>
+<li><code>45</code>: data length (69 bytes)</li>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>43</code>: data length (67 bytes)</li>
+<li><strong>Policy 1</strong><ul>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>08</code>: data length (8 bytes)</li>
+<li><code>06 06 67 81 0c 01 02 01</code>: 2.23.140.1.2.1, the object identifier for <a href="https://cabforum.org/object-registry/">baseline requirements</a></li>
+</ul>
+</li>
+<li><strong>Policy 2</strong><ul>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>37</code>: data length (55 bytes)</li>
+<li><code>06 0b 2b ... 01 01 01</code>: 1.3.6.1.4.1.44947.1.1.1, the object identifier for Let&#39;s Encrypt&#39;s CPS</li>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>28</code>: data length (40 bytes)</li>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>26</code>: data length (38 bytes)</li>
+<li><code>06 08 2b ... 07 02 01</code>: 1.3.6.1.5.5.7.2.1, the object identifier for <code>id-qt-cps</code></li>
+<li><code>16 1a 68 ... 6f 72 67</code>: URL (<a href="https://cps.letsencrypt.org">https://cps.letsencrypt.org</a>)</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="segment" data-hex="30" data-name="Extension: Certificate Transparency">
+
+<p><a href="https://certificate.transparency.dev/">Certificate Transparency</a> is a standard for... well... certificate transparency! The idea is for CAs to permanently log every certificate they issue, making it easier to track down malicious or mistakenly issued certificates. There are three types of groups involved in CT:</p>
+<ul>
+<li>CAs, who submit certificates to logs</li>
+<li>Logs, which validate certificates and log them, returning a Signed Certificate Timestamp (a promise that the certificate will be added to the log). The data structure which logs store issuances in (a <a href="https://en.wikipedia.org/wiki/Merkle_tree">Merkle Tree</a>) is constructed using cryptographic primitives such that it is impossible to remove an entry without consumers of the log noticing.</li>
+<li>Monitors, which receive updates from logs and ensure that the logs are not misbehaving. Monitors may also offer services that contact you when a new certificate is issued for one of your domains.</li>
+</ul>
+<p>Certificate Transparency is further strengthened by the fact that some browsers (such as <a href="https://chromium.googlesource.com/chromium/src/+/master/net/docs/certificate-transparency.md">Chrome</a>) now display an SSL error if a certificate lacks Certificate Transparency information, preventing CAs from issuing certificates off the record.</p>
+<p>This is all a very surface-level description of the Certificate Transparency ecosystem; for more information, you should check out the <a href="https://certificate.transparency.dev/howctworks/">official website</a>.</p>
+</div>
+<div class="segment" data-hex="" data-name="">
+</div>
+<div class="segment" data-hex="" data-name="">
+</div>
+<div class="segment" data-hex="" data-name="">
+</div>
+<div class="segment" data-hex="" data-name="">
+</div>
+<div class="segment" data-hex="" data-name="">
+</div>
 </div>
 
 <h1 id="epilogue">Epilogue <a class="section-link" href="#epilogue">&sect;</a></h1><p>This article only shows part of what makes TLS tick. There&#39;s much more beneath the surface; things like session resumption, 0-RTT messages, client authentication, SNI, ALPN, the list goes on. To learn more, the RFC is your best friend. Skip ahead to the Further Reading section for some good references.</p>
-<h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session turned out to be surprisingly treacherous. I ended up developing a perverse affection towards TLS that left me waking up in the middle of night, sweating profusely, in a delirious state as my sleep-addled brain tried to comprehend AEAD. In this case, it involved modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
+<h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session turned out to be surprisingly treacherous. I approached this blogpost with such fervor that I ended up developing a perverse affection towards TLS, one that left me waking up in the middle of night, sweating profusely, drifting in and out of consciousness as my sleep-addled brain tried in vain to comprehend X.509. In this case, it involved modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
 <pre><code class="hljs"><span class="hljs-comment">diff --git a/deps/openssl/openssl/ssl/statem/extensions_clnt.c b/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>
 <span class="hljs-comment">index 7b46074232..bd765f43f0 100644</span>
 <span class="hljs-comment">--- a/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>
@@ -844,7 +910,9 @@ secureSocket.<span class="hljs-title function_">on</span>(<span class="hljs-stri
 <li><a href="https://datatracker.ietf.org/doc/html/rfc8446">IETF - RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3</a></li>
 <li><a href="https://datatracker.ietf.org/doc/html/rfc8448">IETF - RFC 8448: Example Handshake Traces for TLS 1.3</a></li>
 <li><a href="https://datatracker.ietf.org/doc/html/rfc5869">IETF - RFC 5869: HMAC-based Extract-and-Expand Key Derivation Function (HKDF)</a></li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc5280">IETF - RFC 5280: Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile</a></li>
 <li><a href="https://developers.cloudflare.com/fundamentals/internet/protocols/tls">Cloudflare Fundamentals - TLS</a></li>
+<li><a href="https://certificate.transparency.dev/howctworks/">Certificate Transparency - How CT Works</a></li>
 <li><a href="https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/">Let&#39;s Encrypt - A Warm Welcome to ASN.1 and DER</a></li>
 </ul>
 <noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script><p class="footnote">&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">contribute</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></body></html>

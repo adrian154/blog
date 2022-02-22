@@ -2,6 +2,7 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -9,7 +10,6 @@ body {
     padding: 1.0em;
     margin: 1.0em auto;
     font-family: IBM Plex Sans, 'sans serif';
-    overflow-x: hidden;
     hyphens: auto;
     text-justify: inter-word;
     font-size: 12.5pt;
