@@ -1,6 +1,6 @@
-<noscript><b>If you are reading this message, JavaScript is not enabled. Unfortunately, this page relies on JS to dynamically generate content which you may not be able to view.</b></noscript>
+<noscript><b>If you are reading this message, JavaScript is not enabled. Unfortunately, this page relies on JS to dynamically generate content which you may not be able to view. Some parts of this article may be inaccessible.</b></noscript>
 
-The Internet is, by default, not secure. In TCP and below, everything is transferred in plaintext; an attacker could snoop on your communications or, worse, masquerade as the person you think you're talking to. Yet today, most Internet users will never fall prey to such a man-in-the-middle attack. What changed? The answer is the **Transport Layer Security (TLS)** protocol, which transparently secures much of the modern-day web. Let's figure out how it accomplishes this feat.
+The Internet is, by default, not secure. In TCP and below, everything is transferred in plaintext; an attacker could snoop on your communications or, worse, masquerade as the person you think you're talking to. Yet today, most users don't have to worry about those kinds of attacks. Why not? The answer is **Transport Layer Security**, which transparently secures much of the modern Web. Strap in, because we're about to learn some cryptography.
 
 # Conceptual Overview
 
@@ -10,7 +10,7 @@ TLS aims to create a secure channel with these three properties: **confidentiali
 
 It's pretty easy to see why confidentiality is important. Nobody wants a third party to be able to read your communications, because that would obviously compromise your security. The solution is to encrypt your data with a cipher, an algorithm which accepts a plaintext and a key and produces a ciphertext, such that it is easy to retrieve the plaintext if you have the key, but virtually impossible without it. When a cipher uses the same key to encrypt and decrypt data, it is called a [symmetric cipher](https://en.wikipedia.org/wiki/Symmetric-key_algorithm).
 
-Symmetric ciphers are preferred for the bulk encryption of data because they are much faster than their asymmetric counterparts, but there's one major obstacle: key exchange. The two communicating parties need to figure out a way to share a single key in order to read each other's messages, but this creates a bit of a chicken-and-egg situation: how do you transmit the key if the channel isn't secure? To solve this problem, we need to get a little more clever.
+Symmetric ciphers are great because they're usually very fast and very secure, but they do have one weakness: key exchange. The two communicating parties need to figure out a way to share a secret key without the possibility of anyone else obtaining it. This creates a bit of a chicken-and-egg problem; after all, they can't establish a private means of communication without negotiating a key first, which just brings us back to square one. To solve this problem, we need to get a little more clever.
 
 Enter the [Diffie-Hellman Key Exchange](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange). It enables a client and a server to generate the same secret value while only exchanging publicly knowable data, which sounds impossible until you take a look at how it works. Here's a diagram that explains the steps of Diffie-Hellman key exchange using colors of paint as a stand-in for cryptographic keys.
 
@@ -23,7 +23,7 @@ We can make this model a little more rigorous by replacing the paints with varia
 * It is easy to compute `x * y`, but even if the value of `x` or `y` is known, it should be very difficult to retrieve the other operand from the result of the operation. Examples of such operations will be discussed later.
 * The operation must be associative, i.e. `(x * y) * z` = `(x * z) * y`.
 
-(Don't let the notation confuse you. `*` does *not* represent regular multiplication, which wouldn't work for this process since it does not fulfill our first requirement.)
+(Don't let the notation confuse you. `*` does *not* represent regular multiplication, which wouldn't work for this process since it doesn't fulfill our first requirement.)
 
 Now, we're ready to do the key exchange. Alice generates a random secret `A`, and Bob generates a random secret `B`. Alice sends Bob `A * C` and Bob sends Alice `B * C`. Now, Alice can compute `A * (B * C)` and Bob can compute `B * (A * C)`. Because the operation is associative, Alice and Bob arrive at the same value, which they can now use as the key to a symmetric cipher.
 
@@ -31,9 +31,11 @@ However, if an attacker could observe the key exchange between Alice and Bob, th
 
 <div class="info-box">
 
-This was really a simplified way of explaining operations over elements of a finite cyclic group. Groups are a very useful mathematical construct when it comes to cryptography since certain groups have properties that make them well-suited for use in processes such as key exchange. For example, [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) uses a [multiplicative group of integers modulo *n*](https://en.wikipedia.org/wiki/Multiplicative_group_of_integers_modulo_n) where the modulus is a large semiprime; its security relies on the difficulty of [integer factorization](https://en.wikipedia.org/wiki/Integer_factorization).
+Diffie-Hellman key exchange is where mathematical concepts such as [groups](https://en.wikipedia.org/wiki/Group_(mathematics)) become very useful. A group is a structure consisting of a set of elements and an operation which accepts two elements and produces one element. This operation must be associative (among other requirements).
 
-Today, cryptosystems based on [elliptic curve groups](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) have become popular since they offer similar security to RSA with much smaller and thus more convenient keys. Elliptic curve cryptograph is secured by the elliptic curve discrete logarithm problem. Essentially, given a point *P* and integer *n*, it is very difficult to retrieve *n* (the discrete logarithm) knowing *n* &times; *P* and *P*.
+The characteristics of certain groups make them useful for key exchange, and cryptography in general. For example, [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) uses a [multiplicative group of integers modulo *n*](https://en.wikipedia.org/wiki/Multiplicative_group_of_integers_modulo_n) where the modulus is a large semiprime. RSA's security relies on the fact that [factoring large integers](https://en.wikipedia.org/wiki/Integer_factorization) is very difficult, and there are no methods fast enough to factor the extremely large semiprimes used in RSA.
+
+Today, cryptosystems based on [elliptic curve groups](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) have become popular since they offer similar security to RSA, but with much smaller and thus more convenient keys. These constructions make use of a property which certain elliptic curve groups possess: if a starting point *P* is added to itself *n* times, it is very difficult to determine *n* even if both the starting point and the ending point are known. This is known as the elliptic curve discrete logarithm problem, and so far very little progress has been made in the way of attacking it.
 
 I'm really terrible at explaining group theory, so if you want to learn more check out this [short introduction](https://math.mit.edu/~jwellens/Group%20Theory%20Forum.pdf).
 
@@ -41,23 +43,36 @@ I'm really terrible at explaining group theory, so if you want to learn more che
 
 ## Authenticity
 
-Confidentiality is worthless if you can't ensure that the person on the other end of the line is who you actually *intend* to talk to. One of TLS's central goals is to prevent impersonation by enabling clients to securely verify the identity of the remote server, a process known as **authentication**. It accomplishes this with the help of digital signatures.
+Confidentiality is worthless if you can't ensure that the person on the other end of the line is who you actually *intend* to talk to. One of TLS's jobs is to help the server prove that it is who it claims to be. This is accomplished with the help of digital signatures.
 
-To create a digital signature, the client first generates a random private key, and derives a public key from the private key using a process specific to the signature scheme. They then feed a piece of data to be signed and their private key into the signing algorithm, which produces a short digital signature. Now, *anyone* can pass the signature and the public key to a verification algorithm to check that the signature is genuine. The cryptosystem is constructed such that only someone who has the private key can produce valid signatures for that public key (which identifies the signer), and there is no way to extract the private key from a signature and public key. Essentially, the public key identifies the signer, and the private key allows them to prove their ownership of the public key. 
+Digital signatures are a form of [public key cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography), so the client first has to generate a keypair. This is usually done by creating a private key from random data, and then deriving a public key using a process specific to the signature scheme. The public key serves as the cryptographic identity of the client, and it can be distributed safely without compromising the private key.
 
-One can imagine a scheme involving a trusted third party that leverages the power of digital signatures to associate a public key with a real-world identity. If Bob wanted to prove his identity to Alice, he could combine his public key and name into a *certificate*, and then get Carol to sign it. Carol is a very well-trusted member of society, so everyone already knows her public key. Now, to prove his identity to anyone, Bob can simply present his certificate signed by Carol, and prove that he controls the private key corresponding to the public key in the certificate by creating a valid signature with it. Essentially, this method establishes a chain of trust back to Carol.
+To create a digital signature, the client uses the signing algorithm to convert their private key and a piece of data into a short piece of data known as a signature. Signatures are useful since they have the following properties:
+* Anyone can prove that a signature is valid using just the public key and the signed data.
+* The signature won't validate if the data doesn't match what was originally signed.
+* No one can create a signature without possessing the private key.
+
+One can imagine a scheme involving a trusted third party that leverages the power of digital signatures to associate a public key with a real-world identity. Suppose Bob wants to send a message to Alice, but he wants to assure Alice that the message was actually sent by him and not an impostor. Sure, he could sign the message, but what good is that if Alice doesn't know his public key? This is one of the fundamental problems in public key cryptography: establishing a relationship between a useful identity and a public key.
+
+Here's how TLS approaches this problem. Bob is friends with Carol, who's so famous that everybody knows her public key. Bob asks Carol to sign the following statement:
+
+> Bob's public key is 123456789.
+
+Carol makes sure that the person she's talking to is actually Bob, and signs Bob's statement (which is known as a *certificate* in cryptography). Now, Bob can send Alice his certificate, allowing Alice to be sure of Bob's public key. This allows him to use digital signatures to prove the authenticity of his communications from after that point.
+
+This, in essence, is how TLS performs authentication. Carol represents a group of organizations known as [certificate authorities](https://en.wikipedia.org/wiki/Certificate_authority), whose public keys are hardcoded into most browsers. Certificates on the web don't usually link a human name to a public key; instead, the "useful identity" they try to prove is usually a domain name. Furthermore, the CA may not directly sign a website's certificate. Instead, they may sign the certificate for an *intermediate* keypair, which does the task of actually signing end user certificates. This sequence can extend for as many signers as necessary, creating a **chain of trust**.
 
 ![chain of trust diagram](static/images/certificate-chain-of-trust.png)
 
 *A rough diagram showing how a verifiable chain of trust is created using digital signatures. [Image](https://en.wikipedia.org/wiki/File:Chain_Of_Trust.svg) by Yukhih / [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/deed.en)*
 
-This is basically how TLS performs authentication. The trusted organization which signs certificates is known as a [certificate authority](https://en.wikipedia.org/wiki/Certificate_authority), and instead of including human names, most certificates contain the bearer's domain name. If you're on Chrome, you can click the padlock icon next to the URL of this page to view the SSL certificate of the webserver running this blog. Here's what you might expect to see:
+You can see this at play for pretty much any website you visit. If you're on Chrome, simply click the padlock button next to the address bar in your browser, and you'll see the option to view the website's certification path. Here's what you would probably see for this page:
 
 ![picture of the ssl cert for this site](static/images/windows-cert-view.png)
 
-During the TLS handshake process, all three of these certificates were sent from my server to your browser. The first certificate named `bithole.dev` contains my server's public key, as well as a signature that your browser can use to validate my certificate by looking at `R3`'s public key. In turn, `R3` is signed by `ISRG Root X1`, whose fingerprint is hardcoded into your browser as one of several trusted **root certificates**, issued by a root certificate authority. Your browser can follow this chain of signatures and verify that each certificate is valid.
+During the TLS handshake process, all three of these certificates were sent from my server to your browser. The first certificate named `bithole.dev` contains my server's public key, as well as a reference to `R3`'s public key and a signature made with that public key. In turn, `R3` is signed by `ISRG Root X1`, whose fingerprint is hardcoded into your browser as one of several trusted **root certificates**. Your browser can follow this chain of signatures and verify that each certificate is valid.
 
-Simply receiving a valid certificate doesn't prevent man-in-the-middle attacks, though. My website's certificate is public knowledge; my webserver has to actually prove ownership of the corresponding private key somehow. TLS kills two birds with one stone by making the server sign the value it sent to the client during Diffie-Hellman key exchange earlier in the handshake. Not only does it prove the server's identity, it also ensures your client that the key it established using DH was with the server and not an intermediate attacker.
+Simply receiving a valid certificate doesn't prevent man-in-the-middle attacks, though. Certificates are public knowledge; my webserver has to actually prove ownership of the corresponding private key somehow. TLS makes the server sign the hash of all the messages sent before certificate verification. This assures the client that at no point during the handshake did an attacker mingle in their communications.
 
 *Couldn't the root CA issue a certificate to anyone for a website, and my computer would blindly trust it?* you might ask. The answer is, unfortunately, yes. That's why there are so few root CAs, which are audited frequently. This is also why most sites' certificates aren't directly signed by the root certificate. The root certificate is kept offline for maximum security, and all signing is done with an intermediate signed by the root instead. In the event that the intermediate certificate is compromised, things are *bad* but not *really bad*; the CA can simply issue a new intermediate instead of trying to get every user to adopt a new root certificate.
 
