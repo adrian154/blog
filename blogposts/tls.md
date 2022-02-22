@@ -971,6 +971,8 @@ The actual signature of the certificate.
 
 We can actually verify the signature of the certificate using OpenSSL. {TODO}
 
+The three certificates are available for download: [test.bithole.dev](resources/tls/cert1.crt), [R3](resources/tls/cert2.crt), [ISRG Root X1](resources/tls/cert3.crt).
+
 # Epilogue
 
 This article only shows part of what makes TLS tick. There's much more beneath the surface; things like session resumption, 0-RTT messages, client authentication, SNI, ALPN, the list goes on. To learn more, the RFC is your best friend. Skip ahead to the Further Reading section for some good references.
