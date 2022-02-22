@@ -842,8 +842,15 @@ This extension provides information about where to access various services offer
     * `30`: datatype (sequence)
     * `21`: data length (33 bytes)
     * `06 08 2b 06 01 05 05 07 30 01`: 1.3.6.1.5.5.7.48.1, the object identifier for `id-ad-ocsp`
+    * `86 15 68 ... 6f 72 67`: URL (http://r3.o.lencr.org)
+* **CA Issuer**
+    * `30`: datatype (sequence)
+    * `22`: data length (34 bytes)
+    * `06 08 2b 06 01 05 05 07 30 02`: 1.3.6.1.5.5.7.48.2, the object identifier for `id-ad-caIssuers`
+    * `86 16 68 ... 72 67 2f`: URL (http://r3.i.lencr.org/)
 
 </div>
+
 </div>
 
 # Epilogue
