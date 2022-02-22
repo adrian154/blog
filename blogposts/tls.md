@@ -908,7 +908,7 @@ This extension describes where to access the issuer's Certificate Practice State
     * `16 1a 68 ... 6f 72 67`: URL (https://cps.letsencrypt.org)
 
 </div>
-<div class="segment" data-hex="30" data-name="Extension: Certificate Transparency">
+<div class="segment" data-hex="30820104060a2b06010401d6790204020481f50481f200f00076006f5376ac31f03119d89900a45115ff77151c11d902c10029068db2089a37d9130000017f0bd084e50000040300473045022100eee2822add6ff5c9cc507f0a8a5f174551205becfbf0031e962d8f4ce916090b022049cf3e53e653385c0745902e8c7901e4971b25b436eafb22f2b83c222747b3c500760046a555eb75fa912030b5a28969f4f37d112c4174befd49b885abf2fc70fe6d470000017f0bd084e10000040300473045022018c8aee5cff4fdc7b19232bc8533de5890f75820f85ac40d11c5696e9ab9912e022100a1dddb603ec9b815f067ac0ac6a5229146fdcf932b5ad4ff28ae892aee813caa" data-name="Extension: Certificate Transparency" data-x="1">
 
 [Certificate Transparency](https://certificate.transparency.dev/) is a standard for... well... certificate transparency! The idea is for CAs to permanently log every certificate they issue, making it easier to track down malicious or mistakenly issued certificates. There are three types of groups involved in CT:
 
@@ -920,20 +920,56 @@ Certificate Transparency is further strengthened by the fact that some browsers 
 
 This is all a very surface-level description of the Certificate Transparency ecosystem. For more information, you should check out the [official website](https://certificate.transparency.dev/howctworks/).
 
+* `30`: datatype (sequence)
+* `820104`: data length (260 bytes)
+* `06 0a 2b ... 02 04 02`: 1.3.6.1.4.1.11129.2.4.2, the object identifier for `SignedCertificateTimestampList`
+* `04`: datatype (octet string)
+* `81 f5`: data length (245 bytes)
+* `04`: datatype (octet string)
+* `81 f2`: data length (242 bytes)
+* `00 f0`: list length (240 bytes)
+* **SCT #1 (Sectigo)** 
+    * `00 76`: length
+    * `00`: version 
+    * `6f 53 76 ... 37 d9 13`: log ID (Sectigo "Mammoth")
+    * `00 00 01 7f 0b d0 84 e5`: timestamp (Feb 17, 2022)
+    * `00 00`: extensions length (0 bytes)
+    * `04 03`: signature algorithm (0x0403 for ecdsa_secp256r1_sha256)
+    * `00 47`: signature length (71 bytes)
+    * `30 45 02 ... 47 b3 c5`: signature
+* **SCT #2 (Google)**
+    * `00 76`: length
+    * `00`: version 
+    * `46 a5 55 ... fe 6d 47`: log ID (Google "Xenon2022")
+    * `00 00 01 7f 0b d0 84 e1`: timestamp (Feb 17, 2022)
+    * `00 00`: extensions length (0 bytes)
+    * `04 03`: signature algorithm (0x0403 for ecdsa_secp256r1_sha256)
+    * `00 47`: signature length (71 bytes)
+    * `30 45 02 ... 81 3c aa`: signature
 
+</div>
+<div class="segment" data-hex="300d06092a864886f70d01010b0500" data-name="Signature Algorithm Identifier">
+
+This field identifies the signature algorithm the issuer used to sign the certificate.
+
+* `30`: datatype (sequence)
+* `0d`: data length (13 bytes)
+* `06 09 2a ... 01 01 0b`: 1.2.840.113549.1.1.11, the object identifier for sha256WithRSAEncryption
+* `05 00`: parameters (NULL)
 
 </div>
-<div class="segment" data-hex="" data-name="">
+<div class="segment" data-hex="03820101007c8acf6d06a816072795343919d9bb769fca5fe24838129408127831eec82333ed91463dbb46fcbdb4640a156969f87dd65a724f10b36628dc109ac26f763e04210d9a44296c6a7952ff4cb3a5d885e9069feea17ef2ab8b858b293cc3217d7cc1b3316db027cd78a5ef546c76352d4016815674e4e093847d691fab2fe8d8ece833355c3e15e96586d12729bd97117b64437c69050488b2b09d8cf690345ce80507c58e5ecffd3ed8e242d12d6e2677a40c0c608d055cfd370dc6b00da27f1df0003b7b427b8f6c8049deba5d040beba054b1dafa6881669a41ff9d815f31bfa52175ddd0b41be5e72b82ea51f9a10d62e6b617d9ad63bedaf7cadb1cefbcd5" data-name="Signature">
+
+The actual signature of the certificate.
+
+* `03`: datatype (bitstring)
+* `82 01 01`: data length (257 bytes)
+* `00 7c 8a ... ef bc d5`: the signature
+
 </div>
-<div class="segment" data-hex="" data-name="">
 </div>
-<div class="segment" data-hex="" data-name="">
-</div>
-<div class="segment" data-hex="" data-name="">
-</div>
-<div class="segment" data-hex="" data-name="">
-</div>
-</div>
+
+We can actually verify the signature of the certificate using OpenSSL. {TODO}
 
 # Epilogue
 
