@@ -339,7 +339,7 @@
 <li><code>00 7a</code>: length of payload (122 bytes)</li>
 </ul>
 </div>
-<div class="segment" data-hex="02000076" data-name="Handshake">
+<div class="segment" data-hex="02000076" data-name="Handshake Header">
 
 <ul>
 <li><code>02</code>: message type (2 for ServerHello)</li>
@@ -475,6 +475,156 @@ serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(se
 </div>
 </div>
 
+<h1 id="s--c-certificate">S → C: Certificate <a class="section-link" href="#s--c-certificate">&sect;</a></h1><p>The server sends its certificate to the client. Here, the certificate message is abridged since most of it consists of the actual certificate itself, which is explained below.</p>
+<p><em>Only the decrypted record is shown.</em></p>
+<div class="server packet">
+<div class="segment" data-hex="0b000fbb000fb700052a..000000051a..0000000564..000016" data-name="Handshake Header">
+
+<ul>
+<li><code>0b</code>: message type (11 for Certificate)</li>
+<li><code>00 0f bb</code>: message length (4027 bytes)</li>
+<li><code>00 0f b7</code>: certificate list length (4023 bytes)<ul>
+<li>First certificate<ul>
+<li><code>00 05 2a</code>: length (1322 bytes)</li>
+<li><code>..</code>: certificate data</li>
+<li><code>00 00</code>: extensions length (0 bytes)</li>
+</ul>
+</li>
+<li>Second certificate<ul>
+<li><code>00 05 1a</code>: length (1306 bytes)</li>
+<li><code>..</code>: certificate data</li>
+<li><code>00 00</code>: extensions length (0 bytes)</li>
+</ul>
+</li>
+<li>Third certificate<ul>
+<li><code>00 05 64</code>: length (1380 bytes)</li>
+<li><code>..</code>: certificate data</li>
+<li><code>00 00</code>: extensions length (0 bytes)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>16</code>: actual record type (22 for handshake)</li>
+</ul>
+</div>
+</div>
+
+<p>The certificates themselves are serialized using a scheme called <a href="https://en.wikipedia.org/wiki/X.690#DER_encoding">Distinguished Encoding Rules</a>, or just DER. If you&#39;re familiar with Minecraft&#39;s <a href="https://minecraft.fandom.com/wiki/NBT_format">NBT</a>, DER is kinda like that, but crappier. DER is rather complicated, so this section doesn&#39;t aim to really explain its nuances; instead, it&#39;s meant to give you an idea of what&#39;s actually in a certificate and how it&#39;s stored. Here&#39;s the first certificate, dissected:</p>
+<div class="server packet">
+<div class="segment" data-hex="30820526" data-name="Certificate Header">
+
+<p>A certificate contains the to-be-signed certificate and the actual signature.</p>
+<ul>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>82 05 26</code>: data length (1318 bytes)</li>
+</ul>
+</div>
+<div class="segment" data-hex="3082040e" data-name="To-Be-Signed Certificate Header">
+
+<p>The to-be-signed certificate is where all the actually interesting information is stored, including the domain names which the certificate covers.</p>
+<ul>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>82 04 0e</code>: data length (1038 bytes)</li>
+</ul>
+</div>
+<div class="segment" data-hex="a003020102" data-name="Version">
+
+<p>This certificate uses <a href="https://en.wikipedia.org/wiki/X.509">X.509</a> version 3.</p>
+<ul>
+<li><code>a0</code>: datatype (context-specific, &#39;version&#39;)</li>
+<li><code>03</code>: data length (3 bytes)</li>
+<li><code>02</code>: datatype (integer)</li>
+<li><code>01</code>: data length (1 byte)</li>
+<li><code>02</code>: version (2 for v3)</li>
+</ul>
+</div>
+<div class="segment" data-hex="021204f99a1b9df5e7f17bb9f19166129e3ff810" data-name="Serial Number">
+
+<p>Each certificate has a unique 20-byte serial number, which distinguishes it from other certificates issued by the same CA.</p>
+<ul>
+<li><code>02</code>: datatype (integer)</li>
+<li><code>12</code>: data length (12 bytes)</li>
+<li><code>04 f9 9a ... 3f f8 10</code>: serial number</li>
+</ul>
+</div>
+<div class="segment" data-hex="300d06092a864886f70d01010b0500" data-name="Signature Algorithm">
+
+<p>This section identifies the signature algorithm used by the issuer to sign the certificate. Signature algorithms are one of the many things that are referenced through <a href="https://en.wikipedia.org/wiki/Object_identifier">object identifiers</a>, a hierarchical naming system created by the <a href="https://en.wikipedia.org/wiki/International_Telecommunication_Union">ITU</a> and the ISO/IEC.</p>
+<ul>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>0d</code>: length</li>
+<li><strong>Signature Algorithm</strong><ul>
+<li><code>06</code>: datatype (object identifier)</li>
+<li><code>09</code>: data length (9 bytes)</li>
+<li><code>2a 86 48 ... 01 01 0b</code>: 1.2.840.113549.1.1.11, the object identifier for <code>sha256WithRSAEncryption</code></li>
+</ul>
+</li>
+<li><strong>Parameters</strong><ul>
+<li><code>05</code>: datatype (NULL)</li>
+<li><code>00</code>: data length (0)</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="segment" data-hex="3032" data-name="Issuer Header">
+
+<p>The following section provides information about the issuer of the certificate through a pair of key-value attributes.</p>
+<ul>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>32</code>: data length (50 bytes)</li>
+</ul>
+</div>
+<div class="segment" data-hex="310b3009060355040613025553" data-name="Issuer Country">
+
+<p>This field identifies the country code of the issuer.</p>
+<ul>
+<li><code>31</code>: datatype (set)</li>
+<li><code>0b</code>: data length (11 bytes)</li>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>09</code>: data length (9 bytes)</li>
+<li><code>06 03 55 04 06</code>: 2.5.4.6, the object identifier for the <code>id-at-countryname</code> property</li>
+<li><code>13 02 55 53</code>: string (&quot;US&quot;)</li>
+</ul>
+</div>
+<div class="segment" data-hex="3116301413025553130d4c6574277320456e6372797074" data-name="Issuer Name">
+
+<p>This field identifies the name of the issuer&#39;s organization</p>
+<ul>
+<li><code>31</code>: datatype (set)</li>
+<li><code>16</code>: data length (22 bytes)</li>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>14</code>: data length (20 bytes)</li>
+<li><code>06 03 55 04 0a</code>: 2.5.4.10, the object identifier for the <code>id-at-organizationName</code> property</li>
+<li><code>13 0d 4c ... 79 70 74</code>: string (&quot;Let&#39;s Encrypt&quot;)</li>
+</ul>
+</div>
+<div class="segment" data-hex="310b3009060355040313025233" data-name="Common Name">
+
+<p>This field specifies a human-readable name for the signing certificate.</p>
+<ul>
+<li><code>31</code>: datatype (set)</li>
+<li><code>0b</code>: data length (11 bytes)</li>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>09</code>: data length (9 bytes)</li>
+<li><code>06 03 55 04 03</code>: 2.5.4.3, the object identifier for the <code>id-at-commonName</code> property</li>
+<li><code>13 02 52 33</code>: string (&quot;R3&quot;)</li>
+</ul>
+</div>
+<div class="segment" data-hex="301e170d3232303231383036353132385a170d3232303531393036353132375a" data-name="Validity">
+
+<p>This section provides the dates between which the certificate is valid. This is how certificate expiration works.</p>
+<ul>
+<li><code>30</code>: datatype (sequence)</li>
+<li><code>1e</code>: data length (30 bytes)</li>
+<li><code>17 0d 32 ... 32 38 5a</code>: earliest valid time (Feb 18, 2022 6:51:28)</li>
+<li><code>17 0d 32 ... 32 37 5a</code>: latest valid time (May 19, 2022 6:51:27)</li>
+</ul>
+</div>
+<div class="segment" data-hex="" data-name="">
+</div>
+<div class="segment" data-hex="" data-name="">
+</div>
+</div>
 
 <h1 id="epilogue">Epilogue <a class="section-link" href="#epilogue">&sect;</a></h1><p>This article only shows part of what makes TLS tick. There&#39;s much more beneath the surface; things like session resumption, 0-RTT messages, client authentication, SNI, ALPN, the list goes on. To learn more, the RFC is your best friend. Skip ahead to the Further Reading section for some good references.</p>
 <h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session turned out to be surprisingly treacherous. I ended up developing a perverse affection towards TLS that left me waking up in the middle of night, sweating profusely, in a delirious state as my sleep-addled brain tried to comprehend AEAD. In this case, it involved modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
@@ -542,5 +692,6 @@ secureSocket.<span class="hljs-title function_">on</span>(<span class="hljs-stri
 <li><a href="https://datatracker.ietf.org/doc/html/rfc8448">IETF - RFC 8448: Example Handshake Traces for TLS 1.3</a></li>
 <li><a href="https://datatracker.ietf.org/doc/html/rfc5869">IETF - RFC 5869: HMAC-based Extract-and-Expand Key Derivation Function (HKDF)</a></li>
 <li><a href="https://developers.cloudflare.com/fundamentals/internet/protocols/tls">Cloudflare Fundamentals - TLS</a></li>
+<li><a href="https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/">Let&#39;s Encrypt - A Warm Welcome to ASN.1 and DER</a></li>
 </ul>
 <noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script><p class="footnote">&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">contribute</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></body></html>

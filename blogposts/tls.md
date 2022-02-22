@@ -386,7 +386,7 @@ Similar to the previous message, the server also claims that the message version
 * `00 7a`: length of payload (122 bytes) 
 
 </div>
-<div class="segment" data-hex="02000076" data-name="Handshake">
+<div class="segment" data-hex="02000076" data-name="Handshake Header">
 
 * `02`: message type (2 for ServerHello)
 * `00 00 76`: message length (118 bytes)
@@ -572,6 +572,148 @@ The last byte denotes the actual record type (22 for handshake).
 </div>
 </div>
 
+# S → C: Certificate
+
+The server sends its certificate to the client. Here, the certificate message is abridged since most of it consists of the actual certificate itself, which is explained below.
+
+*Only the decrypted record is shown.*
+
+<div class="server packet">
+<div class="segment" data-hex="0b000fbb000fb700052a..000000051a..0000000564..000016" data-name="Handshake Header">
+
+* `0b`: message type (11 for Certificate)
+* `00 0f bb`: message length (4027 bytes)
+* `00 0f b7`: certificate list length (4023 bytes)
+    * First certificate
+        * `00 05 2a`: length (1322 bytes)
+        * `..`: certificate data
+        * `00 00`: extensions length (0 bytes)
+    * Second certificate
+        * `00 05 1a`: length (1306 bytes)
+        * `..`: certificate data
+        * `00 00`: extensions length (0 bytes)
+    * Third certificate
+        * `00 05 64`: length (1380 bytes)
+        * `..`: certificate data
+        * `00 00`: extensions length (0 bytes)
+* `16`: actual record type (22 for handshake)
+
+</div>
+</div>
+
+The certificates themselves are serialized using a scheme called [Distinguished Encoding Rules](https://en.wikipedia.org/wiki/X.690#DER_encoding), or just DER. If you're familiar with Minecraft's [NBT](https://minecraft.fandom.com/wiki/NBT_format), DER is kinda like that, but crappier. DER is rather complicated, so this section doesn't aim to really explain its nuances; instead, it's meant to give you an idea of what's actually in a certificate and how it's stored. Here's the first certificate, dissected:
+
+<div class="server packet">
+<div class="segment" data-hex="30820526" data-name="Certificate Header">
+
+A certificate contains the to-be-signed certificate and the actual signature.
+
+* `30`: datatype (sequence)
+* `82 05 26`: data length (1318 bytes)
+
+</div>
+<div class="segment" data-hex="3082040e" data-name="To-Be-Signed Certificate Header">
+
+The to-be-signed certificate is where all the actually interesting information is stored, including the domain names which the certificate covers.
+
+* `30`: datatype (sequence)
+* `82 04 0e`: data length (1038 bytes)
+
+</div>
+<div class="segment" data-hex="a003020102" data-name="Version">
+
+This certificate uses [X.509](https://en.wikipedia.org/wiki/X.509) version 3.
+
+* `a0`: datatype (context-specific, 'version')
+* `03`: data length (3 bytes)
+* `02`: datatype (integer)
+* `01`: data length (1 byte)
+* `02`: version (2 for v3)
+
+</div>
+<div class="segment" data-hex="021204f99a1b9df5e7f17bb9f19166129e3ff810" data-name="Serial Number">
+
+Each certificate has a unique 20-byte serial number, which distinguishes it from other certificates issued by the same CA.
+
+* `02`: datatype (integer)
+* `12`: data length (12 bytes)
+* `04 f9 9a ... 3f f8 10`: serial number
+
+</div>
+<div class="segment" data-hex="300d06092a864886f70d01010b0500" data-name="Signature Algorithm">
+
+This section identifies the signature algorithm used by the issuer to sign the certificate. Signature algorithms are one of the many things that are referenced through [object identifiers](https://en.wikipedia.org/wiki/Object_identifier), a hierarchical naming system created by the [ITU](https://en.wikipedia.org/wiki/International_Telecommunication_Union) and the ISO/IEC.
+
+* `30`: datatype (sequence)
+* `0d`: length
+* **Signature Algorithm**
+    * `06`: datatype (object identifier)
+    * `09`: data length (9 bytes)
+    * `2a 86 48 ... 01 01 0b`: 1.2.840.113549.1.1.11, the object identifier for `sha256WithRSAEncryption`
+* **Parameters**
+    * `05`: datatype (NULL)
+    * `00`: data length (0)
+
+</div>
+<div class="segment" data-hex="3032" data-name="Issuer Header">
+
+The following section provides information about the issuer of the certificate through a pair of key-value attributes.
+
+* `30`: datatype (sequence)
+* `32`: data length (50 bytes)
+
+</div>
+<div class="segment" data-hex="310b3009060355040613025553" data-name="Issuer Country">
+
+This field identifies the country code of the issuer.
+
+* `31`: datatype (set)
+* `0b`: data length (11 bytes)
+* `30`: datatype (sequence)
+* `09`: data length (9 bytes)
+* `06 03 55 04 06`: 2.5.4.6, the object identifier for the `id-at-countryname` property
+* `13 02 55 53`: string ("US")
+
+</div>
+<div class="segment" data-hex="3116301413025553130d4c6574277320456e6372797074" data-name="Issuer Name">
+
+This field identifies the name of the issuer's organization
+
+* `31`: datatype (set)
+* `16`: data length (22 bytes)
+* `30`: datatype (sequence)
+* `14`: data length (20 bytes)
+* `06 03 55 04 0a`: 2.5.4.10, the object identifier for the `id-at-organizationName` property
+* `13 0d 4c ... 79 70 74`: string ("Let's Encrypt")
+
+</div>
+<div class="segment" data-hex="310b3009060355040313025233" data-name="Common Name">
+
+This field specifies a human-readable name for the signing certificate.
+
+* `31`: datatype (set)
+* `0b`: data length (11 bytes)
+* `30`: datatype (sequence)
+* `09`: data length (9 bytes)
+* `06 03 55 04 03`: 2.5.4.3, the object identifier for the `id-at-commonName` property
+* `13 02 52 33`: string ("R3")
+
+</div>
+<div class="segment" data-hex="301e170d3232303231383036353132385a170d3232303531393036353132375a" data-name="Validity">
+
+This section provides the dates between which the certificate is valid. This is how certificate expiration works.
+
+* `30`: datatype (sequence)
+* `1e`: data length (30 bytes)
+* `17 0d 32 ... 32 38 5a`: earliest valid time (Feb 18, 2022 6:51:28)
+* `17 0d 32 ... 32 37 5a`: latest valid time (May 19, 2022 6:51:27)
+
+</div>
+<div class="segment" data-hex="" data-name="">
+</div>
+<div class="segment" data-hex="" data-name="">
+</div>
+</div>
 
 # Epilogue
 
@@ -656,3 +798,4 @@ You can download the full packet capture of the exchange which this page is base
 * [IETF - RFC 8448: Example Handshake Traces for TLS 1.3](https://datatracker.ietf.org/doc/html/rfc8448)
 * [IETF - RFC 5869: HMAC-based Extract-and-Expand Key Derivation Function (HKDF)](https://datatracker.ietf.org/doc/html/rfc5869)
 * [Cloudflare Fundamentals - TLS](https://developers.cloudflare.com/fundamentals/internet/protocols/tls)
+* [Let's Encrypt - A Warm Welcome to ASN.1 and DER](https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/)
