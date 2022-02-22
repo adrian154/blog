@@ -14,7 +14,7 @@ Symmetric ciphers are great because they're usually very fast and very secure, b
 
 Enter the [Diffie-Hellman Key Exchange](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange). It enables a client and a server to generate the same secret value while only exchanging publicly knowable data, which sounds impossible until you take a look at how it works. Here's a diagram that explains the steps of Diffie-Hellman key exchange using colors of paint as a stand-in for cryptographic keys.
 
-![DHKE diagram using paint analogy](static/images/DHKE-paint-analogy.png)
+![DHKE diagram using paint analogy](resources/tls/DHKE-paint-analogy.png)
 
 <br>
 
@@ -62,13 +62,13 @@ Carol makes sure that the person she's talking to is actually Bob, and signs Bob
 
 This, in essence, is how TLS performs authentication. Carol represents a group of organizations known as [certificate authorities](https://en.wikipedia.org/wiki/Certificate_authority), whose public keys are hardcoded into most browsers. Certificates on the web don't usually link a human name to a public key; instead, the "useful identity" they try to prove is usually a domain name. Furthermore, the CA may not directly sign a website's certificate. Instead, they may sign the certificate for an *intermediate* keypair, which does the task of actually signing end user certificates. This sequence can extend for as many signers as necessary, creating a **chain of trust**.
 
-![chain of trust diagram](static/images/certificate-chain-of-trust.png)
+![chain of trust diagram](resources/tls/certificate-chain-of-trust.png)
 
 *A rough diagram showing how a verifiable chain of trust is created using digital signatures. [Image](https://en.wikipedia.org/wiki/File:Chain_Of_Trust.svg) by Yukhih / [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/deed.en)*
 
 You can see this at play for pretty much any website you visit. If you're on Chrome, simply click the padlock button next to the address bar in your browser, and you'll see the option to view the website's certification path. Here's what you would probably see for this page:
 
-![picture of the ssl cert for this site](static/images/windows-cert-view.png)
+![picture of the ssl cert for this site](resources/tls/windows-cert-view.png)
 
 During the TLS handshake process, all three of these certificates were sent from my server to your browser. The first certificate named `bithole.dev` contains my server's public key, as well as a reference to `R3`'s public key and a signature made with that public key. In turn, `R3` is signed by `ISRG Root X1`, whose fingerprint is hardcoded into your browser as one of several trusted **root certificates**. Your browser can follow this chain of signatures and verify that each certificate is valid.
 
@@ -525,7 +525,7 @@ serverHandshakeIV = hkdfExpandLabel(serverHandshakeTrafficSecret, "iv", Buffer.a
 
 The initialization vector (IV) ensures that even if the same piece of data is encrypted, a different ciphertext will result. We will explore this in a moment when we actually get to decrypting messages.
 
-The code used to explain this section is available [here](static/tls-key-schedule.js). 
+The code used to explain this section is available [here](resources/tls/tls-key-schedule.js). 
 
 # S → C: Change Cipher Spec
 
@@ -1046,7 +1046,7 @@ secureSocket.on("secureConnect", () => {
 
 I created a subdomain `test.bithole.dev` resolving to `127.0.0.1` and grabbed a certificate through Let's Encrypt to make this example a little more realistic.
 
-You can download the full packet capture of the exchange which this page is based on [here](static/tls-capture.pcap). You'll also need the [keylog](static/tls-keylog.txt) to decrypt the capture.
+You can download the full packet capture of the exchange which this page is based on [here](resources/tls/capture.pcap). You'll also need the [keylog](resources/tls/keylog.txt) to decrypt the capture.
 
 # Further Reading
 * [TLS 1.3 Illustrated](https://tls13.ulfheim.net/)

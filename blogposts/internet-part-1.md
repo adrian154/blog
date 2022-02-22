@@ -35,13 +35,13 @@ There are also plenty of obscure and dead LAN technologies. One example is [Toke
 
 # Switches
 
-![an ethernet switch](static/images/ethernet-switch.jpg)
+![an ethernet switch](resources/internet/ethernet-switch.jpg)
 
 *An Ethernet switch. [Photo](https://commons.wikimedia.org/wiki/File:Netgear_Gigabit_Switch_5-port.jpg) by [Simon A. Eugster](https://commons.wikimedia.org/wiki/User:LivingShadow) / [CC-BY](https://creativecommons.org/licenses/by-sa/3.0/deed.en)*
 
 Devices called [network switches](https://en.wikipedia.org/wiki/Network_switch) allow communication between nodes on the same LAN. A switch is basically an embedded device with a large number of Ethernet ports. Because all devices on the network communicate with each other by talking through the switch, a [star topology](https://en.wikipedia.org/wiki/Star_network) is formed.
 
-![star topology diagram](static/images/switch-star-topology.png)
+![star topology diagram](resources/internet/switch-star-topology.png)
 
 *In case you can't tell, I'm not exactly the best at making diagrams.*
 
@@ -81,7 +81,7 @@ In IP, every network interface (usually just one per computer) is associated wit
 
 Because IPv4 addresses are only 32 bits long, there can only be 2<sup>32</sup> = ~4 billion unique IPv4 addresses. That seems like a lot, but as early as the 90s the threat of [running out of IPv4 addresses](https://en.wikipedia.org/wiki/IPv4_address_exhaustion) has continually loomed over the Internet, made worse by the fact that many parts of IPv4 space are [reserved](https://en.wikipedia.org/wiki/Reserved_IP_addresses) for various purposes. To fix this issue, IPv6 was created. IPv6 addresses are 128 bits long, which is more than enough to serve humanity's needs at the moment. (If all IPv6 addresses were distributed equally among all living humans, every individual could have 47 octillion addresses. It's safe to say that we won't be running out any time soon, especially because sadly a lot of the Internet is still stuck on IPv4.)
 
-![xkcd #195 internet map](static/images/xkcd-internet-map.jpg)
+![xkcd #195 internet map](resources/internet/xkcd-internet-map.jpg)
 
 *[xkcd 195](https://xkcd.com/195/): A map of IPv4 space circa 2006. Things have only gotten more crowded since then.*
 
@@ -121,7 +121,7 @@ To solve the first problem, clients use a source IP of 0.0.0.0 in their initial 
 
 Okay, so we've obtained an IP address. Now what?
 
-![diagram of an IP LAN](static/images/ip-lan.png)
+![diagram of an IP LAN](resources/internet/ip-lan.png)
 
 Suppose computer 10.0.0.2 wants to send a message to 10.0.0.3. In order to actually deliver a message to 10.0.0.3, our sender needs to know which MAC address to send packets to. It can obtain this information via the [Address Resolution Protocol](https://en.wikipedia.org/wiki/Address_Resolution_Protocol) (ARP).
 
@@ -139,7 +139,7 @@ One major weakness of ARP is its vulnerability to [spoofing attacks](https://en.
 
 ARP is ubiquitous among IEEE 802 networks. If your computer is on a WiFi or Ethernet-based network, you can install [Wireshark](https://www.wireshark.org/) and observe ARP requests happening right before your eyes.
 
-![arp requests on my LAN, as seen by wireshark](static/images/arp-capture.png)
+![arp requests on my LAN, as seen by wireshark](resources/internet/arp-capture.png)
 
 *Some ARP requests seen on my local network.*
 
@@ -196,7 +196,7 @@ As I write this blogpost, IPv6 will have been available for an entire decade in 
 
 This ever-worsening drought of IP addresses has forced the Internet's biggest players, the ISPs, to get creative. One solution that has been used to combat IPv4 exhaustion is [Network Address Translation](https://en.wikipedia.org/wiki/Network_address_translation) (NAT). NAT precludes the need to assign every device on a household network a unique IP address. Here's how it works.
 
-![diagram of NAT](static/images/nat.png)
+![diagram of NAT](resources/internet/nat.png)
 
 *What a typical NAT setup looks like.*
 
@@ -234,7 +234,7 @@ When you look at the Internet at the AS level, the illusion is truly stripped ba
 
 Routing between ASes is universally done via the [Border Gateway Protocol](https://en.wikipedia.org/wiki/Border_Gateway_Protocol), which is a [path vector routing protocol](https://en.wikipedia.org/wiki/Path-vector_routing_protocol) as opposed to a link state routing protocol. Instead of broadcasting the existence of links throughout the network, BGP routers advertise which ASes they can reach and the path to take to their peers. This has the benefit of preventing the possibility of a loop, which would pose a serious problem at a global scale. In general, BGP is designed to reduce volatility in Internet routing. To reduce network usage and routing table size, BGP routers may use heuristics to selectively reject routes, a process known as [route filtering](https://en.wikipedia.org/wiki/Route_filtering). (The side-effect of route filtering is that no router on the Internet has a complete view of *all* routes, so collecting statistics on the routing table requires careful observation from numerous viewpoints.)
 
-![diagram of interaction between internal and external networks](static/images/routing-protocols.png)
+![diagram of interaction between internal and external networks](resources/internet/routing-protocols.png)
 
 *Diagram of the various routing protocols found on the Internet. Internal links are highighted in red; border routers are highlighted in green.*
 
@@ -244,7 +244,7 @@ The BGP routing itself looks just like the routing table you'd find on your rout
 
 Not every AS is connected with each other; often, Internet packets will travel through networks belonging to several ASes until they reach their destination. You can see this for yourself using the [traceroute](https://linux.die.net/man/8/traceroute) utility. Many Internet infrastructure operators also run public [Looking Glass](https://en.wikipedia.org/wiki/Looking_Glass_server) servers, which allow users to run traceroutes or retrieve BGP route information from their backbone servers. In particular, SdV operates a [graphical traceroute tool](http://bgpmap.sdv.fr/) which lets you visualize all the routes to a certain IP available in their border gateways' routing tables. Here's an example output for [8.8.8.8](https://developers.google.com/speed/public-dns), which is Google's public DNS project.
 
-![bgp map to google dns](static/images/bgp-traceroute.gif)
+![bgp map to google dns](resources/internet/bgp-traceroute.gif)
 
 The red arrows signify the best path, the one that packets would actually follow in the network. As you can see, there is more than one way to reach the destination; Google is part of [France-IX](https://www.franceix.net/en/), which SdV is also a member of. The purple rectangles represent border routers within SdV's own network; they aren't shown for other networks since they are normally obscured from public view.
 
@@ -268,13 +268,13 @@ Note that peering and transit are the same thing from a technical standpoint. Al
 
 Another staple of backbone routing is the [Internet Exchange Point](https://en.wikipedia.org/wiki/Internet_exchange_point) (IXP). IXPs are essentially a series of interconnected switches, usually managed by a non-profit organization, that allow many ASes to peer with each other without a huge number of cross-connections. 
 
-![picture of an internet exchange](static/images/internet-exchange.jpg)
+![picture of an internet exchange](resources/internet/internet-exchange.jpg)
 
 *A switch belonging to [AMS-IX](https://en.wikipedia.org/wiki/Amsterdam_Internet_Exchange), one of the world's biggest Internet exchanges. [Photo](https://en.wikipedia.org/wiki/File:AMS-IX_optical_patch_panel.jpg) by Fabienne Serriere / [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/deed.en)*
 
 IXPs are a pretty great thing for a number of reasons. They provide a way to peer with numerous other ASes, reducing latency for everyone, while avoiding the large number of physical connections that would be necessary to reach the same level of connectedness that would be necessary otherwise.
 
-![peering diagram](static/images/peering.png)
+![peering diagram](resources/internet/peering.png)
 
 If you are interested in internet exchanges, I encourage you to checkout the [Fremont Cabal Internet Exchange](https://fcix.net/), a burgeoning IXP based out of Fremont, California (which is also my hometown!) The [blogpost](https://blog.thelifeofkenneth.com/2018/04/creating-internet-exchange-for-even.html) about its creation is as informative as it is humorous.
 
@@ -305,7 +305,7 @@ So far, we've only discussed *unicast* traffic, where packets are routed from on
 
 One of the most common protocols that uses multicast routing is [multicast DNS](https://en.wikipedia.org/wiki/Multicast_DNS) (mDNS), which is essentially a variant of DNS that works over multicast. It is often used to discover devices on the LAN such as printers.
 
-![mdns traffic on my LAN](static/images/mdns-capture.png)
+![mdns traffic on my LAN](resources/internet/mdns-capture.png)
 
 *mDNS traffic on my LAN. I'm pretty sure it's from my printer.*
 

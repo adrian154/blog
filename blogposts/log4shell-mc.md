@@ -8,7 +8,7 @@ In case you haven't heard, there's been a bit of an illness going around. No, no
 
 Today I checked the Discord server for my SMP, and was greeted with a rather unexpected surprsie:
 
-![pic from my discord](static/images/log4shell-bitcraft.png)
+![pic from my discord](resources/log4shell/log4shell-bitcraft.png)
 
 *This lovely Discord-Minecraft bridge is powered by [Minelink](https://github.com/adrian154/minelink).*
 
@@ -153,7 +153,7 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOjnUF/J249WuSeaDSlEnOeP1n/75iHQxRK8xjuB1J
 
 Rafael, you sly dog! If you had used C, I might respect you a little more. Scrolling through the absolutely enormous output reminds me that golang still lacks a functional tree shaker, or at least it's not doing its job. The numerous mentions to `ssh` suggest that the binary establishes a reverse shell so that Mr. Rafael here can log into your server to further pursue his shenanigans. 
 
-I've set up a VM to further investigate what Rafael is up to with his attacks. In the meantime, [here](static/log4shell-payload.bin) is the download link for the payload if you'd like to look to examine it, though obviously don't be stupid with it since it's live malware.
+I've set up a VM to further investigate what Rafael is up to with his attacks. In the meantime, [here](resources/log4shell/log4shell-payload.bin) is the download link for the payload if you'd like to look to examine it, though obviously don't be stupid with it since it's live malware.
 
 # Epilogue
 
