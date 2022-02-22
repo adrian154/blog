@@ -74,15 +74,19 @@ document.querySelectorAll(".packet").forEach(packet => {
         section.remove();
         packet.append(container);
 
+        const bytes = section.dataset.hex.match(/../g);
+
         // create span
         const spanOuter = document.createElement("span");
         spanOuter.style.position = "relative";
         const span = document.createElement("span");
         span.classList.add("hex-segment");
-        span.textContent = section.dataset.hex.match(/../g).join(" ");
+        span.textContent = bytes.join(" ");
         spanOuter.append(span);
 
-        const preview = span.cloneNode(true);
+        const preview = document.createElement("span");
+        preview.classList.add("hex-segment");
+        preview.textContent = section.dataset.previewTruncate ? bytes.slice(0, section.dataset.previewTruncate).join(" ") + ".." : bytes.join(" ");
         preview.classList.add("preview");
         container.append(preview);
 

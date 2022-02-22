@@ -601,12 +601,14 @@ The server sends its certificate to the client. Here, the certificate message is
 </div>
 </div>
 
-The certificates themselves are serialized using a scheme called [Distinguished Encoding Rules](https://en.wikipedia.org/wiki/X.690#DER_encoding), or just DER. If you're familiar with Minecraft's [NBT](https://minecraft.fandom.com/wiki/NBT_format), DER is kinda like that, but crappier. DER is rather complicated, so this section doesn't aim to really explain its nuances; instead, it's meant to give you an idea of what's actually in a certificate and how it's stored. Here's the first certificate, dissected:
+The certificates themselves are serialized using a scheme called [Distinguished Encoding Rules](https://en.wikipedia.org/wiki/X.690#DER_encoding), or just DER.  DER is rather complicated, so this section doesn't aim to really explain its nuances; instead, it's meant to give you an idea of what's actually in a certificate and how it's stored. There's a lot of information in the certificate that isn't really necessary for understanding the TLS cryptosystem. Pay the most attention to the parts that associate the server's keypair with its identity (its domain name), as well as the parts proving the certificate's trustworthiness.
+
+Here's the first certificate, dissected:
 
 <div class="server packet">
 <div class="segment" data-hex="30820526" data-name="Certificate Header">
 
-A certificate contains the to-be-signed certificate and the actual signature.
+A certificate actually has two components: the to-be-signed certificate, and the actual signature.
 
 * `30`: datatype (sequence)
 * `82 05 26`: data length (1318 bytes)
@@ -614,7 +616,7 @@ A certificate contains the to-be-signed certificate and the actual signature.
 </div>
 <div class="segment" data-hex="3082040e" data-name="To-Be-Signed Certificate Header">
 
-The to-be-signed certificate is where all the actually interesting information is stored, including the domain names which the certificate covers.
+The to-be-signed certificate is where all the interesting information is stored, including the domain names which the certificate covers.
 
 * `30`: datatype (sequence)
 * `82 04 0e`: data length (1038 bytes)
@@ -642,7 +644,7 @@ Each certificate has a unique 20-byte serial number, which distinguishes it from
 </div>
 <div class="segment" data-hex="300d06092a864886f70d01010b0500" data-name="Signature Algorithm">
 
-This section identifies the signature algorithm used by the issuer to sign the certificate. Signature algorithms are one of the many things that are referenced through [object identifiers](https://en.wikipedia.org/wiki/Object_identifier), a hierarchical naming system created by the [ITU](https://en.wikipedia.org/wiki/International_Telecommunication_Union) and the ISO/IEC.
+This section identifies the signature algorithm used by the issuer to sign the certificate. Signature algorithms are one of the many things in DER-land that are referenced through [object identifiers](https://en.wikipedia.org/wiki/Object_identifier), a hierarchical naming system created by the [ITU](https://en.wikipedia.org/wiki/International_Telecommunication_Union) and the ISO/IEC. Object identifiers consist of a series of integers separated by periods.
 
 * `30`: datatype (sequence)
 * `0d`: length
@@ -657,7 +659,7 @@ This section identifies the signature algorithm used by the issuer to sign the c
 </div>
 <div class="segment" data-hex="3032" data-name="Issuer Header">
 
-The following section provides information about the issuer of the certificate through a pair of key-value attributes.
+The following sections provides information about the issuer of the certificate through a pair of key-value attributes.
 
 * `30`: datatype (sequence)
 * `32`: data length (50 bytes)
@@ -675,7 +677,7 @@ This field identifies the country code of the issuer.
 * `13 02 55 53`: string ("US")
 
 </div>
-<div class="segment" data-hex="3116301413025553130d4c6574277320456e6372797074" data-name="Issuer Name">
+<div class="segment" data-hex="3116301413025553130d4c6574277320456e6372797074" data-name="Issuer Organization Name">
 
 This field identifies the name of the issuer's organization
 
@@ -687,9 +689,9 @@ This field identifies the name of the issuer's organization
 * `13 0d 4c ... 79 70 74`: string ("Let's Encrypt")
 
 </div>
-<div class="segment" data-hex="310b3009060355040313025233" data-name="Common Name">
+<div class="segment" data-hex="310b3009060355040313025233" data-name="Issuer Certificate Common Name">
 
-This field specifies a human-readable name for the signing certificate.
+This field specifies the human-readable name of the signing certificate.
 
 * `31`: datatype (set)
 * `0b`: data length (11 bytes)
@@ -708,10 +710,139 @@ This section provides the dates between which the certificate is valid. This is 
 * `17 0d 32 ... 32 38 5a`: earliest valid time (Feb 18, 2022 6:51:28)
 * `17 0d 32 ... 32 37 5a`: latest valid time (May 19, 2022 6:51:27)
 
+This is the last of the issuer properties included in this certificate.
+
 </div>
-<div class="segment" data-hex="" data-name="">
+<div class="segment" data-hex="301b3119301706035504031310746573742e626974686f6c652e646576" data-name="Common Name">
+
+This field specifies the human-readable name for our certificate.
+
+* `30`: datatype (sequence)
+* `1b`: data length (27 bytes)
+* `31`: datatype (set)
+* `19`: data length (25 bytes)
+* `30`: datatype (sequence)
+* `17`: data length (23 bytes)
+* `06 03 55 04 03`: 2.5.4.3, the object identifier for `id-at-commonName`
+* `13 10 74 ... 64 65 76`: string ("test.bithole.dev")
+
 </div>
-<div class="segment" data-hex="" data-name="">
+<div class="segment" data-hex="30820122300d06092a864886f70d0101010500" data-name="Subject Public Key Info">
+
+This part provides information about our public key. (Recall that the point of a certificate is to establish a connection between our identity and our public key.)
+
+* `30`: datatype (sequence)
+* `82 01 22`: data length (290 bytes)
+* `30`: datatype (sequence)
+* `0d`: data length (13 bytes)
+* `06 09 2a ... 01 01 01`: 1.2.840.113549.1.1.1, the object identifier for `rsaEncryption`
+* `05 00`: paramters (NULL)
+
+</div>
+<div class="segment" data-hex="0382010f003082010a0282010100b587501904bd9198c9c9eab873d4a249dcc37632e5ed3d22bcbab4126b5727fbfedc8975d073cd2e9f9faef3243c145a6458531b831515778bf76125c07a4148fe39b6eaddd38539d5f7bdf1dbc3a9bc014cb4fbce004879f4cdf84164bcd8d6f1f95ce730f4cfe91908cf2b15a4a60b26d2c4d31c4c850976d40d775f103bf33deb293bc8a6412865c596e0a07e8c38d72b8d4a981b518738cb6843ddc2574c2e279db10e4ce88d5fbe0502ca4ed97eee1f820894258d6a8deb78aa0f69b6ebddd5e991732cc19642bec153e6c874c3393a90dde0aae55b61417e96c0e695eb66fb9ddcbc2af5e6b8af4e61357ed1b0abe8a2efe9323c5fd14f6af30afa19b90203010001" data-preview-truncate="47" data-name="Subject Public Key">
+
+* `03`: datatype (bitstring)
+* `82010f`: data length (271 bytes)
+* `00 30 82 ... 01 00 01`: our RSA public key
+
+</div>
+<div class="segment" data-hex="a382024b30820247" data-name="Extensions Header">
+
+The following sections contain X.509 *extensions*, which provide additional certificate info.
+
+* `a3`: datatype (context-specific, 'Extensions')
+* `82 02 4b`: data length (587 bytes)
+* `30`: datatype (sequence)
+* `82 02 47`: data length (583 bytes)
+
+</div>
+<div class="segment" data-hex="300e0603551d0f0101ff0404030205a0" data-name="Extension: Key Usage">
+
+This extension lists the tasks which a key can be used for. For example, a CA may want to restrict the ability to sign certificates to only a handful of intermediate CAs. The Certificate Sign bit in this extension allows CAs to control the capabilities of each certificate they issue.
+
+* `30`: datatype (sequence)
+* `0e`: data length (14 bytes)
+* `06 03 55 1d 0f`: 2.5.29.15, the object identifier for `id-ce-keyUsage`
+* `01 01 ff`: the extension is critical; parsers cannot accept this certificate unless they are able to understand this extension
+* `04`: datatype (octet string)
+* `04`: data length (4 bytes)
+* `03`: datatype (bitstring)
+* `02`: data length (2 bytes)
+* `05`: padding bits (5)
+* `a0`: bitfields describing the key usage
+
+`0xa0` in binary is 10100000; the two set bits represent the Digital Signature and Key Encipherment usages.
+
+</div>
+<div class="segment" data-hex="301d0603551d250416301406082b0601050507030106082b06010505070302" data-name="Extension: Extended Key Usage">
+
+This extension is included in end certificates. It further restricts them to **only** the purposes listed within this extension. In this case, this certificate is valid for server authentication and client authentication.
+
+* `30`: datatype (sequence)
+* `1d`: data length (29 bytes)
+* `06 03 55 1d 25`: 2.5.92.37, the object identifier for `id-ce-extKeyUsage`
+* `04`: datatype (octet string)
+* `16`: data length (22 bytes)
+* `30`: datatype (sequence)
+* `14`: data length (20 bytes)
+* `06 08 2b ... 07 03 01`: 1.3.6.1.5.5.7.3.1, the object identifier for `id-kp-serverAuth` 
+* `06 08 2b ... 07 03 02`: 1.3.6.1.5.5.7.3.2, the object identifier for `id-kp-clientAuth`
+
+</div>
+<div class="segment" data-hex="300c0603551d130101ff04023000" data-name="Extension: Basic Constraints">
+
+This extension offers more fine-grained controls over what certificates can be issued using this certificate. Since we aren't a CA and can't issue *any* certificates, no constraints are listed here.
+
+* `30`: datatype (sequence)
+* `0c`: data length (12 bytes)
+* `06 03 55 1d 13`: 2.5.29.19, the object identifier for `id-ce-basicConstraints`
+* `01 01 ff`: the extension is critical; parsers cannot accept this certificate unless they are able to understand this extension
+* `04`: datatype (octet string)
+* `02`: data length (2 bytes)
+* `30`: datatype (sequence)
+* `00`: data length (0)
+
+</div>
+<div class="segment" data-hex="301d0603551d0e04160414e7a1622dade131944f1341c83a37a5b96336263e" data-name="Extension: Subject Key Identifier">
+
+This extension uniquely identifies the certificate based on its public key. This value can be referenced in any certificates issued using this certificate.
+
+* `30`: datatype (sequence)
+* `1d`: data length (29 bytes)
+* `06 03 55 1d 0e`: 2.5.29.14, the object identifier for `id-ce-subjectKeyIdentifier`
+* `04`: datatype (octet string)
+* `16`: data length (22 bytes)
+* `04 14 e7 ... 36 26 3e`: the subject key identifier
+
+</div>
+<div class="segment" data-hex="301f0603551d23041830168014142eb317b75856cbae500940e61faf9d8b14c2c6" data-name="Extension: Authority Key Identifier">
+
+This extension contains the subject key identifier of the signing certificate(s), i.e. the authorities. The purpose of this extension is to assist in establishing a chain of trust.
+
+* `30`: datatype (sequence)
+* `1f`: data length (31 bytes)
+* `06 03 55 1d 23`: 2.5.29.35, the object identifier for `id-ce-authorityKeyIdentifier`
+* `04`: datatype (octet string)
+* `18`: data length (24 bytes)
+* `80 14 14 ... 14 2c c6`: the subject key identifier
+
+</div>
+<div class="segment" data-hex="305506082b0601050507010104493047302106082b060105050730018615687474703a2f2f72332e6f2e6c656e63722e6f7267302206082b060105050730028616687474703a2f2f72332e692e6c656e63722e6f72672f" data-name="Extension: Authority Information Access">
+
+This extension provides information about where to access various services offered by the certificate issuer, such as [OCSP](https://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol) (which allows clients to query the issuer regarding the validity of a certificate online).
+
+* `30`: datatype (sequence)
+* `55`: data length (85 bytes)
+* `06 08 2b 06 01 05 05 07 01 01`: 1.3.6.1.5.5.7.1.1, the object identifier for `id-pe-authorityInfoAccess`
+* `04`: datatype (octet string)
+* `49`: data length (73 bytes)
+* `30`: datatype (sequence)
+* `47`: data length (71 bytes)
+* **OCSP**
+    * `30`: datatype (sequence)
+    * `21`: data length (33 bytes)
+    * `06 08 2b 06 01 05 05 07 30 01`: 1.3.6.1.5.5.7.48.1, the object identifier for `id-ad-ocsp`
+
 </div>
 </div>
 
