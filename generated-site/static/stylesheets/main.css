@@ -6,13 +6,20 @@ html {
 }
 
 body {
+
     max-width: 45em;
     padding: 1.0em;
     margin: 1.0em auto;
+    overflow-x: hidden;
+
+    /* text*/
     font-family: IBM Plex Sans, 'sans serif';
-    hyphens: auto;
-    text-justify: inter-word;
     font-size: 12.5pt;
+    
+}
+
+p {
+    line-height: 1.3em;
 }
 
 h1 {
@@ -71,7 +78,7 @@ img {
 }
 
 blockquote {
-    border-left: 4px solid #888;
+    border-left: 3px solid #888;
     opacity: 80%;
     padding: 0.1em 1.0em;
     margin: 0;
@@ -109,7 +116,7 @@ button {
 
 /* "conversation" tables */
 .conversation {
-    width: 100%;
+    margin: auto;
     display: flex;
     flex-direction: column;
 }
@@ -127,6 +134,7 @@ button {
 
 .conversation-header div {
     border-bottom: 1px solid #aaa;
+    padding: 0.5em 0 !important;
 }
 
 .conversation div div {
@@ -147,4 +155,9 @@ button {
 .conversation-center {
     flex-basis: 100%;
     text-align: center !important; /* too lazy to grok the priorities at play  here */
+}
+
+.limited-height-code pre {
+    max-height: 30em;
+    overflow: auto;
 }
