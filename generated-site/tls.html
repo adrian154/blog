@@ -414,15 +414,15 @@
 <pre><code class="hljs">server_privkey x client_pubkey = shared_secret
 d8b3916b7e1ed8d6fa07c7810eef53639b77e51e0fd8e044c1c9e1186fd63c49 x
 4b65e1788c1999350d0a44f50646a75c392584735d96d6d0b35b61c2f9375931 = 
-4c75e186e47a2627bb4501955a051d516653d9570f34c660e623d26e2175b956</code></pre><p>From here, TLS uses a process known as the <a href="https://datatracker.ietf.org/doc/html/rfc8446#section-7.1">key schedule</a> to derive a set of keys from the shared secret. Essentially, it uses a set of cryptographic operations to take several &quot;sources of entropy without context&quot; (as the RFC calls it) and combine them into one state that can be used to generate new keys as needed. The importance of context will be explained in just a moment.</p>
-<p>The key schedule begins with the calculation of an &quot;early secret&quot;. This is normally used to include the pre-shared key in the key schedule. Since we don&#39;t have a PSK, this part is mostly irrelevant. However, we still have to do it, just with dummy values.</p>
+4c75e186e47a2627bb4501955a051d516653d9570f34c660e623d26e2175b956</code></pre><p>From here, TLS uses a process known as the <a href="https://datatracker.ietf.org/doc/html/rfc8446#section-7.1">key schedule</a> to generate keys from the shared secret. There are two primary cryptographic operations involved. The first is <code>hkdfExtract</code>, which introduces a new &quot;source of entropy&quot; (e.g. the shared secret) into the current key schedule state, making all future derived keys depend on the correctness of this value. The second is <code>deriveSecret</code>, which uses the key schedule state to actually generate a random key of a specific length. This process is necessary because TLS generally needs to create several keys deterministically from a single shared secret, and getting it wrong can have serious security implications.</p>
+<p>The key schedule begins with the calculation of an &quot;early secret&quot;. This is used to include the pre-shared key in the key schedule. Since we don&#39;t have a PSK, this part is mostly irrelevant. However, the spec says that we still have to do it, just with dummy values.</p>
 <pre><code class="hljs">earlySecret = <span class="hljs-title function_">hkdfExtract</span>(
     <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-variable constant_">HASHLEN</span>), <span class="hljs-comment">// initial salt is zero </span>
     <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-variable constant_">HASHLEN</span>)  <span class="hljs-comment">// replace PSK with string of zeroes of the same length</span>
 );</code></pre><p>Next, calculate a derived secret from the early secret.</p>
 <pre><code class="hljs">derivedSecret = <span class="hljs-title function_">deriveSecret</span>(earlySecret, <span class="hljs-string">&quot;derived&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>));</code></pre><p>Create the handshake secret using the shared value from key exchange and the derived secret from the previous step.</p>
 <pre><code class="hljs"><span class="hljs-comment">// sharedSecret = 4c 75 e1 ...</span>
-handshakeSecret = <span class="hljs-title function_">hkdfExtract</span>(derivedSecret, sharedSecret);</code></pre><p>For the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to <code>deriveSecret</code> in a parameter called the <em>context</em>. This is why the Random field is included in the Hello messages: to prevent replay attacks. The Random fields change between handshakes, and thus, so does the context. This prevents an attacker from simply recording and replaying a TLS session in an attempt to repeat a request: the server will send a new Random field, creating a different context with a different secret key.</p>
+handshakeSecret = <span class="hljs-title function_">hkdfExtract</span>(derivedSecret, sharedSecret);</code></pre><p>For the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to <code>deriveSecret</code> in a parameter called the <em>context</em>. This is why the Random field is included in the Hello messages: to prevent replay attacks. The Random fields change between handshakes, and thus, so does the context. Without this protection, an attacker could simply record a client connecting to the server and replay the handshake in an attempt to extract the key; however, since the Random field sent by the server in the attacker&#39;s session would be different from the value sent in the previous session, the handshake context changes, and different keys are derived.</p>
 <p><code>handshakeContext</code> is created by applying a cryptographic hash function to the raw data of the ClientHello and Server Hello messages, excluding the record header.</p>
 <pre><code class="hljs"><span class="hljs-comment">// client side</span>
 clientHandshakeTrafficSecret = <span class="hljs-title function_">deriveSecret</span>(handshakeSecret, <span class="hljs-string">&quot;c hs traffic&quot;</span>, handshakeContext);
@@ -435,7 +435,7 @@ clientHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(cl
 
 <span class="hljs-comment">// server credentials</span>
 serverHandshakeKey = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">32</span>);
-serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;iv&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">12</span>);</code></pre><p>The initialization vector (IV) ensures that even if the same piece of data is encrypted, a different ciphertext will result. We will explore this in a moment when we actually get to decrypting messages.</p>
+serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;iv&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">12</span>);</code></pre><p>The initialization vector (IV) ensures that every ciphertext is unique. Without a unique IV for each message, encrypting the same plaintext would produce the same ciphertext, which exposes a ton of information to attackers.</p>
 <p>The code used to explain this section is available <a href="resources/tls/tls-key-schedule.js">here</a>. </p>
 <h1 id="s--c-change-cipher-spec">S → C: Change Cipher Spec <a class="section-link" href="#s--c-change-cipher-spec">&sect;</a></h1><p>Next, the server sends the Change Cipher Spec message. This isn&#39;t used in TLS 1.3, but to avoid confusing intermediate nodes, this message is still sent. From this point on, the rest of the handshake is encrypted.</p>
 <div class="server packet">
@@ -467,16 +467,16 @@ serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(se
 </div>
 <div class="segment" data-hex="661418d92aaf3626dfe5670f3127d6ed" data-name="Authentication Tag">
 
-<p>The cipher outputs not only a ciphertext but also an authentication tag, which allows recipients to verify that the ciphertext was not modified while not disclosing any info about the plaintext to attackers.</p>
+<p>The cipher outputs not only a ciphertext but also an authentication tag, which allows recipients to verify that the ciphertext was not modified while not revealing any information about the plaintext to attackers.</p>
 </div>
 </div>
 
 <p>Here&#39;s the result that we get after decryption:</p>
 <p>08000002000016</p>
 <div class="server packet">
-<div class="segment" data-hex="080000020000" data-name="Encrypted Extensions">
+<div class="segment" data-hex="080000020000" data-name="Handshake Header">
 
-<p>All extensions not necessary for performing key exchange should only be sent here to avoid divulging information to an attacker.</p>
+<p>All extensions not necessary for performing key exchange must be sent here for maximum privacy.</p>
 <ul>
 <li><code>08</code>: message type (8 for EncryptedExtensions)</li>
 <li><code>00 00 02</code>: message length (2 bytes)</li>
@@ -1011,7 +1011,29 @@ nLRbwHOoq7hHwg==
 -----END CERTIFICATE-----</code></pre></div>
 
 <p>This yields pretty much the same information as what was listed in the manual breakdown, sans all the byte-level details. At the end, the certificate is also shown in <a href="https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail">PEM format</a>, which is just Base64-encoded DER with some extra lines attached.</p>
-<h1 id="s--c-encrypted-extensions">S → C: Encrypted Extensions <a class="section-link" href="#s--c-encrypted-extensions">&sect;</a></h1><p>In this message, the server proves that it controls the private keys behind the certificate by signing </p>
+<h1 id="s--c-certificate-verify">S → C: Certificate Verify <a class="section-link" href="#s--c-certificate-verify">&sect;</a></h1><p>This message allows the server to prove that it controls the private keys behind the certificate by signing a hash of all the messages sent up until now. This also ensures that none of those messages were tampered with.</p>
+<div class="server packet">
+<div class="segment" data-hex="0f000104" data-name="Handshake Header">
+
+<ul>
+<li><code>0f</code>: message type (15 for CertificateVerify)</li>
+<li><code>00 01 04</code>: message length (260 bytes)</li>
+</ul>
+</div>
+<div class="segment" data-hex="0804" data-name="Signature Algorithm">
+
+<p>The algorithm used to sign the context hash (0x0804 for <code>rsa_pss_rsae_sha256</code>).</p>
+</div>
+<div  class="segment" data-hex="0100394fbf6cbd019e90b4a97a405d3f16ee5510dc3b34b5e1e844c75974be587137e7e25482a10decc7ba97219e880715c766e78d0fafad963cb95996a111fe798bc47060f2eb45b398b50a2e616c5566720865b7572d5ada5a5ea9168311c5ed3e1b49b03b04c463fca9ba1c7621b940731db06f4cda19c78933f1be5a40d4fda7848bd5c67cfe2d7c85dadd9d52a1d9db6b853ac877926ed5ea72cb35f852c664e98c2ac377cd8b3217d059356df20c3e86b6042ad88a39b676f2a338fb4909710b1c208336415959891f5e522ea6e7468f128adc391b643749ed56cda3280d59ef92ce26f66bb0b89f5c9ccfdf8fab7da7b5882bca27cc496ea0767f9ca44e9e" data-name="Signature">
+
+<p>The actual signature, which we can verify for ourselves: {TODO}</p>
+</div>
+<div class="segment" data-hex="16" data-name="Data Type">
+
+<p>The last byte denotes the actual record type (22 for handshake).</p>
+</div>
+</div>
+
 <h1 id="epilogue">Epilogue <a class="section-link" href="#epilogue">&sect;</a></h1><p>This article only shows part of what makes TLS tick. There&#39;s much more beneath the surface; things like session resumption, 0-RTT messages, client authentication, SNI, ALPN, the list goes on. To learn more, the RFC is your best friend. Skip ahead to the Further Reading section for some good references.</p>
 <h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session turned out to be surprisingly treacherous. I approached this blogpost with such fervor that I ended up developing a perverse affection towards TLS, one that left me waking up in the middle of night, sweating profusely, drifting in and out of consciousness as my sleep-addled brain tried in vain to comprehend X.509. In this case, it involved modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
 <pre><code class="hljs"><span class="hljs-comment">diff --git a/deps/openssl/openssl/ssl/statem/extensions_clnt.c b/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>

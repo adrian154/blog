@@ -475,9 +475,9 @@ d8b3916b7e1ed8d6fa07c7810eef53639b77e51e0fd8e044c1c9e1186fd63c49 x
 4c75e186e47a2627bb4501955a051d516653d9570f34c660e623d26e2175b956
 ```
 
-From here, TLS uses a process known as the [key schedule](https://datatracker.ietf.org/doc/html/rfc8446#section-7.1) to derive a set of keys from the shared secret. Essentially, it uses a set of cryptographic operations to take several "sources of entropy without context" (as the RFC calls it) and combine them into one state that can be used to generate new keys as needed. The importance of context will be explained in just a moment.
+From here, TLS uses a process known as the [key schedule](https://datatracker.ietf.org/doc/html/rfc8446#section-7.1) to generate keys from the shared secret. There are two primary cryptographic operations involved. The first is `hkdfExtract`, which introduces a new "source of entropy" (e.g. the shared secret) into the current key schedule state, making all future derived keys depend on the correctness of this value. The second is `deriveSecret`, which uses the key schedule state to actually generate a random key of a specific length. This process is necessary because TLS generally needs to create several keys deterministically from a single shared secret, and getting it wrong can have serious security implications.
 
-The key schedule begins with the calculation of an "early secret". This is normally used to include the pre-shared key in the key schedule. Since we don't have a PSK, this part is mostly irrelevant. However, we still have to do it, just with dummy values.
+The key schedule begins with the calculation of an "early secret". This is used to include the pre-shared key in the key schedule. Since we don't have a PSK, this part is mostly irrelevant. However, the spec says that we still have to do it, just with dummy values.
 
 ```js
 earlySecret = hkdfExtract(
@@ -499,7 +499,7 @@ Create the handshake secret using the shared value from key exchange and the der
 handshakeSecret = hkdfExtract(derivedSecret, sharedSecret);
 ```
 
-For the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to `deriveSecret` in a parameter called the *context*. This is why the Random field is included in the Hello messages: to prevent replay attacks. The Random fields change between handshakes, and thus, so does the context. This prevents an attacker from simply recording and replaying a TLS session in an attempt to repeat a request: the server will send a new Random field, creating a different context with a different secret key.
+For the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to `deriveSecret` in a parameter called the *context*. This is why the Random field is included in the Hello messages: to prevent replay attacks. The Random fields change between handshakes, and thus, so does the context. Without this protection, an attacker could simply record a client connecting to the server and replay the handshake in an attempt to extract the key; however, since the Random field sent by the server in the attacker's session would be different from the value sent in the previous session, the handshake context changes, and different keys are derived.
 
 `handshakeContext` is created by applying a cryptographic hash function to the raw data of the ClientHello and Server Hello messages, excluding the record header.
 
@@ -523,7 +523,7 @@ serverHandshakeKey = hkdfExpandLabel(serverHandshakeTrafficSecret, "key", Buffer
 serverHandshakeIV = hkdfExpandLabel(serverHandshakeTrafficSecret, "iv", Buffer.alloc(0), 12);
 ```
 
-The initialization vector (IV) ensures that even if the same piece of data is encrypted, a different ciphertext will result. We will explore this in a moment when we actually get to decrypting messages.
+The initialization vector (IV) ensures that every ciphertext is unique. Without a unique IV for each message, encrypting the same plaintext would produce the same ciphertext, which exposes a ton of information to attackers.
 
 The code used to explain this section is available [here](resources/tls/tls-key-schedule.js). 
 
@@ -563,7 +563,7 @@ The TLS plaintext, encrypted using the server's key and the initialization vecto
 </div>
 <div class="segment" data-hex="661418d92aaf3626dfe5670f3127d6ed" data-name="Authentication Tag">
 
-The cipher outputs not only a ciphertext but also an authentication tag, which allows recipients to verify that the ciphertext was not modified while not disclosing any info about the plaintext to attackers.
+The cipher outputs not only a ciphertext but also an authentication tag, which allows recipients to verify that the ciphertext was not modified while not revealing any information about the plaintext to attackers.
 
 </div>
 </div>
@@ -573,9 +573,9 @@ Here's the result that we get after decryption:
 08000002000016
 
 <div class="server packet">
-<div class="segment" data-hex="080000020000" data-name="Encrypted Extensions">
+<div class="segment" data-hex="080000020000" data-name="Handshake Header">
 
-All extensions not necessary for performing key exchange should only be sent here to avoid divulging information to an attacker.
+All extensions not necessary for performing key exchange must be sent here for maximum privacy.
 
 * `08`: message type (8 for EncryptedExtensions)
 * `00 00 02`: message length (2 bytes)
@@ -1101,9 +1101,33 @@ nLRbwHOoq7hHwg==
 
 This yields pretty much the same information as what was listed in the manual breakdown, sans all the byte-level details. At the end, the certificate is also shown in [PEM format](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail), which is just Base64-encoded DER with some extra lines attached.
 
-# S → C: Encrypted Extensions
+# S → C: Certificate Verify
 
-In this message, the server proves that it controls the private keys behind the certificate by signing 
+This message allows the server to prove that it controls the private keys behind the certificate by signing a hash of all the messages sent up until now. This also ensures that none of those messages were tampered with.
+
+<div class="server packet">
+<div class="segment" data-hex="0f000104" data-name="Handshake Header">
+
+* `0f`: message type (15 for CertificateVerify)
+* `00 01 04`: message length (260 bytes)
+
+</div>
+<div class="segment" data-hex="0804" data-name="Signature Algorithm">
+
+The algorithm used to sign the context hash (0x0804 for `rsa_pss_rsae_sha256`).
+
+</div>
+<div  class="segment" data-hex="0100394fbf6cbd019e90b4a97a405d3f16ee5510dc3b34b5e1e844c75974be587137e7e25482a10decc7ba97219e880715c766e78d0fafad963cb95996a111fe798bc47060f2eb45b398b50a2e616c5566720865b7572d5ada5a5ea9168311c5ed3e1b49b03b04c463fca9ba1c7621b940731db06f4cda19c78933f1be5a40d4fda7848bd5c67cfe2d7c85dadd9d52a1d9db6b853ac877926ed5ea72cb35f852c664e98c2ac377cd8b3217d059356df20c3e86b6042ad88a39b676f2a338fb4909710b1c208336415959891f5e522ea6e7468f128adc391b643749ed56cda3280d59ef92ce26f66bb0b89f5c9ccfdf8fab7da7b5882bca27cc496ea0767f9ca44e9e" data-name="Signature">
+
+The actual signature, which we can verify for ourselves: {TODO}
+
+</div>
+<div class="segment" data-hex="16" data-name="Data Type">
+
+The last byte denotes the actual record type (22 for handshake).
+
+</div>
+</div>
 
 # Epilogue
 
