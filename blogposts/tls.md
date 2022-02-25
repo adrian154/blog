@@ -1165,6 +1165,24 @@ The last byte denotes the actual record type (22 for handshake).
 </div>
 </div>
 
+# S → C: Finished
+
+As the name implies, this is the last message sent by the server in the handshake. It helps the client confirm that the handshake was successful and has not been tampered with.
+
+<div class="server packet">
+<div class="segment" data-hex="14000030" data-name="Handshake Header">
+
+* `14`: message type (20 for Finished)
+* `00 00 30`: message length (48 bytes) 
+
+</div>
+<div class="segment" data-hex="89625ec1d535045663cf6237a38b8d220dd00fe4ea50bfe2d51573680becf1c8bbae0421cb667bff10bc546c017aaef6" data-name="Verify Data">
+
+TODO
+
+</div>
+</div>
+
 # Epilogue
 
 This article only shows part of what makes TLS tick. There's much more beneath the surface; things like session resumption, 0-RTT messages, client authentication, SNI, ALPN, the list goes on. To learn more, the RFC is your best friend. Skip ahead to the Further Reading section for some good references.
