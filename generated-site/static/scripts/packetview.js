@@ -88,7 +88,7 @@ document.querySelectorAll(".packet").forEach(packet => {
 
         const preview = document.createElement("span");
         preview.classList.add("hex-segment");
-        preview.textContent = section.dataset.previewTruncate ? bytes.slice(0, section.dataset.previewTruncate).join(" ") + ".." : bytes.join(" ");
+        preview.textContent = section.dataset.previewTruncate ? bytes.slice(0, section.dataset.previewTruncate).join(" ") + " .." : bytes.join(" ");
         preview.classList.add("preview");
         container.append(preview);
 
