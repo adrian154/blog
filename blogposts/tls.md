@@ -357,7 +357,7 @@ This extension lists the supported key exchange modes for pre-shared keys. This 
 </div>
 <div class="segment" data-hex="003300260024001d00204b65e1788c1999350d0a44f50646a75c392584735d96d6d0b35b61c2f9375931" data-name="Extension: key_share">
 
-The client sends its public keys to the server in this extension. If the server supports the algorithm of the key sent in the handshake, all messages following the ClientHello can be encrypted. If the server doesn't support any of the key share algorithms, it may ask the client to resend the ClientHello message via a [Hello Retry Request](https://datatracker.ietf.org/doc/html/rfc8446#section-4.1.4), 
+The client sends its public keys to the server using this extension. If the server doesn't support any of the key share algorithms, it may ask the client to resend the ClientHello message via a [Hello Retry Request](https://datatracker.ietf.org/doc/html/rfc8446#section-4.1.4). This way, an unnecessary round trip can be avoided in most handshakes.
 
 * `00 33`: extension type (51 for key_share)
 * `00 26`: data length (38 bytes)
@@ -588,6 +588,8 @@ The last byte denotes the actual record type (22 for handshake).
 
 </div>
 </div>
+
+You can check out the code I used to decrypt the message [here](resources/tls/decrypt.js).
 
 # S → C: Certificate
 
@@ -1119,7 +1121,41 @@ The algorithm used to sign the context hash (0x0804 for `rsa_pss_rsae_sha256`).
 </div>
 <div  class="segment" data-hex="0100394fbf6cbd019e90b4a97a405d3f16ee5510dc3b34b5e1e844c75974be587137e7e25482a10decc7ba97219e880715c766e78d0fafad963cb95996a111fe798bc47060f2eb45b398b50a2e616c5566720865b7572d5ada5a5ea9168311c5ed3e1b49b03b04c463fca9ba1c7621b940731db06f4cda19c78933f1be5a40d4fda7848bd5c67cfe2d7c85dadd9d52a1d9db6b853ac877926ed5ea72cb35f852c664e98c2ac377cd8b3217d059356df20c3e86b6042ad88a39b676f2a338fb4909710b1c208336415959891f5e522ea6e7468f128adc391b643749ed56cda3280d59ef92ce26f66bb0b89f5c9ccfdf8fab7da7b5882bca27cc496ea0767f9ca44e9e" data-name="Signature">
 
-The actual signature, which we can verify for ourselves: {TODO}
+This is the actual signature. We can verify this with a little code.
+
+First, we construct the context hash, similar to what we did earlier to derive the handshake keys.
+
+```js
+contextHash = crypto.createHash("sha384").update(Buffer.concat([
+    ClientHello,
+    ServerHello,
+    EncryptedExtensions,
+    Certificate
+])).digest();
+```
+
+Next, we have to apply some padding to create the actual data which was signed.
+
+```
+data = Buffer.concat([
+    Buffer.from(new Array(64).fill(0x20)), // 64 spaces
+    Buffer.from("TLS 1.3, server CertificateVerify", "ascii"), // context string
+    Buffer.alloc(1), // null byte
+    contextHash // content to be signed
+]);
+```
+Finally, we can verify the signature.
+
+```
+console.log(crypto.verify(
+    "sha256",
+    data,
+    {key, padding: crypto.constants.RSA_PKCS1_PSS_PADDING},
+    signature
+)); // -> "true"
+```
+
+Even if a single bit of any of the inputs is modified, the signature will fail to verify.
 
 </div>
 <div class="segment" data-hex="16" data-name="Data Type">
