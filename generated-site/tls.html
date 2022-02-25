@@ -319,7 +319,7 @@
 </div>
 <div class="segment" data-hex="003300260024001d00204b65e1788c1999350d0a44f50646a75c392584735d96d6d0b35b61c2f9375931" data-name="Extension: key_share">
 
-<p>The client sends its public keys to the server in this extension. If the server supports the algorithm of the key sent in the handshake, all messages following the ClientHello can be encrypted. If the server doesn&#39;t support any of the key share algorithms, it may ask the client to resend the ClientHello message via a <a href="https://datatracker.ietf.org/doc/html/rfc8446#section-4.1.4">Hello Retry Request</a>, </p>
+<p>The client sends its public keys to the server using this extension. If the server doesn&#39;t support any of the key share algorithms, it may ask the client to resend the ClientHello message via a <a href="https://datatracker.ietf.org/doc/html/rfc8446#section-4.1.4">Hello Retry Request</a>. This way, an unnecessary round trip can be avoided in most handshakes.</p>
 <ul>
 <li><code>00 33</code>: extension type (51 for key_share)</li>
 <li><code>00 26</code>: data length (38 bytes)<ul>
@@ -436,7 +436,7 @@ clientHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(cl
 <span class="hljs-comment">// server credentials</span>
 serverHandshakeKey = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">32</span>);
 serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;iv&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">12</span>);</code></pre><p>The initialization vector (IV) ensures that every ciphertext is unique. Without a unique IV for each message, encrypting the same plaintext would produce the same ciphertext, which exposes a ton of information to attackers.</p>
-<p>The code used to explain this section is available <a href="resources/tls/tls-key-schedule.js">here</a>. </p>
+<p>The code used to explain this section is available <a href="https://github.com/adrian154/blog/blob/main/generated-site/resources/tls/key-schedule.js">here</a>. </p>
 <h1 id="s--c-change-cipher-spec">S → C: Change Cipher Spec <a class="section-link" href="#s--c-change-cipher-spec">&sect;</a></h1><p>Next, the server sends the Change Cipher Spec message. This isn&#39;t used in TLS 1.3, but to avoid confusing intermediate nodes, this message is still sent. From this point on, the rest of the handshake is encrypted.</p>
 <div class="server packet">
 <div class="segment" data-hex="140303000101" data-name="Record Header">
@@ -489,6 +489,7 @@ serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(se
 </div>
 </div>
 
+<p>You can check out the code I used to decrypt the message <a href="https://github.com/adrian154/blog/blob/main/generated-site/resources/tls/decrypt.js">here</a>.</p>
 <h1 id="s--c-certificate">S → C: Certificate <a class="section-link" href="#s--c-certificate">&sect;</a></h1><p>The server sends its certificate to the client. Here, the certificate message is abridged since most of it consists of the actual certificate itself, which is explained below.</p>
 <p><em>Only the decrypted record is shown.</em></p>
 <div class="server packet">
@@ -1026,7 +1027,26 @@ nLRbwHOoq7hHwg==
 </div>
 <div  class="segment" data-hex="0100394fbf6cbd019e90b4a97a405d3f16ee5510dc3b34b5e1e844c75974be587137e7e25482a10decc7ba97219e880715c766e78d0fafad963cb95996a111fe798bc47060f2eb45b398b50a2e616c5566720865b7572d5ada5a5ea9168311c5ed3e1b49b03b04c463fca9ba1c7621b940731db06f4cda19c78933f1be5a40d4fda7848bd5c67cfe2d7c85dadd9d52a1d9db6b853ac877926ed5ea72cb35f852c664e98c2ac377cd8b3217d059356df20c3e86b6042ad88a39b676f2a338fb4909710b1c208336415959891f5e522ea6e7468f128adc391b643749ed56cda3280d59ef92ce26f66bb0b89f5c9ccfdf8fab7da7b5882bca27cc496ea0767f9ca44e9e" data-name="Signature">
 
-<p>The actual signature, which we can verify for ourselves: {TODO}</p>
+<p>This is the actual signature. We can verify this with a little code.</p>
+<p>First, we construct the context hash, similar to what we did earlier to derive the handshake keys.</p>
+<pre><code class="hljs">contextHash = crypto.<span class="hljs-title function_">createHash</span>(<span class="hljs-string">&quot;sha384&quot;</span>).<span class="hljs-title function_">update</span>(<span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">concat</span>([
+    <span class="hljs-title class_">ClientHello</span>,
+    <span class="hljs-title class_">ServerHello</span>,
+    <span class="hljs-title class_">EncryptedExtensions</span>,
+    <span class="hljs-title class_">Certificate</span>
+])).<span class="hljs-title function_">digest</span>();</code></pre><p>Next, we have to apply some padding to create the actual data which was signed.</p>
+<pre><code class="hljs">data = <span class="hljs-keyword">Buffer</span>.concat([
+    <span class="hljs-keyword">Buffer</span>.from(<span class="hljs-keyword">new</span> <span class="hljs-keyword">Array</span>(<span class="hljs-number">64</span>).fill(<span class="hljs-number">0</span>x20)), // <span class="hljs-number">64</span> spaces
+    <span class="hljs-keyword">Buffer</span>.from(<span class="hljs-string">&quot;TLS 1.3, server CertificateVerify&quot;</span>, <span class="hljs-string">&quot;ascii&quot;</span>), // <span class="hljs-keyword">context</span> <span class="hljs-built_in">string</span>
+    <span class="hljs-keyword">Buffer</span>.alloc(<span class="hljs-number">1</span>), // <span class="hljs-keyword">null</span> byte
+    contextHash // content <span class="hljs-keyword">to</span> be <span class="hljs-built_in">signed</span>
+]);</code></pre><p>Finally, we can verify the signature.</p>
+<pre><code class="hljs"><span class="hljs-title">console</span>.log(crypto.verify(
+    <span class="hljs-string">&quot;sha256&quot;</span>,
+    <span class="hljs-class"><span class="hljs-keyword">data</span>,</span>
+    {key, padding: crypto.constants.<span class="hljs-type">RSA_PKCS1_PSS_PADDING</span>},
+    signature
+)); // -&gt; <span class="hljs-string">&quot;true&quot;</span></code></pre><p>Even if a single bit of any of the inputs is modified, the signature will fail to verify. You can check out the full script <a href="https://github.com/adrian154/blog/blob/main/generated-site/resources/tls/certificate-verify.js">here</a>.</p>
 </div>
 <div class="segment" data-hex="16" data-name="Data Type">
 
