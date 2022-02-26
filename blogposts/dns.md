@@ -1,4 +1,4 @@
-*[This article is part of a series.](internet-part-2.html)*
+[*This post is part of a series.*](internet-series.html)
 
 When you typed `blog.bithole.dev` into your browser, it sent a request addressed towards my server at 142.93.26.121, which replied with this blogpost. But how did it know where to send the request? The answer is the **domain name system**, or DNS. Let's see how it works.
 
@@ -203,13 +203,9 @@ Reverse DNS is powered by delegations, just like forward DNS. The `in-addr.arpa`
 
 IPv6 reverse DNS uses the `ip6.arpa` domain, and unlike IPv4 every single hex digit within the address counts as a separate zone. This yields rather unwieldy domain names like `3.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.e.7.3.0.0.0.2.6.2.ip6.arpa`, but it offers a much higher granularity of 4 bits. However, the huge number of IPv6 addresses *does* present a scaling challenge to organizations that manage large numbers of IPv6 networks (such as ISPs); approaches towards mangaging reverse DNS for many IPv6 networks are discussed in [RFC 8501](https://datatracker.ietf.org/doc/html/rfc8501). 
 
-# Securing DNS
+# Epilogue
 
-Thanks to DNS's ubiquity, it is constantly under attack from all sides, meaning that securing DNS has become a topic of great interest in recent years. One category of attacks that is particularly concerning is [DNS spoofing](https://en.wikipedia.org/wiki/DNS_spoofing), which exploits various vulnerabilities in nameservers to cause incorrect results to be returned, potentially causing users to send traffic to the attacker's servers. This is made worse by the fact that even if a single hijacked response is returned, the record may persist in the domain name system for extended periods of times due to caching by resolvers. This phenomenon is known as **cache poisoning**. Attacks of this type are partially mitigated for the Web because TLS, which functions independently of DNS, prevents attackers from successfully masquerading as the site which the user is trying to visit; however, there are still weaknesses:
-* Users may not notice that HTTPS is not available, and continue to the spoofed site over unsecured HTTP.
-* The spoofed site may discreetly redirect the user to a similar domain which the attacker has a valid TLS certificate for, fooling users into believing that their connection is secured.
-
-Mitigations exist at several level to prevent attacks of this type from succeeding. At the application layer, many browsers have adopted [HSTS Preload](https://hstspreload.org/https://hstspreload.org/), which automatically prevents users from using HTTP for certain domains. However, since we're talking about DNS today, let's learn about [DNSSEC](https://datatracker.ietf.org/doc/html/rfc4033).
+If you liked this article, check out its siblings which talk about other Internet technologies [here](internet-series.html).
 
 # Further Reading / References
 * [RFC 1034: DNS Concepts (IETF)](https://datatracker.ietf.org/doc/html/rfc1034)

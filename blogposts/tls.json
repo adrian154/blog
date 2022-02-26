@@ -1,7 +1,7 @@
 {
     "title": "Transport Layer Security",
     "description": "In this article, we examine the gory details of a TLS session, down to every byte exchanged. If you've ever wondered how the Web is secured, this one's for you.",
-    "timestamp": 1643000114865,
+    "timestamp": 1645857396650,
     "publish": false,
     "scripts": ["static/scripts/packetview.js"],
     "stylesheets": ["static/stylesheets/packetview.css"]

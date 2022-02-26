@@ -1,3 +1,5 @@
+[*This post is part of a series.*](internet-series.html)
+
 Some time ago, it occurred to me that I didn't *really* understand what made the Internet work. Sure, I am all too familiar with what the user experience is like, and my adventures in web development have forced me to acquire a fair bit of networking knowledge, but between the bits of light there existed vast chasms of confusion. So I decided to do some reading, some soul-searching, and publish my findings in the form of a blog post.
 
 Please note that this post is by no means a comprehensive overview of *all* the technologies involved in the Internet; that would require far more lifetimes than the one which I have to waste. I probably won't cover the Internet's history in very much depth, either, though that is a fascinating topic that I strongly encourage you to look into.
@@ -319,9 +321,9 @@ One of IPv6's most attractive features is its longer address length (128 bits), 
 
 IPv6 also supports multicast traffic; in fact, broadcast is entirely supplanted by multicast. There are special addresses used for routing packets to all nodes or routers on a local network, but these are all implemented using [Multicast Listener Discover](https://datatracker.ietf.org/doc/html/rfc3810), IPv6's replacement for IGMP.
 
-# To Be Continued
+# Epilogue
 
-We made it to the end. Congratulations.
+This post is very much still a work in progress. As you may have noticed, the IPv6 section is rather sparse. When I can find time, I plan on writing more and revising various parts of the article (which was written in quite a hurry, as you may have noticed). Until then, [check out the other posts in the series](internet-series.html)!
 
 # Further Reading / References
 * [What is BGP? (Cloudflare)](https://www.cloudflare.com/learning/security/glossary/what-is-bgp/)

