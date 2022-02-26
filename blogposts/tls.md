@@ -1136,7 +1136,7 @@ contextHash = crypto.createHash("sha384").update(Buffer.concat([
 
 Next, we have to apply some padding to create the actual data which was signed.
 
-```
+```js
 data = Buffer.concat([
     Buffer.from(new Array(64).fill(0x20)), // 64 spaces
     Buffer.from("TLS 1.3, server CertificateVerify", "ascii"), // context string
@@ -1146,7 +1146,7 @@ data = Buffer.concat([
 ```
 Finally, we can verify the signature.
 
-```
+```js
 console.log(crypto.verify(
     "sha256",
     data,
@@ -1178,10 +1178,49 @@ As the name implies, this is the last message sent by the server in the handshak
 </div>
 <div class="segment" data-hex="89625ec1d535045663cf6237a38b8d220dd00fe4ea50bfe2d51573680becf1c8bbae0421cb667bff10bc546c017aaef6" data-name="Verify Data">
 
-TODO
+The first step towards generating the verification data is to derive a new key like so;
+
+```js
+serverFinishedKey = hkdfExpandLabel(serverHandshakeTrafficSecret, "finished", Buffer.alloc(0), HASHLEN);
+```
+
+Next, we compute yet another context hash, this time including the CertificateVerify message.
+
+```js
+contextHash = crypto.createHash("sha384").update(Buffer.concat([
+    ClientHello,
+    ServerHello,
+    EncryptedExtensions,
+    Certificate,
+    CertificateVerify
+])).digest();
+```
+
+Finally, we can compute the verification data.
+
+```js
+console.log(crypto.createHmac("sha384", finishedKey)
+                  .update(contextHash)
+                  .digest()
+                  .toString("hex"));
+```
+
+This yields:
+
+```plaintext
+89625ec1d535045663cf6237a38b8d220dd00fe4ea50bfe2d51573680becf1c8bbae0421cb667bff10bc546c017aaef6
+```
+
+which matches the value sent by the server, helping the client confirm that the authentication portion of the handshake is legitimate, and the derived keys are correct.
 
 </div>
 </div>
+
+# C → S: Change Cipher Spec
+
+As described earlier, this message is sent to avoid confusing intermediate nodes. It's ignored in TLS 1.3.
+
+
 
 # Epilogue
 

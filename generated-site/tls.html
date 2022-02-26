@@ -1035,22 +1035,50 @@ nLRbwHOoq7hHwg==
     <span class="hljs-title class_">EncryptedExtensions</span>,
     <span class="hljs-title class_">Certificate</span>
 ])).<span class="hljs-title function_">digest</span>();</code></pre><p>Next, we have to apply some padding to create the actual data which was signed.</p>
-<pre><code class="hljs">data = <span class="hljs-keyword">Buffer</span>.concat([
-    <span class="hljs-keyword">Buffer</span>.from(<span class="hljs-keyword">new</span> <span class="hljs-keyword">Array</span>(<span class="hljs-number">64</span>).fill(<span class="hljs-number">0</span>x20)), // <span class="hljs-number">64</span> spaces
-    <span class="hljs-keyword">Buffer</span>.from(<span class="hljs-string">&quot;TLS 1.3, server CertificateVerify&quot;</span>, <span class="hljs-string">&quot;ascii&quot;</span>), // <span class="hljs-keyword">context</span> <span class="hljs-built_in">string</span>
-    <span class="hljs-keyword">Buffer</span>.alloc(<span class="hljs-number">1</span>), // <span class="hljs-keyword">null</span> byte
-    contextHash // content <span class="hljs-keyword">to</span> be <span class="hljs-built_in">signed</span>
+<pre><code class="hljs">data = <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">concat</span>([
+    <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Array</span>(<span class="hljs-number">64</span>).<span class="hljs-title function_">fill</span>(<span class="hljs-number">0x20</span>)), <span class="hljs-comment">// 64 spaces</span>
+    <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>(<span class="hljs-string">&quot;TLS 1.3, server CertificateVerify&quot;</span>, <span class="hljs-string">&quot;ascii&quot;</span>), <span class="hljs-comment">// context string</span>
+    <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">1</span>), <span class="hljs-comment">// null byte</span>
+    contextHash <span class="hljs-comment">// content to be signed</span>
 ]);</code></pre><p>Finally, we can verify the signature.</p>
-<pre><code class="hljs"><span class="hljs-title">console</span>.log(crypto.verify(
+<pre><code class="hljs"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(crypto.<span class="hljs-title function_">verify</span>(
     <span class="hljs-string">&quot;sha256&quot;</span>,
-    <span class="hljs-class"><span class="hljs-keyword">data</span>,</span>
-    {key, padding: crypto.constants.<span class="hljs-type">RSA_PKCS1_PSS_PADDING</span>},
+    data,
+    {key, <span class="hljs-attr">padding</span>: crypto.<span class="hljs-property">constants</span>.<span class="hljs-property">RSA_PKCS1_PSS_PADDING</span>},
     signature
-)); // -&gt; <span class="hljs-string">&quot;true&quot;</span></code></pre><p>Even if a single bit of any of the inputs is modified, the signature will fail to verify. You can check out the full script <a href="https://github.com/adrian154/blog/blob/main/generated-site/resources/tls/certificate-verify.js">here</a>.</p>
+)); <span class="hljs-comment">// -&gt; &quot;true&quot;</span></code></pre><p>Even if a single bit of any of the inputs is modified, the signature will fail to verify. You can check out the full script <a href="https://github.com/adrian154/blog/blob/main/generated-site/resources/tls/certificate-verify.js">here</a>.</p>
 </div>
 <div class="segment" data-hex="16" data-name="Data Type">
 
 <p>The last byte denotes the actual record type (22 for handshake).</p>
+</div>
+</div>
+
+<h1 id="s--c-finished">S → C: Finished <a class="section-link" href="#s--c-finished">&sect;</a></h1><p>As the name implies, this is the last message sent by the server in the handshake. It helps the client confirm that the handshake was successful and has not been tampered with.</p>
+<div class="server packet">
+<div class="segment" data-hex="14000030" data-name="Handshake Header">
+
+<ul>
+<li><code>14</code>: message type (20 for Finished)</li>
+<li><code>00 00 30</code>: message length (48 bytes)</li>
+</ul>
+</div>
+<div class="segment" data-hex="89625ec1d535045663cf6237a38b8d220dd00fe4ea50bfe2d51573680becf1c8bbae0421cb667bff10bc546c017aaef6" data-name="Verify Data">
+
+<p>The first step towards generating the verification data is to derive a new key like so;</p>
+<pre><code class="hljs">serverFinishedKey = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;finished&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-variable constant_">HASHLEN</span>);</code></pre><p>Next, we compute yet another context hash, this time including the CertificateVerify message.</p>
+<pre><code class="hljs">contextHash = crypto.<span class="hljs-title function_">createHash</span>(<span class="hljs-string">&quot;sha384&quot;</span>).<span class="hljs-title function_">update</span>(<span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">concat</span>([
+    <span class="hljs-title class_">ClientHello</span>,
+    <span class="hljs-title class_">ServerHello</span>,
+    <span class="hljs-title class_">EncryptedExtensions</span>,
+    <span class="hljs-title class_">Certificate</span>,
+    <span class="hljs-title class_">CertificateVerify</span>
+])).<span class="hljs-title function_">digest</span>();</code></pre><p>Finally, we can compute the verification data.</p>
+<pre><code class="hljs"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(crypto.<span class="hljs-title function_">createHmac</span>(<span class="hljs-string">&quot;sha384&quot;</span>, finishedKey)
+                  .<span class="hljs-title function_">update</span>(contextHash)
+                  .<span class="hljs-title function_">digest</span>()
+                  .<span class="hljs-title function_">toString</span>(<span class="hljs-string">&quot;hex&quot;</span>));</code></pre><p>This yields:</p>
+<pre><code class="hljs">89625ec1d535045663cf6237a38b8d220dd00fe4ea50bfe2d51573680becf1c8bbae0421cb667bff10bc546c017aaef6</code></pre><p>which matches the value sent by the server, helping the client confirm that the authentication portion of the handshake is legitimate, and the derived keys are correct.</p>
 </div>
 </div>
 

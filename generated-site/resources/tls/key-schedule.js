@@ -62,7 +62,17 @@ clientHandshakeIV = hkdfExpandLabel(clientHandshakeTrafficSecret, "iv", Buffer.a
 serverHandshakeKey = hkdfExpandLabel(serverHandshakeTrafficSecret, "key", Buffer.alloc(0), 32);
 serverHandshakeIV = hkdfExpandLabel(serverHandshakeTrafficSecret, "iv", Buffer.alloc(0), 12);
 
+// *certificate + certificateverify*
+
+clientFinishedKey = hkdfExpandLabel(clientHandshakeTrafficSecret, "finished", Buffer.alloc(0), HASHLEN);
+serverFinishedKey = hkdfExpandLabel(serverHandshakeTrafficSecret, "finished", Buffer.alloc(0), HASHLEN);
+
 // --- end illustrative part
 
-console.log(`Client: key=${clientHandshakeKey.toString("hex")}, IV=${clientHandshakeIV.toString("hex")}`);
-console.log(`Server: key=${serverHandshakeKey.toString("hex")}, IV=${serverHandshakeIV.toString("hex")}`);
+console.log(">>> After ServerHello sent");
+console.log(`client:\n\tkey=${clientHandshakeKey.toString("hex")}\n\tIV=${clientHandshakeIV.toString("hex")}`);
+console.log(`server:\n\tkey=${serverHandshakeKey.toString("hex")}\n\tIV=${serverHandshakeIV.toString("hex")}`);
+
+console.log(">>> After CertificateVerify");
+console.log(`client finished key: ${clientFinishedKey.toString("hex")}`);
+console.log(`server finished key: ${serverFinishedKey.toString("hex")}`);
