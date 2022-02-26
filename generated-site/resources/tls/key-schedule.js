@@ -1,7 +1,7 @@
 // Simulate the TLS key schedule
 
 const crypto = require("crypto");
-const {ClientHello, ServerHello} = require("./inputs.js");
+const {ClientHello, ServerHello, EncryptedExtensions, Certificate, CertificateVerify, ServerFinished} = require("./inputs.js");
 
 const HASH = "sha384", HASHLEN = 384 / 8;
 const hmacHash = (salt, key) => crypto.createHmac(HASH, salt).update(key).digest();
@@ -62,10 +62,25 @@ clientHandshakeIV = hkdfExpandLabel(clientHandshakeTrafficSecret, "iv", Buffer.a
 serverHandshakeKey = hkdfExpandLabel(serverHandshakeTrafficSecret, "key", Buffer.alloc(0), 32);
 serverHandshakeIV = hkdfExpandLabel(serverHandshakeTrafficSecret, "iv", Buffer.alloc(0), 12);
 
-// *certificate + certificateverify*
+// >>> after certificate and certificateverify
 
 clientFinishedKey = hkdfExpandLabel(clientHandshakeTrafficSecret, "finished", Buffer.alloc(0), HASHLEN);
 serverFinishedKey = hkdfExpandLabel(serverHandshakeTrafficSecret, "finished", Buffer.alloc(0), HASHLEN);
+
+// >>> after server finished
+
+derivedSecret2 = deriveSecret(handshakeSecret, "derived", Buffer.alloc(0));
+masterSecret = hkdfExtract(derivedSecret2, Buffer.alloc(HASHLEN));
+
+applicationContext = Buffer.concat([handshakeContext, EncryptedExtensions, Certificate, CertificateVerify, ServerFinished]);
+clientApplicationTrafficSecret = deriveSecret(masterSecret, "c ap traffic", applicationContext);
+serverApplicationTrafficSecret = deriveSecret(masterSecret, "s ap traffic", applicationContext);
+
+clientApplicationKey = hkdfExpandLabel(clientApplicationTrafficSecret, "key", Buffer.alloc(0), 32);
+clientApplicationIV = hkdfExpandLabel(clientApplicationTrafficSecret, "iv", Buffer.alloc(0), 12);
+
+serverApplicationKey = hkdfExpandLabel(serverApplicationTrafficSecret, "key", Buffer.alloc(0), 32);
+serverApplicationIV = hkdfExpandLabel(serverApplicationTrafficSecret, "iv", Buffer.alloc(0), 12);
 
 // --- end illustrative part
 
@@ -76,3 +91,7 @@ console.log(`server:\n\tkey=${serverHandshakeKey.toString("hex")}\n\tIV=${server
 console.log(">>> After CertificateVerify");
 console.log(`client finished key: ${clientFinishedKey.toString("hex")}`);
 console.log(`server finished key: ${serverFinishedKey.toString("hex")}`);
+
+console.log(">>> After Finished");
+console.log(`client:\n\tkey=${clientApplicationKey.toString("hex")}\n\tIV=${clientApplicationIV.toString("hex")}`);
+console.log(`server:\n\tkey=${serverApplicationKey.toString("hex")}\n\tIV=${serverApplicationIV.toString("hex")}`);

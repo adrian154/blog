@@ -437,6 +437,8 @@ clientHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(cl
 serverHandshakeKey = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">32</span>);
 serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;iv&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">12</span>);</code></pre><p>The initialization vector (IV) ensures that every ciphertext is unique. Without a unique IV for each message, encrypting the same plaintext would produce the same ciphertext, which exposes a ton of information to attackers.</p>
 <p>The code used to explain this section is available <a href="https://github.com/adrian154/blog/blob/main/generated-site/resources/tls/key-schedule.js">here</a>. </p>
+<h2 id="perfect-forward-secrecy">Perfect Forward Secrecy <a class="section-link" href="#perfect-forward-secrecy">&sect;</a></h2><p>One important property offered by this complex key schedule is <a href="https://en.wikipedia.org/wiki/Forward_secrecy">perfect forward secrecy</a>: even if the server&#39;s certificate private key is eventually compromised, a client cannot decrypt recorded TLS traffic sent before the compromise. It&#39;s easy to see why this is the case: the public key the server sent in its key_share has nothing to do with the keypair in the server&#39;s certificate, so the keys used to calculate the shared secret are referred to as <em>ephemeral</em>. As long as these ephemeral keys aren&#39;t saved in a place where an attacker could obtain them eventually, the forward secrecy remains unbroken. Indeed, the TLS 1.3 RFC recommends immediately overwriting these values in  memory to reduce potential exposures.  </p>
+<p>The only reason we&#39;re able to decrypt the capture is because I passed a flag to OpenSSL telling it to log some of the values used in key exchange (such as the handshake traffic secrets) to a text file that can be parsed by tools such as <a href="https://www.wireshark.org/">Wireshark</a>.</p>
 <h1 id="s--c-change-cipher-spec">S → C: Change Cipher Spec <a class="section-link" href="#s--c-change-cipher-spec">&sect;</a></h1><p>Next, the server sends the Change Cipher Spec message. This isn&#39;t used in TLS 1.3, but to avoid confusing intermediate nodes, this message is still sent. From this point on, the rest of the handshake is encrypted.</p>
 <div class="server packet">
 <div class="segment" data-hex="140303000101" data-name="Record Header">
@@ -472,7 +474,6 @@ serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(se
 </div>
 
 <p>Here&#39;s the result that we get after decryption:</p>
-<p>08000002000016</p>
 <div class="server packet">
 <div class="segment" data-hex="080000020000" data-name="Handshake Header">
 
@@ -491,7 +492,7 @@ serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(se
 
 <p>You can check out the code I used to decrypt the message <a href="https://github.com/adrian154/blog/blob/main/generated-site/resources/tls/decrypt.js">here</a>.</p>
 <h1 id="s--c-certificate">S → C: Certificate <a class="section-link" href="#s--c-certificate">&sect;</a></h1><p>The server sends its certificate to the client. Here, the certificate message is abridged since most of it consists of the actual certificate itself, which is explained below.</p>
-<p><em>Only the decrypted record is shown.</em></p>
+<p><em>Only the decrypted message is shown.</em></p>
 <div class="server packet">
 <div class="segment" data-hex="0b000fbb000fb700052a..000000051a..0000000564..000016" data-name="Handshake Header">
 
@@ -891,7 +892,7 @@ serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(se
 <p>The three certificates are available for download: <a href="resources/tls/cert1.crt">test.bithole.dev</a>, <a href="resources/tls/cert2.crt">R3</a>, and <a href="resources/tls/cert3.crt">ISRG Root X1</a>. You can dump information about these certificates using OpenSSL from the terminal:</p>
 <div class="limited-height-code">
 
-<pre><code class="hljs">$ openssl x509 -in cert2.crt -inform der -text
+<pre><code class="hljs">$ openssl x509 -in cert2.crt -inform der -noout -text
 Certificate:
     Data:
         Version: 3 (0x2)
@@ -979,40 +980,11 @@ Certificate:
          52:43:a6:6f:32:57:65:4d:32:81:df:38:53:85:5d:7e:5d:66:
          29:ea:b8:dd:e4:95:b5:cd:b5:56:12:42:cd:c4:4e:c6:25:38:
          44:50:6d:ec:ce:00:55:18:fe:e9:49:64:d4:4e:ca:97:9c:b4:
-         5b:c0:73:a8:ab:b8:47:c2
------BEGIN CERTIFICATE-----
-MIIFFjCCAv6gAwIBAgIRAJErCErPDBinU/bWLiWnX1owDQYJKoZIhvcNAQELBQAw
-TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
-cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMjAwOTA0MDAwMDAw
-WhcNMjUwOTE1MTYwMDAwWjAyMQswCQYDVQQGEwJVUzEWMBQGA1UEChMNTGV0J3Mg
-RW5jcnlwdDELMAkGA1UEAxMCUjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
-AoIBAQC7AhUozPaglNMPEuyNVZLD+ILxmaZ6QoinXSaqtSu5xUyxr45r+XXIo9cP
-R5QUVTVXjJ6oojkZ9YI8QqlObvU7wy7bjcCwXPNZOOftz2nwWgsbvsCUJCWH+jdx
-sxPnHKzhm+/b5DtFUkWWqcFTzjTIUu61ru2P3mBw4qVUq7ZtDpelQDRrK9O8Zutm
-NHz6a4uPVymZ+DAXXbpyb/uBxa3Shlg9F8fnCbvxK/eG3MHacV3URuPMrSXBiLxg
-Z3Vms/EY96Jc5lP/Ooi2R6X/ExjqmAl3P51T+c8B5fWmcBcUr2Ok/5mzk53cU6cG
-/kiFHaFpriV1uxPMUgP17VGhi9sVAgMBAAGjggEIMIIBBDAOBgNVHQ8BAf8EBAMC
-AYYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMBIGA1UdEwEB/wQIMAYB
-Af8CAQAwHQYDVR0OBBYEFBQusxe3WFbLrlAJQOYfr52LFMLGMB8GA1UdIwQYMBaA
-FHm0WeZ7tuXkAXOACIjIGlj26ZtuMDIGCCsGAQUFBwEBBCYwJDAiBggrBgEFBQcw
-AoYWaHR0cDovL3gxLmkubGVuY3Iub3JnLzAnBgNVHR8EIDAeMBygGqAYhhZodHRw
-Oi8veDEuYy5sZW5jci5vcmcvMCIGA1UdIAQbMBkwCAYGZ4EMAQIBMA0GCysGAQQB
-gt8TAQEBMA0GCSqGSIb3DQEBCwUAA4ICAQCFyk5HPqP3hUSFvNVneLKYY611TR6W
-PTNlclQtgaDqw+34IL9fzLdwALduO/ZelN7kIJ+m74uyA+eitRY8kc607TkC53wl
-ikfmZW4/RvTZ8M6UK+5UzhK8jCdLuMGYL6KvzXGRSgi3yLgjewQtCPkIVz6D2QQz
-CkcheAmCJ8MqyJu5zlzyZMjAvnnAT45tRAxekrsu94sQ4egdRCnbWSDtY7kh+BIm
-lJNXoB1lBMEKIq4QDUOXoRgffuDghje1WrG9ML+Hbisq/yFOGwXD9RiX8F6sw6W4
-avAuvDszue5L3sz85K+EC4Y/wFVDNvZo4TYXao6Z0f+lQKc0t8DQYzk1OXVu8rp2
-yJMC6alLbBfODALZvYH7n7do1AZls4I9d1P4jnkDrQoxB3UqQ9hVl3LEKQ73xF1O
-yK5GhDDX8oVfGKF5u+decIsH4YaTw7mP3GFxJSqv3+0lUFJoi5Lc5da149p90Ids
-hCExroL1+7mryIkXPeFM5TgO9r0rvZaBFOvV2z0gp35Z0+L4WPlbuEjN/lxPFin+
-HlUjr8gRsI3qfJOQFy/9rKIJR0Y/8Omwt/8oTWgy1mdeHmmjk7j1nYsvC9JSQ6Zv
-MldlTTKB3zhThV1+XWYp6rjd5JW1zbVWEkLNxE7GJThEUG3szgBVGP7pSWTUTsqX
-nLRbwHOoq7hHwg==
------END CERTIFICATE-----</code></pre></div>
+         5b:c0:73:a8:ab:b8:47:c2</code></pre></div>
 
-<p>This yields pretty much the same information as what was listed in the manual breakdown, sans all the byte-level details. At the end, the certificate is also shown in <a href="https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail">PEM format</a>, which is just Base64-encoded DER with some extra lines attached.</p>
+<p>This yields pretty much the same information as what was listed in the manual breakdown, sans all the byte-level details.</p>
 <h1 id="s--c-certificate-verify">S → C: Certificate Verify <a class="section-link" href="#s--c-certificate-verify">&sect;</a></h1><p>This message allows the server to prove that it controls the private keys behind the certificate by signing a hash of all the messages sent up until now. This also ensures that none of those messages were tampered with.</p>
+<p><em>Only the decrypted message is shown.</em></p>
 <div class="server packet">
 <div class="segment" data-hex="0f000104" data-name="Handshake Header">
 
@@ -1054,7 +1026,8 @@ nLRbwHOoq7hHwg==
 </div>
 </div>
 
-<h1 id="s--c-finished">S → C: Finished <a class="section-link" href="#s--c-finished">&sect;</a></h1><p>As the name implies, this is the last message sent by the server in the handshake. It helps the client confirm that the handshake was successful and has not been tampered with.</p>
+<h1 id="s--c-finished">S → C: Finished <a class="section-link" href="#s--c-finished">&sect;</a></h1><p>As the name implies, this is the last message sent by the server in the handshake. It contains the HMAC of all messages sent up to this point, created using a key derived from the server&#39;s handshake traffic secret, guaranteeing that none of the handshake has been interfered with.</p>
+<p><em>Only the decrypted message is shown.</em></p>
 <div class="server packet">
 <div class="segment" data-hex="14000030" data-name="Handshake Header">
 
@@ -1082,8 +1055,121 @@ nLRbwHOoq7hHwg==
 </div>
 </div>
 
-<h1 id="epilogue">Epilogue <a class="section-link" href="#epilogue">&sect;</a></h1><p>This article only shows part of what makes TLS tick. There&#39;s much more beneath the surface; things like session resumption, 0-RTT messages, client authentication, SNI, ALPN, the list goes on. To learn more, the RFC is your best friend. Skip ahead to the Further Reading section for some good references.</p>
-<h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session turned out to be surprisingly treacherous. I approached this blogpost with such fervor that I ended up developing a perverse affection towards TLS, one that left me waking up in the middle of night, sweating profusely, drifting in and out of consciousness as my sleep-addled brain tried in vain to comprehend X.509. In this case, it involved modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
+<div class="info-box">
+
+<p>TODO: Explain HMAC</p>
+</div>
+
+<h1 id="c--s-change-cipher-spec">C → S: Change Cipher Spec <a class="section-link" href="#c--s-change-cipher-spec">&sect;</a></h1><p>The client also sends a Change Cipher Spec message to the server, which is ignored in TLS 1.3. The byte-level analysis is omitted since it is identical to the one <a href="#s--c-change-cipher-spec">sent by the server</a> earlier in the handshake.</p>
+<h1 id="c--s-finished">C → S: Finished <a class="section-link" href="#c--s-finished">&sect;</a></h1><p>Like the server, the client also sends a Finished message to complete the handshake. </p>
+<p><em>Only the decrypted message is shown.</em></p>
+<div class="client packet">
+<div class="segment" data-hex="14000030" data-name="Handshake Header">
+
+<ul>
+<li><code>14</code>: message type (20 for Finished)</li>
+<li><code>00 00 30</code>: message length (48 bytes)</li>
+</ul>
+</div>
+<div class="segment" data-hex="13e0061c0160d048c9ea16964b12d5340630c8e30f04c48b895f98f898113d31b2c9653af573952ad5ead6719b34fc17" data-name="Verify Data">
+
+<p>The value of this field is derived in the same way as the server Finished method, but with a couple small differences:</p>
+<ul>
+<li>The client handshake traffic secret is used as the key to the HMAC.</li>
+<li>The context hash now has to include the Finished message sent by the server.</li>
+</ul>
+<p>If we re-run the script using the updated values, we get this hash:</p>
+<pre><code class="hljs">13e0061c0160d048c9ea16964b12d5340630c8e30f04c48b895f98f898113d31b2c9653af573952ad5ead6719b34fc17</code></pre><p>which matches the expected value.</p>
+</div>
+</div>
+
+<h1 id="s--c-new-session-ticket">S → C: New Session Ticket <a class="section-link" href="#s--c-new-session-ticket">&sect;</a></h1><p>TLS 1.3 supports a feature called session resumption to reduce the number of full key exchanges a client has to do. Here&#39;s how it works: after completing a handshake, the server may send the client a value called a <strong>session ticket</strong>. Next time, the client can present the session ticket to the server as a preshared key and pick up last time the two parties left off, instead of starting from scratch. Let&#39;s examine the parts of a session ticket.</p>
+<p><em>Only the decrypted message is shown.</em></p>
+<div class="server packet">
+<div class="segment" data-hex="04000105" data-name="Handshake Header">
+
+<ul>
+<li><code>04</code>: message type (4 for NewSessionTicket)</li>
+<li><code>00 01 05</code>: message length (261 bytes)</li>
+</ul>
+</div>
+<div class="segment" data-hex="00001c20" data-name="Lifetime">
+
+<p>The lifetime of the ticket, in seconds. This ticket is valid for up to 7200 seconds after it is issued.</p>
+</div>
+<div class="segment" data-hex="5831c630" data-name="Age Add">
+
+<p>This value is used to prevent eavesdroppers from learning the lifetime of the ticket when the client uses it (since it will be sent in plaintext). Clients should add this value to the lifetime to obfuscate the value in a way that only a server which knows the age_add value can figure out the true lifetime. </p>
+<p>For example, if the client were to resume a session using this ticket, it would send <code>lifetime + age_add</code> to the server, which is <code>0x5831e250</code>. Without knowing <code>age_add</code>, it is <strong>impossible</strong> for an eavesdropper to determine <code>lifetime</code>.</p>
+</div>
+<div class="segment" data-hex="080000000000000000" data-name="Nonce">
+
+<p>The nonce uniquely identifies a ticket.</p>
+<ul>
+<li><code>08</code>: data length (8 bytes)</li>
+<li><code>00 00 00 ... 00 00 00</code>: the nonce</li>
+</ul>
+</div>
+<div class="segment" data-hex="00f070add483a5ee6559224cd7e701399258d31c391336459ca6c8a84447a2a4e6303d9c8a288de2295289f9f965dcec95cb79a91c880f11264a4b52f44a3c98652d69123dbe15b8cb593ff08cfe96ef2d9c953a3d05062dc7c5c08584577638af4f84814420f20f127eb08572dff7dc19218b60e9e12711fd33d0b99014ab918f533389e712b729c4ca909f3cecf900eb2917dc4fd1a54317c36dbf2028d6311ba631949d620c232106a8ba667a86d88e77c33b9acf010c1e2ca52db64c05f72baef8de3990c4da13e5511e624ca169d90159477ce15e53edeadaa1f87ddb30761bc803f0ee73b42df790af729dc4955697" data-name="Ticket" data-preview-truncate="47">
+
+<p>This part is the ticket itself. The value of the ticket has no defined structure; the server can put whatever it needs to keep track of clients in this field, hence why it is considered <a href="https://en.wikipedia.org/wiki/Opaque_data_type">opaque</a>.</p>
+</div>
+<div class="segment" data-hex="0000" data-name="Extensions Length">
+
+<p>Length of the extensions section (0 bytes).</p>
+</div>
+</div>
+
+<p>The second session ticket is omitted since it is pretty much the same as this one.</p>
+<h1 id="application-key-calculation">Application Key Calculation <a class="section-link" href="#application-key-calculation">&sect;</a></h1><p>From this point on, messages are encrypted by a new set of keys known as the <em>application traffic keys</em>. We can follow their derivation in the key schedule.</p>
+<p>First, we generate the master secret.</p>
+<pre><code class="hljs">derivedSecret2 = <span class="hljs-title function_">deriveSecret</span>(handshakeSecret, <span class="hljs-string">&quot;derived&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>));
+masterSecret = <span class="hljs-title function_">hkdfExtract</span>(derivedSecret2, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-variable constant_">HASHLEN</span>));</code></pre><p>Next, the application secrets are derived. These values will be used by the client and server, respectively, to generate their encryption keys.</p>
+<pre><code class="hljs">applicationContext = <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">concat</span>([handshakeContext, <span class="hljs-title class_">EncryptedExtensions</span>, <span class="hljs-title class_">Certificate</span>, <span class="hljs-title class_">CertificateVerify</span>, <span class="hljs-title class_">ServerFinished</span>]);
+clientApplicationTrafficSecret = <span class="hljs-title function_">deriveSecret</span>(masterSecret, <span class="hljs-string">&quot;c ap traffic&quot;</span>, applicationContext);
+serverApplicationTrafficSecret = <span class="hljs-title function_">deriveSecret</span>(masterSecret, <span class="hljs-string">&quot;s ap traffic&quot;</span>, applicationContext);</code></pre><p>We can now derive a set of values that we can use with our cipher (AES-256), much like we did earlier during the handshake.</p>
+<pre><code class="hljs">clientApplicationKey = <span class="hljs-title function_">hkdfExpandLabel</span>(clientApplicationTrafficSecret, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">32</span>);
+clientApplicationIV = <span class="hljs-title function_">hkdfExpandLabel</span>(clientApplicationTrafficSecret, <span class="hljs-string">&quot;iv&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">12</span>);
+
+serverApplicationKey = <span class="hljs-title function_">hkdfExpandLabel</span>(serverApplicationTrafficSecret, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">32</span>);
+serverApplicationIV = <span class="hljs-title function_">hkdfExpandLabel</span>(serverApplicationTrafficSecret, <span class="hljs-string">&quot;iv&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">12</span>);</code></pre><p>We are finally ready to read the last part of the session.</p>
+<h1 id="s--c-application-data">S → C: Application Data <a class="section-link" href="#s--c-application-data">&sect;</a></h1><p>The script I wrote to generate this session finishes by sending four bytes of application data to the server. Let&#39;s see what&#39;s inside.</p>
+<p>Here&#39;s the unencrypted packet:</p>
+<div class="server packet">
+<div class="segment" data-hex="1703030015" data-name="Record Header">
+
+<ul>
+<li><code>17</code>: record type (23 for Application Data)</li>
+<li><code>03 03</code>: protocol version (TLS 1.2 for backwards compatibility)</li>
+<li><code>00 15</code>: length of payload (21 bytes)</li>
+</ul>
+</div>
+<div class="segment" data-hex="09666bb5a3" data-name="Ciphertext">
+
+<p>The client&#39;s message to the server, encrypted.</p>
+</div>
+<div class="segment" data-hex="6067e79f614aac921bf3c5d86ba781ea" data-name="Authentication Tag">
+
+<p>Used by the AEAD cipher to verify that the cipher text is intact.</p>
+</div>
+</div>
+
+<p>Now, decrypted:</p>
+<div class="server packet">
+<div class="segment" data-hex="deadbeef" data-name="Data">
+
+<p>A cordial hello from our client to the server.</p>
+</div>
+<div class="segment" data-hex="17" data-name="Data Type">
+
+<p>The actual data type of the record (23 for Application Data).</p>
+</div>
+</div>
+
+<p>And, at long last, the client and server have a secure channel which they can communicate through.</p>
+<h1 id="epilogue">Epilogue <a class="section-link" href="#epilogue">&sect;</a></h1><p>This article only shows part of what makes TLS tick. There&#39;s much more beneath the surface; things like 0-RTT messages, client authentication, SNI, ALPN, the list goes on. Not to mention the fact that TLS 1.3 is vastly different from TLS 1.2 in many ways&mdash;though I specifically chose TLS 1.3 since it is more elegant than TLS 1.2, which is more nuanced thanks to several well-known security holes.</p>
+<p>To learn more, the RFCs are your best friend. Skip ahead to the Further Reading section for some good references.</p>
+<h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session turned out to be surprisingly tricky. I ended up modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
 <pre><code class="hljs"><span class="hljs-comment">diff --git a/deps/openssl/openssl/ssl/statem/extensions_clnt.c b/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>
 <span class="hljs-comment">index 7b46074232..bd765f43f0 100644</span>
 <span class="hljs-comment">--- a/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>
@@ -1116,7 +1202,7 @@ nLRbwHOoq7hHwg==
          /* Generate encoding of server key */
          encoded_pt_len = EVP_PKEY_get1_encoded_public_key(skey, &amp;encodedPoint);
          if (encoded_pt_len == 0) {
-</code></pre><p>After that, it was a simple matter of using NodeJS to create a TLS client and server, then capturing the exchange using <code>tcpdump</code>. Here&#39;s the client/server code.</p>
+</code></pre><p>Turns out, that was enough instrumentation to figure out all the other secrets used in the handshake. A couple weeks of banging my head on various RFCs was enough to piece together the rest of the puzzle. After that, it was a simple matter of using NodeJS to create a TLS client and server, then capturing the exchange using <code>tcpdump</code>. Here&#39;s the client/server code.</p>
 <pre><code class="hljs"><span class="hljs-comment">// run with --tls-keylog=...</span>
 
 <span class="hljs-keyword">const</span> tls = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;tls&quot;</span>);
