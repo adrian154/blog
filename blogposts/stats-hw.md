@@ -55,7 +55,7 @@ No &alpha; given, so let &alpha; = 0.05
 * For non-dog-owning patients, *n* > 30, so the Central Limit Theorem assures us that the sampling distribution will be normal. For dog-owning patients, *n* < 30 but no datapoints are given, so we must assume that the population is normally distributed to proceed with the *t*-test.
 * *n<sub>1</sub>* and *n<sub>2</sub>* are less than 10% of the population.
 
-`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{873-800}{\sqrt{\frac{136^2}{22} + \frac{134^2}{80}}} = 2.2367$$`
+`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{873-800}{\sqrt{\frac{136^2}{22} + \frac{134^2}{80}}}\\= 2.2367$$`
 
 <div class="t-plot"><div class="plot" data-mean="0" data-df="33.0827" data-t="2.2367" data-area="0.0322"></div>
 
@@ -76,7 +76,7 @@ H<sub>1</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> &ne; 0
 * *n* > 30, so the Central Limit Theorem assures us that the sampling distribution will be normal
 * *n<sub>1</sub>* and *n<sub>2</sub>* are less than 10% of the population.
 
-`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{29.6-27.3}{\sqrt{\frac{24.3^2}{247} + \frac{24.0^2}{253}}} = 1.0646$$`
+`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{29.6-27.3}{\sqrt{\frac{24.3^2}{247} + \frac{24.0^2}{253}}}\\= 1.0646$$`
 
 <div class="t-plot"><div class="plot" data-mean="0" data-df="497.3385" data-t="1.0646" data-area="0.2876"></div>
 
@@ -97,7 +97,7 @@ No &alpha; given, so let &alpha; = 0.05
 * *n* > 30, so the Central Limit Theorem assures us that the sampling distributions will be normal
 * *n<sub>1</sub>* and *n<sub>2</sub>* are less than 10% of the population.
 
-`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{3.12-3.23}{\sqrt{\frac{0.485^2}{184} + \frac{0.524^2}{114}}} = -1.8116$$`
+`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{3.12-3.23}{\sqrt{\frac{0.485^2}{184} + \frac{0.524^2}{114}}}\\= -1.8116$$`
 
 <div class="t-plot"><div class="plot" data-mean="0" data-df="225.5522" data-t="-1.8116" data-area="0.0357"></div>
 
@@ -107,7 +107,33 @@ Reject H<sub>0</sub> at &alpha; = 0.05. There is enough evidence to conclude tha
 
 **11.10**
 
+Let &mu;<sub>1</sub> be the true mean percentage of time spent with previous partner for genetically altered voles and &mu;<sub>2</sub> be the true mean percentage of time spent with previous partner for unaltered voles.
+
+H<sub>0</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> = 0
+
+H<sub>1</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> &ne; > 0
+
+&alpha; = 0.05
+
+*Assumptions* 
+* The samples are SRSes.
+* *n<sub>1</sub>* and *n<sub>2</sub>* are less than 10% of the population.
+* *n* < 30, we need to draw boxplots to assess the normality of the data.
+
+<div class="boxplot" data-min="59" data-q1="67.5" data-median="84.5" data-q3="92" data-max="100"></div>
+<div class="boxplot" data-min="2" data-q1="40" data-median="60" data-q3="84" data-max="99"></div>
+
+There doesn't appear to be too much skew, assuming that the populations are normally distributed and proceeding.
+
+`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{82.6363-56.8}{\sqrt{\frac{13.1017^2}{11} + \frac{29.7491^2}{20}}}\\= 3.3395$$`
+
+<div class="t-plot"><div class="plot" data-mean="0" data-df="28.1193" data-t="3.3395" data-area="0.0012"></div>
+
+Reject H<sub>0</sub> at &alpha; = 0.05. There is enough evidence to conclude that the mean percentage of time spent with their previous partner by genetically altered voles is higher than that of unaltered voles.
+
 **11.13**
+
+
 
 ## Friday, 2/25
 
