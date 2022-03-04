@@ -133,17 +133,101 @@ Reject H<sub>0</sub> at &alpha; = 0.05. There is enough evidence to conclude tha
 
 **11.13**
 
+Let &mu;<sub>1</sub> be the true mean score of participants in the ginkgo group and &mu;<sub>2</sub> be the true mean score of participants in the placebo group.
 
+H<sub>0</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> = 0
+
+H<sub>1</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> &ne; > 0
+
+No &alpha; given, so let &alpha; = 0.05
+
+*Assumptions* 
+* The samples are SRSes.
+* *n* > 30, so the Central Limit Theorem assures us that the sampling distributions will be normal
+* *n<sub>1</sub>* and *n<sub>2</sub>* are less than 10% of the population.
+
+`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{5.6-5.5}{\sqrt{\frac{0.6^2}{104} + \frac{0.6^2}{115}}}\\= 1.2317$$`
+
+<div class="t-plot"><div class="plot" data-mean="0" data-df="214.8066" data-t="1.2317" data-area="0.1097"></div>
+
+Fail to reject H<sub>0</sub> at &alpha; = 0.05. There is insufficient evidence to conclude that there the mean score of participants in the ginkgo group is greater than the mean score of participants in the placebo group.
 
 ## Friday, 2/25
+
+TODO - Wks
 
 ## Monday, 2/28
 
 **11.31**
 
+Let &mu; be the true mean difference between exhaustion time after drinking chocolate milk and exhaustion time after drinking a carbohydrate replacement drink.
+
+H<sub>0</sub>: &mu; = 0
+
+H<sub>1</sub>: &mu; > 0
+
+&alpha; = 0.05
+
+*Assumptions* 
+* The sample is an SRS.
+* *n* is less than 10% of the population.
+* *n* < 30, so let's draw a boxplot of the data.
+
+<div class="boxplot" data-min="0.9" data-q1="4.73" data-median="12.71" data-q3="19.095" data-max="27.43"></div>
+
+`$$t = \frac{\bar{x} - H_0}{\frac{s}{\sqrt{n}}} = \frac{14.0789}{\frac{9.4745}{\sqrt{9}}}\\= 4.4576$$`
+
+<div class="t-plot"><div class="plot" data-mean="0" data-df="8" data-t="4.4572" data-area="0.0011"></div>
+
+Reject H<sub>0</sub> at &alpha; = 0.05. There is sufficient evidence to conclude that the true mean of the differences between time to exhaustion with chocolate milk and time to exhaustion with carbohydrate replacement drink is greater than zero.
+
 **11.33**
 
+Let &mu; be the true mean difference between breast feeding bone mineral content and postweaning bone mineral content.
+
+H<sub>0</sub>: &mu; = 25
+
+H<sub>1</sub>: &mu; > 25
+
+&alpha; = 0.05
+
+*Assumptions* 
+* The sample is an SRS.
+* *n* is less than 10% of the population.
+* *n* < 30, so let's draw a boxplot of the data.
+
+<div class="boxplot" data-min="-336" data-q1="-180.5" data-median="-70" data-q3="-34" data-max="-5"></div>
+
+`$$t = \frac{\bar{x} - H_0}{\frac{s}{\sqrt{n}}} = \frac{-105.27 - (-25)}{\frac{103.8450}{\sqrt{10}}}\\= -2.4575$$`
+
+<div class="t-plot"><div class="plot" data-mean="0" data-df="9" data-t="-2.4575" data-area="0.0182"></div>
+
+Reject H<sub>0</sub> at &alpha; = 0.05. There is sufficient evidence to conclude that the true mean difference between breast feeding mineral content and postweaning bone mineral content is greater than 25 g.
+
 **11.36**
+
+Let &mu; be the true mean difference between radiation measurements taken using the two different methods.
+
+H<sub>0</sub>: &mu; = 0
+
+H<sub>1</sub>: &mu; &ne; 0
+
+No &alpha; given, so let &alpha; = 0.05
+
+*Assumptions* 
+* The sample is an SRS.
+* *n* is less than 10% of the population.
+* *n* < 30, so let's draw a boxplot of the data.
+
+<div class="boxplot" data-min="-6.9" data-q1="-3.2" data-median="0.2" data-q3="2.6" data-max="2.7"></div>
+
+There is some skewness in the data, but no outliers. We will assume that the population is normally distributed and proceed with the *t*-interval.
+
+`$$t = \frac{\bar{x} - H_0}{\frac{s}{\sqrt{n}}} = \frac{-0.7375}{\frac{3.5262}{\sqrt{8}}}\\= -0.5916$$`
+
+<div class="t-plot"><div class="plot" data-mean="0" data-df="7" data-t="-0.5916" data-area="0.5727"></div>
+
+Fail to reject H<sub>0</sub> at &alpha; = 0.05. There is insufficient evidence to conclude that the true mean difference between radiation as measured by the two methods is greater than zero.
 
 ## Tuesday, 3/1
 
