@@ -6,9 +6,8 @@ html {
 
 body {
 
-    max-width: 45em;
-    padding: 1.0em;
-    margin: 1.0em auto;
+    margin: 2.0em;
+    columns: 2;
     overflow-x: hidden;
 
     /* text*/
@@ -31,7 +30,7 @@ h2, h3, h4, h5, h6 {
 
 h1 {
     padding-bottom: 0.2em;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #000;
 }
 
 table {

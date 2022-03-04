@@ -1,6 +1,0 @@
-{
-    "title": "Dissecting a Log4Shell Attack",
-    "description": "Ever since the beginning, Log4Shell has been inseperably tied to Minecraft servers. In this post, I take apart one such attack and see what makes it tick.",
-    "timestamp": 1642141626850,
-    "publish": true
-}
