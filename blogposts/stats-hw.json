@@ -2,5 +2,6 @@
     "title": "title",
     "description": "description",
     "timestamp": 1643000114865,
-    "publish": true
+    "publish": true,
+    "scripts": ["static/stats.js"]
 }
