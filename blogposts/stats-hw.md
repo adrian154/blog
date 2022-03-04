@@ -233,14 +233,131 @@ Fail to reject H<sub>0</sub> at &alpha; = 0.05. There is insufficient evidence t
 
 **11.45**
 
+Let &pi;<sub>1</sub> be the true proportion of passengers who experienced symptoms after a flight that did not recirculate air, and &pi;<sub>2</sub> be the true proportion of passengers who experienced symptoms after a flight that did recirculate air.
+
+H<sub>0</sub>: &pi;<sub>1</sub> - &pi;<sub>2</sub> = 0
+
+H<sub>1</sub>: &pi;<sub>2</sub> - &pi;<sub>2</sub> &ne; 0
+
+&alpha; = 0.05
+
+*Assumptions* 
+* The sample is an SRS.
+* *n*&times;&pi; > 10, *n*&times;(1-&pi;) for both samples.
+* *n* < 10% of the population
+
+`$$p_c = \frac{n_1p_1 + n_2p_2}{n_1 + n_2} = 0.1991$$`
+
+`$$z = \frac{p_1 - p_2}{\sqrt{\frac{p_c(1-p_c)}{n_1} + \frac{p_c(1-p_c)}{n_2}}} = 0.7676$$`
+
+<div class="normal-plot"><div class="plot" data-mean="0" data-z="0.7676" data-area="0.4431"></div>
+
+Fail to reject H<sub>0</sub> at &alpha; = 0.05. There is insufficient evidence to conclude that the proportion of passengers who experience symptoms after a flight with recirculated air differs from the proportion of passengers who experienced symptoms after a flight without recirculated air.
+
 **11.47**
+
+Let &pi;<sub>1</sub> be the true proportion of Americans age 12 and over who reported owning an MP3 player in 2005, and &pi;<sub>2</sub> be the true proportion of Americans age 12 and over who reported owning an MP3 player in 2006.
+
+*Assumptions* 
+* The sample is an SRS.
+* *n*&times;&pi; > 10, *n*&times;(1-&pi;) for both samples.
+* *n* < 10% of the population
+
+`$$z_\text{crit} = invNorm(\frac{1 - 0.95}{2}) = 1.96$$`
+
+`$$p_c = \frac{n_1p_1 + n_2p_2}{n_1 + n_2} = 0.175$$`
+
+`$$(p_1 - p_2)\pm z_\text{crit}\sqrt{\frac{p_1(1-p_1)}{n_1} + \frac{p_2(1-p_2)}{n_2}}\\= (-0.0815, -0.0184)$$`
+
+I am 95% confident that the true difference in the proportion of Americans age 12 and over who reported owning an MP3 player in 2005 and 2006 is between 8.15% and 1.84%.
 
 **11.49**
 
+Let &pi;<sub>1</sub> be the true proportion of subjects in the regular chip group who experienced gastrointestinal symptoms, and &pi;<sub>2</sub> be the true proportion of passengers in the Olestra chip group who experienced gastrointestinal symptoms.
+
+H<sub>0</sub>: &pi;<sub>1</sub> - &pi;<sub>2</sub> = 0
+
+H<sub>1</sub>: &pi;<sub>2</sub> - &pi;<sub>2</sub> &ne; 0
+
+&alpha; = 0.05
+
+*Assumptions* 
+* The sample is an SRS.
+* *n*&times;&pi; > 10, *n*&times;(1-&pi;) for both samples.
+* *n*<sub>1</sub> and *n*<sub>2</sub> are both less than 10% of the population
+
+`$$p_c = \frac{n_1p_1 + n_2p_2}{n_1 + n_2} = 0.1676$$`
+
+`$$z = \frac{p_1 - p_2}{\sqrt{\frac{p_c(1-p_c)}{n_1} + \frac{p_c(1-p_c)}{n_2}}} = 0.7051$$`
+
+<div class="normal-plot"><div class="plot" data-mean="0" data-z="0.7051" data-area="0.4808"></div>
+
+Fail to reject H<sub>0</sub> at &alpha; = 0.05. There is insufficient evidence to conclude that the proportion of subjects in the regular chip group experienced gastrointestinal symptoms at a different rate than subjects in the Olestra chip group.
+
 ## Wednesday, 3/2
+
+TODO - Wks
 
 ## Thursday, 3/3
 
 **11.61**
+
+a. Let &mu;<sub>1</sub> be the true mean elongation of the square knots and &mu;<sub>2</sub> be the true mean elongation of the Duncan loops for Maxon thread.
+
+H<sub>0</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> = 0
+
+H<sub>1</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> &ne; 0
+
+No &alpha; given, so let &alpha; = 0.05
+
+*Assumptions* 
+* The samples are SRSes.
+* *n* < 30, but it is stated that the population is normally distributed.
+* *n<sub>1</sub>* and *n<sub>2</sub>* are less than 10% of the population.
+
+`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{10-11}{\sqrt{\frac{0.1^2}{10} + \frac{0.3^2}{15}}}\\= -11.9523$$`
+
+<div class="t-plot"><div class="plot" data-mean="0" data-df="18.2663" data-t="-11.9523" data-area="0"></div>
+
+Reject H<sub>0</sub> at &alpha; = 0.05. There is sufficient evidence to conclude that the mean elongation of the Dunan loops is different from the mean elongation of the Duncan loops in Maxon thread.
+
+b. Let &mu;<sub>1</sub> be the true mean elongation of the square knots and &mu;<sub>2</sub> be the true mean elongation of the Duncan loops for Ticron thread.
+
+H<sub>0</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> = 0
+
+H<sub>1</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> &ne; 0
+
+No &alpha; given, so let &alpha; = 0.05
+
+*Assumptions* 
+* The samples are SRSes.
+* *n* < 30, but it is stated that the population is normally distributed.
+* *n<sub>1</sub>* and *n<sub>2</sub>* are less than 10% of the population.
+
+`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{2.5 - 10.9}{\sqrt{\frac{0.06^2}{10} + \frac{0.4^2}{11}}}\\= -68.8029$$`
+
+<div class="t-plot"><div class="plot" data-mean="0" data-df="10.4940" data-t="-68.8029" data-area="0"></div>
+
+Reject H<sub>0</sub> at &alpha; = 0.05. There is sufficient evidence to conclude that the mean elongation of the Dunan loops is different from the mean elongation of the Duncan loops in Ticron thread.
+
+c. Let &mu;<sub>1</sub> be the true mean elongation of the Maxon Duncan loops and &mu;<sub>2</sub> be the true mean elongation of the Ticron Duncan loops.
+
+H<sub>0</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> = 0
+
+H<sub>1</sub>: &mu;<sub>1</sub> - &mu;<sub>2</sub> &ne; 0
+
+No &alpha; given, so let &alpha; = 0.05
+
+*Assumptions* 
+* The samples are SRSes.
+* *n* < 30, but it is stated that the population is normally distributed.
+* *n<sub>1</sub>* and *n<sub>2</sub>* are less than 10% of the population.
+
+`$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} = \frac{11.0-10.9}{\sqrt{\frac{0.3^2}{15} + \frac{0.4^2}{11}}}\\= 0.6977$$`
+
+<div class="t-plot"><div class="plot" data-mean="0" data-df="17.7894" data-t="0.6977" data-area="0.4944"></div>
+
+Fail to reject H<sub>0</sub> at &alpha; = 0.05. There is insufficient evidence to conclude that the mean elongation of the Duncan loops in Maxon thread is different from the mean elongation of the Duncan loops in Ticron thread.
+
 
 **11.65**

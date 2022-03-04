@@ -1,7 +1,6 @@
 // --- deps
 const {directory, render, read} = require("./helpers.js");
 const blogpost = require("./components/blogpost.js");
-const rssFeed = require("./components/rss-feed.js");
 const index = require("./components/index.js");
 const path = require("path");
 const fs = require("fs");
@@ -28,4 +27,3 @@ blogposts.forEach(post => {
 // generate index and feeds
 const published = blogposts.filter(blogpost => blogpost.publish);
 render(OUTPUT_DIR, "index.html", index, published);
-render(OUTPUT_DIR, "rss.xml", rssFeed, published);
