@@ -16,9 +16,16 @@ But how is RGB mapped to YCbCr? In my opinion, the relationship between the two 
 
 <video loop controls autoplay><source src="resources/jpeg/rgb-cube-animation.mp4" type="video/mp4"></video>
 
-This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. Now, we can imagine a new coordinate space where the Y component indicates distance along the axis where R, G, and B are equal, while Cb and Cr represent the other two degrees of freedom.
+This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. We can imagine a new coordinate space where the Y component indicates distance along this axis.
 
-Now, let's compare what the components of the image look like in the two color spaces. Here's what the image looks liek in RGB.
+![ycbcr cube with plane](resources/jpeg/cube-on-plane.png)
+
+Now, imagine that we take a slice of the cube at a given Y-value. We can make one side of this square Cb, and the other side Cr. This completes our color space. Here's what it looks like at Y = 0.5:
+
+![ycbcr color space](resources/jpeg/ycbcr.png)
+
+
+Let's compare what the components of the image look like in the two color spaces. Here's what the image looks like in RGB.
 
 ![rgb components of the image](resources/jpeg/rgb-components.jpg)
 

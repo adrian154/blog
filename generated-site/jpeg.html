@@ -6,8 +6,11 @@
 <p>RGB isn&#39;t very conducive to chroma subsampling, though, since each component contributes to both the color and the brightness of the pixel. JPEG first converts the RGB pixel data to a color space called <a href="https://en.wikipedia.org/wiki/YCbCr">YCbCr</a>. Like RGB, YCbCr pixels also consist of three values; however, the meaning of the values are different. <strong>Y</strong> is the luminance (brightness) of the pixel, and <strong>Cb</strong> and <strong>Cr</strong> together represent the color of the pixel without any luminance info.</p>
 <p>But how is RGB mapped to YCbCr? In my opinion, the relationship between the two color spaces is best explained visually. We can imagine RGB as a cube, with <em>x</em>-axis as red, <em>y</em>-axis as green, and <em>z</em>-axis as blue.</p>
 <p><video loop controls autoplay><source src="resources/jpeg/rgb-cube-animation.mp4" type="video/mp4"></video></p>
-<p>This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. Now, we can imagine a new coordinate space where the Y component indicates distance along the axis where R, G, and B are equal, while Cb and Cr represent the other two degrees of freedom.</p>
-<p>Now, let&#39;s compare what the components of the image look like in the two color spaces. Here&#39;s what the image looks liek in RGB.</p>
+<p>This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. We can imagine a new coordinate space where the Y component indicates distance along this axis.</p>
+<p><a href="resources/jpeg/cube-on-plane.png" target="_blank"><img src="resources/jpeg/cube-on-plane.png" alt="ycbcr cube with plane"></a></p>
+<p>Now, imagine that we take a slice of the cube at a given Y-value. We can make one side of this square Cb, and the other side Cr. This completes our color space. Here&#39;s what it looks like at Y = 0.5:</p>
+<p><a href="resources/jpeg/ycbcr.png" target="_blank"><img src="resources/jpeg/ycbcr.png" alt="ycbcr color space"></a></p>
+<p>Let&#39;s compare what the components of the image look like in the two color spaces. Here&#39;s what the image looks like in RGB.</p>
 <p><a href="resources/jpeg/rgb-components.jpg" target="_blank"><img src="resources/jpeg/rgb-components.jpg" alt="rgb components of the image"></a></p>
 <p>And here&#39;s what the image looks like in YCbCr:</p>
 <p><a href="resources/jpeg/cormorant-ycbcr.jpg" target="_blank"><img src="resources/jpeg/cormorant-ycbcr.jpg" alt="image in ycbcr color space"></a></p>
