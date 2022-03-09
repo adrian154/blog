@@ -9,7 +9,7 @@ body {
     max-width: 45em;
     padding: 1.0em;
     margin: 1.0em auto;
-    overflow-x: hidden;
+    overflow-x: clip;
 
     /* text*/
     font-family: IBM Plex Sans, 'sans serif';
