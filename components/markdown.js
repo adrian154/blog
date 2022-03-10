@@ -10,26 +10,19 @@ const katex = require("katex");
 const headingToFragment = text => text.toLowerCase().replace(/\s+/g, "-").split("").filter(char => char.match(/[0-9a-zA-Z\-]/)).join("");
 
 // --- global state
-const fragments = []; // keep track of URL fragments so that they can always be unique
+let fragments = null; // keep track of URL fragments so that they can always be unique
 
 // --- rendering methods
 
 // generate heading with section link
 const HEADINGS = [h1, h2, h3, h4, h5, h6];
 const renderHeading = (text, level) => {
-    
-    let fragment = headingToFragment(text);
-    
-    // make sure the fragment is unique, in the most ugly way possible
-    while(fragments.includes(fragment)) {
-        fragment += "1";
-    }
-
+    const fragment = headingToFragment(text);
+    fragments[fragment] = {title: text, level};
     return HEADINGS[level - 1]({id: fragment}, [text, " ", a({class: "section-link", href: "#" + fragment}, {html: "&sect;"})]).html;
-
 };
 
-// latex kludg
+// latex kludge
 const renderCodespan = (code) => {
     const inline = code.match(/\$([^\$]+)\$/);
     const display = code.match(/\$\$([^\$]+)\$\$/);
@@ -52,4 +45,7 @@ marked.use({
     }
 });
 
-module.exports = markdown => marked.parse(markdown);
+module.exports = markdown => {
+    fragments = {};
+    return {html: marked.parse(markdown), fragments};
+};

@@ -1,7 +1,5 @@
 [*This post is part of a series.*](internet-series.html)
 
-**Foreword:** This article was inspired by two similar endeavours: [TLS Illustrated](https://tls13.ulfheim.net/) and [A walk-through of an SSL handshake](https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art059). Please go check out those authors' work too.
-
 The Internet is, by default, not secure. In TCP and below, everything is transferred in plaintext; an attacker could snoop on your communications or, worse, masquerade as the person you think you're talking to. Yet today, most users don't have to worry about those kinds of attacks. Why not? The answer is the **Transport Layer Security** protocol, which transparently secures much of the modern Web. Strap in, because we're about to learn some cryptography.
 
 # Conceptual Overview
