@@ -4,7 +4,7 @@ Recently, I set out to create my own photo organizer, a project which eventually
 
 *This poor cormorant has no idea what he's about to go through.*
 
-This image is 597 by 800 pixels. Each pixel consists of three components, red, green, and blue. The brightness of each component is encoded as an 8-bit value, where 0 is no light emitted and 2^8 - 1 = 255 is the maximum brithness your display can muster. So, each pixel contains at least three bytes of information. Multiply that by the number of pixels, and we get a file size of around 359 kilobytes! Yet the image shown above is actually only 43kB in size, just 12% of the value we just calculated. In other words, by encoding the image using the JPEG format, we can achieve a compression ratio of roughly 8:1. Part of this is because JPEG is **lossy**, meaning the compressed image is slightly degraded compared to the original image, but in most situations this loss in quality is virtually imperceptible. How is this possible? Let's find out.
+This image is 597 by 800 pixels. Each pixel consists of three components, red, green, and blue. The brightness of each component is encoded as an 8-bit value, where 0 is no light emitted and 2^8 - 1 = 255 is the maximum brithness your display can muster. So, each pixel contains at least three bytes of information. Multiply that by the number of pixels, and we get a file size of around 359 kilobytes! Yet the image shown above is actually only 43kB in size, just 12% of the value we just calculated. In other words, by encoding the image using the JPEG format, we can achieve a compression ratio of roughly 8:1. This is possible because most images (especially photographs) contain a lot of redundant info. JPEG uses various clever encoding tricks to eliminate unimportant data from an image while producing a virtually indistinguishable output. How? Let's find out.
 
 # Chroma Subsampling
 
@@ -16,26 +16,39 @@ But how is RGB mapped to YCbCr? In my opinion, the relationship between the two 
 
 <video class="center" loop controls autoplay><source src="resources/jpeg/rgb-cube-animation.mp4" type="video/mp4"></video>
 
-This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. We can treat the luminance component (Y) as representing distance along this axis. Now, for a given Y, we can take a slice of the cube and assign the remaining two degrees of freedom to Cb and Cr, respectively.
+This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. One can imagine a coordinate system where we align the cube such that the luminance component (Y) extends along this line. We can then extract a slice of the cube for any given luminance, and assign the remaining two degrees of freedom to Cb and Cr.
 
-This is essentially how YCbCr works, except the RGB values are first processed so that the cube ends up looking more like a slanted rectangular prism. For the more math-inclined readers, you might recognize this as an affine transformation, hence why the RGB-YCbCr conversion is generally described using matrix multiplication. This variation is necessary to ensure that all the "slices" are rectangular. Here's a demo that shows the Cb/Cr planes as we adjust Y. 
+This is essentially how YCbCr works, except the RGB values are first processed so that the cube ends up looking more like a slanted rectangular prism. (For the more math-inclined readers, you might recognize this as an affine transformation, hence why the RGB-YCbCr conversion is often described in terms of matrix multiplication). Here's a demo that shows the Cb-Cr planes as we adjust Y. 
 
 <video class="center" loop controls autoplay><source src="resources/jpeg/ycbcr-slices.mp4" type="video/mp4"></video>
 
 *No, that Y is definitely not backwards.*
 
-Here's what the CbCr plane looks like at Y=0.5:
+Here's what the Cb-Cr plane looks like at Y=0.5:
 
 ![ycbcr diagram](resources/jpeg/ycbcr.png)
 
-When an image is converted to JPEG, the first thing that happens is that the RGB colors are converted to YCbCr. The Cb and Cr channels are stored at half the resolution of the full image.
+When an image is converted to JPEG, the first thing that happens is that the RGB colors are converted to YCbCr. The Cb and Cr channels are stored at half the resolution of the full image, a scheme which is referred to as **4:2:0**.
 
 Let's compare what the components of the image look like in the two color spaces. Here's what the image looks like in RGB.
 
-![rgb components of the image](resources/jpeg/rgb-components.jpg)
+![rgb components of the image](resources/jpeg/rgb-components.png)
 
 And here's what the image looks like in YCbCr:
 
-![image in ycbcr color space](resources/jpeg/cormorant-ycbcr.jpg)
+![image in ycbcr color space](resources/jpeg/ycbcr-components.png)
 
-Note that unlike the RGB components, you can't just add Y, Cb, and Cr together and expect it to look like the original imgae.
+As you can see, the importance of the luminance channel really shines through here. There is very little appreciable detail in the Cb and Cr channels, unlike in RGB space, where each channel is perceived (roughly) equally in the final image.
+
+# Discrete Cosine Transform
+
+TODO
+
+# Huffman Coding
+
+TODO
+
+# Further Reading
+
+* [ITU - T.871: JPEG File Interchange Format (JFIF)](https://www.itu.int/rec/T-REC-T.871-201105-I/en)
+* [CCITT - T.81: Digital Compression and Coding of Continuous-Tone Still Images - Requirements and Guidelines](https://www.w3.org/Graphics/JPEG/itu-t81.pdf)
