@@ -10,14 +10,14 @@
 <p>This is essentially how YCbCr works, except the RGB values are first processed so that the cube ends up looking more like a slanted rectangular prism. (For the more math-inclined readers, you might recognize this as an affine transformation, hence why the RGB-YCbCr conversion is often described in terms of matrix multiplication). Here&#39;s a demo that shows the Cb-Cr planes as we adjust Y. </p>
 <p><video class="center" loop controls autoplay><source src="resources/jpeg/ycbcr-slices.mp4" type="video/mp4"></video></p>
 <p><em>No, that Y is definitely not backwards.</em></p>
-<p>Here&#39;s what the Cb-Cr plane looks like at Y=0.5:</p>
+<p>If you want a better view of what the Cb-Cr plane looks like, here is a labeled diagram rendered at Y = 0.5. </p>
 <p><a href="resources/jpeg/ycbcr.png" target="_blank"><img src="resources/jpeg/ycbcr.png" alt="ycbcr diagram"></a></p>
 <p>When an image is converted to JPEG, the first thing that happens is that the RGB colors are converted to YCbCr. The Cb and Cr channels are stored at half the resolution of the full image, a scheme which is referred to as <strong>4:2:0</strong>.</p>
 <p>Let&#39;s compare what the components of the image look like in the two color spaces. Here&#39;s what the image looks like in RGB.</p>
 <p><a href="resources/jpeg/rgb-components.png" target="_blank"><img src="resources/jpeg/rgb-components.png" alt="rgb components of the image"></a></p>
 <p>And here&#39;s what the image looks like in YCbCr:</p>
 <p><a href="resources/jpeg/ycbcr-components.png" target="_blank"><img src="resources/jpeg/ycbcr-components.png" alt="image in ycbcr color space"></a></p>
-<p>As you can see, the importance of the luminance channel really shines through here. There is very little appreciable detail in the Cb and Cr channels, unlike in RGB space, where each channel is perceived (roughly) equally in the final image.</p>
+<p>As you can see, the importance of the luminance channel really shines through here. There is very little appreciable detail in the Cb and Cr channels, unlike in RGB space, where each channel is perceived (roughly) equally in the final image. We can safely discard much of the detail in the chrominance channels without sacrificing too much quality in the final image. However, this still doesn&#39;t bring us to the astounding compression ratios that JPEG achieves on a regular basis. For that, we&#39;ll need to go deeper into the compression process.</p>
 <h1 id="discrete-cosine-transform">Discrete Cosine Transform <a class="section-link" href="#discrete-cosine-transform">&sect;</a></h1><p>TODO</p>
 <h1 id="huffman-coding">Huffman Coding <a class="section-link" href="#huffman-coding">&sect;</a></h1><p>TODO</p>
 <h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><ul>

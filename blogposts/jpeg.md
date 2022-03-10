@@ -24,7 +24,7 @@ This is essentially how YCbCr works, except the RGB values are first processed s
 
 *No, that Y is definitely not backwards.*
 
-Here's what the Cb-Cr plane looks like at Y=0.5:
+If you want a better view of what the Cb-Cr plane looks like, here is a labeled diagram rendered at Y = 0.5. 
 
 ![ycbcr diagram](resources/jpeg/ycbcr.png)
 
@@ -38,7 +38,7 @@ And here's what the image looks like in YCbCr:
 
 ![image in ycbcr color space](resources/jpeg/ycbcr-components.png)
 
-As you can see, the importance of the luminance channel really shines through here. There is very little appreciable detail in the Cb and Cr channels, unlike in RGB space, where each channel is perceived (roughly) equally in the final image.
+As you can see, the importance of the luminance channel really shines through here. There is very little appreciable detail in the Cb and Cr channels, unlike in RGB space, where each channel is perceived (roughly) equally in the final image. We can safely discard much of the detail in the chrominance channels without sacrificing too much quality in the final image. However, this still doesn't bring us to the astounding compression ratios that JPEG achieves on a regular basis. For that, we'll need to go deeper into the compression process.
 
 # Discrete Cosine Transform
 
