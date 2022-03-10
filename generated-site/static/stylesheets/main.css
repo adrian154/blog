@@ -11,11 +11,11 @@ body {
     padding: 1.0em;
     margin: 1.0em auto;
     overflow-x: clip;
-    background-color: #fffdf7;
+    background-color: #ffffff;
 
     /* text*/
     font-family: IBM Plex Sans, 'sans serif';
-    font-size: 18px;
+    font-size: 12.5pt;
 
 }
 
@@ -156,16 +156,21 @@ button {
 }
 
 /* contents */
-#contents {
+#contents-outer {
     position: fixed;
     top: 0;
-    left: 0;
+    left: -15em;
+    width: 15em;
+    transition: 0.5s ease;
+    z-index: 2;
+}
+
+#contents {
     padding: 0 1.0em;
     color: #ffffff;
     background-color: #000000;
     overflow-y: auto;
-    width: 15em;
-    height: 100%;
+    height: 100vh;
 }
 
 #contents > p:first-child {
@@ -175,3 +180,20 @@ button {
 
 #contents a { text-decoration: none; color: #ffffff; }
 #contents a:hover { color: #cacaca; }
+
+.shown {
+    left: 0 !important; /* couldn't be bothered to fix this priority issue cause i really needed to take a dump */
+}
+
+#show-toc {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background-color: #000000;
+    border: none;
+    font-size: 12pt;
+    font-family: inherit;
+    width: 7em;
+    padding: 0.5em;
+    color: #ffffff;
+}

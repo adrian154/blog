@@ -18,7 +18,8 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
         stylesheet("https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"),
         link({rel: "icon", type: "image/png", sizes: "16x16", href: "static/images/favicon.png"}),
         properties.stylesheets?.map(stylesheet),
-        properties.scripts?.map(scriptSrc => script({defer: null, src: scriptSrc}))
+        properties.scripts?.map(scriptSrc => script({defer: null, src: scriptSrc})),
+        script({defer: null, src: "static/scripts/ui.js"})
     ),
     body(
         a({href: "/"}, img({src: "static/images/banner1.jpg", alt: "blog banner"})),

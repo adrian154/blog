@@ -1,14 +1,16 @@
 const {commentsSettings} = require("../config.json");
-const {script, h1, p, a, noscript, b, div} = require("html-generator");
+const {script, h1, p, a, noscript, b, div, button} = require("html-generator");
 const renderMarkdown = require("./markdown.js");
 const formatDate = require("./format-date.js");
 const {baseURL} = require("../config.json");
 const document = require("./document.js");
-const {raw} = require("./helpers");
 
-const tableOfContents = fragments => div({id: "contents"},
-    p("Table of Contents"),
-    Object.entries(fragments).map(entry => a({href: "#" + entry[0]}, p(entry[1].title)))
+const tableOfContents = fragments => div({id: "contents-outer"}, 
+    div({id: "contents"},
+        p("Table of Contents"),
+        Object.entries(fragments).map(entry => a({href: "#" + entry[0]}, p(entry[1].title)))
+    ),
+    button({id: "show-toc"}, {html: "&#9776 Contents"})
 );
 
 module.exports = (properties, src) => {

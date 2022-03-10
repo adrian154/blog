@@ -30,7 +30,8 @@ code.hljs {
 
 .hljs {
   color: #383a42;
-  background: #fafafa;
+  background: #f3f3f3;
+  font-size: 11pt;
 }
 
 .hljs-comment,

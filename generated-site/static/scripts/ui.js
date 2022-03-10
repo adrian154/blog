@@ -1,0 +1,1 @@
+document.getElementById("show-toc").addEventListener("click", () => document.getElementById("contents-outer").classList.toggle("shown"));
