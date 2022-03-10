@@ -56,10 +56,9 @@ h1:hover .section-link, h2:hover .section-link {
     visibility: visible;
 }
 
-img, video {
+img, .center {
     display: block;
     max-width: 100%;
-    margin: auto;
     margin: 2.0em auto;
 }
 

@@ -14,17 +14,19 @@ RGB isn't very conducive to chroma subsampling, though, because the brightness o
 
 But how is RGB mapped to YCbCr? In my opinion, the relationship between the two color spaces is best explained visually. We can imagine RGB as a cube, with *x*-axis as red, *y*-axis as green, and *z*-axis as blue.
 
-<video loop controls autoplay><source src="resources/jpeg/rgb-cube-animation.mp4" type="video/mp4"></video>
+<video class="center" loop controls autoplay><source src="resources/jpeg/rgb-cube-animation.mp4" type="video/mp4"></video>
 
 This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. We can treat the luminance component (Y) as representing distance along this axis. Now, for a given Y, we can take a slice of the cube and assign the remaining two degrees of freedom to Cb and Cr, respectively.
 
-This is essentially how YCbCr works, except the RGB values are first processed so that the cube ends up looking more like a slanted rectangular prism. For the more math-inclined readers, you might recognize this as an affine transformation, hence why the RGB-YCbCr conversion is generally described using matrix multiplication. This variation is necessary to ensure that all the slices of the cube are rectangular. Here's what it looks like:
+This is essentially how YCbCr works, except the RGB values are first processed so that the cube ends up looking more like a slanted rectangular prism. For the more math-inclined readers, you might recognize this as an affine transformation, hence why the RGB-YCbCr conversion is generally described using matrix multiplication. This variation is necessary to ensure that all the "slices" are rectangular. Here's a demo that shows the Cb/Cr planes as we adjust Y. 
 
-![image of the ycbcr space]()
+<video class="center" loop controls autoplay><source src="resources/jpeg/ycbcr-slices.mp4" type="video/mp4"></video>
 
-Check out what happens as we advance our slice of YCbCr space along the luminance (Y) axis.
+*No, that Y is definitely not backwards.*
 
-TODO
+Here's what the CbCr plane looks like at Y=0.5:
+
+![ycbcr diagram](resources/jpeg/ycbcr.png)
 
 When an image is converted to JPEG, the first thing that happens is that the RGB colors are converted to YCbCr. The Cb and Cr channels are stored at half the resolution of the full image.
 
