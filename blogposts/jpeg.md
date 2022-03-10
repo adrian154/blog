@@ -8,9 +8,9 @@ This image is 597 by 800 pixels. Each pixel consists of three components, red, g
 
 # Chroma Subsampling
 
-The first method that JPEG uses to reduce the filesize is a technique called **chroma subsampling**. Essentially, this step exploits the fact that our eyes are much more sensitive to changes in brightness than to changes in color. After all, changes in brightness are how we perceive shapes and features. If you converted an image to black and white, you would still have a good idea of what the image is a picture of, whereas if you only had the color information your eyes would be much more confused. By reducing the precision of the color data, the size of each pixel can be reduced without a noticeable quality impact.
+The first method that JPEG uses to reduce the filesize is a technique called **chroma subsampling**. Essentially, this step exploits the fact that our eyes are much more sensitive to changes in brightness than to changes in color. After all, changes in brightness are how we perceive shapes and features. If you converted an image to black and white, you would still have a good idea of what the image is a picture of, whereas if you only had the color information it'd convey much less detail. If we stored the color information at a lower resolution than the brightness information, it could reduce the size of the image without noticeably degrading the quality.
 
-RGB isn't very conducive to chroma subsampling, though, since each component contributes to both the color and the brightness of the pixel. JPEG first converts the RGB pixel data to a color space called [YCbCr](https://en.wikipedia.org/wiki/YCbCr). Like RGB, YCbCr pixels also consist of three values; however, the meaning of the values are different. **Y** is the luminance (brightness) of the pixel, and **Cb** and **Cr** together represent the color of the pixel without any luminance info.
+RGB isn't very conducive to chroma subsampling, though, because the brightness of the pixel is baked into all three channels. JPEG first converts the RGB pixel data to a color space called [YCbCr](https://en.wikipedia.org/wiki/YCbCr). Like RGB, YCbCr pixels also consist of three values; however, the meaning of the values are different. **Y** is the luminance (brightness) of the pixel, and **Cb** and **Cr** together represent the color of the pixel without any luminance info.
 
 But how is RGB mapped to YCbCr? In my opinion, the relationship between the two color spaces is best explained visually. We can imagine RGB as a cube, with *x*-axis as red, *y*-axis as green, and *z*-axis as blue.
 
@@ -18,6 +18,15 @@ But how is RGB mapped to YCbCr? In my opinion, the relationship between the two 
 
 This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. We can treat the luminance component (Y) as representing distance along this axis. Now, for a given Y, we can take a slice of the cube and assign the remaining two degrees of freedom to Cb and Cr, respectively.
 
+This is essentially how YCbCr works, except the RGB values are first processed so that the cube ends up looking more like a slanted rectangular prism. For the more math-inclined readers, you might recognize this as an affine transformation, hence why the RGB-YCbCr conversion is generally described using matrix multiplication. This variation is necessary to ensure that all the slices of the cube are rectangular. Here's what it looks like:
+
+![image of the ycbcr space]()
+
+Check out what happens as we advance our slice of YCbCr space along the luminance (Y) axis.
+
+TODO
+
+When an image is converted to JPEG, the first thing that happens is that the RGB colors are converted to YCbCr. The Cb and Cr channels are stored at half the resolution of the full image.
 
 Let's compare what the components of the image look like in the two color spaces. Here's what the image looks like in RGB.
 
