@@ -37,6 +37,12 @@
     padding: 3px 8px;
 }
 
+@media (max-width: 60em) {
+    .preview {
+        position: initial;
+    }
+}
+
 .label-outer {
     position: absolute;
     left: 0;

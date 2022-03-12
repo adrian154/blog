@@ -72,11 +72,17 @@ document.querySelectorAll(".packet").forEach(packet => {
         };
 
         // set up container
+        const bytes = section.dataset.hex.match(/../g);
+        const preview = document.createElement("span");
+        preview.classList.add("hex-segment");
+        preview.textContent = section.dataset.previewTruncate ? bytes.slice(0, section.dataset.previewTruncate).join(" ") + " .." : bytes.join(" ");
+        preview.classList.add("preview");
+        container.append(preview);
         container.append(header, content);
+
+        // get rid of the original and append the new container
         section.remove();
         packet.append(container);
-
-        const bytes = section.dataset.hex.match(/../g);
 
         // create span
         const spanOuter = document.createElement("span");
@@ -85,12 +91,6 @@ document.querySelectorAll(".packet").forEach(packet => {
         span.classList.add("hex-segment");
         span.textContent = bytes.join(" ");
         spanOuter.append(span);
-
-        const preview = document.createElement("span");
-        preview.classList.add("hex-segment");
-        preview.textContent = section.dataset.previewTruncate ? bytes.slice(0, section.dataset.previewTruncate).join(" ") + " .." : bytes.join(" ");
-        preview.classList.add("preview");
-        container.append(preview);
 
         preview.addEventListener("click", () => show({reverse: true}));
         span.addEventListener("click", show);

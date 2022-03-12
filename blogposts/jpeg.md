@@ -42,7 +42,15 @@ As you can see, the importance of the luminance channel really shines through he
 
 # Discrete Cosine Transform
 
-TODO
+In the previous step, we reduced size by getting rid of color information. However, we can also drastically reduce size by getting rid of unnecessary *spatial* information. What does that mean? Consider this photo of a flower.
+
+![macro photograph of a pepper flower](resources/jpeg/test-2-reference.png)
+
+If we zoom in close on the two highlighted regions, it becomes clear that not all image data is created equal. The one on the left contains much more information than the one on the right, yet they occupy the same amount of space.
+
+![zoom in on sections of flower image](resources/jpeg/flower-regions-comparison.png)
+
+Like last time, the problem now becomes representing the image data in a way that lets us separate the important parts from the unimportant parts. JPEG accomplishes this using the **discrete cosine transform (DCT)**.
 
 # Huffman Coding
 

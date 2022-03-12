@@ -18,7 +18,11 @@
 <p>And here&#39;s what the image looks like in YCbCr:</p>
 <p><a href="resources/jpeg/ycbcr-components.png" target="_blank"><img src="resources/jpeg/ycbcr-components.png" alt="image in ycbcr color space"></a></p>
 <p>As you can see, the importance of the luminance channel really shines through here. There is very little appreciable detail in the Cb and Cr channels, unlike in RGB space, where each channel is perceived (roughly) equally in the final image. We can safely discard much of the detail in the chrominance channels without sacrificing too much quality in the final image. However, this still doesn&#39;t bring us to the astounding compression ratios that JPEG achieves on a regular basis. For that, we&#39;ll need to go deeper into the compression process.</p>
-<h1 id="discrete-cosine-transform">Discrete Cosine Transform <a class="section-link" href="#discrete-cosine-transform">&sect;</a></h1><p>TODO</p>
+<h1 id="discrete-cosine-transform">Discrete Cosine Transform <a class="section-link" href="#discrete-cosine-transform">&sect;</a></h1><p>In the previous step, we reduced size by getting rid of color information. However, we can also drastically reduce size by getting rid of unnecessary <em>spatial</em> information. What does that mean? Consider this photo of a flower.</p>
+<p><a href="resources/jpeg/test-2-reference.png" target="_blank"><img src="resources/jpeg/test-2-reference.png" alt="macro photograph of a pepper flower"></a></p>
+<p>If we zoom in close on the two highlighted regions, it becomes clear that not all image data is created equal. The one on the left contains much more information than the one on the right, yet they occupy the same amount of space.</p>
+<p><a href="resources/jpeg/flower-regions-comparison.png" target="_blank"><img src="resources/jpeg/flower-regions-comparison.png" alt="zoom in on sections of flower image"></a></p>
+<p>Like last time, the problem now becomes representing the image data in a way that lets us separate the important parts from the unimportant parts. JPEG accomplishes this using the <strong>discrete cosine transform (DCT)</strong>.</p>
 <h1 id="huffman-coding">Huffman Coding <a class="section-link" href="#huffman-coding">&sect;</a></h1><p>TODO</p>
 <h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><ul>
 <li><a href="https://www.itu.int/rec/T-REC-T.871-201105-I/en">ITU - T.871: JPEG File Interchange Format (JFIF)</a></li>

@@ -2,7 +2,6 @@
 
 html {
     scroll-behavior: smooth;
-    border-bottom: 6px solid #000000;
 }
 
 body {
@@ -10,7 +9,8 @@ body {
     max-width: 43em;
     padding: 1.0em;
     margin: 1.0em auto;
-    overflow-x: clip;
+    position: relative;
+    overflow-x: hidden;
     background-color: #ffffff;
 
     /* text*/
@@ -182,7 +182,8 @@ button {
 #contents a:hover { color: #cacaca; }
 
 .shown {
-    left: 0 !important; /* couldn't be bothered to fix this priority issue cause i really needed to take a dump */
+    left: 0 !important; /* couldn't be bothered to fix this priority issue
+                           cause i really needed to take a dump */
 }
 
 #show-toc {
