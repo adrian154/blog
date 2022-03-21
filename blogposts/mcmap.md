@@ -160,3 +160,40 @@ This takes us down to around 4,530 unparseable responses. Of these, 891 response
 
 # Analyzing the Data
 
+Finally, we're ready to start dirtying our fingers with some data! My concerns about losing responses to my crappy parser turned out to be unfounded, because only 0.7% of the collected hits were recognized as incomplete JSON. Anyways, to answer the original question: how many Minecraft servers are out there? Drumroll, please...
+
+<p style="text-align: center; font-size: 2.0em;">166,851</p>
+
+Give or take. There's probably some pretty big error bars on that number. [Shodan](https://www.shodan.io/) reports a very similar number, while [bStats](https://bstats.org/global/bukkit) says that there are 175,000 online servers. The difference probably represents servers that aren't publicly accessible.
+
+Here are the ten greatest player counts:
+
+<p style="text-align: center; word-spacing: 1.0em">99999999 20220320 20220320 20220319 20220319<br>9128312 114516 114515 114514 114514</p>
+
+and the ten lowest player counts:
+
+<p style="text-align: center; word-spacing: 1.0em">-1337 -46 -2 -1 -1 -1 -1 -1 -1 -1</p>
+
+As you can see, honesty is far from mandatory when it comes to player count. 
+
+## Geographical Distribution
+
+TODO
+
+## Server Softwares
+
+TODO
+
+## DDoS Protection
+
+One statistic that I unwittingly collected during the scan was the number of servers with DDoS protection. Most Minecraft DDoS protection services operate by filtering traffic through a proxy to the actual server, allowing the server host to take use of the provider's beefier network infrastructure. The two dominant players in this field are [TCPShield](https://tcpshield.com/) and [Cosmic Guard](https://cosmicguard.com/).
+
+We're able to detect IPs representing proxies for these two providers thanks to the fact that when pinging a server, a Minecraft client will send the hostname used to connect to the server. However, in our case, our probe uses the same hostname ("example.com") every time; normal Minecraft servers ignore this value, but DDoS proxies will detect that an invalid hostname was used and deny the connection. Here's what it looks like when you try to join a DDoS-protected server using its IP:
+
+![tcpshield join error](resources/mcmap/tcp-shield.png)
+
+We can search the dataset for ping responses which look like this. Turns out there are about **742** TCPShield proxies and **1,139** Cosmic Guard proxies on the public Internet.
+
+# Modded Servers
+
+TODO
