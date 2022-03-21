@@ -8,9 +8,10 @@ In case you haven't heard, there's been a bit of an illness going around. No, no
 
 Today I checked the Discord server for my SMP, and was greeted with a rather unexpected surprsie:
 
-![pic from my discord](resources/log4shell/log4shell-bitcraft.png)
-
-*This lovely Discord-Minecraft bridge is powered by [Minelink](https://github.com/adrian154/minelink).*
+<figure style="max-width: 358px">
+    <img src="resources/log4shell/log4shell-bitcraft.png" alt="picture of the offending message">
+    <figcaption>This lovely Discord-Minecraft bridge is powered by <a href="https://github.com/adrian154/minelink">Minelink</a>.</figcaption>
+</figure>
 
 This is a pretty stock-standard attempt to exploit Log4Shell, which I have thankfully patched my server against. Essentially, Log4J provides a functionality called *message lookup substitution*: when you log a message using Log4J, it looks for segments enclosed in `${ }` and replaces those segments with a dynamically retrieved value. One of the systems which Log4j can use to retrieve data is the [Java Naming and Directory Interface](https://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface), whose purpose is to allow applications to look up information given a short, portable name. Now, the really terrifying part is that JNDI may contact an [LDAP](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol) server, which returns a response serialized as a Java class. The value of that response is extracted by **executing the class**. And in just three easy steps, you've got remote code execution!
 

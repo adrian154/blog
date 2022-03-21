@@ -37,15 +37,17 @@ There are also plenty of obscure and dead LAN technologies. One example is [Toke
 
 # Switches
 
-![an ethernet switch](resources/internet/ethernet-switch.jpg)
-
-*An Ethernet switch. [Photo](https://commons.wikimedia.org/wiki/File:Netgear_Gigabit_Switch_5-port.jpg) by [Simon A. Eugster](https://commons.wikimedia.org/wiki/User:LivingShadow) / [CC-BY](https://creativecommons.org/licenses/by-sa/3.0/deed.en)*
+<figure style="max-width: 800px">
+    <img src="resources/internet/ethernet-switch.jpg" alt="ethernet switch">
+    <figcaption>An Ethernet switch. <a href="https://commons.wikimedia.org/wiki/File:Netgear_Gigabit_Switch_5-port.jpg">Image</a> by <a href="https://commons.wikimedia.org/wiki/User:LivingShadow">Simon A. Eugster</a> / <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.en">CC-BY</a></figcaption>
+</figure>
 
 Devices called [network switches](https://en.wikipedia.org/wiki/Network_switch) allow communication between nodes on the same LAN. A switch is basically an embedded device with a large number of Ethernet ports. Because all devices on the network communicate with each other by talking through the switch, a [star topology](https://en.wikipedia.org/wiki/Star_network) is formed.
 
-![star topology diagram](resources/internet/switch-star-topology.png)
-
-*In case you can't tell, I'm not exactly the best at making diagrams.*
+<figure style="max-width: 481px">
+    <img src="resources/internet/switch-star-topology.png" alt="star topology diagram">
+    <figcaption>In case you can't tell, I'm not exactly the best at making diagrams.</figcaption>
+</figure>
 
 Ethernet frames are fairly simple in structure. As expected, each frame contains the source MAC address and destination MAC address (along with other fields such as a checksum) before the payload, so that the frame can be routed to the correct recipient. 
 
@@ -83,9 +85,10 @@ In IP, every network interface (usually just one per computer) is associated wit
 
 Because IPv4 addresses are only 32 bits long, there can only be 2<sup>32</sup> = ~4 billion unique IPv4 addresses. That seems like a lot, but as early as the 90s the threat of [running out of IPv4 addresses](https://en.wikipedia.org/wiki/IPv4_address_exhaustion) has continually loomed over the Internet, made worse by the fact that many parts of IPv4 space are [reserved](https://en.wikipedia.org/wiki/Reserved_IP_addresses) for various purposes. To fix this issue, IPv6 was created. IPv6 addresses are 128 bits long, which is more than enough to serve humanity's needs at the moment. (If all IPv6 addresses were distributed equally among all living humans, every individual could have 47 octillion addresses. It's safe to say that we won't be running out any time soon, especially because sadly a lot of the Internet is still stuck on IPv4.)
 
-![xkcd #195 internet map](resources/internet/xkcd-internet-map.jpg)
-
-*[xkcd 195](https://xkcd.com/195/): A map of IPv4 space circa 2006. Things have only gotten more crowded since then.*
+<figure style="max-width: 740px">
+    <img src="resources/internet/xkcd-internet-map.jpg" alt="xkcd internet map">
+    <figcaption><a href="https://xkcd.com/195/">xkcd 195</a>: a map of IPv4 space circa 2006. Things have only gotten more crowded since then.</figcaption>
+</figure>
 
 <div class="info-box">
 
@@ -198,9 +201,10 @@ As I write this blogpost, IPv6 will have been available for an entire decade in 
 
 This ever-worsening drought of IP addresses has forced the Internet's biggest players, the ISPs, to get creative. One solution that has been used to combat IPv4 exhaustion is [Network Address Translation](https://en.wikipedia.org/wiki/Network_address_translation) (NAT). NAT precludes the need to assign every device on a household network a unique IP address. Here's how it works.
 
-![diagram of NAT](resources/internet/nat.png)
-
-*What a typical NAT setup looks like.*
+<figure style="max-width: 481px">
+    <img src="resources/internet/nat.png" alt="nat diagram">
+    <figcaption>A typical NAT setup.</figcaption>
+</figure>
 
 Each device on the LAN has a private IP address. In this case, the addresses are from the 10.0.0.0/8 block, one of three blocks which are [reserved](https://datatracker.ietf.org/doc/html/rfc1918) for use within private networks. These are not directly usable for accessing the internet; most networks are configured to [reject](https://en.wikipedia.org/wiki/Bogon_filtering) packets originating from outside the network with a private IP. Instead, when the NAT router receives a packet from a device that is destined for the public Internet, it overwrites the original address with the router's public address before relaying it. This way, all the devices on the LAN can access the Internet through just one address.
 
@@ -236,9 +240,10 @@ When you look at the Internet at the AS level, the illusion is truly stripped ba
 
 Routing between ASes is universally done via the [Border Gateway Protocol](https://en.wikipedia.org/wiki/Border_Gateway_Protocol), which is a [path vector routing protocol](https://en.wikipedia.org/wiki/Path-vector_routing_protocol) as opposed to a link state routing protocol. Instead of broadcasting the existence of links throughout the network, BGP routers advertise which ASes they can reach and the path to take to their peers. This has the benefit of preventing the possibility of a loop, which would pose a serious problem at a global scale. In general, BGP is designed to reduce volatility in Internet routing. To reduce network usage and routing table size, BGP routers may use heuristics to selectively reject routes, a process known as [route filtering](https://en.wikipedia.org/wiki/Route_filtering). (The side-effect of route filtering is that no router on the Internet has a complete view of *all* routes, so collecting statistics on the routing table requires careful observation from numerous viewpoints.)
 
-![diagram of interaction between internal and external networks](resources/internet/routing-protocols.png)
-
-*Diagram of the various routing protocols found on the Internet. Internal links are highighted in red; border routers are highlighted in green.*
+<figure style="max-width: 801px">
+    <img src="resources/internet/routing-protocols.png" alt="interaction between internal and external networks">
+    <figcaption>Diagram of the various routing protocols found on the Internet. Internal links are highighted in red; border routers are highlighted in green.</figcaption>
+</figure>
 
 The BGP routing itself looks just like the routing table you'd find on your router or computer, just *much bigger* (around 900,000 unique prefixes at the time of writing). Its functionality remains unchanged, though. When a border router receives a packet:
 * If the packet is destined to the internal network, it relays the packet based on whatever routing protocol the AS internally uses.
@@ -270,9 +275,10 @@ Note that peering and transit are the same thing from a technical standpoint. Al
 
 Another staple of backbone routing is the [Internet Exchange Point](https://en.wikipedia.org/wiki/Internet_exchange_point) (IXP). IXPs are essentially a series of interconnected switches, usually managed by a non-profit organization, that allow many ASes to peer with each other without a huge number of cross-connections. 
 
-![picture of an internet exchange](resources/internet/internet-exchange.jpg)
-
-*A switch belonging to [AMS-IX](https://en.wikipedia.org/wiki/Amsterdam_Internet_Exchange), one of the world's biggest Internet exchanges. [Photo](https://en.wikipedia.org/wiki/File:AMS-IX_optical_patch_panel.jpg) by Fabienne Serriere / [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/deed.en)*
+<figure style="max-width: 3888px">
+    <img src="resources/internet/internet-exchange.jpg" alt="internet exchange cables">
+    <figcaption>One of many switches which make up <a href="https://en.wikipedia.org/wiki/Amsterdam_Internet_Exchange">AMS-IX</a>, one fo the world's largest Internet exchanges. <a href="https://en.wikipedia.org/wiki/File:AMS-IX_optical_patch_panel.jpg">Photo</a> by Fabienne Serriere / <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.en">CC BY-SA</a>.</figcaption>
+</figure>
 
 IXPs are a pretty great thing for a number of reasons. They provide a way to peer with numerous other ASes, reducing latency for everyone, while avoiding the large number of physical connections that would be necessary to reach the same level of connectedness that would be necessary otherwise.
 

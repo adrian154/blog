@@ -20,9 +20,10 @@ This cube has one important property: there exists a line through the cube where
 
 This is essentially how YCbCr works, except the RGB values are first processed so that the cube ends up looking more like a slanted rectangular prism. (For the more math-inclined readers, you might recognize this as an affine transformation, hence why the RGB-YCbCr conversion is often described in terms of matrix multiplication). Here's a demo that shows the Cb-Cr planes as we adjust Y. 
 
-<video class="center" loop controls autoplay><source src="resources/jpeg/ycbcr-slices.mp4" type="video/mp4"></video>
-
-*No, that Y is definitely not backwards.*
+<figure style="max-width: 480px">
+    <video loop controls autoplay><source src="resources/jpeg/ycbcr-slices.mp4" type="video/mp4"></video>
+    <figcaption>No, that Y is definitely not backwards.</figcaption>
+</figure>
 
 If you want a better view of what the Cb-Cr plane looks like, here is a labeled diagram rendered at Y = 0.5. 
 

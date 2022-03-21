@@ -58,10 +58,21 @@ h1:hover .section-link, h2:hover .section-link {
     visibility: visible;
 }
 
-img, .center {
+img, .center, figure{
     display: block;
     max-width: 100%;
-    margin: 2.0em auto;
+    margin: 1.5em auto;
+}
+
+
+figure img {
+    width: 100%;
+    margin: 0;
+}
+
+figcaption {
+    font-size: 10.5pt;
+    margin: 1.0em 0;
 }
 
 .footnote {

@@ -26,11 +26,20 @@ $ cat pingpayload | nc mc.bithole.dev 25565
 
 With that, I started coding. The process was rather uneventful, save for a couple brief moments of frustration which have since been memorialized in my commit history.
 
-![frustration](resources/mcmap/frustration.png)
+<figure style="max-width: 294px">
+    <img src="resources/mcmap/frustration.png" alt="humorous git commit history">
+    <figcaption>This was after I realized that the reason the masscan binary kept disappearing was that Windows Defender was flagging it as malware and deleting it.</figcaption>
+</figure>
 
-(This was after I realized that the reason the masscan binary kept disappearing was that Windows Defender was flagging it as malware and deleting it.)
+You can check out my finished code [here](https://github.com/adrian154/masscan).
 
-You can check out my finished code [here](https://github.com/adrian154/masscan). With that, I started the scan, and went to bed feeling relaxed and content.
+With that done, all that was left to do was start the scan...
+
+```
+$ nohup masscan --excludefile exclude.txt -p25565 0.0.0.0/0 --source-port 61000 --banners -oD log.ndjson &
+```
+
+...and we were off to the races!
 
 # Data Processing 
 
@@ -105,9 +114,10 @@ Much nicer!
 
 There was another, bigger problem, though. In my attempts to [fix](https://github.com/adrian154/masscan/commit/2b3ee07704b3f863fef481f6422394d5740dcf43) my hopelessly broken packet parser, I ended up getting rid of the code which actually reads the response length, instead opting to log everything received from the server after the packet header as part of the banner. This resulted in a lot of JSON with extra garbage at the end, which greatly upsets `JSON.parse`. I needed a way to figure out where the actual JSON ended... but how?
 
-![@Aplet123's advice](resources/mcmap/advice.png)
-
-Wow, thanks mysterious stranger!
+<figure style="max-width: 501px">
+    <img src="resources/mcmap/advice.png" alt="advice from a wise sage">
+    <figcaption>Thanks, kind stranger!</figcaption>
+</figure>
 
 Before I got to work on that, I decided to first sift through the data and identify any oddities&mdash;things that definitely weren't Minecraft servers. These were quite numerous; about 68% of the responses did not begin with an opening brace `{`. Of these, the vast majority just sent back the probe baked into our custom build of MASSCAN. Three Minecraft servers had somehow made their way into this dejected pile of rejects, far too few for me to go about diagnosing the issue. There were also plenty of MySQL/MariaDB servers, and whatever this is:
 
@@ -142,6 +152,11 @@ const extractJSON = str => {
 ```
 
 This takes us down to around 4,530 unparseable responses. Of these, 891 responses start with a '{' yet cannot be extracted currently. A cursory look at these misfits suggests that most of them were cut off&mdash;maybe re-scan these later? That'll have to wait until another day. (Keep in mind that the scan still hasn't finished yet, but since MASSCAN iterates through IPs randomly, I can be fairly confident that these numbers will be representative of our final dataset.)
+
+<figure style="max-width: 475px">
+    <img src="resources/mcmap/funny-server.png" alt="funny server">
+    <figcaption>Me too, buddy. Me too.</figcaption>
+</figure>
 
 # Analyzing the Data
 

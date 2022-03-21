@@ -62,9 +62,10 @@ Carol makes sure that the person she's talking to is actually Bob, and signs Bob
 
 This, in essence, is how TLS performs authentication. Carol represents a group of organizations known as [certificate authorities](https://en.wikipedia.org/wiki/Certificate_authority), whose public keys are hardcoded into web browsers. Certificates on the web generally don't link a human name to a public key; instead, the "useful identity" they try to anchor is usually a domain name. Furthermore, the CA may not directly sign a website's certificate. Instead, they may sign the certificate for an *intermediate* keypair, which does the task of actually signing end user certificates. This sequence can extend for as many signatures as necessary, creating a **chain of trust**.
 
-![chain of trust diagram](resources/tls/certificate-chain-of-trust.png)
-
-*A rough diagram showing how a verifiable chain of trust is created using digital signatures. [Image](https://en.wikipedia.org/wiki/File:Chain_Of_Trust.svg) by Yukhih / [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/deed.en)*
+<figure style="max-width: 1280px">
+    <img src="resources/tls/certificate-chain-of-trust.png" alt="chain of trust diagram">
+    <figcaption>A rough diagram showing how a verifiable chain of trust is created using digital signatures. <a href="https://en.wikipedia.org/wiki/File:Chain_Of_Trust.svg">Image</a> by Yukhih / <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA</a>.</figcaption>
+</figure>
 
 You can see this at play for pretty much any website you visit. If you're on Chrome, simply click the padlock button next to the address bar in your browser, and you'll see the option to view the website's certification path. Here's what you would probably see for this page:
 
