@@ -6,7 +6,7 @@ html {
 
 body {
 
-    max-width: 43em;
+    max-width: 43rem;
     padding: 1.0em;
     margin: 1.0em auto;
     position: relative;
@@ -90,6 +90,7 @@ a {
 }
 
 a, a:visited { color: #000000; }
+a:hover { color: #888888; }
 
 .info-box {
     border-radius: 5px;
@@ -159,8 +160,8 @@ button {
 #contents-outer {
     position: fixed;
     top: 0;
-    left: -15em;
-    width: 15em;
+    left: -15rem;
+    width: 15rem;
     transition: 0.5s ease;
     z-index: 2;
 }
@@ -198,3 +199,30 @@ button {
     padding: 0.5em;
     color: #ffffff;
 }
+
+/* uncomment to unlock the super secret SERIF EXPERIENCE */
+/*
+body {
+    font-family: serif;
+    font-size: 19px;
+    letter-spacing: -0.03rem;
+}
+
+p {
+    line-height: 1.3em;
+    text-align: justify;
+    hyphens: auto;
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+h2 {
+    font-size: 1.2em;
+}
+
+code {
+    font-size: 14pt;
+}
+*/
