@@ -239,7 +239,7 @@ Here's a map of Minecraft servers per 100,000 people.
     <figcaption>Check out the interactive version <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQx6I47r69ZkcL0tfS3-tu1yiyVz-gh4koDQrTS1NPdbsxTBH36i12aXT7syDeYvLTV7LMTH5HB-_FX/pubchart?oid=220984261&format=interactive">here</a>.</figcaption>
 </figure>
 
-The US is quite Minecraft server-dense, with over one server per 10,000 people. However, Germany is actually the densest hotspot for Minecraft hosting, with a whopping four servers per 10,000 people. This is probably thanks to cheap hosting offerings from companies like [Hetzner](https://www.hetzner.com/).
+The US is quite Minecraft server-dense, with over one server per 10,000 people. However, Germany ends up taking the prize for most Minecraft servers per capita, with a whopping four servers for every 10,000 people. This is probably thanks to cheap hosting offerings from companies like [Hetzner](https://www.hetzner.com/).
 
 ## Server Softwares
 
