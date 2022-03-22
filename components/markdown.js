@@ -33,15 +33,13 @@ const renderCodespan = (code) => {
 
 // bug: markdown's highlight method does not include the `hljs` class, which breaks formatting
 const renderCodeblock = (src, language) => pre(code({class: "hljs"}, {html: language ? hljs.highlight(src, {language}).value : hljs.highlightAuto(src).value})).html;
-const renderImage = (href, title, text) => a({href, target: "_blank"}, img({src: href, alt: text})).html;
 
 // --- setup marked
 marked.use({
     renderer: {
         heading: renderHeading,
         codespan: renderCodespan,
-        code: renderCodeblock,
-        image: renderImage
+        code: renderCodeblock
     }
 });
 

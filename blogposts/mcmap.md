@@ -10,14 +10,7 @@ MASSCAN is a TCP port scanning tool created by [Robert David Graham](https://git
 
 Unsurprisingly, masscan doesn't come with Minecraft support out of the box. No problem, we can implement it ourselves. I started by brushing up on the Minecraft protocol, for which [wiki.vg](https://wiki.vg/Main_Page) is an invaluable reference.
 
-Thankfully, a Minecraft server list ping is basically 1-RTT, so all we have to do is send this magic packet and read the response:
-
-```plaintext
-0000000 0015 ffff ffff 0b0f 7865 6d61 6c70 2e65
-0000010 6f63 dd6d 0136 0001
-```
-
-Interestingly enough, this means that you can actually use `netcat` to ping a Minecraft server from the console. Here's what that looks like:
+Thankfully, a Minecraft server list ping is basically 1-RTT, so all we have to do is send this magic packet and read the response. Interestingly enough, this means that you can actually use `netcat` to ping a Minecraft server from the console. Here's what that looks like:
 
 ```plaintext
 $ cat pingpayload | nc mc.bithole.dev 25565
@@ -31,7 +24,68 @@ With that, I started coding. The process was rather uneventful, save for a coupl
     <figcaption>This was after I realized that the reason the masscan binary kept disappearing was that Windows Defender was flagging it as malware and deleting it.</figcaption>
 </figure>
 
-You can check out my finished code [here](https://github.com/adrian154/masscan).
+You can check out my finished code [here](https://github.com/adrian154/masscan). The magic occurs pretty much entirely in [proto-minecraft.c](https://github.com/adrian154/masscan/blob/master/src/proto-minecraft.c). First, we declare the probe which we'll send to every scanned server:
+
+```c
+static const char minecraft_hello[] = {
+    0x15, // length
+    0x00, // packet ID (handshake)
+    0xff, 0xff, 0xff, 0xff, 0x0f, // protocol version number (-1 for ping) 
+    0x0b, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, // hostname (we just use 'example.com')
+    0xdd, 0x36, // port (stick with 25565)
+    0x01, // next state (1 for querying server status)
+    0x01, // length 
+    00 // packet ID (request status)
+};
+```
+
+Now, all that's left is to parse the response from the server.
+
+```c
+static void minecraft_parse(const struct Banner1 *banner1,
+                            void *banner1_private,
+                            struct ProtocolState *stream_state,
+                            const unsigned char *px, size_t length,
+                            struct BannerOutput *banout,
+                            struct InteractiveData *more) {
+
+    unsigned state = stream_state->state; // assuming this starts out at zero
+
+    UNUSEDPARM(banner1_private);
+    UNUSEDPARM(banner1);
+
+    for(size_t i = 0; i < length; i++) {
+        switch(state) {
+            case 0:
+                state = STATE_READ_PACKETLEN;
+                // !! fall through !!
+            case STATE_READ_PACKETLEN: // reuse one case for both varint fields
+            case STATE_READ_DATALEN:
+                // MSB indicates whether there are more bytes in the varint
+                // varints shouldn't be longer than 5 bytes, but we don't enforce this restriction
+                if(!(px[i] & 0x80)) {
+                    if(state == STATE_READ_PACKETLEN) state = STATE_READ_PACKET_ID;
+                    else state = STATE_READ_DATA;
+                }
+                break;
+            case STATE_READ_PACKET_ID:
+                if(px[i] == 0x00) state = STATE_READ_DATALEN;
+                else state = 0xffffffff;
+                break;
+            case STATE_READ_DATA:
+                banout_append_char(banout, PROTO_MINECRAFT, px[i]);
+                break;
+            default: // skip to the end if something went wrong
+                i = (unsigned)length;
+        }
+    }
+    
+    stream_state->state = state;
+
+}
+```
+
+It's not the best C ever written, but whatever. Sue me.
 
 With that done, all that was left to do was start the scan...
 
@@ -160,9 +214,9 @@ This takes us down to around 4,530 unparseable responses. Of these, 891 response
 
 # Analyzing the Data
 
-Finally, we're ready to start dirtying our fingers with some data! My concerns about losing responses to my crappy parser turned out to be unfounded, because only 0.7% of the collected hits were recognized as incomplete JSON. Anyways, to answer the original question: how many Minecraft servers are out there? Drumroll, please...
+I woke up on Monday to some good news: the scan was done! Finally, we're ready to start dirtying our fingers with some data. My concerns about losing responses to my crappy parser turned out to be unfounded, because only 0.7% of the collected hits were recognized as incomplete JSON. Anyways, to answer the original question: how many Minecraft servers are out there? Drumroll, please...
 
-<p style="text-align: center; font-size: 2.0em;">166,851</p>
+<p style="text-align: center; font-size: 2.0em;">160,992</p>
 
 Give or take. There's probably some pretty big error bars on that number. [Shodan](https://www.shodan.io/) reports a very similar count, while [bStats](https://bstats.org/global/bukkit) says that there are about 175,000 online servers. The difference probably represents servers that aren't publicly accessible.
 
@@ -178,13 +232,32 @@ As you can see, honesty is far from mandatory when it comes to player count.
 
 ## Geographical Distribution
 
-TODO
+Here's a map of Minecraft servers per 100,000 people.
+
+<figure style="max-width: 1362px">
+    <img src="resources/mcmap/geomap.png" alt="geographic distribution of mc servers">
+    <figcaption>Check out the interactive version <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQx6I47r69ZkcL0tfS3-tu1yiyVz-gh4koDQrTS1NPdbsxTBH36i12aXT7syDeYvLTV7LMTH5HB-_FX/pubchart?oid=220984261&format=interactive">here</a>.</figcaption>
+</figure>
+
+The US is quite Minecraft server-dense, with over one server per 10,000 people. However, Germany is actually the densest hotspot for Minecraft hosting, with a whopping four servers per 10,000 people. This is probably thanks to cheap hosting offerings from companies like [Hetzner](https://www.hetzner.com/).
 
 ## Server Softwares
 
-The ping response includes a "version" field, which can be used to determine what software a server is running. There's a problem, though: you can use plugins to display a custom version in place of the default version message, resulting in thousands of unique "versions" being recorded. I had to manually go through and remove all of these without discarding any legitimate version strings. In the process, I discovered dozens of obscure server softwares that I had no idea existed, and learned how to say "maintenance" in at least five languages. Anyways, here's an approximate view of the distribution:
+The ping response includes a "version" field, which can be used to determine what software a server is running. There's a problem, though: you can use plugins to display a custom version in place of the default version message, resulting in thousands of unique "versions" being recorded. I had to manually go through and remove all of these without discarding any legitimate version strings. In the process, I discovered dozens of obscure server softwares that I had no idea existed (mostly shitty Spigot forks), and learned how to say "maintenance" in at least five languages. Anyways, here's an approximate view of the distribution:
 
-![versions chart](resources/mcmap/versions-chart.png)
+<figure style="max-width: 1898px">
+    <img src="resources/mcmap/versions-chart.png" alt="versions chart">
+    <figcaption>Click the image to enlarge it.</figcaption>
+</figure>
+
+I also compared the popularity of different server software "brands".
+
+![brands chart](resources/mcmap/version-brands-chart.png)
+
+<figure style="max-width: 1217px">
+    <img src="resources/mcmap/brands-chart-inner.png" alt="brands chart inner">
+    <figcaption>The last chart was getting a little crowded, so here's the inner pie chart representing the more minor brands. I still haven't figured out how to do a proper pie-of-pie chart in Google Sheets yet. Are the pie charts getting a little redundant? As you can tell, I have zero data visualization skills.</figcaption>
+</figure>
 
 ## DDoS Protection
 

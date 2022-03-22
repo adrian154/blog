@@ -1,5 +1,5 @@
 const {commentsSettings} = require("../config.json");
-const {script, h1, p, a, noscript, b, div, button} = require("html-generator");
+const {script, h1, p, a, noscript, b, div, button, img} = require("html-generator");
 const renderMarkdown = require("./markdown.js");
 const formatDate = require("./format-date.js");
 const {baseURL} = require("../config.json");
@@ -24,6 +24,7 @@ module.exports = (properties, src) => {
         h1({style: "margin-top: 0"}, properties.title),
         tableOfContents(body.fragments),
         body,
+        img({id: "img-view", style: "display: none"}),
         noscript(b("Please enable Javascript to view the comments on this post.")),
         script({
             src: "https://utteranc.es/client.js",

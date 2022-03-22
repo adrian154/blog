@@ -211,6 +211,20 @@ button {
     color: #ffffff;
 }
 
+/* imgview stuff */
+#img-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: scale-down;
+    background-color: rgba(0, 0, 0, 75%);
+    margin: 0;
+}
+
+img {cursor: pointer;}
+
 /* uncomment to unlock the super secret SERIF EXPERIENCE */
 /*
 body {
