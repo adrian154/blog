@@ -271,7 +271,22 @@ We can search the dataset for ping responses which look like this. Turns out the
 
 ## Modded Servers
 
-TODO
+Let's see what mods people are playing with! Here's the top 20 most popular mods (Forge only).
+
+| Rank | Name | Rank | Name |
+|------|------|------|------|
+| 1 | [Just Enough Items](https://www.curseforge.com/minecraft/mc-mods/jei) (45%) | 11 | [Placebo](https://www.curseforge.com/minecraft/mc-mods/placebo)&dagger; (33%) |
+| 2 | [Forgelin](https://www.curseforge.com/minecraft/mc-mods/shadowfacts-forgelin)&dagger; (41%) | 12 | [AutoRegLib](https://www.curseforge.com/minecraft/mc-mods/autoreglib)&dagger; (33%) |
+| 3 | [Chisel](https://www.curseforge.com/minecraft/mc-mods/chisel) (39%) | 13 | [Applied Energistics 2](https://www.curseforge.com/minecraft/mc-mods/applied-energistics-2) (33%) |
+| 4 | [Baubles](https://www.curseforge.com/minecraft/mc-mods/baubles) (39%) | 14 | [AppleSkin](https://www.curseforge.com/minecraft/mc-mods/appleskin) (30%) |
+| 5 | [FoamFix](https://www.curseforge.com/minecraft/mc-mods/foamfix-optimization-mod) (36%) | 15 | [Reborn Core](https://www.curseforge.com/minecraft/mc-mods/reborncore)&dagger; (30%) |
+| 6 | [Mantle](https://www.curseforge.com/minecraft/mc-mods/mantle)&dagger; (36%) | 16 | [Tinkers' Construct](https://www.curseforge.com/minecraft/mc-mods/tinkers-construct) (30%) |
+| 7 | [CraftTweaker](https://www.curseforge.com/minecraft/mc-mods/crafttweaker) (36%) | 17 | [Pam's HarvestCraft](https://www.curseforge.com/minecraft/mc-mods/pams-harvestcraft) (29%) |
+| 8 | [JourneyMap](https://www.curseforge.com/minecraft/mc-mods/journeymap) (35%) | 18 | [MTLib](https://www.curseforge.com/minecraft/mc-mods/mtlib)&dagger; (29%) |
+| 9 | [CodeChickenLib](https://www.curseforge.com/minecraft/mc-mods/codechicken-lib-1-8)&dagger; (33%) | 19 | [Redstone Flux](https://www.curseforge.com/minecraft/mc-mods/redstone-flux)&dagger; (29%) |
+| 10 | [Inventory Tweaks](https://www.curseforge.com/minecraft/mc-mods/inventory-tweaks) (33%) | 20 | [ModTweaker](https://www.curseforge.com/minecraft/mc-mods/modtweaker) (29%) |
+
+Mods marked with a &dagger; are library mods, which are used as dependencies by other mods. As expected, they make up a lot of the most popular mods.
 
 # Epilogue
 
