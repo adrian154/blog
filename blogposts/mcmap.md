@@ -164,7 +164,7 @@ Finally, we're ready to start dirtying our fingers with some data! My concerns a
 
 <p style="text-align: center; font-size: 2.0em;">166,851</p>
 
-Give or take. There's probably some pretty big error bars on that number. [Shodan](https://www.shodan.io/) reports a very similar number, while [bStats](https://bstats.org/global/bukkit) says that there are 175,000 online servers. The difference probably represents servers that aren't publicly accessible.
+Give or take. There's probably some pretty big error bars on that number. [Shodan](https://www.shodan.io/) reports a very similar count, while [bStats](https://bstats.org/global/bukkit) says that there are about 175,000 online servers. The difference probably represents servers that aren't publicly accessible.
 
 Here are the ten greatest player counts:
 
@@ -182,7 +182,9 @@ TODO
 
 ## Server Softwares
 
-TODO
+The ping response includes a "version" field, which can be used to determine what software a server is running. There's a problem, though: you can use plugins to display a custom version in place of the default version message, resulting in thousands of unique "versions" being recorded. I had to manually go through and remove all of these without discarding any legitimate version strings. In the process, I discovered dozens of obscure server softwares that I had no idea existed, and learned how to say "maintenance" in at least five languages. Anyways, here's an approximate view of the distribution:
+
+![versions chart](resources/mcmap/versions-chart.png)
 
 ## DDoS Protection
 
@@ -194,6 +196,10 @@ We're able to detect IPs representing proxies for these two providers thanks to 
 
 We can search the dataset for ping responses which look like this. Turns out there are about **742** TCPShield proxies and **1,139** Cosmic Guard proxies on the public Internet.
 
-# Modded Servers
+## Modded Servers
 
 TODO
+
+# Epilogue
+
+This blogpost ended up being one of the most exciting and interesting ones I've worked on so far. If you have any ideas for interesting ways to analyze the data I've collected, please don't hestitate to leave a comment or [contact me directly](https://bithole.dev/). Unfortunately, I probably won't be relasing the dataset since it will inevitably be used to target unprotected servers. 
