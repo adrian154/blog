@@ -1,12 +1,12 @@
-If you've ever read any of my past blogposts, you'll know that I often lament the fact that much of the Internet still runs on IPv4. Still, with greater IPv6 adoption looming on the horizon, I decided to do something that I've always wanted to do: scan the public Internet for Minecraft servers.
+If you've ever read any of my other blogposts, you'll know that I often lament the fact that much of the Internet still runs on IPv4. Still, IPv6's sluggish rollout has some benefits; namely, because almost 100% of the Internet supports IPv4, I can do something I've always been curious about: scan the entire public Internet for Minecraft servers.
 
-*That can't possibly be possible*, you might say. Well, it's actually not as Herculean a task as it seems. IPv4 addresses are 32 bits long, so there are around four billion possible IP addresses. Some of these are reserved for things like private networks or multicast, leaving us with about 3,970,693,888 hosts to scan. At 20,000 hosts/second, we'll have scanned every publicly accessible IP in under three days.
+*That can't possibly be possible!*, you might say. Well, it's actually not as Herculean a task as it seems. IPv4 addresses are 32 bits long, so there are around four billion possible IP addresses. Some of these are reserved for things like private networks or multicast, leaving us with about 3,970,693,888 hosts to scan. At 20,000 hosts/second, we'll have scanned every publicly accessible IP in under three days.
 
 # Building the Scanner
 
 I'm not a very patient person, so I knew that much of my time spent working on this project would be devoted towards making it go *fast*. I had already tried an experiment like this once, using NodeJS to manually connect to every single IP in 0.0.0.0/0. However, the scan took five days to complete, and after it finished I accidentally deleted half the data in a stupid blunder which I will never forgive myself for. This time, I started by finding the fastest TCP port scanner available, which brought me to [MASSCAN](https://github.com/robertdavidgraham/masscan).
 
-MASSCAN is a TCP port scanning tool created by [Robert David Graham](https://github.com/robertdavidgraham). It's distinguished from its port-scanning siblings like `nmap` by the fact that it can go *really* fast: up to 25 million packets per second, enough to scan the entire IPv4 Internet in just five minutes. It achieves this ludicrously high speed by implementing a stripped-down TCP/IP stack, tailored for porst scanning. It can also conduct basic interactions with a scanned server to retrieve information about the services running on that port, retrieving what masscan refers to as a "banner". This makes it perfect for our purposes.
+MASSCAN is a TCP port scanning tool created by [Robert David Graham](https://github.com/robertdavidgraham). It's distinguished from its port-scanning siblings like `nmap` by the fact that it can go *really* fast: up to 25 million packets per second, enough to scan the entire IPv4 Internet in just five minutes. It achieves this ludicrously high speed by implementing a stripped-down TCP/IP stack in userspace, tailored for port scanning. (Userspace networking is one of the many ingredients in the [C10M sauce](http://c10m.robertgraham.com/p/manifesto.html).) MASSCAN can also conduct basic interactions with a scanned server to retrieve information about the services running on that port, retrieving what masscan refers to as a "banner". This makes it perfect for our purposes.
 
 Unsurprisingly, masscan doesn't come with Minecraft support out of the box. No problem, we can implement it ourselves. I started by brushing up on the Minecraft protocol, for which [wiki.vg](https://wiki.vg/Main_Page) is an invaluable reference.
 
@@ -89,7 +89,7 @@ It's not the best C ever written, but whatever. Sue me.
 
 With that done, all that was left to do was start the scan...
 
-```
+```plaintext
 $ nohup masscan --excludefile exclude.txt -p25565 0.0.0.0/0 --source-port 61000 --banners -oD log.ndjson &
 ```
 
@@ -99,13 +99,13 @@ $ nohup masscan --excludefile exclude.txt -p25565 0.0.0.0/0 --source-port 61000 
 
 The next day, while the scan was still running, I began thinking about how to process the data. One challenge I quickly noticed was that the data is strewn with false positives, i.e. the server responded with a SYN/ACK, but the Minecraft server ping couldn't be completed. While a tiny fraction of these are probably represented by servers with `enable-status` set to false, most are probably not running Minecraft at all. Hits like these represent around 90% of the data collected, inflating file size considerably. Thankfully, this didn't end up being too much of a problem besides making download times annoyingly long.
 
-Another issue is that our data is way too large for NodeJS to swallow in one gulp. I naively tried to simply `require` the enormous JSON file, only for Node to spit out this error message:
+Another issue is that our data is way too large for NodeJS to swallow in one gulp. I naively tried to import the enormous JSON file, only for Node to spit out this error message:
 
 ```plaintext
 Error: Cannot create a string longer than 0x1fffffe8 characters
 ```
 
-Bummer. Oh well, it was foolish of me to expect that to work. My goal is to store the data in an SQLite database, which will hopefully make it more convenient to work with. So, I whipped up a short script:
+Bummer. Oh well, it was foolish of me to expect that to work. My goal is to store the data in an SQLite database, which will hopefully make it easier to work with. So, I whipped up a short script:
 
 ```js
 const Database = require("better-sqlite3"), fs = require("fs"), readline = require("readline");
