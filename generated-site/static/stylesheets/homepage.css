@@ -5,6 +5,7 @@ h1 {
     padding: 0;
     cursor: pointer;
     color: initial;
+    font-size: 2.0em;
 }
 
 h1:hover {
