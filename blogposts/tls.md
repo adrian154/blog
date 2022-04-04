@@ -999,7 +999,7 @@ The actual signature of the certificate.
 </div>
 </div>
 
-This certificate contains some information about where to proceed next in the chain of trust. The easiest way is to probably look for the certificate whose subject key identifier matches the authority key identifier listed here, which is `142eb317b75856cbae500940e61faf9d8b14c2c6`. If we look at R3, we'll see that its subject key identifier has that value; we can then validate the signature included in `test.bithole.dev` using R3's public key. Repeat the process, and we reach ISRG Root X1, which is signed by itself since it's a root certificate.
+This certificate contains some information about where to proceed next in the chain of trust. The easiest way is to probably look for the certificate whose subject key identifier matches the authority key identifier listed here, which is `142eb31...14c2c6`. If we look at R3, we'll see that its subject key identifier has that value; we can then validate the signature included in `test.bithole.dev` using R3's public key. Repeat the process, and we reach ISRG Root X1, which is signed by itself since it's a root certificate.
 
 The three certificates are available for download: [test.bithole.dev](resources/tls/cert1.crt), [R3](resources/tls/cert2.crt), and [ISRG Root X1](resources/tls/cert3.crt). You can dump information about these certificates using OpenSSL from the terminal:
 
