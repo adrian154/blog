@@ -1,5 +1,5 @@
 const {commentsSettings} = require("../config.json");
-const {script, h1, p, a, noscript, b, div, button, img, main, nav} = require("html-generator");
+const {script, h1, p, a, noscript, b, div, button, img, main, nav, raw} = require("html-generator");
 const renderMarkdown = require("./markdown.js");
 const formatDate = require("./format-date.js");
 const {baseURL} = require("../config.json");
@@ -10,7 +10,7 @@ const tableOfContents = fragments => nav(
         p("Table of Contents"),
         Object.entries(fragments).map(entry => a({href: "#" + entry[0]}, p(entry[1].title)))
     ),
-    button({id: "show-toc"}, {html: "&#9776 Contents"})
+    button({id: "show-toc"}, raw("&#9776; Contents"))
 );
 
 module.exports = (properties, src) => {

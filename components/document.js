@@ -1,5 +1,5 @@
-const { html, head, meta, title, link, p, body, a, img, script, header, footer } = require("html-generator");
-const { stylesheet, raw } = require("./helpers");
+const { html, head, meta, title, link, p, body, a, img, script, header, footer, raw } = require("html-generator");
+const { stylesheet } = require("./helpers");
 
 module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en"},
     head(
