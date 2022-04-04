@@ -4,5 +4,6 @@
     "timestamp": 0,
     "publish": false,
     "scripts": ["static/scripts/jpeg.js"],
-    "stylesheets": ["static/stylesheets/jpeg.css"]
+    "stylesheets": ["static/stylesheets/jpeg.css"],
+    "interactive": true
 }

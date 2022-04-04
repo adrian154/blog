@@ -29,7 +29,7 @@ Now, we're ready to do the key exchange. Alice generates a random secret `A`, an
 
 However, if an attacker could observe the key exchange between Alice and Bob, they would only obtain `A * C` and `B * C`. The attacker probably knows `C`, but because reversing the operation is hard, the attacker cannot calculate `A` or `B`, and thus cannot determine the shared secret.
 
-<div class="info-box">
+<aside>
 
 Diffie-Hellman key exchange is where mathematical concepts such as [groups](https://en.wikipedia.org/wiki/Group_(mathematics)) become very useful. A group is a structure consisting of a set of elements and an operation which accepts two elements and produces one element. This operation must be associative (among other requirements).
 
@@ -39,7 +39,7 @@ Today, cryptosystems based on [elliptic curve groups](https://en.wikipedia.org/w
 
 I'm really terrible at explaining group theory, so if you want to learn more check out this [short introduction](https://math.mit.edu/~jwellens/Group%20Theory%20Forum.pdf).
 
-</div>
+</aside>
 
 ## Authenticity
 
@@ -75,7 +75,7 @@ During the TLS handshake process, all three of these certificates were sent from
 
 Simply receiving a valid certificate doesn't prevent man-in-the-middle attacks, though. Certificates are public knowledge; my webserver has to actually prove ownership of the corresponding private key somehow. To solve this, TLS makes the server sign the hash of all the messages sent before certificate verification. This assures the client that at no point during the handshake did an attacker mingle in their communications.
 
-<div class="info-box">
+<aside>
 
 In this context, a hash refers to a [cryptographic hash function](https://en.wikipedia.org/wiki/Cryptographic_hash_function), which essentially converts variable-length data into a fixed-length digest. Cryptographic hashes also have the following properties:
 * It is very difficult to determine the input based on the output.
@@ -96,7 +96,7 @@ However, if I hash "cookies", this is the output:
 
 As you can see, changing a single character ends up producing two distinct hashes with seemingly no relationship. The characteristics of hash functions make them very useful for cryptography, which we will see later.
 
-</div>
+</aside>
 
 *If a CA issued a certificate to a hacker, wouldn't my computer blindly trust it?* you might ask. The answer is yes, unfortunately. That's why there are so few root CAs, which are audited frequently. This is also why most sites' certificates aren't directly signed by the root certificate. The root certificate is kept offline for maximum security, and all signing is done with an intermediate signed by the root instead. In the event that the intermediate certificate is compromised, things are *bad* but not *really bad*; the CA can simply issue a new intermediate instead of trying to get every user to adopt a new root certificate.
 
@@ -113,7 +113,7 @@ Here's a conversational illustration of all these concepts at play in a TLS hand
         <div class="client-says">Hello, here are the cipher suites I support, as well as a public key I have generated for this session.</div><div></div>
     </div>
     <div>
-        <div></div><div class="server-says">Let's use <...> as the cipher suite for this connection. Here is the public key I have generated for this session.</div>
+        <div></div><div class="server-says">Let's use &lt;...&gt; as the cipher suite for this connection. Here is the public key I have generated for this session.</div>
     </div>
     <div>
         <div class="conversation-center"><i>Both sides calculate the shared secret.</i></div>
@@ -393,11 +393,11 @@ The client sends its public keys to the server using this extension. If the serv
 </div>
 </div>
 
-<div class="info-box">
+<aside>
 
 If all the mismatching TLS versions scattered throughout the packet are confusing, don't worry. There's a whole section in the TLS 1.3 RFC documenting the various backwards compatibility measures taken to avoid confusing intermediate nodes, something they've termed [middlebox compatibility mode](https://datatracker.ietf.org/doc/html/rfc8446#appendix-D.4).
 
-</div>
+</aside>
 
 # Server Handshake Key Generation
 
@@ -1218,13 +1218,13 @@ which matches the value sent by the server, helping the client confirm that the 
 </div>
 </div>
 
-<div class="info-box">
+<aside>
 
 This part of the handshake relies on [HMAC](https://en.wikipedia.org/wiki/HMAC), which you can think of as an extension of a regular cryptographic hash. An HMAC takes not one but two parameters: a secret key, and the data to be hashed. The other party can compare the resulting hash with the expected value, and check whether the data matches up. The key is necessary because anyone can create a regular hash, which provides no guarantee of authenticity.
 
 *Couldn't we accomplish the same thing by simply concatenating the key and the data, and then hashing?*, you may be asking. This is a very natural instinct, but it has a serious flaw: under certain circumstances, it may be possible to append data to the message while still producing a valid hash. This is known as a [length extension attack](https://en.wikipedia.org/wiki/Length_extension_attack). While there are ways to prevent this, those mitigations introduce their own vulnerabilities. Try to squash those, and you end up reinventing HMACs.
 
-</div>
+</aside>
 
 # C → S: Change Cipher Spec
 

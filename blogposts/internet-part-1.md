@@ -16,11 +16,11 @@ Let's start from the very bottom. No Internet, no networks even. Consider two co
 
 The physical layer is closely tied to the **link layer**, which leverages the physical layer's capabilities to transfer full *frames* of data over a network that may be more complicated than a single point-to-point link. It may also take on responsibilities such as error correction and automatic retransmission.
 
-<div class="info-box">
+<aside>
 
 The idea of a "frame" is a little vague since their implementation varies a great deal between different protocols. However, for every network, there is a maximum frame size that it can accept, known as the [maximum transmission unit](https://en.wikipedia.org/wiki/Maximum_transmission_unit) or MTU. This is an important property of the link-layer network that higher layers need to be aware of.
 
-</div>
+</aside>
 
 The physical layer and link layer are generally tightly coupled (out of necessity), which is the source of endless frustration. For example, the term "Ethernet" might refer to the physical cable standard, but it could also refer to the Ethernet protocol used to transfer frames over those cables. Which is it?
 
@@ -53,7 +53,7 @@ Ethernet frames are fairly simple in structure. As expected, each frame contains
 
 When computer A wants to send a message to computer B, it sends a frame to the switch with computer B's MAC address. However, the switch doesn't know which physical port the connection to computer B is located on, so it relays the frame to all connected computers, hoping that one of them is the intended recipient. When computer B receives the frame, it might reply with another frame. That frame would contain computer B's MAC address as the source, allowing the switch to internally associate the connection it received the frame on with computer B. In the future, when the switch receives a frame with computer B as its destination, it can simply relay the frame on the correct link instead of *flooding*.
 
-<div class="info-box">
+<aside>
 
 Back in the day, when everything was slightly worse, networks were often created using [hubs](https://en.wikipedia.org/wiki/Ethernet_hub) instead of switches. Hubs are much simpler devices which simply retransmit everything that it receives on every port. Because of their relative lack of sophistication, hubs suffer from a littany of problems:
 * Since every device needs to be able to receive the data being transmitted by the hub, if one device was slower than the others, *every* link on the switch would be forced to operate at that speed.
@@ -61,7 +61,7 @@ Back in the day, when everything was slightly worse, networks were often created
 
 Today, hubs have been made obsolete in favor of switches and are rarely used outside of special conditions (though evidently my school's IT department hasn't gotten the memo). Even in the early days of Ethernet, it was apparent that collisions posed a challenging problem, so other protocols approached access control differently. For example, in Token Ring setups, there is no central switch or hub; nodes are connected in a ring, and transmission rights are passed around the ring, so no collisions were possible. When one node was done transmitting, it passed the *token* to the next node, hence the name "Token Ring". \*roll credits\*
 
-</div>
+</aside>
 
 Switches are one of the most ubiquitous building blocks of computer networks, so it's no surprise that they are all over the place. If your router has more than one Ethernet port, chances are it has a built-in switch.
 
@@ -90,11 +90,11 @@ Because IPv4 addresses are only 32 bits long, there can only be 2<sup>32</sup> =
     <figcaption><a href="https://xkcd.com/195/">xkcd 195</a>: a map of IPv4 space circa 2006. Things have only gotten more crowded since then.</figcaption>
 </figure>
 
-<div class="info-box">
+<aside>
 
 *Why can't MAC addresses just be used for routing?*, you might ask. The biggest reason is that IP is meant to be mostly agnostic of the protocols used in the underlying link layer. Using MAC addresses would violate that principle; networks not running on IEEE 802 technologies wouldn't be able to join the Internet, which defeats its whole purpose of connecting numerous heterogeneous networks.
 
-</div>
+</aside>
 
 ## Packets
 
@@ -136,11 +136,11 @@ ARP is a protocol that enables the resolution of IP addresses to MAC addresses o
 
 There also exists a second method for the discovery of IP-to-MAC mappings. Under certain circumstances, such as when a device joins a network or obtains a new IP address, it may publish an ARP announcement that prompts all other devices to update their ARP caches.
 
-<div class="info-box">
+<aside>
 
 One major weakness of ARP is its vulnerability to [spoofing attacks](https://en.wikipedia.org/wiki/ARP_spoofing), wherein a malicious device publishes an ARP announcement or responds to an ARP request not intended for them in order to masquerade as another device. For this reason, IPv6 uses [Neighbor Discovery Protocol](https://en.wikipedia.org/wiki/Neighbor_Discovery_Protocol) (NDP) instead of ARP. NDP seeks to address some of the security and usability problems which have traditionally affected ARP. To learn more, check out [this thread](https://superuser.com/questions/969831/why-is-arp-replaced-by-ndp-in-ipv6) on StackExchange.
 
-</div>
+</aside>
 
 ARP is ubiquitous among IEEE 802 networks. If your computer is on a WiFi or Ethernet-based network, you can install [Wireshark](https://www.wireshark.org/) and observe ARP requests happening right before your eyes.
 
@@ -167,31 +167,31 @@ Under CIDR, the number of network/host bits is variable, instead of being fixed 
 
 Complementary to CIDR is the idea of a *netmask*. For a given classless network, its netmask is a special 32-bit value where all the prefix bits are set to 1 while all the host bits are cleared. The routing prefix of an address can be obtained by finding the bitwise AND of the address and the netmask. If the routing prefix doesn't match that of the local network, your computer won't perform an ARP lookup, since only machines on the same LAN can be contacted via MAC address.
 
-<div class="info-box">
+<aside>
 
 Check out my [CIDR calculator](https://bithole.dev/tools/cidr.html), which performs a number of useful operations given a CIDR range.
 
-</div>
+</aside>
 
 ## Going Public
 
 So what happens when your computer encounters an IP that isn't on the LAN? Thankfully for your poor computer, handling the routing of this packet across the public Internet is mostly outside of its responsibilities. Your computer has a [*default route*](https://en.wikipedia.org/wiki/Default_route), which specifies who to contact to relay packets outside the local network. That device is called the **default gateway**, since it serves as a gateway to the rest of the world.
 
-<div class="info-box">
+<aside>
 
 Your computer uses the default gateway's IP (which can be printed via `ipconfig` on Windows or `ip a` on Linux) to figure out its MAC address via ARP. However, the IP packets sent to the default gateway still have the final recipient's IP address, since obviously the default gateway needs to know who to send it to.
 
 Many residential routers also serve a management page from the default gateway IP. This is purely by convention. The router can distinguish traffic to the gateway itself and traffic to the public internet by looking at the destination address of incoming packets.
 
-</div>
+</aside>
 
 Your router itself has a default gateway, too. In fact, your router's view of the internet isn't really different from that of your computer's: it too is just part of a bigger network, owned by your ISP instead of you. Other than that, pretty much all the other details stay the same; your router has a subnet mask, it performs ARP requests, and it relays packets which aren't on its network to the default gateway. In fact, your router probably obtains its address from the ISP through DHCP as well. (That's why rebooting your router may result in your home network being assigned a new IP address. Realistically, however, most routers remember their previous IP address and simply request the same one when they boot up again.)
 
-<div class="info-box">
+<aside>
 
 Access to the ISP's network is controlled via MAC address. Because of this, if you choose to use your own router instead of your ISP's equipment, you may have to contact them so that they can add your router's MAC address to their records. Conversely, if you know the MAC address of a subscriber on the same WAN, you can spoof it to get free Internet. Be warned, though, this is [fairly illegal...](https://www.techdirt.com/articles/20140616/06521227593/when-aaron-swartz-spoofed-his-mac-address-it-proved-he-was-criminal-when-apple-does-it-its-good-everyone.shtml)
 
-</div>
+</aside>
 
 ## NAT: A Perpetual Annoyance
 
@@ -230,11 +230,11 @@ But what if the destination isn't in the ISP's network?
 
 At the very top level, the Internet is organized into [autonomous systems](https://en.wikipedia.org/wiki/Autonomous_system_(Internet)). Generally, all the IPs within an AS are controlled by one organization (usually a corporation) and can reach each other without leaving the AS. The AS is defined by the list of routing prefixes that belong to the AS, and each AS is assigned a number (an ASN) by our good friend IANA.
 
-<div class="info-box">
+<aside>
 
 ASNs were initially 16-bit, but eventually it became obvious that the supply was about to run out, so IANA started allocating [32-bit ASNs](https://datatracker.ietf.org/doc/html/rfc4893) in 2007.
 
-</div>
+</aside>
 
 When you look at the Internet at the AS level, the illusion is truly stripped bare, and you can see the Internet for what it is: a bunch of servers, organized into ASes, with connections running between them.
 
@@ -255,11 +255,11 @@ Not every AS is connected with each other; often, Internet packets will travel t
 
 The red arrows signify the best path, the one that packets would actually follow in the network. As you can see, there is more than one way to reach the destination; Google is part of [France-IX](https://www.franceix.net/en/), which SdV is also a member of. The purple rectangles represent border routers within SdV's own network; they aren't shown for other networks since they are normally obscured from public view.
 
-<div class="info-box">
+<aside>
 
 The way `traceroute` works is really fascinating. Ever wonder how it figures out the route a packet takes between point A and point B when the Internet Protocol suite seemingly provides no such functionality? The answer is remarkably clever. It starts by sending a packet to the destination with a TTL of 1. This packet will travel down one hop along the route before the router sees that the TTL has reached zero, and sends an ICMP error message to the original sender. This reveals the first router along the path; a packet of TTL 2 will reveal the second router, and so on, until the destination IP is reached. 
 
-</div>
+</aside>
 
 ## The Politics of Peering
 

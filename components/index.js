@@ -1,6 +1,6 @@
 const formatDate = require("./format-date.js");
 const { baseURL } = require("../config.json");
-const { h1, p, a } = require("html-generator");
+const { h1, p, a, article, div, b, button } = require("html-generator");
 const document = require("./document.js");
 
 module.exports = blogposts => document(
@@ -10,9 +10,13 @@ module.exports = blogposts => document(
         canonicalURL: baseURL,
         stylesheets: ["static/stylesheets/homepage.css"]
     },
-    blogposts.map(blogpost => [
+    div({id: "blog-intro"},
+        p("Hello, I'm Adrian. Welcome to my blog, a loose collection of technology-related ramblings on various topics. Hopefully, you'll find them interesting."),
+        p(b("Update (4/3): "), "I've been experimenting with a new serif look to the site. Let me know how it looks. ", button({id: "serif-toggle"}, "Click to toggle!"))
+    ),
+    blogposts.map(blogpost => article(
         p({class: "date"}, formatDate(new Date(blogpost.timestamp))),
         a({href: blogpost.id + ".html"}, h1(blogpost.title)),
         p(blogpost.description),
-    ])
+    ))
 );

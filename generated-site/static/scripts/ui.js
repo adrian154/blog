@@ -1,26 +1,38 @@
 (() => {
 
-    // toc code
-    const contents = document.getElementById("contents-outer");
-    const button = document.getElementById("show-toc");
-    button.addEventListener("click", () => contents.classList.toggle("shown"));
-    button.addEventListener("focusout", () => contents.classList.remove("shown"));
+    // toc show/hide
+    const contents = document.querySelector("nav");
+    if(contents) {
+        const button = document.getElementById("show-toc");
+        button.addEventListener("click", () => contents.classList.toggle("shown"));
+        button.addEventListener("focusout", () => contents.classList.remove("shown"));
+    }
 
-    // image stuff
+    // click image to preview
     const imgView = document.getElementById("img-view");
-    imgView.addEventListener("click", () => {
-        imgView.style.display = "none";
-    });
+    if(imgView) {
 
-    document.querySelectorAll("img").forEach(node => {
-        if(node == imgView) return;
-        node.addEventListener("click", () => {
-            imgView.src = node.src;
-            imgView.style.display = "";
+        imgView.addEventListener("click", () => imgView.style.display = "none");
+        
+        document.querySelector("main").querySelectorAll("img").forEach(node => {
+            if(node == imgView) return;
+            node.addEventListener("click", () => {
+                imgView.src = node.src;
+                imgView.style.display = "";
+            });
+            window.addEventListener("keydown", event => {
+                if(event.key === "Escape") imgView.style.display = "none";
+            });
         });
-        window.addEventListener("keydown", event => {
-            if(event.key === "Escape") imgView.style.display = "none";
-        });
-    });
+
+    }
+
+    // serif toggle
+    if(localStorage.getItem("serif") === "true") 
+        document.documentElement.classList.add("serif");
+    else
+        document.documentElement.classList.remove("serif");
+
+    document.getElementById("serif-toggle")?.addEventListener("click", () => localStorage.setItem("serif", document.documentElement.classList.toggle("serif")));
 
 })();

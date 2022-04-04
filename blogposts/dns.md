@@ -98,7 +98,7 @@ The act of redirecting queries to another nameserver is known as a **delegation*
 
 These are NS records, which associate a zone with its authoritative nameserver. In this case, we have 13 nameservers to choose from. Let's just go with the first one, `e.gtld-servers.net`.
 
-<div class="info-box">
+<aside>
 
 In addition to NS records, the J root also sent A and AAAA records for the domains of these nameservers:
 
@@ -109,7 +109,7 @@ e.gtld-servers.net.     172800  IN      AAAA    2001:502:1ca1::30
 
 These records are called [glue records](https://datatracker.ietf.org/doc/html/rfc7719#section-6). Why are glue records necessary? Well, `e.gtld-servers.net` is authoritative for multiple top-level domains&mdash;including .net!&mdash;meaning that we wouldn't be able to resolve `e.gtld-servers.net` without contacting `e.gtld-servers.net` first. To break this circular dependency, the parent zone's nameserver sends a glue record.
 
-</div>
+</aside>
 
 ```plaintext
 $ dig A docs.google.com @e.gtld-servers.net
@@ -176,12 +176,12 @@ docs.google.com.        300     IN      A       172.217.5.110
 
 Success! We got an answer to our query. More importantly, take a look at the `flags` section; the `aa` flag means that according to the nameserver, the response we received is authoritative. The process we just did is called an **iterative query**, where we followed the chain of DNS delegations until we reached the source of truth for the zone in question.
 
-<div class="info-box">
+<aside>
 
 If you prefer GUIs, you can use an [online tool](https://bithole.dev/tools/dns/) I made to trace DNS delegations. Just click the "iteratively query from root" checkbox and type in the hostname you are interested in.
 
 
-</div>
+</aside>
 
 As a quick aside: for all intents and purposes, a top-level domain such as ".com" functions just like a regular domain. ICANN has [stated](https://www.icann.org/en/announcements/details/new-gtld-dotless-domain-names-prohibited-30-8-2013-en) that TLDs should never have A or AAAA records, but this hasn't stopped some TLDs like [.ai](http://ai./) from doing so.
 

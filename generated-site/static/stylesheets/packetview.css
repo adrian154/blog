@@ -1,7 +1,3 @@
-
-/* hide segments by default */
-.segment { display: none; }
-
 /* container for segment description */
 .container {
     position: relative;

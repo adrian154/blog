@@ -4,5 +4,6 @@
     "timestamp": 1645857396650,
     "publish": true,
     "scripts": ["static/scripts/packetview.js"],
-    "stylesheets": ["static/stylesheets/packetview.css"]
+    "stylesheets": ["static/stylesheets/packetview.css"],
+    "interactive": true
 }

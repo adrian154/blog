@@ -47,7 +47,6 @@ document.querySelectorAll(".packet").forEach(packet => {
         containers.push(container);
 
         const content = section.cloneNode(true);
-        content.style.display = "block";
 
         // create header
         const header = document.createElement("h2");

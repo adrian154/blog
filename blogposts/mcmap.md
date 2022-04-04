@@ -253,14 +253,16 @@ Here's a map of Minecraft servers per 100,000 people.
 
 The US is quite Minecraft server-dense, with over one server per 10,000 people. However, Germany ends up taking the prize for most Minecraft servers per capita, with a whopping four servers for every 10,000 people. This is probably thanks to cheap hosting offerings from companies like [Hetzner](https://www.hetzner.com/).
 
-## Server Softwares
+## Server Distributions
 
-The ping response includes a "version" field, which can be used to determine what software a server is running. There's a problem, though: you can use plugins to display a custom version in place of the default version message, resulting in thousands of unique "versions" being recorded. I had to manually go through and remove all of these without discarding any legitimate version strings. In the process, I discovered dozens of obscure server softwares that I had no idea existed (mostly shitty Spigot forks), and learned how to say "maintenance" in at least five languages. Anyways, here's an approximate view of the distribution:
+The ping response includes a "version" field, which can be used to determine what software a server is running. There's a problem, though: you can use plugins to display a custom version in place of the default version message, resulting in thousands of unique "versions" being recorded. I had to manually go through and remove all of these while taking care to not discard any legitimate version strings. In the process, I discovered dozens of obscure server softwares that I had no idea existed (mostly shitty Spigot forks), and learned how to say "maintenance" in at least five languages. Anyways, here's a look at the most common servers:
 
 <figure style="max-width: 1898px">
     <img src="resources/mcmap/versions-chart.png" alt="versions chart">
     <figcaption>Click the image to enlarge it.</figcaption>
 </figure>
+
+I also matched the strings for certain keywords to identify which specific server "brands" were most common. 
 
 I also compared the popularity of different server software "brands".
 

@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap");
+
 
 html {
     scroll-behavior: smooth;
@@ -6,7 +8,7 @@ html {
 
 body {
 
-    max-width: 43rem;
+    max-width: 45rem;
     padding: 1.0em;
     margin: 1.0em auto;
     position: relative;
@@ -75,7 +77,7 @@ figcaption {
     margin: 1.0em 0;
 }
 
-.footnote {
+footer p {
     font-size: 11pt;
     opacity: 75%;
     margin-top: 2.0em;
@@ -103,7 +105,7 @@ a {
 a, a:visited { color: #000000; }
 a:hover { color: #888888; }
 
-.info-box {
+aside {
     border-radius: 5px;
     border: 1px solid #4287f5;
     background-color: rgba(66, 135, 245, 15%);
@@ -168,7 +170,7 @@ button {
 }
 
 /* contents */
-#contents-outer {
+nav {
     position: fixed;
     top: 0;
     left: -15rem;
@@ -225,29 +227,29 @@ button {
 
 img {cursor: pointer;}
 
-/* uncomment to unlock the super secret SERIF EXPERIENCE */
-/*
-body {
-    font-family: serif;
-    font-size: 19px;
-    letter-spacing: -0.03rem;
+/* ----- TEST: SERIF EXPERIENCE ----- */
+.serif body {
+    font-family: "Source Serif Pro", serif;
+    font-size: 18px;
+    color: #111;
 }
 
-p {
-    line-height: 1.3em;
-    text-align: justify;
-    hyphens: auto;
+.serif p {
+    line-height: 1.45em;
 }
 
-h1 {
-    font-size: 1.5em;
+.serif .date {
+    font-size: 12pt;
 }
 
-h2 {
-    font-size: 1.2em;
+.serif h1 {
+    font-size: 1.7em;
 }
 
-code {
-    font-size: 14pt;
+.serif main h1 {
+    margin-top: 1.0em;
 }
-*/
+
+.serif code {
+    font-size: 13pt;
+}
