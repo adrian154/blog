@@ -1,7 +1,7 @@
 const { html, head, meta, title, link, p, body, a, img, script, header, footer, raw } = require("html-generator");
 const { stylesheet } = require("./helpers");
 
-module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en"},
+module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en", class: "serif"},
     head(
 
         meta({charset: "utf-8"}),

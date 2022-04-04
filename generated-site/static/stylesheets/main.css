@@ -228,25 +228,28 @@ nav {
 img {cursor: pointer;}
 
 /* ----- TEST: SERIF EXPERIENCE ----- */
-body {
+.serif body {
     font-family: "Source Serif Pro", serif;
     font-size: 18px;
     color: #111;
 }
 
-p {
+.serif p {
     line-height: 1.45em;
 }
 
-.date {
+.serif .date {
     font-size: 12pt;
 }
 
-h1 {
+.serif h1 {
     font-size: 1.7em;
+}
+
+.serif main h1 {
     margin-top: 1.0em;
 }
 
-code {
+.serif code {
     font-size: 13pt;
 }
