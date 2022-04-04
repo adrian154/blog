@@ -11,7 +11,7 @@ module.exports = blogposts => document(
         stylesheets: ["static/stylesheets/homepage.css"]
     },
     div({id: "blog-intro"},
-        p("Hello, I'm Adrian. Welcome to my blog, a loose collection various technology-related ramblings on topics I felt like writing about. Hopefully, you'll find them interesting."),
+        p("Hello, I'm Adrian. Welcome to my blog, a loose collection of technology-related ramblings on various topics. Hopefully, you'll find them interesting."),
         p(b("Update (4/3): "), "I've been experimenting with a new serif look to the site. Let me know how it looks.")
     ),
     blogposts.map(blogpost => article(

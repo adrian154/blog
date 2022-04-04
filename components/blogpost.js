@@ -21,11 +21,13 @@ module.exports = (properties, src) => {
             canonicalURL: new URL(`/${properties.id}.html`, baseURL).href
         },
         main(
+            properties.interactive && noscript(p({style: "color: #ff0000"}, "Warning: If you are seeing this message, JS isn't supported; unfortunately, since this page relies on JS to dynamically generate content, parts of the page may be missing or brutally disfigured.")),
             p({id: "date", class: "date"}, formatDate(new Date(properties.timestamp))),
             h1({style: "margin-top: 0"}, properties.title),
             tableOfContents(body.fragments),
             body,
             img({id: "img-view", style: "display: none"}),
+            h1("Comments"),
             noscript(b("Please enable Javascript to view the comments on this post.")),
             script({
                 src: "https://utteranc.es/client.js",
