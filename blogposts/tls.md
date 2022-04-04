@@ -113,7 +113,7 @@ Here's a conversational illustration of all these concepts at play in a TLS hand
         <div class="client-says">Hello, here are the cipher suites I support, as well as a public key I have generated for this session.</div><div></div>
     </div>
     <div>
-        <div></div><div class="server-says">Let's use <...> as the cipher suite for this connection. Here is the public key I have generated for this session.</div>
+        <div></div><div class="server-says">Let's use &lt;...&gt; as the cipher suite for this connection. Here is the public key I have generated for this session.</div>
     </div>
     <div>
         <div class="conversation-center"><i>Both sides calculate the shared secret.</i></div>
