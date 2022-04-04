@@ -12,7 +12,7 @@
         imgView.style.display = "none";
     });
 
-    document.querySelectorAll("img").forEach(node => {
+    document.querySelector("main").querySelectorAll("img").forEach(node => {
         if(node == imgView) return;
         node.addEventListener("click", () => {
             imgView.src = node.src;
