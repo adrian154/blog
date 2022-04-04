@@ -6,7 +6,7 @@ If you've ever read any of my other blogposts, you'll know that I often lament t
 
 I'm not a very patient person, so I knew that much of my time spent working on this project would be devoted towards making it go *fast*. I had already tried an experiment like this once, using NodeJS to manually connect to every single IP in 0.0.0.0/0. However, the scan took five days to complete, and after it finished I accidentally deleted half the data in a stupid blunder which I will never forgive myself for. This time, I started by finding the fastest TCP port scanner available, which brought me to [MASSCAN](https://github.com/robertdavidgraham/masscan).
 
-MASSCAN is a TCP port scanning tool created by [Robert David Graham](https://github.com/robertdavidgraham). It's distinguished from its port-scanning siblings like `nmap` by the fact that it can go *really* fast: up to 25 million packets per second, enough to scan the entire IPv4 Internet in just five minutes. It achieves this ludicrously high speed by implementing a stripped-down TCP/IP stack in userspace, tailored for port scanning. (Userspace networking is one of the many ingredients in the [C10M sauce](http://c10m.robertgraham.com/p/manifesto.html).) MASSCAN can also conduct basic interactions with a scanned server to retrieve information about the services running on that port, retrieving what masscan refers to as a "banner". This makes it perfect for our purposes.
+MASSCAN is a TCP port scanning tool created by [Robert David Graham](https://github.com/robertdavidgraham). It's distinguished from its port-scanning siblings like `nmap` by the fact that it can go *really* fast: up to 25 million packets per second, enough to scan the entire IPv4 Internet in just five minutes. It achieves this ludicrously high speed by implementing a stripped-down TCP/IP stack in userspace, tailored for port scanning. (Userspace networking is one of the many ingredients in the [C10M sauce](http://c10m.robertgraham.com/p/manifesto.html).) MASSCAN can also conduct basic interactions with a scanned server to extract information about the services running on that port, retrieving what masscan refers to as a "banner". This makes it perfect for our purposes.
 
 Unsurprisingly, masscan doesn't come with Minecraft support out of the box. No problem, we can implement it ourselves. I started by brushing up on the Minecraft protocol, for which [wiki.vg](https://wiki.vg/Main_Page) is an invaluable reference.
 
@@ -222,13 +222,25 @@ Give or take. There's probably some pretty big error bars on that number. [Shoda
 
 Here are the ten greatest player counts:
 
-<p style="text-align: center; word-spacing: 1.0em">99999999 20220320 20220320 20220319 20220319<br>9128312 114516 114515 114514 114514</p>
+<p style="text-align: center; word-spacing: 1.0em">99,999,999 20,220,320 20,220,320 20,220,319 20,220,319<br>9,128,312 114,516 114,515 114,514 114,514</p>
 
 and the ten lowest player counts:
 
 <p style="text-align: center; word-spacing: 1.0em">-1337 -46 -2 -1 -1 -1 -1 -1 -1 -1</p>
 
-As you can see, honesty is far from mandatory when it comes to player count. 
+Needless to say, honesty is far from mandatory when it comes to player count. Here is some rudimentary analysis of the playercount distribution, ignoring the obviously dishonest servers:
+
+TODO
+
+Turns out, the vast majority of Minecraft servers have no one online. Kinda depressing.
+
+Finally, Minecraft servers also send a sample of the online players by default, letting us make an incomplete list of who's online at any given moment. I couldn't think of anything to do with this data, but [maybe your name's in the list](resources/mcmap/players.txt)!
+
+<div class="info-box">
+
+There are mods/plugins which allow you to summon fake players under any name; technical players often use these fake players to keep farms loaded. As a result, many spoofed names like `jeb_` and `notch` show up in the list. However, the vast majority of these usernames probably represent real players.
+
+</div>
 
 ## Geographical Distribution
 
@@ -287,6 +299,10 @@ Let's see what mods people are playing with! Here's the top 20 most popular mods
 | 10 | [Inventory Tweaks](https://www.curseforge.com/minecraft/mc-mods/inventory-tweaks) (33%) | 20 | [ModTweaker](https://www.curseforge.com/minecraft/mc-mods/modtweaker) (29%) |
 
 Mods marked with a &dagger; are library mods, which are used as dependencies by other mods. As expected, they make up a lot of the most popular mods.
+
+# Server Hosts
+
+TODO
 
 # Epilogue
 

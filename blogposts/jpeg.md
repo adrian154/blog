@@ -53,6 +53,23 @@ If we zoom in close on the two highlighted regions, it becomes clear that not al
 
 Like last time, the problem now becomes representing the image data in a way that lets us separate the important parts from the unimportant parts. JPEG accomplishes this using the **discrete cosine transform (DCT)**.
 
+To understand the discrete cosine transform, we need to start viewing the image as a function. For example, a grid of pixels is really just a function mapping a position in space to color. However, there are other ways of representing the image. Enter the [Fourier Transform](https://en.wikipedia.org/wiki/Fourier_transform), a mathematical tool that allows you to decompose *any* signal into a series of sine waves. Yes, you heard me right: by adding up an (infinite) series of sine waves, you can reproduce any function. Let's dig a little deeper into this amazing insight.
+
+## The Frequency Domain
+
+TODO: Fourier Transform
+* what goes into a circle?
+* relationship b/t vectors (re/im) -> circle
+* adding vectors, representing shapes
+* how the transform works
+* (maybe) DFT?
+* harmonic analysis
+* holy shit
+
+## DCT in 2D
+
+
+
 # Huffman Coding
 
 TODO
