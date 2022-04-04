@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap");
+
 
 html {
     scroll-behavior: smooth;
@@ -6,7 +8,7 @@ html {
 
 body {
 
-    max-width: 43rem;
+    max-width: 45rem;
     padding: 1.0em;
     margin: 1.0em auto;
     position: relative;
@@ -225,29 +227,25 @@ nav {
 
 img {cursor: pointer;}
 
-/* uncomment to unlock the super secret SERIF EXPERIENCE */
-/*
+/* ----- TEST: SERIF EXPERIENCE ----- */
 body {
-    font-family: serif;
-    font-size: 19px;
-    letter-spacing: -0.03rem;
+    font-family: "Source Serif Pro", serif;
+    font-size: 18px;
+    color: #111;
 }
 
 p {
-    line-height: 1.3em;
-    text-align: justify;
-    hyphens: auto;
+    line-height: 1.45em;
+}
+
+.date {
+    font-size: 12pt;
 }
 
 h1 {
-    font-size: 1.5em;
-}
-
-h2 {
-    font-size: 1.2em;
+    font-size: 1.7em;
 }
 
 code {
-    font-size: 14pt;
+    font-size: 13pt;
 }
-*/

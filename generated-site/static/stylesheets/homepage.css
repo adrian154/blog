@@ -5,9 +5,14 @@ h1 {
     padding: 0;
     cursor: pointer;
     color: initial;
-    font-size: 2.0em;
+    font-size: 1.6em;
 }
 
 h1:hover {
     text-decoration: underline;
+}
+
+#blog-intro {
+    padding: 1.0em;
+    background-color: #f0f0f0;
 }
