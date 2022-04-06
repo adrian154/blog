@@ -230,8 +230,8 @@ img {cursor: pointer;}
 /* ----- TEST: SERIF EXPERIENCE ----- */
 .serif body {
     font-family: "Source Serif Pro", serif;
-    font-size: 18px;
-    color: #111;
+    font-size: 12.5pt;
+    color: #222;
 }
 
 .serif p {
@@ -251,5 +251,5 @@ img {cursor: pointer;}
 }
 
 .serif code {
-    font-size: 13pt;
+    font-size: 11pt;
 }

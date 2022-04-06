@@ -244,16 +244,13 @@ There are mods/plugins which allow you to summon fake players under any name; te
 
 ## Geographical Distribution
 
-Here's a map of Minecraft servers per 100,000 people.
+Where are most Minecraft servers located? We can make a map of which countries have the most Minecraft servers:
 
-<figure style="max-width: 1362px">
-    <img src="resources/mcmap/geomap.png" alt="geographic distribution of mc servers">
-    <figcaption>Check out the interactive version <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQx6I47r69ZkcL0tfS3-tu1yiyVz-gh4koDQrTS1NPdbsxTBH36i12aXT7syDeYvLTV7LMTH5HB-_FX/pubchart?oid=220984261&format=interactive">here</a>.</figcaption>
-</figure>
+
 
 The US is quite Minecraft server-dense, with over one server per 10,000 people. However, Germany ends up taking the prize for most Minecraft servers per capita, with a whopping four servers for every 10,000 people. This is probably thanks to cheap hosting offerings from companies like [Hetzner](https://www.hetzner.com/).
 
-## Server Distributions
+## Server Softwares
 
 The ping response includes a "version" field, which can be used to determine what software a server is running. There's a problem, though: you can use plugins to display a custom version in place of the default version message, resulting in thousands of unique "versions" being recorded. I had to manually go through and remove all of these while taking care to not discard any legitimate version strings. In the process, I discovered dozens of obscure server softwares that I had no idea existed (mostly shitty Spigot forks), and learned how to say "maintenance" in at least five languages. Anyways, here's a look at the most common servers:
 
