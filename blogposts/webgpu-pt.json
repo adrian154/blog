@@ -1,6 +1,7 @@
 {
     "title": "Pathtracing with WebGPU",
     "description": "WebGPU is the next-gen GPU API for the web, allowing us to unleash the number-crunching capacity of our graphics cards. Let's use it to write a physically-based renderer.",
-    "timestamp": 1644036481518,
-    "publish": true
+    "timestamp": 0,
+    "publish": false,
+    "scripts": ["static/scripts/pt.js"]
 }

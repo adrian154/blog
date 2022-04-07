@@ -225,6 +225,10 @@ nav {
     margin: 0;
 }
 
+.indented {
+    padding: 0 1.0em;
+}
+
 img {cursor: pointer;}
 
 /* ----- TEST: SERIF EXPERIENCE ----- */
