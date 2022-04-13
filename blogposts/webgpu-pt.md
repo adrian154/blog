@@ -45,15 +45,20 @@ This equation basically boils down to...
 
 <div class="indented">
 
-The <span style="color: #ff0000">light emitted by point $x$</span> is equal to the <span style="color: #009B55">light emitted from point $x$</span> plus the sum of the <span style="color: #0000ff">light hitting point $x$, multiplied by the likelihood of light being reflected towards the viewer</span>.
+The <span style="color: #ff0000">outgoing light from point $x$</span> is equal to the <span style="color: #009B55">light emitted by point $x$</span> plus the sum of the <span style="color: #0000ff">light hitting point $x$, multiplied by the likelihood of light being reflected towards the viewer</span>.
 
 </div>
 
-But wait, what's that last term, $\omega_i \cdot  n$? For starters, $n$ is the normal vector at point $x$. That basically means it's the vector perpendicular to the surface at point $x$. Since both $n$ and $\omega_i$ are unit vectors, their dot product is simply equal to the cosine of the angle between them. You will often see this written as $\cos\theta_i$.
+But wait, what's that last term, $\omega_i \cdot  n$? For starters, $n$ is the normal vector at point $x$. That basically means it's the vector perpendicular to the surface at point $x$. Since both $n$ and $\omega_i$ are unit vectors, their dot product is simply equal to the cosine of the 
+angle between them. You will often see this written as $\cos\theta_i$.
+
+<aside>
 
 If you want a rigorous explanation of this term, I would highly recommend that you read the section about radiometry (specifically, the definition of radiance, which is the quantity given by our equation) in [*Physically Based Rendering*](https://pbr-book.org/3ed-2018/Color_and_Radiometry/Radiometry). For now, my quick-and-dirty explanation will suffice.
 
-Basically, the product of the BRDF and the incoming radiance tells us how much energy is going towards the viewer. However, as the surface becomes more tilted relative to the viewer, the apparent area it takes up in our view increases. Since the energy is spread out over a wider area, the radiance is lower. This phenomenon is known as [Lambert's law](https://en.wikipedia.org/wiki/Lambert%27s_cosine_law).
+</aside>
+
+Basically, the product of the BRDF and the incoming radiance tells us how much energy is going towards the viewer. However, as the surface becomes more tilted relative to the viewer, the apparent area it takes up in our view increases. Since the energy is spread out over a wider area, the radiance is lower. This phenomenon is known as [Lambert's law](https://en.wikipedia.org/wiki/Lambert%27s_cosine_law). Simple geometry 
 
 Think about what happens if you shine a light against a wall. It will appear brightest when you shine it directly perpendicular to the wall; in this case, $\theta_i = 0\degree$, so $\cos\theta_i = 1$. As you tilt the flashlight, the brightness of the wall decreases. Eventually, the beam will be parallel with the wall, at which point $\theta_i = 90\degree$ and $\cos\theta_i = 0$.
 
@@ -93,4 +98,31 @@ Here's a very basic demonstration of a Monte Carlo method, where we pick random 
 
 Notice how as the number of points increases, the error progressively decreases. It can be shown that a Monte Carlo integrator will converge on the answer at a rate of $\frac{1}{\sqrt{n}}$, regardless of dimension. While this rate is unbearably slow compared to other methods when applied to 1D integration, as the number of dimensions grows, Monte Carlo integration gains a significant edge.
 
-So how do we apply Monte Carlo integration to the rendering equation? It's pretty simple, actually; we can just plug in .
+So how do we apply Monte Carlo integration to the rendering equation? It's pretty simple, actually; we can just plug it into our basic MC estimator.
+
+$$L_o(x, \omega_o) \approx L_e(x) + \frac{1}{n} \sum_{i=0}^n \frac{\text{BRDF}(\omega_i, \omega_o)}{\text{pdf}(\omega_i)} L_i(x, \omega_i) (\omega_i \cdot n)$$
+
+This roughly translates into a recursive algorithm:
+
+```plaintext
+function pathtrace(ray, i) {
+
+    // don't recurse infinitely
+    if(i == MAX_ITERATIONS) {
+        return BLACK;
+    }
+
+    Hit hit = raytrace(ray);    
+    if(hit) {
+        Vector sample = generateSample();
+        Ray nextRay = new Ray(ray.point, sample);
+        return hit.emission + BRDF(sample) * pathtrace(nextRay, i + 1) * dot(hit.normal, sample);
+    } else {
+        return background(ray);
+    }
+
+}
+
+// for each pixel, find the average value of sample() over a large `n`
+```
+

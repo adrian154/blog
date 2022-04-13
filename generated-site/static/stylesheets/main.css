@@ -40,11 +40,19 @@ h1 {
 
 table {
     border-collapse: collapse;
+    margin: auto;
 }
 
 td, th {
-    padding: 0.5em;
-    border: 1px solid #aaa;
+    padding: 0.75em;
+}
+
+th {
+    border-bottom: 1px solid #000000;
+}
+
+td {
+    border-bottom: 1px solid #cccccc;
 }
 
 .section-link {

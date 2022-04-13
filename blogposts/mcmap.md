@@ -246,7 +246,7 @@ There are mods/plugins which allow you to summon fake players under any name; te
 
 Where are most Minecraft servers located? We can make a map of which countries have the most Minecraft servers:
 
-
+TODO
 
 The US is quite Minecraft server-dense, with over one server per 10,000 people. However, Germany ends up taking the prize for most Minecraft servers per capita, with a whopping four servers for every 10,000 people. This is probably thanks to cheap hosting offerings from companies like [Hetzner](https://www.hetzner.com/).
 
@@ -301,8 +301,17 @@ Mods marked with a &dagger; are library mods, which are used as dependencies by 
 
 # Server Hosts
 
-TODO
+Before we start, here's some eye candy:
+
+<figure style="max-width: 1024x">
+    <img src="resources/mcmap/hilbert-map.png" alt="map of server IPs along hilbert curve">
+    <figcaption>Check out the <a href="resources/mcmap/hilbert-map-labeled.png">labeled version</a>, too.</figcaption>
+</figure>
+
+What you're looking at is every online Minecraft server in IPv4 space, plotted along a Hilbert curve (a style of visualization that was pioneered by [xkcd](https://xkcd.com/195/)). I won't go into too much detail here, but essentially the Hilbert curve is a way of arranging linear points in 2D space such that a sequence of points will always end up in a compact region (unlike other mappings, where two adjacent points might end up far apart because of wrapping).
+
+Each IP is associated with an autonomous system; by grouping IPs with ASNs, we can rank hosts by how many Minecraft servers they're running. 
 
 # Epilogue
 
-This blogpost ended up being one of the most exciting and interesting ones I've worked on so far. If you have any ideas for interesting ways to analyze the data I've collected, please don't hestitate to leave a comment or [contact me directly](https://bithole.dev/). Unfortunately, I probably won't be relasing the dataset since it will inevitably be used to target unprotected servers. 
+This blogpost ended up being one of the most exciting and interesting ones I've worked on so far. If you have any ideas for interesting ways to analyze the data I've collected, please don't hestitate to leave a comment or [contact me directly](https://bithole.dev/). Unfortunately, I probably won't be releasing the dataset since it will inevitably be used to target unprotected servers. 

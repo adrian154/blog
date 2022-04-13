@@ -163,6 +163,7 @@ rl.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;
 </div>
 
 <h2 id="geographical-distribution">Geographical Distribution <a class="section-link" href="#geographical-distribution">&sect;</a></h2><p>Where are most Minecraft servers located? We can make a map of which countries have the most Minecraft servers:</p>
+<p>TODO</p>
 <p>The US is quite Minecraft server-dense, with over one server per 10,000 people. However, Germany ends up taking the prize for most Minecraft servers per capita, with a whopping four servers for every 10,000 people. This is probably thanks to cheap hosting offerings from companies like <a href="https://www.hetzner.com/">Hetzner</a>.</p>
 <h2 id="server-softwares">Server Softwares <a class="section-link" href="#server-softwares">&sect;</a></h2><p>The ping response includes a &quot;version&quot; field, which can be used to determine what software a server is running. There&#39;s a problem, though: you can use plugins to display a custom version in place of the default version message, resulting in thousands of unique &quot;versions&quot; being recorded. I had to manually go through and remove all of these while taking care to not discard any legitimate version strings. In the process, I discovered dozens of obscure server softwares that I had no idea existed (mostly shitty Spigot forks), and learned how to say &quot;maintenance&quot; in at least five languages. Anyways, here&#39;s a look at the most common servers:</p>
 <figure style="max-width: 1898px">
@@ -254,6 +255,12 @@ rl.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;
 </tr>
 </tbody></table>
 <p>Mods marked with a &dagger; are library mods, which are used as dependencies by other mods. As expected, they make up a lot of the most popular mods.</p>
-<h1 id="server-hosts">Server Hosts <a class="section-link" href="#server-hosts">&sect;</a></h1><p>TODO</p>
-<h1 id="epilogue">Epilogue <a class="section-link" href="#epilogue">&sect;</a></h1><p>This blogpost ended up being one of the most exciting and interesting ones I&#39;ve worked on so far. If you have any ideas for interesting ways to analyze the data I&#39;ve collected, please don&#39;t hestitate to leave a comment or <a href="https://bithole.dev/">contact me directly</a>. Unfortunately, I probably won&#39;t be relasing the dataset since it will inevitably be used to target unprotected servers. </p>
+<h1 id="server-hosts">Server Hosts <a class="section-link" href="#server-hosts">&sect;</a></h1><p>Before we start, here&#39;s some eye candy:</p>
+<figure style="max-width: 1024x">
+    <img src="resources/mcmap/hilbert-map.png" alt="map of server IPs along hilbert curve">
+    <figcaption>Check out the <a href="resources/mcmap/hilbert-map-labeled.png">labeled version</a>, too.</figcaption>
+</figure>
+
+<p>What you&#39;re looking at is every online Minecraft server in IPv4 space, plotted along a Hilbert curve (a style of visualization that was pioneered by <a href="https://xkcd.com/195/">xkcd</a>). I won&#39;t go into too much detail here, but essentially the Hilbert curve is a way of arranging linear points in 2D space such that a sequence of points will always end up in a compact region (unlike other mappings, where two adjacent points might end up far apart because of wrapping).</p>
+<h1 id="epilogue">Epilogue <a class="section-link" href="#epilogue">&sect;</a></h1><p>This blogpost ended up being one of the most exciting and interesting ones I&#39;ve worked on so far. If you have any ideas for interesting ways to analyze the data I&#39;ve collected, please don&#39;t hestitate to leave a comment or <a href="https://bithole.dev/">contact me directly</a>. Unfortunately, I probably won&#39;t be releasing the dataset since it will inevitably be used to target unprotected servers. </p>
 <img id="img-view" style="display: none"><h1>Comments</h1><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>
