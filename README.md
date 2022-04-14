@@ -1,2 +1,3 @@
 # blog
- Finally.
+
+[My blog](https://blog.bithole.dev/)
