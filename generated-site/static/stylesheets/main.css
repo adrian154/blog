@@ -231,6 +231,7 @@ nav {
     object-fit: scale-down;
     background-color: rgba(0, 0, 0, 75%);
     margin: 0;
+    z-index: 3;
 }
 
 .indented {
