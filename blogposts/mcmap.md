@@ -4,13 +4,13 @@ If you've ever read any of my other blogposts, you'll know that I often lament t
 
 # Building the Scanner
 
-I'm not a very patient person, so I knew that much of my time spent working on this project would be devoted towards making it go *fast*. I had already tried an experiment like this once, using NodeJS to manually connect to every single IP in 0.0.0.0/0. However, the scan took five days to complete, and after it finished I accidentally deleted half the data in a stupid blunder which I will never forgive myself for. This time, I started by finding the fastest TCP port scanner available, which brought me to [MASSCAN](https://github.com/robertdavidgraham/masscan).
+I'm not a very patient person, so I knew that much of my time spent working on this project would be devoted towards making it go *fast*. I had actually built a primitive Minecraft server scanner using NodeJS about a year ago; however, trying to scale it up to whole-Internet scanning rates quickly ended up becoming a nightmare. I did end up scanning the entirety of 0.0.0.0/0 (even though it took five days); however, I accidentally deleted half the data in a stupid blunder which I will never forgive myself for, prompting me to fall into a deep depression. This time, I started by finding the fastest TCP port scanner available, which brought me to [MASSCAN](https://github.com/robertdavidgraham/masscan).
 
-MASSCAN is a TCP port scanning tool created by [Robert David Graham](https://github.com/robertdavidgraham). It's distinguished from its port-scanning siblings like `nmap` by the fact that it can go *really* fast: up to 25 million packets per second, enough to scan the entire IPv4 Internet in just five minutes. It achieves this ludicrously high speed by implementing a stripped-down TCP/IP stack in userspace, tailored for port scanning. (Userspace networking is one of the many ingredients in the [C10M sauce](http://c10m.robertgraham.com/p/manifesto.html).) MASSCAN can also conduct basic interactions with a scanned server to extract information about the services running on that port, retrieving what masscan refers to as a "banner". This makes it perfect for our purposes.
+MASSCAN is a TCP port scanning tool created by [Robert David Graham](https://github.com/robertdavidgraham). It's distinguished from its port-scanning siblings like `nmap` by the fact that it can go *really* fast: up to 25 million packets per second, enough to scan the entire IPv4 Internet in just five minutes. It achieves this ludicrously high speed by implementing a stripped-down TCP/IP stack in userspace, tailored for massively concurrent port scanning. (Userspace networking is one of the many ingredients in the [C10M sauce](http://c10m.robertgraham.com/p/manifesto.html).) MASSCAN can also conduct basic interactions with a scanned server to extract information about the services running on that port, retrieving what masscan refers to as a "banner". This makes it perfect for our purposes.
 
 Unsurprisingly, masscan doesn't come with Minecraft support out of the box. No problem, we can implement it ourselves. I started by brushing up on the Minecraft protocol, for which [wiki.vg](https://wiki.vg/Main_Page) is an invaluable reference.
 
-Thankfully, a Minecraft server list ping is basically 1-RTT, so all we have to do is send this magic packet and read the response. Interestingly enough, this means that you can actually use `netcat` to ping a Minecraft server from the console. Here's what that looks like:
+Thankfully, the Minecraft protocol is simple enough that all we need to do is send one packet to collect all the available info about a server. Interestingly enough, this means that you can actually use `netcat` to ping a Minecraft server from the console. Here's what that looks like:
 
 ```plaintext
 $ cat pingpayload | nc mc.bithole.dev 25565
@@ -228,19 +228,13 @@ and the ten lowest player counts:
 
 <p style="text-align: center; word-spacing: 1.0em">-1337 -46 -2 -1 -1 -1 -1 -1 -1 -1</p>
 
-Needless to say, honesty is far from mandatory when it comes to player count. Here is some rudimentary analysis of the playercount distribution, ignoring the obviously dishonest servers:
+Minecraft servers also send a sample of the online players by default, letting us make an incomplete list of who's online at any given moment. I couldn't think of anything to do with this data, but [maybe your name's in the list](resources/mcmap/players.txt)!
 
-TODO
-
-Turns out, the vast majority of Minecraft servers have no one online. Kinda depressing.
-
-Finally, Minecraft servers also send a sample of the online players by default, letting us make an incomplete list of who's online at any given moment. I couldn't think of anything to do with this data, but [maybe your name's in the list](resources/mcmap/players.txt)!
-
-<div class="info-box">
+<aside>
 
 There are mods/plugins which allow you to summon fake players under any name; technical players often use these fake players to keep farms loaded. As a result, many spoofed names like `jeb_` and `notch` show up in the list. However, the vast majority of these usernames probably represent real players.
 
-</div>
+</aside>
 
 ## Geographical Distribution
 
@@ -249,6 +243,12 @@ Where are most Minecraft servers located? We can make a map of which countries h
 ![choropleth of mc servers per country](resources/mcmap/geomap.png)
 
 The US is quite Minecraft server-dense, with over one server per 10,000 people. However, Germany ends up taking the prize for most Minecraft servers per capita, with a whopping four servers for every 10,000 people. This is probably thanks to cheap hosting offerings from companies like [Hetzner](https://www.hetzner.com/).
+
+<aside>
+
+Did you know this type of map is called a [choropleth](https://en.wikipedia.org/wiki/Choropleth_map)? Well, now you do!
+
+</aside>
 
 ## Server Softwares
 
@@ -310,7 +310,31 @@ Before we start, here's some eye candy:
 
 What you're looking at is every online Minecraft server in IPv4 space, plotted along a Hilbert curve (a style of visualization that was pioneered by [xkcd](https://xkcd.com/195/)). I won't go into too much detail here, but essentially the Hilbert curve is a way of arranging linear points in 2D space such that a sequence of points will always end up in a compact region (unlike other mappings, where two adjacent points might end up far apart because of wrapping).
 
-Each IP is associated with an autonomous system; by grouping IPs with ASNs, we can rank hosts by how many Minecraft servers they're running. 
+Each IP is associated with an autonomous system; by grouping IPs with ASNs, we can rank hosts by how many Minecraft servers they're running. Here are our top 10 contenders:
+
+<div id="as-table-outer">
+
+| AS | Company | Number of Servers |
+|----|---------|-------------------|
+| AS16276 | OVH | 24,417 |
+| AS8100 | QuadraNet | 9,927 |
+| AS56876 | GPORTAL | 9,339 |
+| AS7506 | GMO Internet | 5,466 |
+| AS24940 | Hetzner | 5,327 |
+| AS7922 | Comcast | 4,887 |
+| AS31898 | Oracle | 4,498 |
+| AS45090 | Tencent | 3,792 |
+| AS7018 | AT&T | 2,565 |
+| AS51167 | Contabo | 2,514 |
+
+</div>
+
+Oh, and just for fun, we can label the servers on the Hilbert map according to ASN. (I ran out of colors after about 15, unfortunately.)
+
+<figure style="max-width: 1350px">
+    <img src="resources/mcmap/hilbert-map-asn.png" alt="map of server IPs along hilbert curve, colored based on ASN">
+    <figcaption>There's also a <a href="resources/mcmap/hilbert-map-asn-large.png">much larger version</a> for your viewing pleasure. You'll probably want to zoom in.</figcaption>
+</figure>
 
 # Epilogue
 
