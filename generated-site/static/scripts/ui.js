@@ -28,9 +28,10 @@
     }
 
     // serif toggle
+    // by default, set serif
     if(localStorage.getItem("serif") === "true") 
         document.documentElement.classList.add("serif");
-    else
+    else if(localStorage.getItem("serif") === "false")
         document.documentElement.classList.remove("serif");
 
     document.getElementById("serif-toggle")?.addEventListener("click", () => localStorage.setItem("serif", document.documentElement.classList.toggle("serif")));
