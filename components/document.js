@@ -1,5 +1,8 @@
 const { html, head, meta, title, link, p, body, a, img, script, header, footer, raw } = require("html-generator");
 const { stylesheet } = require("./helpers");
+const fs = require("fs");
+
+const APPLY_SETTINGS_CODE = fs.readFileSync("generated-site/static/scripts/apply-settings-stub.js", "utf-8");
 
 module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en", class: "serif"},
     head(
@@ -24,6 +27,7 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
 
         // scripts
         properties.scripts?.map(scriptSrc => script({defer: null, src: scriptSrc})),
+        script(raw(APPLY_SETTINGS_CODE)),
         script({defer: null, src: "static/scripts/ui.js"}),
 
         // misc.

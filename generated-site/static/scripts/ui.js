@@ -27,20 +27,8 @@
 
     }
 
-    const createSetting = name => {
-
-        // load setting
-        if(localStorage.getItem(name) === "true")
-            document.documentElement.classList.add(name);
-        else
-            document.documentElement.classList.remove(name);
-        
-        // toggle button logic
-        document.getElementById("toggle-" + name)?.addEventListener("click", () => localStorage.setItem(name, document.documentElement.classList.toggle(name)));
-
-    };
-
-    createSetting("serif");
-    createSetting("darkmode");
+    const addToggle = name => document.getElementById("toggle-" + name)?.addEventListener("click", () => localStorage.setItem(name, document.documentElement.classList.toggle(name)));
+    addToggle("serif");
+    addToggle("darkmode");
     
 })();
