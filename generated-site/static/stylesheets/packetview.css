@@ -62,10 +62,10 @@
 }
 
 /* server/client color schemes */
-.client .container { background-color: #d6ffd4; }
-.client .hex-segment:hover, .client .highlighted .hex-segment { background-color: #a2e6a1; }
-.server .container { background-color: #ffd4d4; }
-.server .hex-segment:hover, .server .highlighted .hex-segment { background-color: #e6a1a1; }
+.client .container { background-color: rgba(12, 255, 0, 10%); }
+.client .hex-segment:hover, .client .highlighted .hex-segment { background-color: rgba(12, 255, 0, 25%); }
+.server .container { background-color: rgba(255, 0, 0, 10%); }
+.server .hex-segment:hover, .server .highlighted .hex-segment { background-color: rgba(255, 0, 0, 25%); }
 
 /* show label on hover/highlight */
 .hex-segment:hover + .label-outer, .highlighted .label-outer {
@@ -84,3 +84,6 @@
     background-color: #ffad08;
     color: #000000;
 }
+
+/* DARKMODE! */
+.darkmode .hex-segment { background-color: #333; }

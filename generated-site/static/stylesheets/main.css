@@ -283,6 +283,7 @@ html {
 }
 
 .darkmode {
+    color-scheme: dark;
     --main-background-color: #18191E;
     --text-color: #ffffff;
     --header-border-color: #555555;
