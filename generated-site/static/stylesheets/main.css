@@ -19,6 +19,8 @@ body {
     font-family: IBM Plex Sans, 'sans serif';
     font-size: 13pt;
 
+    transition: background-color 0.3s;
+
 }
 
 p {
