@@ -27,13 +27,20 @@
 
     }
 
-    // serif toggle
-    // by default, set serif
-    if(localStorage.getItem("serif") === "true") 
-        document.documentElement.classList.add("serif");
-    else if(localStorage.getItem("serif") === "false")
-        document.documentElement.classList.remove("serif");
+    const createSetting = name => {
 
-    document.getElementById("serif-toggle")?.addEventListener("click", () => localStorage.setItem("serif", document.documentElement.classList.toggle("serif")));
+        // load setting
+        if(localStorage.getItem(name) === "true")
+            document.documentElement.classList.add(name);
+        else
+            document.documentElement.classList.remove(name);
+        
+        // toggle button logic
+        document.getElementById("toggle-" + name)?.addEventListener("click", () => localStorage.setItem(name, document.documentElement.classList.toggle(name)));
 
+    };
+
+    createSetting("serif");
+    createSetting("darkmode");
+    
 })();

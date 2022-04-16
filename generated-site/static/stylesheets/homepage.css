@@ -4,15 +4,19 @@ h1 {
     border: 0;
     padding: 0;
     cursor: pointer;
-    color: initial;
     font-size: 2.0em;
 }
 
 h1:hover {
     text-decoration: underline;
+    color: var(--text-color)
 }
 
 #blog-intro {
     padding: 1.0em;
     background-color: #f0f0f0;
+}
+
+html.darkmode #blog-intro {
+    background-color: rgba(0, 0, 0, 50%);
 }
