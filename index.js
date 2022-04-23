@@ -13,16 +13,12 @@ const OUTPUT_DIR = path.join(__dirname, config.output);
 
 // re-render blogposts only if they were modified
 const blogposts = directory(DATA_DIR).sort((a, b) => b.timestamp - a.timestamp);
+
 blogposts.forEach(post => {
-
-    // paths
-    const mdPath = path.join(DATA_DIR, post.id + ".md");
     const destPath = path.join(OUTPUT_DIR, post.id + ".html");
-
-    if(!fs.existsSync(destPath) || fs.statSync(destPath).mtimeMs < fs.statSync(mdPath).mtimeMs || process.argv[2] === "all") {
-        render(OUTPUT_DIR, post.id + ".html", blogpost, post, read(mdPath));
+    if(!fs.existsSync(destPath) || fs.statSync(destPath).mtimeMs < fs.statSync(post.src).mtimeMs || process.argv[2] === "all") {
+        render(OUTPUT_DIR, post.id + ".html", blogpost, post, read(post.src));
     }
-
 });
 
 // generate index and feeds

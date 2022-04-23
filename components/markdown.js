@@ -23,24 +23,53 @@ const renderHeading = (text, level) => {
 };
 
 // latex kludge
-const renderCodespan = (code) => {
+/*const renderCodespan = (code) => {
     const inline = code.match(/\$([^\$]+)\$/);
     const display = code.match(/\$\$([^\$]+)\$\$/);
     if(display) return katex.renderToString(display[1], {throwOnError: false, displayMode: true});
     if(inline) return katex.renderToString(inline[1], {throwOnError: false});
     return false;
-};
+};*/
 
 // bug: markdown's highlight method does not include the `hljs` class, which breaks formatting
-const renderCodeblock = (src, language) => pre(code({class: "hljs"}, {html: language ? hljs.highlight(src, {language}).value : hljs.highlightAuto(src).value})).html;
+const highlight = (src, language) => {
+
+    if(!language) {
+        console.warn("warning: a language wasn't specified, highlight.js's slow autodetection method will be used");
+        return {html: hljs.highlightAuto(src).value};
+    }
+
+    return {html: hljs.highlight(src, {language}).value};
+
+};
+
+const renderCodeblock = (src, language) => pre(code({class: "hljs"}, highlight(src, language))).html;
 
 // --- setup marked
 marked.use({
     renderer: {
         heading: renderHeading,
-        codespan: renderCodespan,
         code: renderCodeblock
-    }
+    },
+    extensions: [
+        {
+            name: "katex",
+            level: "inline",
+            start: src => src.match(/\$/)?.index,
+            tokenizer: (src, tokens) => {
+                const match = src.match(/^(\$\$?)([^\$]+)\$\$?/);
+                if(match) {
+                    return {
+                        type: "katex",
+                        raw: match[0],
+                        displayStyle: match[1] === "$$",
+                        src: match[2] 
+                    }
+                }
+            },
+            renderer: token => katex.renderToString(token.src, {throwOnError: false, displayMode: token.displayStyle})
+        }
+    ]
 });
 
 module.exports = markdown => {

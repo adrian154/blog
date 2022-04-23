@@ -11,7 +11,7 @@ There are two primary interactions which occur:
 * Scattering: how light bounces off the material will determine its texture. Consider the two most extreme examples: a perfect mirror will always reflect light in the same direction, while a painted surface with matte finish will scatter light rays in random directions.
 
 For our purposes, it is enough to model absorption by multiplying the spectrum of the incoming light against a set of coefficients. The scattering of light is a random process, so we can characterize it using its distribution. (This assumes that the scattering events are independent; I can't think  of any physical situation where this wouldn't be the case). The distribution function looks like this:
-
+ 
 <div class="indented">
 
 Let $\text{BRDF}(\omega_i, \omega_o)$ be the proportion of light coming from direction $\omega_i$ reflected in direction $\omega_o$.
