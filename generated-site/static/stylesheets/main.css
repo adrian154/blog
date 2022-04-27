@@ -242,6 +242,8 @@ nav {
 
 img {cursor: pointer;}
 
+.katex { font-size: 1.15em; }
+
 /* ----- SERIF MODE ----- */
 .serif body {
     font-family: "Source Serif Pro", serif;

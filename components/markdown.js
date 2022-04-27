@@ -17,19 +17,16 @@ let fragments = null; // keep track of URL fragments so that they can always be 
 // generate heading with section link
 const HEADINGS = [h1, h2, h3, h4, h5, h6];
 const renderHeading = (text, level) => {
-    const fragment = headingToFragment(text);
+    
+    // make sure the fragment id is unique in the stupidest way possible
+    let fragment = headingToFragment(text);
+    while(fragments[fragment]) {
+        fragment += "x";
+    }
+
     fragments[fragment] = {title: text, level};
     return HEADINGS[level - 1]({id: fragment}, [text, " ", a({class: "section-link", href: "#" + fragment}, {html: "&sect;"})]).html;
 };
-
-// latex kludge
-/*const renderCodespan = (code) => {
-    const inline = code.match(/\$([^\$]+)\$/);
-    const display = code.match(/\$\$([^\$]+)\$\$/);
-    if(display) return katex.renderToString(display[1], {throwOnError: false, displayMode: true});
-    if(inline) return katex.renderToString(inline[1], {throwOnError: false});
-    return false;
-};*/
 
 // bug: markdown's highlight method does not include the `hljs` class, which breaks formatting
 const highlight = (src, language) => {
