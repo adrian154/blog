@@ -1,5 +1,5 @@
 // --- deps
-const { h1, h2, h3, h4, h5, h6, a, code, pre, img } = require("html-generator");
+const { h1, h2, h3, h4, h5, h6, a, code, pre, raw } = require("html-generator");
 const hljs = require("highlight.js");
 const marked = require("marked");
 const katex = require("katex");
@@ -25,7 +25,7 @@ const renderHeading = (text, level) => {
     }
 
     fragments[fragment] = {title: text, level};
-    return HEADINGS[level - 1]({id: fragment}, [text, " ", a({class: "section-link", href: "#" + fragment}, {html: "&sect;"})]).html;
+    return HEADINGS[level - 1]({id: fragment}, [raw(text), " ", a({class: "section-link", href: "#" + fragment}, {html: "&sect;"})]).html;
 };
 
 // bug: markdown's highlight method does not include the `hljs` class, which breaks formatting
