@@ -42,11 +42,48 @@ However, the opposite of this theorem is not always true; just because $\lim_{n\
 
 <aside>
 
-**Problem:** Does $\frac{n^2}{n^2 + 1}$ diverge?
+**Problem:** Does the series $\sum \frac{n^2}{n^2 + 1}$ diverge?
 
 **Solution:** To solve this, we simply evaluate the limit $$\lim_{n\to\infty} \frac{n^2}{n^2 + 1}$$
 
 Since the degree of the top and bottom are the same, the limit is simply the leading coefficient of the numerator over the leading coefficient of the denominator, or $\frac11$. This is not zero, so the series diverges.
+
+</aside>
+
+## The Integral Test
+
+**Theorem:** Let $f(x)$ be a continuous function such that $f(n) = a_n$. If $f(x) > 0$ and is decreasing for all $x \geq 1$, $\sum_1^\infty a_n$ converges if $\int_1^\infty a(n)\,dn$ converges. If the integral diverges, the series diverges too.
+
+<aside>
+
+**Problem:** Does the series $\sum \frac{1}{n(n+1)}$ converge or diverge?
+
+**Solution:** Let's check with the integral test.
+
+$$
+\begin{align*}
+&\int \frac{1}{x(x+1)}\,dx = \\[1.0em]
+&\int \frac{(x+1) - x}{x(x+1)}\,dx = \\[1.0em]
+&\int \frac{x+1}{x(x+1)} - \frac{x}{x(x+1)}\,dx = \\[1.0em]
+&\int \frac1x - \frac{1}{x+1}\,dx = \\[1.0em]
+&\ln|x| - \ln|x+1| + C = \\[1.0em]
+&\ln\left|\frac{x}{x+1}\right| + C
+\end{align*}
+$$
+
+Our integral is over $x \geq 1$, so we can get rid of the absolute value.
+
+Now, to evaluate the improper integral:
+
+$$
+\begin{align*}
+&\lim_{x\to\infty} \ln\frac{x}{x+1} - \ln\frac12 = \\
+&\ln(1) - \ln\frac12 = \\
+&-\ln\frac12
+\end{align*}
+$$
+
+The integral converges, so the series converges too.
 
 </aside>
 
@@ -59,7 +96,3 @@ You can do all sorts of things to a series, and it'll still converge:
 * You can rearrange the terms.
 
 Sometimes modifying a series (e.g. rearranging it) allows us to prove that it converges in an easier way.
-
-## The Integral Test
-
-**Theorem:** For a nonnegative series ($a_n \geq 0$ for all $n$), $\sum_1^\infty a_n$ converges if $\int_1^\infty a(n)\,dn$ converges. If the integral diverges, the series diverges too.
