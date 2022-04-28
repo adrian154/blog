@@ -9,7 +9,7 @@ const document = require("./document.js");
 const tableOfContents = fragments => nav( 
     div({id: "contents"},
         p("Table of Contents"),
-        Object.entries(fragments).map(entry => a({href: "#" + entry[0]}, p(entry[1].title)))
+        Object.entries(fragments).map(entry => a({href: "#" + entry[0]}, p(raw(entry[1].title))))
     ),
     button({id: "show-toc"}, raw("&#9776; Contents"))
 );

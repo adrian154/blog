@@ -26,17 +26,29 @@ As you can see, the partial sums form a sequence, which may converge or diverge.
 
 ## p-series
 
-The series $\sum_{n=1}^\infty \frac{1}{n^p} = 1 + \frac{1}{2^p} + \frac{1}{3^p} + \ldots + \frac{1}{n^p}$ is known as the **p-series**. When $p = 1$, the series is known as the **harmonic series**.
+The series $\sum_{n=1}^\infty \frac{1}{n^p} = 1 + \frac{1}{2^p} + \frac{1}{3^p} + \ldots + \frac{1}{n^p}$ is known as the **p-series**. When $p = 1$, the series is known as the **harmonic series**, which is equal to $1 + \frac12 + \frac13 + \ldots + \frac1n$.
 
-# Series Convergence
+## Geometric Series
 
-There are many ways to determine whether a series converges.
+A series of the form $\sum_{n=0}^\infty ar^n = a + ar + ar^2 + \ldots + ar^n$ is known as a **geometric series**. 
 
-## *n*th-term test
+**Theorem:** A geometric series converges to $\frac{a}{1 - r}$ when $|r| < 1$. When $|r| > 1$, the series diverges.
+
+## The *n*th-term test
 
 **Theorem:** If $\sum a_n$ converges, then $\lim_{n\to\infty} a_n = 0$. Therefore, if $\lim_{n\to\infty} a_n \neq 0$, then $\sum a_n$ does not converge.
 
 However, the opposite of this theorem is not always true; just because $\lim_{n\to\infty} a_n = 0$ doesn't mean the series $\sum a_n$ converges. Basically, you can use the *n*th-term test to prove that a series diverges, but you can't use it to prove that a series converges.
+
+<aside>
+
+**Problem:** Does $\frac{n^2}{n^2 + 1}$ diverge?
+
+**Solution:** To solve this, we simply evaluate the limit $$\lim_{n\to\infty} \frac{n^2}{n^2 + 1}$$
+
+Since the degree of the top and bottom are the same, the limit is simply the leading coefficient of the numerator over the leading coefficient of the denominator, or $\frac11$. This is not zero, so the series diverges.
+
+</aside>
 
 ## Modified Series Still Converge
 
@@ -47,3 +59,7 @@ You can do all sorts of things to a series, and it'll still converge:
 * You can rearrange the terms.
 
 Sometimes modifying a series (e.g. rearranging it) allows us to prove that it converges in an easier way.
+
+## The Integral Test
+
+**Theorem:** For a nonnegative series ($a_n \geq 0$ for all $n$), $\sum_1^\infty a_n$ converges if $\int_1^\infty a(n)\,dn$ converges. If the integral diverges, the series diverges too.
