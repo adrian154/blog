@@ -214,6 +214,122 @@ We just proved that the alternating harmonic series converges, but we also know 
 
 </aside>
 
-# To Be Continued
+# Power Series
 
-I will update this page with content on power series some day later. For now, I'm going to take a break because "convergent" and "divergent" stopped sounding like words about 30 minutes ago.
+So far we have beaten the topic of determining series convergence to death and beyond, but what are they actually useful for? It turns out that we can use series to approximate many functions (such as the trigonometric functions) which cannot be expressed using elementary operations alone.
+
+A power series is a series of the form 
+
+$$\sum_{n=0}^\infty a_n(x - c)^k = a_0 + a_1(x-c) + a_2(x-c)^2 + \ldots$$
+
+where $a_n$ is the sequence of coefficients, and $c$ is the center.
+
+We can treat the power series as a function of $x$:
+
+$$f(x) = \sum_{n=0}^\infty a_n(x - c)^k$$
+
+Every power series has a **radius of convergence** $R$ such that when $|x - c| < R$ the series is convergent, and when $|x - c| > R$ the series is divergent. The series may or may not converge at $|x - c| = R$.
+
+<aside>
+
+**Problem:** What is the radius of convergence of the power series $\sum \frac{x^n}{n!}$? 
+
+**Solution:** We can apply the ratio test.
+
+$$
+\begin{align*}
+    \lim_{n\to\infty} \left|\frac{a_{n+1}}{a_n}\right| &= \lim_{n\to\infty} \left|\frac{(n+1)!}{x^{n+1}} \times \frac{x^n}{n!}\right| \\
+    &= \lim_{n\to\infty} \left|\frac{n+1}{x}\right| \\
+    &= |x| \lim_{n\to\infty} n+1 
+\end{align*}
+$$
+
+For all $x \neq 0$, the value of the ratio test approaches infinity, so the series is divergent. This gives us a radius of convergence of $0$.
+
+</aside>
+
+A related concept is the interval of convergence. However, this interval is not simply equal to $(x - R, x + R)$; whether the endpoints are convergent needs to be tested separately.
+
+So why are power series useful? We'll get to that in a second. Recall $f(x)$ from just a moment ago:
+
+$$f(x) = \sum_{n=0}^\infty a_n(x - c)^n$$
+
+This function has some properties which make it useful. Over the function's interval of convergence, it is continuous and differentiable. We can find the integral of the power series by integrating each of its terms separately and adding them all up:
+
+$$
+\begin{align*}
+    \int f(x)\,dx &= \sum_{n=0}^\infty \int a_n(x-c)^n\,dn \\
+    &= \sum_{n=0}^\infty a_n\frac{(x-c)^{n+1}}{n+1} + C
+\end{align*}
+$$
+
+## Approximating Functions with Power Series
+
+Now for the main course, the headline act. It turns out that we can represent many functions as power series.
+
+Say we have a function $f(x)$, which **can** be represented with a power series:
+
+$$f(x) = \sum_{n=0}^\infty a_n(x - c)^n = a_0 + a_1(x - c) + a_2(x - c)^2 + \ldots$$
+
+How do we find the coefficients of this series?
+
+For starters, we know that $f(c) = a_0$, since when $x = c$ all terms following this one are zero.
+
+The next coefficient can be determined by taking the derivative of $f(x)$:
+
+$$
+\begin{align*}
+    f'(x) &= \sum_{n=0}^\infty n a_n(x-c)^{n-1} \\
+    &= a_1 + 2a_2(x-c) + 3a_3(x-c)^2 + 4a_4(x-c)^3 + \ldots
+\end{align*}    
+$$
+
+Thus, $f'(c) = a_1$.
+
+We can repeat this process to determine the rest of the coefficients:
+
+$$
+\begin{align*}
+    f''(x) &= \sum_{n=0}^\infty n(n-1) a_n(x-c)^{n-2} \\
+    &= 2a_2 + 6a_3(x-c) + 12a_4(x-c)^2 + 20a_5(x-c)^3 + \ldots
+\end{align*}
+$$
+
+We see that $f'(c) = a_1$, $f''(c) = 2a_2$, $f'''(c) = 6a_3$, $f''''(c) = 24a_4$, and so on. We can generalize this: $f^{n}(c)$, the $n\text{th}$ derivative of $f$, is equal to $n! \times a_n$.
+
+## The Taylor Series
+
+The $n\text{th}$ Taylor polynomial of $f(x)$ is 
+
+$$
+\begin{align*}
+    T_n(x) &= \sum_{k=0}^\infty \frac{f^k(c)}{k!} (x-c)^k \\
+           &= f(c) + f'(c)(x-c) + \frac{f''(c)}{2}(x-c)^2 + \frac{f'''(c)}{6}(x-c)^3 + \ldots
+\end{align*}
+$$
+
+When $c = 0$, we call it the **Maclaurin series**.
+
+<aside>
+
+**Problem:** Find the Maclaurin expansion of $sin(x)$.
+
+**Solution:**
+
+$$
+\begin{align*}
+    \sin(x) &= \sum_{n=0}^\infty \frac{f^n(0)}{n!} x^n \\
+    &= \sin(0) + \cos(0)x - \frac{\sin(0)}{2!} x^2 - \frac{\cos(0)}{3!} x^3 \ldots \\
+\end{align*}
+$$
+
+We can disregard all the terms where $n$ is even since $sin(0) = 0$, leaving us with:
+
+$$
+\begin{align*}
+    \sin(x) &= x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \ldots \\
+            &= \sum_{n=0}^\infty (-1)^{n + 1} \frac{}{(2n - 1)!}
+\end{align*}
+$$
+
+</aside>
