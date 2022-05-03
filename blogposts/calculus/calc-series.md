@@ -263,17 +263,19 @@ $$
 \end{align*}
 $$
 
+The radius of convergence of the integral and derivatives of a power series are the same as the radius of convergence of the series itself.
+
 ## Approximating Functions with Power Series
 
 Now for the main course, the headline act. It turns out that we can represent many functions as power series.
 
-Say we have a function $f(x)$, which **can** be represented with a power series:
+Say we have a function $f(x)$, whose value is equivalent to some power series:
 
 $$f(x) = \sum_{n=0}^\infty a_n(x - c)^n = a_0 + a_1(x - c) + a_2(x - c)^2 + \ldots$$
 
 How do we find the coefficients of this series?
 
-For starters, we know that $f(c) = a_0$, since when $x = c$ all terms following this one are zero.
+For starters, we know that $f(c) = a_0$, since when $x = c$ all terms following the first one are zero.
 
 The next coefficient can be determined by taking the derivative of $f(x)$:
 
@@ -312,7 +314,7 @@ When $c = 0$, we call it the **Maclaurin series**.
 
 <aside>
 
-**Problem:** Find the Maclaurin expansion of $sin(x)$.
+**Problem:** Find the Maclaurin expansion of $\sin(x)$.
 
 **Solution:**
 
