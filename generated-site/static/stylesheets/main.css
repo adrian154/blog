@@ -23,7 +23,7 @@ body {
 
 }
 
-p {
+p, li {
     line-height: 1.5em;
 }
 
@@ -250,7 +250,7 @@ img {cursor: pointer;}
     font-size: 14pt;
 }
 
-.serif p {
+.serif p, li {
     line-height: 1.5em;
 }
 
