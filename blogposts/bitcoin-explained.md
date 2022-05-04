@@ -45,11 +45,10 @@ In the Bitcoin protocol, each transaction is an entity with inputs and outputs. 
 
 Here's an example of how UTXOs work. Suppose Akarsh sends me 10 coins. He would use one of his UTXOs as the input to the transaction, which would have an output of 10 coins to my public key and another output back to Akarsh if the value of the input was not exactly equal to 10, kind of like change in a cash transaction. If I wanted to send 7 coins to Jayant, I would create a transaction with the output of the prior transaction as the input. The new transaction would have two outputs, one addressed to Jayant worth 7 coins, and one addressed to me worth 3 coins. 
 
-<aside>
-
-
-
-</aside>
+<figure style="max-width: 793px">
+    <img src="resources/bitcoin/utxo.png" alt="diagram of the previously described exchange">
+    <figcaption>A visual representation of the exchange, totally not drawn in MS Paint. Note that this is a simplification; today, most transactions have multiple inputs and outputs.</figcaption>
+</figure>
 
 This seemingly makes our currency watertight, but... how exactly do we keep nodes from trying to spend the same output several times? The way Bitcoin approaches this problem forms the foundation of blockchain technology. Let's dig in.
 
@@ -57,8 +56,38 @@ This seemingly makes our currency watertight, but... how exactly do we keep node
 
 Double spending is a problem that most conventional payment systems don't have. For instance, it is physically impossible to double-spend cash; if I pay someone with a five-dollar note. I can't pay someone else with that note since I no longer have it after the transaction. But the Bitcoin network suffers from incomplete knowledge: because messages have to be relayed from node-to-node, the order which members of the network receive transactions can vary wildly. 
 
-This can easily be exploited in our current scheme. Suppose Izaan creates two transactions, one where 
+This can easily be exploited in our current scheme. Suppose Jayant and Adrian both operate online businesses which accept our hypothetical cryptocurrency. Izaan could create two transactions, one to Adrian and one to Jayant, and send them both into the network at the same time. Nodes which receive his transaction to Adrian first will reject the one to Jayant, and nodes which receive his transaction to Jayant first will reject the one to Adrian. Essentially, there is disagreement about the order of transactions. Without resolving conflicts like this, the network cannot function.
+
+One logical solution to this problem is to take a vote. All nodes will accept the most popular option, and the network will come to agreement about the state of the ledger. But how do we allocate these votes? A naive solution would be to assign each host (each IP address) one vote, but as explained in the Bitcoin whitepaper, this has obvious pitfalls:
+
+> If the majority were based on one-IP-address-one-vote, it could be subverted by anyone able to allocate many IPs. 
+
+The way Bitcoin gets around this problem is insanely clever (in my book), but it is also the #1 contributor to Bitcoin's inefficiency and high environmental impact. Here's how it works.
+
+# Blockchain and Proof of Work
+
+<figure style="max-width: 1022px">
+    <img src="resources/bitcoin/blockchain.png" alt="diagram of the blockchain from the bitcoin whitepaper">
+    <figcaption>The blockchain, as depicted in the Bitcoin whitepaper, in all its unadulterated glory.</figcaption>
+</figure>
+
+
+Now is probably a good time to drop the concept of the ledger and introduce the concept of the [blockchain](https://en.wikipedia.org/wiki/Blockchain). The two are very similar datastructures; ultimately, both serve as linear records of transactions. However, if the entire network had to come to an agreement over every single transaction, the overhead would be tremendous (especially since *most* transactions aren't double-spend attempts, so wasting time on synchronization is pointless). Thus, we aggregate transactions into *blocks*, each of which can contain hundreds of transactions.
+
+Before we can discuss how Bitcoin is secured, we must first introduce the concept of a [cryptographic hash function](https://en.wikipedia.org/wiki/Cryptographic_hash_function), or just a hash. Cryptographic hashes are functions which take an input of any size and output a fixed-size hash. These functions have a couple important properties:
+
+* It is very difficult to determine the input based on the output.
+* As a corollary, it is very difficult to determine which input will produce a specific output.
+* A small change in the input will result in a very significant change in the output.
+
+Bitcoin is built around the [SHA-256](https://en.wikipedia.org/wiki/SHA-2) hash function. SHA-256 is one if not *the* most popular cryptographic hash function; it has withstood over 20 years of cryptanalysis while still remaining very secure.
+
+During normal operation of the network, nodes known as *miners* continually accept incoming transactions and validate them. Then, they combine the transactions with a couple of fields to create a new block. These fields can be described
+
+# Difficulty Adjustment
 
 # References
 
 * [Satoshi Nakamoto - Bitcoin Whitepaper](https://bitcoin.org/bitcoin.pdf)
+* [Bitcoin-Akka (full Bitcoin implementation in Scala with associated commentary)](http://hhanh00.github.io/bitcoin-akka-tutorial/index.html)
+* [Bitcoin.org Developer Documentation](https://developer.bitcoin.org/devguide/index.html)
