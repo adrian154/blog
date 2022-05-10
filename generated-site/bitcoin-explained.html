@@ -6,7 +6,7 @@
 };
 
 loadSetting("serif");
-loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/bitcoin-explained.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">January 23, 2022</p><h1 style="margin-top: 0">Yet Another Bitcoin Explanation</h1><nav><div id="contents"><p>Table of Contents</p><a href="#the-ledger"><p>The Ledger</p></a><a href="#digital-signatures"><p>Digital Signatures</p></a><a href="#unspent-transaction-outputs"><p>Unspent Transaction Outputs</p></a><a href="#double-spending-and-consensus"><p>Double Spending and Consensus</p></a><a href="#blockchain-and-proof-of-work"><p>Blockchain and Proof of Work</p></a><a href="#difficulty"><p>Difficulty</p></a><a href="#references"><p>References</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>There&#39;s a small chance you might have heard of this thing called <a href="https://en.wikipedia.org/wiki/Bitcoin">Bitcoin</a>. Well, the principles behind it are rather fascinating. Unfortunately, in the recent frenzy of hype around &quot;decentralization&quot; and (<em>retching</em>) Web3, it seems that nuanced discussion about how these decentralized systems actually work has been all but lost. So let&#39;s take a deep dive into the bowels of Bitcoin.</p>
+loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/bitcoin-explained.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">January 23, 2022</p><h1 style="margin-top: 0">Yet Another Bitcoin Explanation</h1><nav><div id="contents"><p>Table of Contents</p><a href="#the-ledger"><p>The Ledger</p></a><a href="#digital-signatures"><p>Digital Signatures</p></a><a href="#unspent-transaction-outputs"><p>Unspent Transaction Outputs</p></a><a href="#double-spending-and-consensus"><p>Double Spending and Consensus</p></a><a href="#blockchain-and-proof-of-work"><p>Blockchain and Proof of Work</p></a><a href="#difficulty-adjustment"><p>Difficulty Adjustment</p></a><a href="#references"><p>References</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>There&#39;s a small chance you might have heard of this thing called <a href="https://en.wikipedia.org/wiki/Bitcoin">Bitcoin</a>. Well, the principles behind it are rather fascinating. Unfortunately, in the recent frenzy of hype around &quot;decentralization&quot; and (<em>retching</em>) Web3, it seems that nuanced discussion about how these decentralized systems actually work has been all but lost. So let&#39;s take a deep dive into the bowels of Bitcoin.</p>
 <p>Before we begin, let&#39;s establish a baseline of how conventional payment systems work so that we can contrast it with how Bitcoin operates. The modern financial system has taken on a great deal of complexity over the ages, but a simplification will do for our purposes: a centralized organization, such as your bank, is responsible for keeping track of its clients&#39; account balances. When a transaction is made, the bank updates the balances of each party involved in the transaction. This system works very well from a functional standpoint, but such a system has two disadvantages:</p>
 <ul>
 <li><p>Your account is entirely controlled by whichever organization you choose to keep your money with.</p>
@@ -58,10 +58,50 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 
 
 <p>Now is probably a good time to drop the concept of the ledger and introduce the concept of the <a href="https://en.wikipedia.org/wiki/Blockchain">blockchain</a>. The two are very similar datastructures; ultimately, both serve as linear records of transactions. However, if the entire network had to come to an agreement over every single transaction, the overhead would be tremendous (especially since <em>most</em> transactions aren&#39;t double-spend attempts, so wasting time on synchronization is pointless). Thus, we aggregate transactions into <em>blocks</em>, each of which can contain hundreds of transactions.</p>
-<p>During normal network operation, certain nodes in the network called <em>miners</em> listen for transactions and accumulate them into a block. </p>
-<h1 id="difficulty">Difficulty <a class="section-link" href="#difficulty">&sect;</a></h1><h1 id="references">References <a class="section-link" href="#references">&sect;</a></h1><ul>
+<p>Before we can discuss how Bitcoin is secured, we must first introduce the concept of a <a href="https://en.wikipedia.org/wiki/Cryptographic_hash_function">cryptographic hash function</a>, or just a hash. Cryptographic hashes are functions which take an input of any size and output a fixed-size hash. These functions have a couple important properties:</p>
+<ul>
+<li>It is very difficult to determine the input based on the output.</li>
+<li>As a corollary, it is very difficult to determine which input will produce a specific output.</li>
+<li>A small change in the input will result in a very significant change in the output.</li>
+</ul>
+<p>Bitcoin is built around the <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-256</a> hash function. SHA-256 is one if not <em>the</em> most popular cryptographic hash function; it has withstood over 20 years of cryptanalysis while still remaining very secure.</p>
+<p>During normal operation of the network, nodes known as <em>miners</em> continually accept incoming transactions and validate them. Then, they combine the transactions with a couple of fields to create a new block header. A block header contains the following fields:</p>
+<ul>
+<li>A version number</li>
+<li>The hash of the previous block in the chain</li>
+<li>The hash of all the transactions contained within the block</li>
+<li>The time at which the block was mined</li>
+<li>The target</li>
+<li>The nonce</li>
+</ul>
+<aside>
+
+<p>TODO: Talk about Merkle trees and why they&#39;re useful in SPV</p>
+</aside>
+
+<p>Since each header contains a reference to the previous header in the form of a cryptographic hash, the blockchain can be thought of as a singly-linked list of block headers.</p>
+<p>There are two fields here whose meaning is not self-apparent: the target, and the nonce. Both have to do with the <strong>mining</strong> process, which is how new blocks are generated. Biascally, there&#39;s a 256-bit value called the <em>target</em>, which every node calculates independently based on previous blocks. The job of the miner is to adjust the nonce so that the SHA256 hash of the block header is lower than the target. The miner has no way to intelligently determine what value of the nonce will fulfill this condition; their only choice is to repeatedly hash the block, incrementing the nonce one at a time, until they&#39;ve successfully mined the block. </p>
+<aside>
+
+<p>To incentivize mining, miners are allowed to include a <strong>coinbase transaction</strong> in each block, crediting themselves with a certain amount of Bitcoin as a reward for their efforts. Coinbase transactions have non-zero outputs but no inputs, so they are how new Bitcoins are introduced into the system. </p>
+<p>The maximum amount which a miner can claim from a new block is hard-coded into all nodes on the network. The reward from the first block was 50 Bitcoins; subsequently, the reward is halved every 210,000 blocks. Nodes will reject blocks where the miners try to reward themselves too much Bitcoin.</p>
+</aside>
+
+<p>What purpose does this serve? Recall the vote allocation problem from earlier. Mining is how members of the Bitcoin network cast a vote for whichever version of the blockchain they believe is correct. You can&#39;t forge a vote because it&#39;s not possible to mine a new block without doing all the work; mining is a very computationally expensive process, so an attacker would have to procure an astonishing amount of processing power to overrule legitimate miners on the network.</p>
+<aside>
+
+<p>This is where the concept of the <strong>51% attack</strong> (also known as the majority attack) arises. If an attacker can produce new blocks faster than the rest of the network, they could create an alternative chain that will be preferred by nodes on the network, giving them the ability to replace recent blocks. Thankfully, the network hashrate is high enough that such an attack is very implausible.</p>
+</aside>
+
+<p>It can be shown that proof-of-work effectively addresses the double spending problem. Consider a situation where we&#39;ve created two conflicting transactions, and broadcast them simultaneously. Each miner will accept only one of the conflicting transactions to be included in a block. Eventually, one miner will &quot;win&quot;, and other miners will forget the other transaction to work on the longest chain.</p>
+<p>This is what makes Bitcoin transactions irreversible: to replace an old block, you&#39;d need to create a new blockchain with more work put into it than the primary chain. The difficulty of performing such an attack increases rapidly over time. As a result, the older the transaction is, the harder it is to reverse. As a rule of thumb, once a transaction has 6 &quot;confirmations&quot; (6 blocks mined after the one it was included in), it is considered irreversible. For low-value transactions, it&#39;s OK to accept them when they have 1 or even 0 confirmations.</p>
+<h1 id="difficulty-adjustment">Difficulty Adjustment <a class="section-link" href="#difficulty-adjustment">&sect;</a></h1><p>Since the creation of Bitcoin, more and more miners have joined the network, causing the rate at which blocks are being attacked to increase tremendously. As of the writing of this article, the Bitcoin network performs around around 225 exahashes per second, which is an unimaginably large number. For reference, 225 exaseconds is equal to approximately 7 trillion years. If the target remained constant, so many blocks would be mined per second that the network would surely collapse.</p>
+<p>To counteract this, Bitcoin nodes are programmed to automatically readjust the target from time to time so that blocks are produced at a steady rate. This process is known as difficulty adjustment.</p>
+<p>Difficulty adjustment is implemented as a recalculation of the target value every 2,016 blocks. The formula which Bitcoin clients use to determine the new target is tailored to produce a block time of 10 minutes, on average.</p>
+<h1 id="references">References <a class="section-link" href="#references">&sect;</a></h1><ul>
 <li><a href="https://bitcoin.org/bitcoin.pdf">Satoshi Nakamoto - Bitcoin Whitepaper</a></li>
 <li><a href="http://hhanh00.github.io/bitcoin-akka-tutorial/index.html">Bitcoin-Akka (full Bitcoin implementation in Scala with associated commentary)</a></li>
 <li><a href="https://developer.bitcoin.org/devguide/index.html">Bitcoin.org Developer Documentation</a></li>
+<li><a href="https://aantonop.com/books/mastering-bitcoin/">Andreas Antonopoulos - Mastering Bitcoin</a></li>
 </ul>
 <img id="img-view" style="display: none"><h1>Comments</h1><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="github-light"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>
