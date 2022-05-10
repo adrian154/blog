@@ -1219,10 +1219,10 @@ serverApplicationIV = <span class="hljs-title function_">hkdfExpandLabel</span>(
              return EXT_RETURN_FAIL;
          }
  
-<span class="hljs-addition">+	/* more devilish key printing */</span>
-<span class="hljs-addition">+	BIO *bp = BIO_new_fp(stdout, BIO_NOCLOSE);</span>
-<span class="hljs-addition">+	EVP_PKEY_print_private(bp, skey, 1, NULL);</span>
-<span class="hljs-addition">+	BIO_free(bp);</span>
+<span class="hljs-addition">+    /* more devilish key printing */</span>
+<span class="hljs-addition">+    BIO *bp = BIO_new_fp(stdout, BIO_NOCLOSE);</span>
+<span class="hljs-addition">+    EVP_PKEY_print_private(bp, skey, 1, NULL);</span>
+<span class="hljs-addition">+    BIO_free(bp);</span>
 <span class="hljs-addition">+</span>
          /* Generate encoding of server key */
          encoded_pt_len = EVP_PKEY_get1_encoded_public_key(skey, &amp;encodedPoint);
