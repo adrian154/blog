@@ -124,9 +124,19 @@ This is what makes Bitcoin transactions irreversible: to replace an old block, y
 
 Since the creation of Bitcoin, more and more miners have joined the network, causing the rate at which blocks are being attacked to increase tremendously. As of the writing of this article, the Bitcoin network performs around around 225 exahashes per second, which is an unimaginably large number. For reference, 225 exaseconds is equal to approximately 7 trillion years. If the target remained constant, so many blocks would be mined per second that the network would surely collapse.
 
-To counteract this, Bitcoin nodes are programmed to automatically readjust the target from time to time so that blocks are produced at a steady rate. This process is known as difficulty adjustment.
+To counteract this, Bitcoin nodes are programmed to automatically readjust the target from time to time so that blocks are produced at a steady rate. This process is known as **difficulty adjustment**. Difficulty adjustment is implemented as a recalculation of the target value every 2,016 blocks. The formula which Bitcoin clients use to determine the new target is tailored to produce a rate of one block every 10 minutes, on average. This can be accomplished by looking at the block time values in the headers of past blocks.
 
-Difficulty adjustment is implemented as a recalculation of the target value every 2,016 blocks. The formula which Bitcoin clients use to determine the new target is tailored to produce a block time of 10 minutes, on average.
+<aside>
+
+Since block times are critical to determining the difficulty of the network, the Bitcoin client uses some heuristics to reject blocks with grossly manipulated timestamps:
+* The timestamp of a new block must be greater than the median of the last 11 blocks.
+* The block cannot be more than two hours ahead of the network-adjusted time, which the node determines by looking at timestamps sent by other peers.
+
+As you can see, these rules are fairly lax, so block timestamps tend to be fairly inaccurate. There is no guarantee that they increase monotonically, and some miner pools are known to intentionally bias their timestamps for one reason or another.
+
+For more info on the implementation details, check out [chain.h](https://github.com/bitcoin/bitcoin/blob/b25a752dfdbb12fd579e1dbef2bb95096867046b/src/chain.h#L288) and [timedata.cpp](https://github.com/bitcoin/bitcoin/blob/master/src/timedata.cpp).
+
+</aside>
 
 # References
 

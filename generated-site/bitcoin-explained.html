@@ -96,8 +96,18 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <p>It can be shown that proof-of-work effectively addresses the double spending problem. Consider a situation where we&#39;ve created two conflicting transactions, and broadcast them simultaneously. Each miner will accept only one of the conflicting transactions to be included in a block. Eventually, one miner will &quot;win&quot;, and other miners will forget the other transaction to work on the longest chain.</p>
 <p>This is what makes Bitcoin transactions irreversible: to replace an old block, you&#39;d need to create a new blockchain with more work put into it than the primary chain. The difficulty of performing such an attack increases rapidly over time. As a result, the older the transaction is, the harder it is to reverse. As a rule of thumb, once a transaction has 6 &quot;confirmations&quot; (6 blocks mined after the one it was included in), it is considered irreversible. For low-value transactions, it&#39;s OK to accept them when they have 1 or even 0 confirmations.</p>
 <h1 id="difficulty-adjustment">Difficulty Adjustment <a class="section-link" href="#difficulty-adjustment">&sect;</a></h1><p>Since the creation of Bitcoin, more and more miners have joined the network, causing the rate at which blocks are being attacked to increase tremendously. As of the writing of this article, the Bitcoin network performs around around 225 exahashes per second, which is an unimaginably large number. For reference, 225 exaseconds is equal to approximately 7 trillion years. If the target remained constant, so many blocks would be mined per second that the network would surely collapse.</p>
-<p>To counteract this, Bitcoin nodes are programmed to automatically readjust the target from time to time so that blocks are produced at a steady rate. This process is known as difficulty adjustment.</p>
-<p>Difficulty adjustment is implemented as a recalculation of the target value every 2,016 blocks. The formula which Bitcoin clients use to determine the new target is tailored to produce a block time of 10 minutes, on average.</p>
+<p>To counteract this, Bitcoin nodes are programmed to automatically readjust the target from time to time so that blocks are produced at a steady rate. This process is known as <strong>difficulty adjustment</strong>. Difficulty adjustment is implemented as a recalculation of the target value every 2,016 blocks. The formula which Bitcoin clients use to determine the new target is tailored to produce a rate of one block every 10 minutes, on average. This can be accomplished by looking at the block time values in the headers of past blocks.</p>
+<aside>
+
+<p>Since block times are critical to determining the difficulty of the network, the Bitcoin client uses some basic heuristics to reject blocks with grossly manipulated timestamps:</p>
+<ul>
+<li>The timestamp of a new block must be greater than the median of the last 11 blocks.</li>
+<li>The block cannot be more than two hours ahead of the network-adjusted time, which the node determines by looking at timestamps sent by other peers.</li>
+</ul>
+<p>As you can see, these rules are fairly lax, so block timestamps tend to be fairly inaccurate. There is no guarantee that they increase monotonically, and some miner pools are known to intentionally bias their timestamps for one reason or another.</p>
+<p>For more info on the implementation details, check out <a href="https://github.com/bitcoin/bitcoin/blob/b25a752dfdbb12fd579e1dbef2bb95096867046b/src/chain.h#L288">chain.h</a> and <a href="https://github.com/bitcoin/bitcoin/blob/master/src/timedata.cpp">timedata.cpp</a>.</p>
+</aside>
+
 <h1 id="references">References <a class="section-link" href="#references">&sect;</a></h1><ul>
 <li><a href="https://bitcoin.org/bitcoin.pdf">Satoshi Nakamoto - Bitcoin Whitepaper</a></li>
 <li><a href="http://hhanh00.github.io/bitcoin-akka-tutorial/index.html">Bitcoin-Akka (full Bitcoin implementation in Scala with associated commentary)</a></li>
