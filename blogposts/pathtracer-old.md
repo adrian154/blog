@@ -70,11 +70,16 @@ For the sake of simplicity, we assume that all light sources emit at equal inten
 
 </aside>
 
+
+
+
+
+
 ## Solving the Rendering Equation
 
 The job of our renderer, in a nutshell, is to solve the rendering equation. Unfortunately, most of the integration methods we normally use are useless here because the rendering equation is very high-dimensional; in fact, unless we place some limits on the rendering equation, the number of dimensions is **infinite**! Thankfully, one class of methods stands out for very high dimension problems: [Monte Carlo integration](https://en.wikipedia.org/wiki/Monte_Carlo_integration).
 
-The idea behind Monte Carlo integration is simple: if we evaluate the function for random points on its domain, the average will approach the integral of the function. Essentially:
+The idea behind Monte Carlo integration is simple: if we evaluate the function for random points on its domain, the average value of the samples will approach the integral of the function. Essentially:
 
 <div class="indented">
 
@@ -84,11 +89,66 @@ Let $x_0, x_1 \ldots x_n$ be uniformly distributed random numbers in the range $
 
 $$\lim_{n\to\infty} \frac{1}{n} \sum_{i=0}^n f(x_i) = \int_{a}^{b} f(x) \,dx$$
 
-In some cases, our samples might not be uniformly distributed. In that case, we can simply weight each sample by the PDF of each sample.
+To understand why this works, we will need to flesh out our knowledge of probability theory a little.
 
-$$\lim_{n\to\infty} \frac{1}{n} \sum_{i=0}^n \frac{f(x_i)}{\text{pdf}(x_i)} = \int_{a}^{b} f(x) \,dx$$
+# Probability
 
-For the statistically inclined folk among the audience, this method of estimating an integral is **unbiased**; that is, given an infinite number of iterations, it will always converge onto the "correct" answer.
+Often, when we're dealing with randomized methods like Monte Carlo integration, we encounter situations where we need to describe a randomly-distributed value. For these situations, there are two methods of choice: the cumulative distribution function (CDF), and the probability density function (PDF).
+
+The idea behind the CDF is simple; for a random variable $X$, the CDF for a value $x$ is the probability that $X \leq x$:
+
+$$P(x) = Pr(X \leq x)$$
+
+Since the CDF describes a probability, its range is limited to $[0, 1]$, and it is monotonically increasing since as $x$ grows greater, the probability of $X$ being less than $x$ must also increase.
+
+The PDF is derived from the CDF. **Literally**. The PDF is defined as the derivative of the CDF:
+
+$$p(x) = \frac{\mathrm{d}P}{\mathrm{d}x}$$
+
+What's the point of doing this? Among other reasons, it gives us this relationship:
+
+$$Pr(\alpha \leq x \leq \beta) = \int_\alpha^\beta p(x)$$
+
+Based on the properties of the CDF, we can infer certain properties of the PDF. First, because the CDF monotonically increases, $p(x)$ is always greater than zero. Furthermore, $\lim_{x\to\infty} P(x) = 1$, so the integral of the PDF over its entire space is $1$.
+
+With that, we can explore the concept of **expected value**. For discrete random variables, the expected value is equal to the value of each outcome multiplied by the probability of that outcome. For example, consider a dice roll:
+
+<table>
+    <tr>
+        <th>Value</th>
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+        <td>4</td>
+        <td>5</td>
+        <td>6</td>
+    </tr>
+    <tr>
+        <th>Probability</th>
+        <td>1/6</td>
+        <td>1/6</td>
+        <td>1/6</td>
+        <td>1/6</td>
+        <td>1/6</td>
+        <td>1/6</td>
+    </tr>
+</table>
+
+The expected value of this process is $\frac{21}{6}$.
+
+We can extend this concept to continuous functions: the expected value of a random variable $X$ with a PDF of $p$ is as follows:
+
+$$E[X] = \int xp(x)\,\mathrm{d}x$$
+
+Let's apply this to our Monte Carlo estimator.
+
+$$
+\begin{align*}
+    E\left[\frac{1}{n} \sum_{i=0}^n f(x_i) \right] &= \frac{1}{n} \sum_{i=0}^n E[f(x_i)] \\
+    &= E[f(x_i)] \\
+    &= \int f(x)p(x)\,\mathrm{d}x
+\end{align*}
+$$
 
 Here's a very basic demonstration of a Monte Carlo method, where we pick random points and count how many fall within a circle to estimate the value of pi.
 
