@@ -174,7 +174,7 @@ Even on affected versions, reporting is weakened by a few main factors:
 * A modified client can refuse to send the server a valid public key and refuse to include valid signatures with messages.
 * A modified server can allow players to join without valid public keys and strip signatures from messages to prevent players from reporting them.
 
-A [mod]() that implements the latter two changes is already available.
+A [mod](https://www.curseforge.com/minecraft/mc-mods/no-chat-reports) that implements the latter two changes is already available.
 
 **WARNING:** Everything below this line is my opinion.
 
