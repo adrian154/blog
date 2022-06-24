@@ -176,10 +176,13 @@ Even on affected versions, reporting is weakened by a few main factors:
 
 A [mod](https://www.curseforge.com/minecraft/mc-mods/no-chat-reports) that implements the latter two changes is already available.
 
-**WARNING:** Everything below this line is my opinion.
+<p style="text-align: center; font-size: 15pt">
+    <b>WARNING</b><br>
+    What follows is my opinion.
+</p>
 
 What do I think about the reports system? I'm not a huge fan, for two main reasons. First, I think this change violates an implicit contract that has existed between Mojang and server operators since the inception of multiplayer in the game, wherein Mojang gives operators full control over what happens on their server, including how punishments are doled out. Now, as a server owner, you are no longer the sole party with a say in who gets to play on your server, since Mojang can overrule your moderation decisions. While they have always technically had this power, the introduction of the report system marks the first instance where they have publicly demonstrated their intent to exercise it. Unsurprisingly, many server admins have perceived the announcement as a violation of their trust.
 
-Second, I don't have much faith in Mojang's ability to moderate chat in a way that the community will find satisfactory, hence my continued support for player-based moderation. In the worst-case scenario, Minecraft goes the way of Roblox or Club Penguin, where the chat becomes a desolte wasteland threatening to get your account banned for the slightest transgression. I find this outcome extremely unlikely due to the technical limitations listed earlier, but nevertheless, odds are there will be little recourse for players who get banned.
+Second, I don't have much faith in Mojang's ability to moderate chat in a way that the community will find satisfactory, hence my continued support for player-based moderation. In the worst-case scenario, Minecraft goes the way of Roblox or Club Penguin, where the chat becomes a desolate wasteland threatening to get your account banned for the slightest transgression. I find this outcome extremely unlikely due to the technical limitations listed earlier, but nevertheless, odds are there will be little recourse for players who get banned.
 
 All in all, I consider the report system as it exists today a poor implementation of a poorly thought-out idea, and I am very disappointed that Mojang hasn't even acknowledged the overwhelmingly negative response to its introduction. I also think that the change marks a shift towards the worse in the relationship between Mojang and server owners, as well as the Minecraft community as a whole.
