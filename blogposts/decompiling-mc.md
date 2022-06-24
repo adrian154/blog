@@ -20,13 +20,7 @@ For convenience, I made a page with links to the downloads for all versions rele
 
 # Renaming
 
-The first thing we're gonna do is rename all the names in the game JAR using the obfuscation mappings. This can be accomplished using a tool called [SpecialSource](https://github.com/md-5/SpecialSource), which can be obtained through [Maven](https://search.maven.org/remotecontent?filepath=net/md-5/SpecialSource/1.11.0/SpecialSource-1.11.0-shaded.jar).
-
-<aside>
-
-Make sure to download the shaded version, or else dependencies necessary to run the tool will be missing.
-
-</aside>
+The first thing we're gonna do is rename all the names in the game JAR using the obfuscation mappings. This can be accomplished using a tool called [SpecialSource](https://github.com/md-5/SpecialSource), which can be obtained through [Maven](https://search.maven.org/remotecontent?filepath=net/md-5/SpecialSource/1.11.0/SpecialSource-1.11.0-shaded.jar). Make sure to download the shaded version, or else dependencies necessary to run the tool will be missing.
 
 Here's the usage for remapping a JAR:
 
@@ -34,7 +28,7 @@ Here's the usage for remapping a JAR:
 java -jar SpecialSource-1.11.0-shaded.jar -i <original JAR> -o <output filename> -m <mappings filename> --kill-lvt
 ```
 
-The `--kill-lvt` flag tells SpecialSource to ignore local variables; we include it since Mojang's official mappings do not include local variable names.
+The `--kill-lvt` flag tells SpecialSource to ignore local variables. We include it since Mojang's official mappings do not include local variable names.
 
 # Decompiling
 
@@ -50,7 +44,7 @@ The first step is to obtain Quiltflower, which can be downloaded from its GitHub
 java -jar quiltflower-1.8.1.jar <remapped JAR> src/
 ```
 
-Quiltflower decompiles fairly quickly; on my computer, the entire process finished in under a minute. (It'll go even faster if you don't accidentally decompile the obfuscated JAR instead of the remapped one). Once your decompiler is finished, you'll be greeted with a folder containing the full source code of Minecraft!
+Quiltflower decompiles fairly quickly; on my computer, the entire process finished in under a minute. (It'll go even faster if you don't accidentally decompile the obfuscated JAR instead of the remapped one&hellip;). Once your decompiler is finished, you'll be greeted with a folder containing the full source code of Minecraft!
 
 <aside>
 

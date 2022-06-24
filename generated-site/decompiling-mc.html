@@ -17,14 +17,9 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <p>For convenience, I made a page with links to the downloads for all versions released at the time of writing with obfuscation maps available; check it out <a href="resources/mc-decompile/links.html">here</a>.</p>
 </aside>
 
-<h1 id="renaming">Renaming <a class="section-link" href="#renaming">&sect;</a></h1><p>The first thing we&#39;re gonna do is rename all the names in the game JAR using the obfuscation mappings. This can be accomplished using a tool called <a href="https://github.com/md-5/SpecialSource">SpecialSource</a>, which can be obtained through <a href="https://search.maven.org/remotecontent?filepath=net/md-5/SpecialSource/1.11.0/SpecialSource-1.11.0-shaded.jar">Maven</a>.</p>
-<aside>
-
-<p>Make sure to download the shaded version, or else dependencies necessary to run the tool will be missing.</p>
-</aside>
-
+<h1 id="renaming">Renaming <a class="section-link" href="#renaming">&sect;</a></h1><p>The first thing we&#39;re gonna do is rename all the names in the game JAR using the obfuscation mappings. This can be accomplished using a tool called <a href="https://github.com/md-5/SpecialSource">SpecialSource</a>, which can be obtained through <a href="https://search.maven.org/remotecontent?filepath=net/md-5/SpecialSource/1.11.0/SpecialSource-1.11.0-shaded.jar">Maven</a>. Make sure to download the shaded version, or else dependencies necessary to run the tool will be missing.</p>
 <p>Here&#39;s the usage for remapping a JAR:</p>
-<pre><code class="hljs">java -jar SpecialSource-1.11.0-shaded.jar -i &lt;original JAR&gt; -o &lt;output filename&gt; -m &lt;mappings filename&gt; --kill-lvt</code></pre><p>The <code>--kill-lvt</code> flag tells SpecialSource to ignore local variables; we include it since Mojang&#39;s official mappings do not include local variable names.</p>
+<pre><code class="hljs">java -jar SpecialSource-1.11.0-shaded.jar -i &lt;original JAR&gt; -o &lt;output filename&gt; -m &lt;mappings filename&gt; --kill-lvt</code></pre><p>The <code>--kill-lvt</code> flag tells SpecialSource to ignore local variables. We include it since Mojang&#39;s official mappings do not include local variable names.</p>
 <h1 id="decompiling">Decompiling <a class="section-link" href="#decompiling">&sect;</a></h1><p>Once the JAR is remapped, it&#39;s ready to be decompiled. Unfortunately, compilation is a lossy process, even for a VM language like Java. This means that decompilers often produce imperfect output; essentially, not all decompilers are made equal. As a result, quite a few people have attempted to tackle the problem of decompilation, producing a great many decompilers. Most have been abandoned, but a few are still being actively developed:</p>
 <ul>
 <li><a href="https://github.com/JetBrains/intellij-community/tree/master/plugins/java-decompiler/engine">Fernflower</a></li>
@@ -32,7 +27,7 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 </ul>
 <p>Thankfully, in our case, the choice of decompiler is not that important since we don&#39;t need to recompile the game. I&#39;ll be using <a href="https://github.com/QuiltMC/quiltflower">Quiltflower</a> in today&#39;s decompilation. Quiltflower is a fork of Fernflower created for the <a href="https://quiltmc.org/">QuiltMC</a> project, with patches to produce more concise output in certain situations. Quiltflower is a drop-in replacement for Fernflower, so the following steps should work just as well if you&#39;re using Fernflower.</p>
 <p>The first step is to obtain Quiltflower, which can be downloaded from its GitHub page. Next, we can begin the decompilation:</p>
-<pre><code class="hljs">java -jar quiltflower-1.8.1.jar &lt;remapped JAR&gt; src/</code></pre><p>Quiltflower decompiles fairly quickly; on my computer, the entire process finished in under a minute. (It&#39;ll go even faster if you don&#39;t accidentally decompile the obfuscated JAR instead of the remapped one). Once your decompiler is finished, you&#39;ll be greeted with a folder containing the full source code of Minecraft!</p>
+<pre><code class="hljs">java -jar quiltflower-1.8.1.jar &lt;remapped JAR&gt; src/</code></pre><p>Quiltflower decompiles fairly quickly; on my computer, the entire process finished in under a minute. (It&#39;ll go even faster if you don&#39;t accidentally decompile the obfuscated JAR instead of the remapped one&hellip;). Once your decompiler is finished, you&#39;ll be greeted with a folder containing the full source code of Minecraft!</p>
 <aside>
 
 <p>Fernflower/Quiltflower accept a great deal of options that control the decompilation process, which are documented on each project&#39;s <a href="https://github.com/QuiltMC/quiltflower">README</a>. If you find that the decompiled code does not meet your expectations, you may have to mess with the command line options that you&#39;re invoking the decompiler with.</p>

@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>A Deep Dive into Minecraft 1.19.1's Report System</title><meta property="og:title" content="A Deep Dive into Minecraft 1.19.1's Report System"><meta property="og:type" content="website"><meta property="og:description" content="The Minecraft community has been awash with conversations about the new global reporting system. In this post, I try to clear up common misconceptions and provide some technical insights into how it works."><meta name="description" content="The Minecraft community has been awash with conversations about the new global reporting system. In this post, I try to clear up common misconceptions and provide some technical insights into how it works."><link rel="stylesheet" href="static/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="static/stylesheets/main.css"><script>const loadSetting = name => {
+    if(localStorage.getItem(name) === "true")
+        document.documentElement.classList.add(name);
+    else
+        document.documentElement.classList.remove(name);
+};
+
+loadSetting("serif");
+loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/mc-report.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">June 24, 2022</p><h1 style="margin-top: 0">A Deep Dive into Minecraft 1.19.1's Report System</h1><nav><div id="contents"><p>Table of Contents</p><a href="#crypto-background-digital-signatures"><p>Crypto Background: Digital Signatures</p></a><a href="#minecraft-key-management"><p>Minecraft Key Management</p></a><a href="#obtaining-a-keypair"><p>Obtaining a Keypair</p></a><a href="#keypair-verification"><p>Keypair Verification</p></a><a href="#signed-chat"><p>Signed Chat</p></a><a href="#chat-message-signing"><p>Chat Message Signing</p></a><a href="#chat-message-verification"><p>Chat Message Verification</p></a><a href="#report-api"><p>Report API</p></a><a href="#the-big-picture"><p>The Big Picture</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>Mojang recently announced that a <a href="https://www.minecraft.net/en-us/article/minecraft-1-19-1-pre-release-1">chat report system</a> would be coming to Minecraft in 1.19.1, which has sparked a great deal of controversy amongst players. I&#39;m not going to discuss whether this is a good idea in this article; instead, we&#39;re going to be taking a look at how exactly the reporting system works and what this means for server operators. Hopefully this will allow for some more enlightened discussion.</p>
+<h1 id="crypto-background-digital-signatures">Crypto Background: Digital Signatures <a class="section-link" href="#crypto-background-digital-signatures">&sect;</a></h1><p>One of the most obvious issues with the report system is that of authenticity. When a report is received, how does the reviewer know that the accused player actually sent the message in question? To ensure that no one can forge a report, Mojang has since implemented functionality that would require all messages to be digitally signed using a key associated with the sender&#39;s account.</p>
+<p>How do digital signatures work? Here&#39;s the process, in a nutshell:</p>
+<ul>
+<li>The user generates a random value known as a private key, which is kept secret. An algorithm is used to derive a public key from the private key. The keypair has the property that the value of the private key cannot be easily determined from the public key, so the public key is safe to distribute.</li>
+<li>To sign a message, the user feeds the message and the private key into a signing algorithm, which produces the digital signature. The user then distributes the signature alongside their message to prove its authenticity.</li>
+<li>If I know the user&#39;s public key, I can verify that the message they&#39;ve sent hasn&#39;t been tampered with by running a verification algorithm on the user&#39;s public key, message, and signature. This algorithm will fail if the signature is invalid, or if the message has been altered in any way.</li>
+</ul>
+<figure style="max-width: 491px">
+    <img src="resources/bitcoin/digital-signature.png" alt="illustration of a digital signature scheme">
+    <figcaption>A diagram of a public-key digital signature scheme. <a href="https://en.wikipedia.org/wiki/File:Private_key_signing.svg">Image</a> by <a href="https://commons.wikimedia.org/wiki/User:FlippyFlink">FlippyFlink</a> / <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA</a></figcaption>
+</figure>
+
+<p>This is not the exact scheme used by Minecraft, but it serves to explain the concept of digital signatures. Let&#39;s see how Minecraft implements it.</p>
+<h1 id="minecraft-key-management">Minecraft Key Management <a class="section-link" href="#minecraft-key-management">&sect;</a></h1><p>First things first, let&#39;s understand how Minecraft manages the user&#39;s keypair. To do this, I decompiled the game, something which I recently wrote a <a href="decompiling-mc.html">blogpost</a> about. Anyways, some digging around eventually brings us to a class called <code>ProfileKeyPairManager</code>, which reveals that your profile keys are stored in a JSON file in the <code>.minecraft/profilekeys</code> folder. A quick look at this file reveals its structure:</p>
+<pre><code class="hljs"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;private_key&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;PEM-encoded RSA private key&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;public_key&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;expires_at&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ISO 8601 timestamp&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;key&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;PEM-encoded RSA public key&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;signature&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;base64 signature&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;refreshed_after&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ISO 8601 timestamp&quot;</span>
+<span class="hljs-punctuation">}</span></code></pre><p>(Obviously, I&#39;ve gone ahead and replaced all the actual values with strings describing each field&#39;s purpose.)</p>
+<p>OpenSSL shows that the RSA private keys are 2048 bits in length. The expiration date suggests that the profile keys have a lifespan of 48 hours. Finally, the player&#39;s keypair is signed by Mojang, as reflected by the <code>signature</code> field. </p>
+<h2 id="obtaining-a-keypair">Obtaining a Keypair <a class="section-link" href="#obtaining-a-keypair">&sect;</a></h2><p><code>ProfileKeyPairManager</code> also contains details about how keypairs are fetched via Mojang&#39;s API. It&#39;s a very simple API; the client makes a POST request to <code>https://api.minecraftservices.com/player/certificates</code>, and the server responds with a JSON object like the one shown above.</p>
+<h2 id="keypair-verification">Keypair Verification <a class="section-link" href="#keypair-verification">&sect;</a></h2><p>During the login sequence, the client sends its public key to the server. Whether the server verifies that the public key is valid is controlled by a setting in <code>server.properties</code> called <code>enforce-secure-profile</code>. At the time of writing (1.19.1-pre1), this setting is <strong>false</strong> by default.</p>
+<p>If this setting is enabled, the server will verify the public keys sent by clients and prevent clients which don&#39;t present a valid keypair from connecting. The verification consists of two checks:</p>
+<ul>
+<li>The <code>expires_at</code> timestamp must not be in the past.</li>
+<li>The <code>expires_at</code> timestamp is converted to epoch milliseconds and concatenated with the public key. This is used as the payload which the signature is validated against.</li>
+</ul>
+<p>The public key that the server uses to verify the signature is stored in a file called <code>yggdrasil_session_pubkey.der</code>, which can be found in the root of <code>authlib-x.x.xx.jar</code>. Here&#39;s some NodeJS code that simulates the verification process:</p>
+<pre><code class="hljs"><span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;fs&quot;</span>),
+      crypto = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;crypto&quot;</span>);
+
+<span class="hljs-keyword">const</span> playerPubkey = { <span class="hljs-comment">/* ... omitted ... */</span>},
+      mojangPubkey = crypto.<span class="hljs-title function_">createPublicKey</span>({
+          <span class="hljs-attr">key</span>: fs.<span class="hljs-title function_">readFileSync</span>(<span class="hljs-string">&quot;yggdrasil_session_pubkey.der&quot;</span>),
+          <span class="hljs-attr">format</span>: <span class="hljs-string">&quot;der&quot;</span>,
+          <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;spki&quot;</span>
+      });
+
+<span class="hljs-keyword">const</span> signedPayload = <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(playerPubkey.<span class="hljs-property">expires_at</span>).<span class="hljs-title function_">getTime</span>() + playerPubkey.<span class="hljs-property">key</span>, <span class="hljs-string">&quot;utf-8&quot;</span>);
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(crypto.<span class="hljs-title function_">verify</span>(
+    <span class="hljs-string">&quot;sha1WithRSAEncryption&quot;</span>,
+    signedPayload,
+    mojangPubkey,
+    <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">from</span>(playerPubkey.<span class="hljs-property">signature</span>, <span class="hljs-string">&quot;base64&quot;</span>)
+)); <span class="hljs-comment">// -&gt; true</span></code></pre><p>TL;DR: Because all player public keys are signed using a keypair known to all servers, a server can verify that a key presented by a player is valid without ever contacting Mojang.</p>
+<h1 id="signed-chat">Signed Chat <a class="section-link" href="#signed-chat">&sect;</a></h1><p>To accomodate the chat reporting system, chat messages are now signed using the user&#39;s keypair. There is a setting under <kbd>Options</kbd> &rarr; <kbd>Chat Settings...</kbd> &rarr; <kbd>Only Show Secure Chat</kbd> that toggles whether messages with invalid signatures are hidden. This setting is <strong>off</strong> by default at the time of writing (1.19.1-pre1).</p>
+<aside>
+
+<p>Chat messages can also have both signed and unsigned parts. I have yet to research how exactly this works.</p>
+</aside>
+
+<h2 id="chat-message-signing">Chat Message Signing <a class="section-link" href="#chat-message-signing">&sect;</a></h2><p>Since 1.19, this has been the on-wire structure of the serverbound chat packet:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>message</td>
+<td>String</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>Instant</td>
+</tr>
+<tr>
+<td>saltSignature</td>
+<td>SaltSignaturePair</td>
+</tr>
+<tr>
+<td>signedPreview</td>
+<td>Boolean</td>
+</tr>
+</tbody></table>
+<p>For more information on how these types are serialized, check out the <a href="https://wiki.vg/Protocol">protocol documentation</a> at <a href="https://wiki.vg/">wiki.vg</a>. A <code>SaltSignaturePair</code> (which is yet to be documented on wiki.vg at the time of writing) has the following structure:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>salt</td>
+<td>Long</td>
+</tr>
+<tr>
+<td>signature</td>
+<td>ByteArray</td>
+</tr>
+</tbody></table>
+<p>To construct the <code>SaltSignaturePair</code>, the client first generates a random 8-byte salt using Java&#39;s <code>SecureRandom</code>. The signed payload is constructed in <code>MessageSignature</code>; it consists of the following fields, concatenated:</p>
+<ul>
+<li>The salt</li>
+<li>The 64 most significant bits of the UUID, as returned by <code>java.util.UUID#getMostSignificantBits()</code></li>
+<li>The 64 least significant bits of the UUID, as returned by <code>java.util.UUID#getLeastSignificantBits()</code> </li>
+<li>The epoch timestamp in seconds as a <code>long</code></li>
+<li>The JSON of the signed chat component, encoded in UTF-8</li>
+</ul>
+<p>All <code>long</code>s are encoded in big-endian order. The signature is generated using the <code>SHA256withRSA</code> algorithm.</p>
+<h2 id="chat-message-verification">Chat Message Verification <a class="section-link" href="#chat-message-verification">&sect;</a></h2><p>In 1.19 the <a href="https://wiki.vg/Protocol#Player_Info">Player Info</a> packet was updated so that players would receive the public keys of other players on the same server. This allows incoming chat messages to be verified. I didn&#39;t write code to simulate this verification process, but the procedure is fairly simple; the client simply needs to reconstruct the signed payload based on the fields in the packet, and feed it to the signature verifier.</p>
+<h1 id="report-api">Report API <a class="section-link" href="#report-api">&sect;</a></h1><p>When an abuse report is submitted, a POST request is made to <code>https://api.minecraftservices.com/player/report</code>. The body is an <code>AbuseReportRequest</code>, serialized as JSON. Requests are authorized using a standard Yggdrasil authorization token.</p>
+<p>Here is the structure of the body, as far as I can tell, though I have yet to successfully capture an actual report payload.</p>
+<pre><code class="hljs"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> UUID<span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;report&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> String<span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;opinionComments&quot;</span><span class="hljs-punctuation">:</span> String<span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;reason&quot;</span><span class="hljs-punctuation">:</span> String<span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;evidence&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;messages&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+                <span class="hljs-punctuation">{</span>
+                    <span class="hljs-attr">&quot;profileID&quot;</span><span class="hljs-punctuation">:</span> UUID<span class="hljs-punctuation">,</span>
+                    <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> Instant<span class="hljs-punctuation">,</span>
+                    <span class="hljs-attr">&quot;salt&quot;</span><span class="hljs-punctuation">:</span> long<span class="hljs-punctuation">,</span>
+                    <span class="hljs-attr">&quot;signature&quot;</span><span class="hljs-punctuation">:</span> String<span class="hljs-punctuation">,</span>
+                    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> String<span class="hljs-punctuation">,</span>
+                    <span class="hljs-attr">&quot;overriddenMessage&quot;</span><span class="hljs-punctuation">:</span> String<span class="hljs-punctuation">,</span>
+                    <span class="hljs-attr">&quot;messageReported&quot;</span><span class="hljs-punctuation">:</span> boolean
+                <span class="hljs-punctuation">}</span>
+            <span class="hljs-punctuation">]</span>
+        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;reportedEntity&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+            <span class="hljs-attr">&quot;profileId&quot;</span><span class="hljs-punctuation">:</span> UUID
+        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;createdTime&quot;</span><span class="hljs-punctuation">:</span> Instant
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;clientInfo&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;clientVersion&quot;</span><span class="hljs-punctuation">:</span> String
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;thirdPartyServerInfo&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;address&quot;</span><span class="hljs-punctuation">:</span> String
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;realmInfo&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;realmId&quot;</span><span class="hljs-punctuation">:</span> String<span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;slotId&quot;</span><span class="hljs-punctuation">:</span> int
+    <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre><p>One thing that stood out to me was that as far as I can tell, the player&#39;s public key is not included in the report, meaning that Mojang has to have a database of player public keys to validate reports with. Since they must cull old keypairs after a certain amount of time, this puts an upper limit on the maximum age after which a message can&#39;t be reported because Mojang will be unable to validate the signature. I obviously have no idea what Mojang&#39;s internal policy on this is, though. My totally baseless speculation is that expired keypairs will be deleted instantly, but take that with a grain of salt.</p>
+<h1 id="the-big-picture">The Big Picture <a class="section-link" href="#the-big-picture">&sect;</a></h1><p>How does this change affect the community? Here are my thoughts.</p>
+<p>For starters, unless Mojang backports the chat signing changes to 1.18 and below, this change is mostly limited to versions 1.19 and above. However, odds are bans will be enforced through the auth servers, so if you are banned for a message sent while playing on 1.19 you won&#39;t be able to play on any version.</p>
+<p>Some players have made the claim that reporting will be limited to Realms, based on pages on the Minecraft website. This is probably not the case; the aformentioned pages are for Bedrock, and there are no communications from Mojang suggesting that this report system will be Realms-only. Surely, if the change wasn&#39;t meant to affect private servers, they would have made a clarification in response to the widespread backlash.</p>
+<p>Even on affected versions, reporting is weakened by a few main factors:</p>
+<ul>
+<li>On servers that have custom chat plugins, odds are player messages are broadcast using the <a href="https://wiki.vg/Protocol#System_Chat_Message_.28clientbound.29">System Chat Message</a> packet and not the Player Chat Message packet. System messages are not signed and thus cannot be reported.</li>
+<li>A modified client can refuse to send the server a valid public key and refuse to include valid signatures with messages.</li>
+<li>A modified server can allow players to join without valid public keys and strip signatures from messages to prevent players from reporting them.</li>
+</ul>
+<p>A <a href="">mod</a> that implements the latter two changes is already available.</p>
+<p><strong>WARNING:</strong> Everything below this line is my opinion.</p>
+<p>What do I think about the reports system? I&#39;m not a huge fan, for two main reasons. First, I think this change violates an implicit contract that has existed between Mojang and server operators since the inception of multiplayer in the game, wherein Mojang gives operators full control over what happens on their server, including how punishments are doled out. Now, as a server owner, you are no longer the sole party with a say in who gets to play on your server, since Mojang can overrule your moderation decisions. While they have always technically had this power, the introduction of the report system marks the first instance where they have publicly demonstrated their intent to exercise it. Unsurprisingly, many server admins have perceived the announcement as a violation of their trust.</p>
+<p>Second, I don&#39;t have much faith in Mojang&#39;s ability to moderate chat in a way that the community will find satisfactory, hence my continued support for player-based moderation. In the worst-case scenario, Minecraft goes the way of Roblox or Club Penguin, where the chat becomes a desolte wasteland threatening to get your account banned for the slightest transgression. I find this outcome extremely unlikely due to the technical limitations listed earlier, but nevertheless, odds are there will be little recourse for players who get banned.</p>
+<p>All in all, I consider the report system as it exists today a poor implementation of a poorly thought-out idea, and I am very disappointed that Mojang hasn&#39;t even acknowledged the overwhelmingly negative response to its introduction. I also think that the change marks a shift towards the worse in the relationship between Mojang and server owners, as well as the Minecraft community as a whole.</p>
+<img id="img-view" style="display: none"><h1>Comments</h1><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="preferred-color-scheme"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>

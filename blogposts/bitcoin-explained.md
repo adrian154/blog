@@ -16,7 +16,7 @@ This works fine, initially; we can keep track of how much money each person has 
 
 **Transaction Authenticity**
 
-Anyone can make a transaction as anybody else. For example, Jayant could fabricate a transaction where I send him all of my funds, and broadcast it to the network. This is obviously unacceptable, but it's actually easily solved with cryptography. 
+Anyone can make a transaction as anybody else. For example, Jayant could fabricate a transaction where I send him all of my funds, and broadcast it to the network. This is obviously unacceptable, but it's actually easily solved with cryptography.
 
 ## Digital Signatures
 
