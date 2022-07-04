@@ -1,0 +1,238 @@
+<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Minecraft Mob Spawning, Explained (1.19)</title><meta property="og:title" content="Minecraft Mob Spawning, Explained (1.19)"><meta property="og:type" content="website"><link rel="stylesheet" href="static/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="static/stylesheets/main.css"><script>const loadSetting = name => {
+    if(localStorage.getItem(name) === "true")
+        document.documentElement.classList.add(name);
+    else
+        document.documentElement.classList.remove(name);
+};
+
+loadSetting("serif");
+loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/mobspawning.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">July 4, 2022</p><h1 style="margin-top: 0">Minecraft Mob Spawning, Explained (1.19)</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap-calculation"><p>Mob Cap Calculation</p></a><a href="#local-mob-cap"><p>Local Mob Cap</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a><a href="#mob-cap-evaluation"><p>Mob Cap Evaluation</p></a><a href="#despawning"><p>Despawning</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>The information in this document is applicable for <strong>Java Edition 1.19</strong>.</p>
+<p>These are the major steps in the spawning algorithm, in order:</p>
+<ul>
+<li>Collect mob cap data</li>
+<li>Run spawning attempts, depending on mob caps </li>
+<li>Despawn entities</li>
+</ul>
+<h1 id="mob-categories">Mob Categories <a class="section-link" href="#mob-categories">&sect;</a></h1><p>The spawning algorithm categorizes all mobs into one of several categories, which are listed here.</p>
+<table>
+<thead>
+<tr>
+<th>Mob Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Monster</td>
+<td>Hostile mobs</td>
+</tr>
+<tr>
+<td>Creature</td>
+<td>Animals</td>
+</tr>
+<tr>
+<td>Ambient</td>
+<td>Bats only</td>
+</tr>
+<tr>
+<td>Axolotls</td>
+<td>Take a guess...</td>
+</tr>
+<tr>
+<td>Underground water creatures</td>
+<td>Glow squid only</td>
+</tr>
+<tr>
+<td>Water creatures</td>
+<td>Dolphins and squid</td>
+</tr>
+<tr>
+<td>Water ambient</td>
+<td>Fish</td>
+</tr>
+<tr>
+<td>Miscellaneous</td>
+<td>Boats, minecarts, etc.</td>
+</tr>
+</tbody></table>
+<h1 id="mob-cap-calculation">Mob Cap Calculation <a class="section-link" href="#mob-cap-calculation">&sect;</a></h1><p>The first spawning-related action that occurs during a game tick is the evaluation of the mob caps. During this step, the game iterates through all loaded entities and counts how many mobs in each <a href="#mob-categories">category</a> exist. The basic idea behind the mob cap is that the number of mobs in each category that can spawn in the world is limited to a base setting for that category times the number of players. (Technically, the global mob cap is based on the number of loaded chunks, but this fact isn&#39;t really important unless players are clumped close together.)</p>
+<p>Generally speaking, monsters that have special attributes preventing them from despawning do not contribute to the mobcap, so the following groups aren&#39;t counted:</p>
+<ul>
+<li>Mobs with the <code>PersistenceRequired</code> tag set to true</li>
+<li>Mobs that are passengers (e.g. riding a boat or minecart)</li>
+<li>Fish and axolotls from buckets</li>
+<li>Endermen carrying blocks</li>
+<li>Raiders that are part of raids</li>
+</ul>
+<p>There is a narrow class of mobs that contribute to the monster mob cap but do not despawn, meaning that if enough of these mobs are accumulated to fill the mob cap hostile mob spawning will be disabled for the entire world. Such a device is called a mobswitch. Examples include:</p>
+<ul>
+<li>Shulkers</li>
+<li>Wardens</li>
+<li>Withers</li>
+<li>Zombie villagers which have been traded with before</li>
+</ul>
+<p>I&#39;m mostly certain that these are all the exceptions that exist, but I may have missed some.</p>
+<h2 id="local-mob-cap">Local Mob Cap <a class="section-link" href="#local-mob-cap">&sect;</a></h2><p>In addition to the global mob cap, the game also keeps track of a local mob cap; you may also see this referred to as the per-player mob cap. For each mob, the game looks at the chunk the mob is occupying, and finds all the players within 128 blocks of that chunk. The mob is then counted in the mob cap for each of those players. This method was implemented in 1.18 to ensure that mob spawns would be fairly split between players on multiplayer worlds regardless of the number of spawning spaces actually available.</p>
+<h2 id="spawning-potentials">Spawning Potentials <a class="section-link" href="#spawning-potentials">&sect;</a></h2><p><em>Acknowledgement: this section would not have been possible without Gnembon&#39;s <a href="https://www.youtube.com/watch?v=4XNvnKDSoEw">video</a> on the subject.</em></p>
+<p>In soul sand valleys and warped forests, a special &quot;potential&quot;-based mechanic is used to reduce the number of mob spawns without adjusting the mob caps themselves. If a mob is in one of these biomes, their position is recorded. Here are the relevant charge/energy values:</p>
+<h3 style="text-align: center">Soul Sand Valley</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Total Energy</th>
+<th>Charge</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Skeleton</td>
+<td>0.7</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>Ghast</td>
+<td>0.7</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>0.7</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>Strider</td>
+<td>0.7</td>
+<td>0.15</td>
+</tr>
+</tbody></table>
+<h3 style="text-align: center">Warped Forest</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Total Energy</th>
+<th>Charge</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Enderman</td>
+<td>1.0</td>
+<td>0.12</td>
+</tr>
+</tbody></table>
+<p>The positions of the counted mobs and their charge can be used to calculate a potential value for any block position. This potential value is used to nerf mob spawns; the exact algorithm is explained later in this article.</p>
+<aside>
+
+<p>The mob caps are only evaluated once per tick, meaning that by the end of the tick the number of mobs in the world may exceed the mob cap. Thus, the mob cap should not be considered a hard limit.</p>
+</aside>
+
+<h1 id="mob-cap-evaluation">Mob Cap Evaluation <a class="section-link" href="#mob-cap-evaluation">&sect;</a></h1><p>Before spawning can begin, the game first checks the global mob cap for each mob category, which is calculated using the following formula:</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>global-mobcap</mtext><mo>=</mo><mfrac><mrow><mtext>mobcap-value</mtext><mo>×</mo><mtext>spawnable-chunks</mtext></mrow><mn>289</mn></mfrac></mrow><annotation encoding="application/x-tex">\text{global-mobcap} = \frac{\text{mobcap-value} \times \text{spawnable-chunks}}{289}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">global-mobcap</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0574em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">289</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">mobcap-value</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">spawnable-chunks</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>Here are the base mob cap values:</p>
+<table>
+<thead>
+<tr>
+<th>Mob Category</th>
+<th>Mob cap</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Monster</td>
+<td>70</td>
+</tr>
+<tr>
+<td>Creature</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Ambient</td>
+<td>15</td>
+</tr>
+<tr>
+<td>Axolotls</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Underground water creatures</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Water creatures</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Water ambient</td>
+<td>20</td>
+</tr>
+</tbody></table>
+<p>The number of spawnable chunks is the number of loaded chunks that are within 8 chunks of a player. In other words, ever player has 17x17 grid of spawnable chunks centered on them. </p>
+<figure style="max-width: 512px">
+    <img src="resources/spawning/spawnable-chunks.png" alt="diagram of spawnable chunks">
+    <figcaption>A diagram of spawnable chunks surrounding the player's chunk, which is represented in green.</figcaption>
+</figure>
+
+<p>This is where the 289 found in the mob cap equation comes from; in singleplayer, there will always be 289 spawnable chunks (unless you&#39;ve set your simulation distance extremely low), so the mob cap will be equal to the constant for each category. On a server, if all the players are spread out so that none of their 17x17 chunk regions overlap, the global mobcap for each category will be equal to the singleplayer mobcap multiplied by the number of players; if there is overlap, the global mobcap will be less.</p>
+<figure style="max-width: 512px">
+    <img src="resources/spawning/spawnable-chunks-overlap.png" alt="diagram of two players' spawnable chunks overlapping">
+    <figcaption>These two players' spawnable chunks overlap, so there are only 434 spawnable chunks instead of 2 &times; 289 = 578. This means that the global mobcap will only be ~1.5&times; greater than the singleplayer value, instead of 2&times;.</figcaption>
+</figure>
+
+<p>If the number of mobs in a category exceeds the global mobcap, spawning for that category is entirely skipped.</p>
+<p>If the global mob cap is not met, the game then checks the local mob cap on a chunk-by-chunk basis. For a given chunk, the game looks at all the players which have that chunk inside their spawnable chunks area. The game then compares the player&#39;s local mob cap to the base value; if it is below the limit, spawning for that category will proceed.</p>
+<p>I know that explanation may have been a little confusing, so here&#39;s a practical example. Let&#39;s go back to our two-player scenario from earlier. Suppose the game is currently evaluating monster spawning for the chunk highlighted in red.</p>
+<img style="max-width: 512px" src="resources/spawning/spawnable-chunks-highlighted.png" alt="the same diagram of two players' spawnable chunks, with one chunk between the two players highlighted in red">
+
+<p>The global monster mob cap is <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>70</mn><mo>×</mo><mn>434</mn><mi mathvariant="normal">/</mi><mn>289</mn><mo>=</mo><mn>105</mn></mrow><annotation encoding="application/x-tex">70 \times 434 / 289 = 105</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">70</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">434/289</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">105</span></span></span></span>. If the total number of monsters in the world is greater than 105, no monster spawning will happen in any chunks.</p>
+<p>If the global mob cap is not met, the game proceeds to check each player&#39;s local mob cap. First, it retrieves the number of monsters within player 1&#39;s chunks, highlighted in blue here:</p>
+<img style="max-width: 512px" src="resources/spawning/chunks-p1.png">
+
+<p>If there are fewer than 70 monsters in the blue chunks, monsters can spawn in the red chunk. Otherwise, the game moves on to player 2&#39;s local mob cap.</p>
+<img style="max-width: 512px" src="resources/spawning/chunks-p2.png">
+
+<p>Note that as soon as the game finds a player whose local mob cap isn&#39;t filled, it continues to the spawning step; the rate of spawning does not depend on the number of players in range.</p>
+<h1 id="despawning">Despawning <a class="section-link" href="#despawning">&sect;</a></h1><p>Every tick, entites check whether they should despawn according to the following rules.</p>
+<ul>
+<li>If the difficulty is peaceful, despawn hostile mobs</li>
+<li>If the mob is an enderman, don&#39;t despawn if carrying a block</li>
+<li>If the mob is an axolotl or fish, don&#39;t despawn if from a bucket</li>
+<li>If the mob is a raider, don&#39;t despawn if part of a raid</li>
+<li>If the <code>PersistenceRequired</code> NBT tag is set to true, don&#39;t despawn</li>
+<li>If the mob is a passenger, don&#39;t despawn</li>
+<li>Calculate the distance to the nearest player<ul>
+<li>If the distance is greater than the despawn distance and the mob should despawn when far away, despawn.</li>
+<li>If the distance is greater than the no despawn distance, the mob should despawn when far away, and over 600 ticks have elapsed, the mob has a 1/800 chance of despawning each tick</li>
+</ul>
+</li>
+</ul>
+<p>The no despawn distance is always 32, while the despawn distance depends on the mob&#39;s category. All mob categories despawn at a distance of 128 blocks except water ambient mobs, which start despawning at just 64 blocks away.</p>
+<p>The <code>PersistenceRequired</code> NBT tag is set when mobs are named with nametags. It is also set on certain mobs created through natural processes, such as the following (not a comprehensive list):</p>
+<ul>
+<li>Zombie piglins created when pigs are struck by lightning</li>
+<li>Witches created when villagers are struck by lightning</li>
+<li>All elder guardians</li>
+<li>Duplicated allays</li>
+<li>Skeletons created from skeleton traps</li>
+<li>Most if not all mobs spawned as part of a structure, e.g. the black cat in a witch hut</li>
+</ul>
+<p>Here are the rules for whether a mob should despawn when far away.</p>
+<ul>
+<li>Default: despawn</li>
+<li>Golems: never despawn<ul>
+<li>Shulkers are considered golems for some bizarre reason, maybe because they shoot projectiles? Anyways, this is why they don&#39;t despawn.</li>
+</ul>
+</li>
+<li>Animals: never despawn<ul>
+<li>Chickens: despawn if part of a chicken jockey</li>
+<li>Cats: despawn if not tame and alive for greater than 2,400 ticks</li>
+</ul>
+</li>
+<li>Allay: never despawn</li>
+<li>Raiders: if part of a raid, never despawn; otherwise, despawn if not part of a patrol or over 128 blocks away</li>
+<li>Zombie Villager: despawn if not converting and zero villager XP (i.e. if a villager which has been traded with is infected, the resulting zombie villager won&#39;t despawn)</li>
+<li>Warden: never despawn</li>
+<li>Wandering Trader: never despawn</li>
+<li>Villager: never despawn</li>
+</ul>
+<p>Endermites will disappear after 2,400 ticks unless the <code>PersistenceRequired</code> tag is set, but this mechanic is implemented separately from regular despawning.</p>
+<img id="img-view" style="display: none"><h1>Comments</h1><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="preferred-color-scheme"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>
