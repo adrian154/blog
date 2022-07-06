@@ -289,7 +289,35 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 </ul>
 </li>
 <li>Look up the biome of the current position. If it is different from the biome where the mob type was first selected, fail.</li>
-<li>Depending on the type of mob, different environment conditions must be met. These rules are grouped into categories called spawn placements</li>
+<li>If the mob&#39;s spawn placement type is not <code>NO_RESTRICTIONS</code>, then run the following checks:<ul>
+<li><code>IN_WATER</code>: the block at the position is water and the block above it is not a full opaque block or soul sand/mud</li>
+<li><code>IN_LAVA</code>: the block at the position is lava</li>
+<li><code>ON_GROUND</code>:<ul>
+<li>The upper face of the block below the position is full and it emits a light level less than 14, with exceptions:<ul>
+<li>Tedrock, barriers, glass, and tinted glass are not spawnable</li>
+<li>Trapdoors are not spawnable regardless of their position</li>
+<li>Soul sand and mud are spawnable</li>
+<li>Mangrove leaves and regular leaves are only spawnable for ocelots and parrots</li>
+<li>Ice is only spawnable for polar bears</li>
+<li>Magma blocks are only spawnable for fire immune mobs</li>
+</ul>
+</li>
+<li>For the block at the position and above the position:<ul>
+<li>The block at the position is not a full block, redstone component, rail, or a fluid  </li>
+<li>If the block at the position causes damage, a mob <em>may</em> still spawn if it does not collide and the mob is immune; for example: <ul>
+<li>Non-fire immune mobs cannot spawn in fire</li>
+<li>Only wither skeletons can spawn in wither roses</li>
+<li>Only polar bears, snow golems, and strays can spawn in powder snow</li>
+</ul>
+</li>
+<li>Mobs cannot spawn in berry bushes or cacti</li>
+</ul>
+</li>
+</ul>
+</li>
+<li></li>
+</ul>
+</li>
 </ul>
 <h1 id="despawning">Despawning <a class="section-link" href="#despawning">&sect;</a></h1><p>Every tick, entites check whether they should despawn according to the following rules.</p>
 <ul>
