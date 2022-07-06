@@ -18,11 +18,16 @@ let fragments = null; // keep track of URL fragments so that they can always be 
 const HEADINGS = [h1, h2, h3, h4, h5, h6];
 const renderHeading = (text, level) => {
     
-    // make sure the fragment id is unique in the stupidest way possible
+    // make sure the fragment id is unique
     let fragment = headingToFragment(text);
-    while(fragments[fragment]) {
-        fragment += "x";
-    }
+    if(fragments[fragment]) {
+        let i = 0, newFragment = null;
+        do {
+            i++;
+            newFragment = `${fragment}-${i}`;
+        } while(fragments[newFragment]);
+        fragment = newFragment;
+    }   
 
     fragments[fragment] = {title: text, level};
     return HEADINGS[level - 1]({id: fragment}, [raw(text), " ", a({class: "section-link", href: "#" + fragment}, {html: "&sect;"})]).html;

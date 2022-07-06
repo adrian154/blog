@@ -1,7 +1,10 @@
 If a mob category is not listed, no mobs in that category spawn for the biome.
 
-## Plains
+Also, check out the companion article about [mob spawning mechanics](mobspawning.html)!
 
+# Overworld Biomes
+
+## Plains
 
 **Creatures**
 
@@ -449,6 +452,8 @@ Same as [Savanna Plateau](#savanna-plateau)
 | Enderman            | 10     | 1&ndash;4 |
 | Witch               | 5      | 1         |
 | Ocelot              | 2      | 1         |
+
+Yes, ocelots spawn with monsters for some reason.
 
 **Ambient**
 
@@ -908,3 +913,146 @@ Same as [Plains](#plains)
 Same as [Plains](#plains)
 
 ## Dripstone Caves
+
+**Monsters**
+
+| Mob Type            | Weight | Pack Size |
+|---------------------|--------|-----------|
+| Spider              | 100    | 4         |
+| Zombie              | 95     | 4         |
+| Zombie Villager     | 5      | 1         |
+| Skeleton            | 100    | 4         |
+| Creeper             | 100    | 4         |
+| Slime               | 100    | 4         |
+| Enderman            | 10     | 1&ndash;4 |
+| Witch               | 5      | 1         |
+| Drowned             | 95     | 4         |
+
+**Ambient**
+
+Same as [Plains](#plains)
+
+**Underground Water**
+
+Same as [Plains](#plains)
+
+## Lush Caves
+
+**Monsters**
+
+Same as [Plains](#plains)
+
+**Axolotls**
+
+| Mob Type            | Weight | Pack Size |
+|---------------------|--------|-----------|
+| Axolotl             | 10     | 4&ndash;6 |
+
+**Water Ambient**
+
+Same as [Mangrove Swamp](#mangrove-swamp)
+
+**Ambient**
+
+Same as [Plains](#plains)
+
+**Underground Water**
+
+Same as [Plains](#plains)
+
+## Deep Dark
+
+No mobs naturally spawn in the Deep Dark.
+
+# Nether Biomes
+
+## Nether Wastes
+
+**Creatures**
+
+| Mob Type            | Weight | Pack Size |
+|---------------------|--------|-----------|
+| Strider             | 60     | 1&ndash;2 |
+
+**Monsters**
+
+| Mob Type            | Weight | Pack Size |
+|---------------------|--------|-----------|
+| Ghast               | 50     | 4         |
+| Zombified Piglin    | 100    | 4         |
+| Magma Cube          | 2      | 4         |
+| Enderman            | 1      | 4         |
+| Piglin              | 15     | 4         |
+
+## Warped Forest
+
+**Creatures**
+
+Same as [Nether Wastes](#nether-wastes)
+
+**Monsters**
+
+| Mob Type            | Weight | Pack Size |
+|---------------------|--------|-----------|
+| Enderman            | 1      | 4         |
+
+## Crimson Forest
+
+**Creatures**
+
+Same as [Nether Wastes](#nether-wastes)
+
+**Monsters**
+
+| Mob Type            | Weight | Pack Size |
+|---------------------|--------|-----------|
+| Zombified Piglin    | 1      | 2&ndash;4 |
+| Hoglin              | 9      | 3&ndash;4 |
+| Piglin              | 5      | 3&ndash;4 |
+
+## Soul Sand Valley
+
+**Creatures**
+
+Same as [Nether Wastes](#nether-wastes)
+
+**Monsters**
+
+| Mob Type            | Weight | Pack Size |
+|---------------------|--------|-----------|
+| Skeleton            | 20     | 5         |
+| Ghast               | 50     | 4         |
+| Enderman            | 1      | 4         |
+
+## Basalt Deltas
+
+**Creatures**
+
+Same as [Nether Wastes](#nether-wastes)
+
+**Monsters**
+
+| Mob Type            | Weight | Pack Size |
+|---------------------|--------|-----------|
+| Ghast               | 40     | 1         |
+| Magma Cube          | 100    | 2&ndash;5 |
+
+## Nether Fortress
+
+| Mob Type            | Weight | Pack Size |
+|---------------------|--------|-----------|
+| Blaze               | 10     | 2&ndash;3 |
+| Zombified Piglin    | 5      | 4         |
+| Wither Skeleton     | 8      | 5         |
+| Skeleton            | 2      | 5         |
+| Magma Cube          | 3      | 4         |
+
+# End Biomes
+
+All End biomes have the same spawning settings.
+
+**Monsters**
+
+| Mob Type            | Weight | Pack Size |
+|---------------------|--------|-----------|
+| Enderman            | 10     | 4         |
