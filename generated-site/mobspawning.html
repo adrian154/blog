@@ -6,7 +6,7 @@
 };
 
 loadSetting("serif");
-loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/mobspawning.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">July 4, 2022</p><h1 style="margin-top: 0">Minecraft Mob Spawning, Explained (1.19)</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap-calculation"><p>Mob Cap Calculation</p></a><a href="#local-mob-cap"><p>Local Mob Cap</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a><a href="#mob-cap-evaluation"><p>Mob Cap Evaluation</p></a><a href="#despawning"><p>Despawning</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>The information in this document is applicable for <strong>Java Edition 1.19</strong>.</p>
+loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/mobspawning.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">July 5, 2022</p><h1 style="margin-top: 0">Minecraft Mob Spawning, Explained (1.19)</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap-basics"><p>Mob Cap Basics</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a><a href="#mob-cap-calculation"><p>Mob Cap Calculation</p></a><a href="#spawning"><p>Spawning</p></a><a href="#pack-spawning"><p>Pack Spawning</p></a><a href="#monster-spawn-weights"><p>Monster Spawn Weights</p></a><a href="#creature-spawn-weights"><p>Creature Spawn Weights</p></a><a href="#despawning"><p>Despawning</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>The information in this document is applicable for <strong>Java Edition 1.19</strong>.</p>
 <p>These are the major steps in the spawning algorithm, in order:</p>
 <ul>
 <li>Collect mob cap data</li>
@@ -54,11 +54,11 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <td>Boats, minecarts, etc.</td>
 </tr>
 </tbody></table>
-<h1 id="mob-cap-calculation">Mob Cap Calculation <a class="section-link" href="#mob-cap-calculation">&sect;</a></h1><p>The first spawning-related action that occurs during a game tick is the evaluation of the mob caps. During this step, the game iterates through all loaded entities and counts how many mobs in each <a href="#mob-categories">category</a> exist. The basic idea behind the mob cap is that the number of mobs in each category that can spawn in the world is limited to a base setting for that category times the number of players. (Technically, the global mob cap is based on the number of loaded chunks, but this fact isn&#39;t really important unless players are clumped close together.)</p>
+<h1 id="mob-cap-basics">Mob Cap Basics <a class="section-link" href="#mob-cap-basics">&sect;</a></h1><p>The first spawning-related action that occurs during a game tick is the evaluation of the mob caps. During this step, the game iterates through all loaded entities and counts how many mobs in each category exist. The basic idea behind the mob cap is that the number of mobs in each category that can spawn in the world is limited to a base setting for that category times the number of players. (Technically, the global mob cap is based on the number of loaded chunks, but this fact isn&#39;t really important unless players are clumped close together.)</p>
 <p>Generally speaking, monsters that have special attributes preventing them from despawning do not contribute to the mobcap, so the following groups aren&#39;t counted:</p>
 <ul>
-<li>Mobs with the <code>PersistenceRequired</code> tag set to true</li>
-<li>Mobs that are passengers (e.g. riding a boat or minecart)</li>
+<li>Mobs with the <code>PersistenceRequired</code> tag set to true (e.g. mobs that have been nametagged)</li>
+<li>Mobs that are riding an entity/vehicle</li>
 <li>Fish and axolotls from buckets</li>
 <li>Endermen carrying blocks</li>
 <li>Raiders that are part of raids</li>
@@ -71,9 +71,7 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <li>Zombie villagers which have been traded with before</li>
 </ul>
 <p>I&#39;m mostly certain that these are all the exceptions that exist, but I may have missed some.</p>
-<h2 id="local-mob-cap">Local Mob Cap <a class="section-link" href="#local-mob-cap">&sect;</a></h2><p>In addition to the global mob cap, the game also keeps track of a local mob cap; you may also see this referred to as the per-player mob cap. For each mob, the game looks at the chunk the mob is occupying, and finds all the players within 128 blocks of that chunk. The mob is then counted in the mob cap for each of those players. This method was implemented in 1.18 to ensure that mob spawns would be fairly split between players on multiplayer worlds regardless of the number of spawning spaces actually available.</p>
-<h2 id="spawning-potentials">Spawning Potentials <a class="section-link" href="#spawning-potentials">&sect;</a></h2><p><em>Acknowledgement: this section would not have been possible without Gnembon&#39;s <a href="https://www.youtube.com/watch?v=4XNvnKDSoEw">video</a> on the subject.</em></p>
-<p>In soul sand valleys and warped forests, a special &quot;potential&quot;-based mechanic is used to reduce the number of mob spawns without adjusting the mob caps themselves. If a mob is in one of these biomes, their position is recorded. Here are the relevant charge/energy values:</p>
+<h2 id="spawning-potentials">Spawning Potentials <a class="section-link" href="#spawning-potentials">&sect;</a></h2><p>In soul sand valleys and warped forests, a special &quot;potential&quot;-based mechanic is used to reduce the number of mob spawns without adjusting the mob caps themselves. If a mob is in one of these biomes, their position is recorded. Here are the relevant charge/energy values:</p>
 <h3 style="text-align: center">Soul Sand Valley</h3>
 
 <table>
@@ -127,7 +125,7 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <p>The mob caps are only evaluated once per tick, meaning that by the end of the tick the number of mobs in the world may exceed the mob cap. Thus, the mob cap should not be considered a hard limit.</p>
 </aside>
 
-<h1 id="mob-cap-evaluation">Mob Cap Evaluation <a class="section-link" href="#mob-cap-evaluation">&sect;</a></h1><p>Before spawning can begin, the game first checks the global mob cap for each mob category, which is calculated using the following formula:</p>
+<h1 id="mob-cap-calculation">Mob Cap Calculation <a class="section-link" href="#mob-cap-calculation">&sect;</a></h1><p>Before spawning can begin, the game first checks the global mob cap for each mob category, which is calculated using the following formula:</p>
 <p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>global-mobcap</mtext><mo>=</mo><mfrac><mrow><mtext>mobcap-value</mtext><mo>×</mo><mtext>spawnable-chunks</mtext></mrow><mn>289</mn></mfrac></mrow><annotation encoding="application/x-tex">\text{global-mobcap} = \frac{\text{mobcap-value} \times \text{spawnable-chunks}}{289}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">global-mobcap</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0574em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">289</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">mobcap-value</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">spawnable-chunks</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
 <p>Here are the base mob cap values:</p>
 <table>
@@ -190,7 +188,363 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <p>If there are fewer than 70 monsters in the blue chunks, monsters can spawn in the red chunk. Otherwise, the game moves on to player 2&#39;s local mob cap.</p>
 <img style="max-width: 512px" src="resources/spawning/chunks-p2.png">
 
+<p>What effect does the local mob cap have on mob spawning? Well, it helps ensure that no player can take up ane excessive portion of the mob cap. Before 1.18, mob farms often worked poorly in multiplayer since if multiple players were online, the spawning algorithm was much more likely to pick a spawning space in the environment rather than one in a farm. Now, players in non-spawnproofed areas have minimal effect on the mob cap because mobs will stop spawning in their chunks once the local mob cap is reached.</p>
 <p>Note that as soon as the game finds a player whose local mob cap isn&#39;t filled, it continues to the spawning step; the rate of spawning does not depend on the number of players in range.</p>
+<aside>
+
+<p>A lot of information relevant to mob spawning is available on the debug screen nowadays. If you look at the line on the top-left part of the screen starting with &quot;SC&quot;, you will find:</p>
+<ul>
+<li>SC: number of spawning chunks</li>
+<li>M: monster mob cap</li>
+<li>C: creature mob cap</li>
+<li>A: ambient mob cap</li>
+<li>A: axolotl mob cap</li>
+<li>U: underground water creatures mob cap</li>
+<li>W: water creatures mob cap</li>
+<li>W: water ambient mob cap</li>
+</ul>
+<p><img src="resources/spawning/debugscreen_sc.png" alt="debug screen"></p>
+<p>On multiplayer, you may need to use a server-side mod like <a href="https://github.com/gnembon/fabric-carpet">Carpet</a> to view global mob cap statistics.</p>
+</aside>
+
+<h1 id="spawning">Spawning <a class="section-link" href="#spawning">&sect;</a></h1><p>Now, the game actually starts looking for a location to spawn a mob. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block.</p>
+<aside>
+
+<p>The Y-value of the highest block for every X/Z combo is known as the <strong>heightmap</strong>. The heightmap of your current position is displayed on the debug screen as &quot;CH S&quot;.</p>
+<p><img src="resources/spawning/debugscreen_ch.png" alt="heightmap"></p>
+<p>You can also use the <a href="https://www.curseforge.com/minecraft/mc-mods/minihud">MiniHUD</a> mod to overlay heightmap indicators over the regular world.</p>
+</aside>
+
+<p>The heightmap is the reason why farms perform best at lower Y-levels. In the optimal configuration, the farm&#39;s lowest spawning platform is at the minimum build height and there are no blocks above the highest spawning spaces. This way, if a spawn attempt lands within the X/Z bounds of the farm, it will not end up below or above the farm. Of course, if you farm is situated at the bottom of the world you will also need to spawnproof within a 128-block radius of your AFK spot. If you are willing to put in the time, you can kill two stones with one bird by excavating a <a href="resources/spawning/perimeter.webp">perimeter</a>.</p>
+<figure style="max-width: 1708px">
+    <img src="resources/spawning/comparison.png" alt="effect of a platform on mob spawning">
+    <figcaption>The platform on the left had a layer of blocks above it at Y=255, while the platform on the right was not covered. Both platforms were allowed to spawn mobs for 15 seconds. There are nearly twice as many mobs on the uncovered platform compared to the covered one, demonstrating the importance of keeping the heightmap low in a mob farm.</figcaption>
+</figure>
+
+
+<p>Once a location is picked, the game runs some preliminary checks to determine whether it should attemt to spawn mobs there. If the block at the position is a full block, soul sand, or mud, the attempt immediately ends. Otherwise, it will make up to three attempts to spawn a pack of mobs near that location.</p>
+<h2 id="pack-spawning">Pack Spawning <a class="section-link" href="#pack-spawning">&sect;</a></h2><p>Minecraft spawns all mobs in packs, meaning that one spawn attempt may result in multiple mobs being spawned. Keep in mind that the algorithm can be rather idiosyncratic and knowing all the details is not too important when it comes to farm optimization.</p>
+<p>The game starts by setting a counter for the number of remaining attempts to spawn a pack of mobs. This counter is initialized with a random value from 1 to 5.</p>
+<p>Next, the game adds a random X and Z offset between -5 and 5 to the current position. These values are picked so that smaller offsets are more common than further offsets; specifically, they follow a <a href="https://en.wikipedia.org/wiki/Triangular_distribution">triangular distribution</a>. Next, the game checks if the spot is within 24 blocks of the player or the world spawn point. If either of these conditions is met, the game repeats the process. Note that each time, the offset is added to the already-offsetted position, which means that pack spawn attempts can wander rather far away from the initial position. However, in practice, this is unlikely; here&#39;s a heatmap showing the spatial distribution of pack spawn attempts.</p>
+<p><img src="resources/spawning/packspawn-heatmap.png" alt="pack spawn heatmap"></p>
+<p>As you can see, most of the attempts end up pretty close to the initial location; around 76% of all attempts are within 5 blocks of the initial location. Pack spawning is why building an overhang in a mob farm may increase its rates; by raising the heightmap in the blocks surrounding the spawning platforms, spawn attempts that begin outside of the farm could still find their way in. This is also why you should never place solid opaque blocks at foot level at any location in the farm, since if a spawn attempt begins at that position it will instantly end.</p>
+<figure style="max-width: 560px">
+    <img src="resources/spawning/footlevel.png" alt="explanation of why foot level blocks are bad">
+    <figcaption>Do not do this. I have ways of finding you.</figcaption>
+</figure>
+
+<p>Anyways, if the position is <em>not</em> within 24 blocks of the player/world spawn and its chunk is loaded, the game gets the biome at that position and checks which mobs can spawn. At this stage, if the biome is a river biome and the category is water ambient mobs, there is a 98% chance that the spawn attempt will fail. Here are the mobs which will spawn in various biomes and their weights; note that within a Nether fortress the fortress spawns override all biome spawns.</p>
+<h2 id="monster-spawn-weights">Monster Spawn Weights <a class="section-link" href="#monster-spawn-weights">&sect;</a></h2><h3 style="text-align: center">Default</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spider</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie</td>
+<td>95</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie Villager</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Creeper</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>10</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Witch</td>
+<td>5</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<h3 style="text-align: center">Nether Fortress</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Blaze</td>
+<td>10</td>
+<td>2&ndash;3</td>
+</tr>
+<tr>
+<td>Zombified Piglin</td>
+<td>5</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Wither Skeleton</td>
+<td>8</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>2</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Magma Cube</td>
+<td>3</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<h2 id="creature-spawn-weights">Creature Spawn Weights <a class="section-link" href="#creature-spawn-weights">&sect;</a></h2><h3 style="text-align: center">Default</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<h3 style="text-align: center">Plains</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Horse</td>
+<td>5</td>
+<td>2&ndash;6</td>
+</tr>
+<tr>
+<td>Donkey</td>
+<td>1</td>
+<td>1&ndash;3</td>
+</tr>
+</tbody></table>
+<h3 style="text-align: center">Old Growth Taiga</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Wolf</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Rabbit</td>
+<td>4</td>
+<td>2&ndash;3</td>
+</tr>
+<tr>
+<td>Fox</td>
+<td>8</td>
+<td>2&ndash;4</td>
+</tr>
+</tbody></table>
+<h3 style="text-align: center">Jungle</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4&ndash;4</td>
+</tr>
+<tr>
+<td>Parrot</td>
+<td>40</td>
+<td>1&ndash;2</td>
+</tr>
+<tr>
+<td>Panda</td>
+<td>1</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<h3 style="text-align: center">Snowy Biomes</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Rabbit</td>
+<td>10</td>
+<td>2&ndash;3</td>
+</tr>
+<tr>
+<td>Polar Bear</td>
+<td>1</td>
+<td>1&mdash;2</td>
+</tr>
+</tbody></table>
+<h3 style="text-align: center">Deset Biomes</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Rabbit</td>
+<td>4</td>
+<td>2&ndash;3</td>
+</tr>
+</tbody></table>
+<h3 style="text-align: center">Mushroom Fields</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mooshroom</td>
+<td>8</td>
+<td>4&ndash;8</td>
+</tr>
+</tbody></table>
+<h3 style="text-align: center">Nether Wastes, Soul Sand Valley, Basalt Deltas, Crimson Forest, Warped Forest</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Strider</td>
+<td>60</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<p>var18 = [1-4]
+var13, var14 = [-5, 5] triangular distr
+var10 = the offset loc</p>
+<p>get nearest player
+if distance to player or world spawnpoint &lt; 24 blocks, abort
+if chunk is not ticking, abort
+    - entities can spawn in lazy chunks at low render distance</p>
+<p>get biome at position</p>
+<ul>
+<li>if this is empty, abort</li>
+</ul>
 <h1 id="despawning">Despawning <a class="section-link" href="#despawning">&sect;</a></h1><p>Every tick, entites check whether they should despawn according to the following rules.</p>
 <ul>
 <li>If the difficulty is peaceful, despawn hostile mobs</li>

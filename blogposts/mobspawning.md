@@ -20,13 +20,13 @@ The spawning algorithm categorizes all mobs into one of several categories, whic
 | Water ambient               | Fish                   |
 | Miscellaneous               | Boats, minecarts, etc. |
 
-# Mob Cap Calculation
+# Mob Cap Basics
 
-The first spawning-related action that occurs during a game tick is the evaluation of the mob caps. During this step, the game iterates through all loaded entities and counts how many mobs in each [category](#mob-categories) exist. The basic idea behind the mob cap is that the number of mobs in each category that can spawn in the world is limited to a base setting for that category times the number of players. (Technically, the global mob cap is based on the number of loaded chunks, but this fact isn't really important unless players are clumped close together.)
+The first spawning-related action that occurs during a game tick is the evaluation of the mob caps. During this step, the game iterates through all loaded entities and counts how many mobs in each category exist. The basic idea behind the mob cap is that the number of mobs in each category that can spawn in the world is limited to a base setting for that category times the number of players. (Technically, the global mob cap is based on the number of loaded chunks, but this fact isn't really important unless players are clumped close together.)
 
 Generally speaking, monsters that have special attributes preventing them from despawning do not contribute to the mobcap, so the following groups aren't counted:
-- Mobs with the `PersistenceRequired` tag set to true
-- Mobs that are passengers (e.g. riding a boat or minecart)
+- Mobs with the `PersistenceRequired` tag set to true (e.g. mobs that have been nametagged)
+- Mobs that are riding an entity/vehicle
 - Fish and axolotls from buckets
 - Endermen carrying blocks
 - Raiders that are part of raids
@@ -39,13 +39,7 @@ There is a narrow class of mobs that contribute to the monster mob cap but do no
 
 I'm mostly certain that these are all the exceptions that exist, but I may have missed some.
 
-## Local Mob Cap
-
-In addition to the global mob cap, the game also keeps track of a local mob cap; you may also see this referred to as the per-player mob cap. For each mob, the game looks at the chunk the mob is occupying, and finds all the players within 128 blocks of that chunk. The mob is then counted in the mob cap for each of those players. This method was implemented in 1.18 to ensure that mob spawns would be fairly split between players on multiplayer worlds regardless of the number of spawning spaces actually available.
-
 ## Spawning Potentials
-
-*Acknowledgement: this section would not have been possible without Gnembon's [video](https://www.youtube.com/watch?v=4XNvnKDSoEw) on the subject.*
 
 In soul sand valleys and warped forests, a special "potential"-based mechanic is used to reduce the number of mob spawns without adjusting the mob caps themselves. If a mob is in one of these biomes, their position is recorded. Here are the relevant charge/energy values:
 
@@ -72,7 +66,7 @@ The mob caps are only evaluated once per tick, meaning that by the end of the ti
 
 </aside>
 
-# Mob Cap Evaluation
+# Mob Cap Calculation
 
 Before spawning can begin, the game first checks the global mob cap for each mob category, which is calculated using the following formula:
 
@@ -122,7 +116,85 @@ If there are fewer than 70 monsters in the blue chunks, monsters can spawn in th
 
 <img style="max-width: 512px" src="resources/spawning/chunks-p2.png">
 
+What effect does the local mob cap have on mob spawning? Well, it helps ensure that no player can take up ane excessive portion of the mob cap. Before 1.18, mob farms often worked poorly in multiplayer since if multiple players were online, the spawning algorithm was much more likely to pick a spawning space in the environment rather than one in a farm. Now, players in non-spawnproofed areas have minimal effect on the mob cap because mobs will stop spawning in their chunks once the local mob cap is reached.
+
 Note that as soon as the game finds a player whose local mob cap isn't filled, it continues to the spawning step; the rate of spawning does not depend on the number of players in range.
+
+<aside>
+
+A lot of information relevant to mob spawning is available on the debug screen nowadays. If you look at the line on the top-left part of the screen starting with "SC", you will find:
+* SC: number of spawning chunks
+* M: monster mob cap
+* C: creature mob cap
+* A: ambient mob cap
+* A: axolotl mob cap
+* U: underground water creatures mob cap
+* W: water creatures mob cap
+* W: water ambient mob cap
+
+![debug screen](resources/spawning/debugscreen_sc.png)
+
+On multiplayer, you may need to use a server-side mod like [Carpet](https://github.com/gnembon/fabric-carpet) to view global mob cap statistics.
+
+</aside>
+
+# Spawning
+
+Now, the game actually starts looking for a location to spawn a mob. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block.
+
+<aside>
+
+The Y-value of the highest block for every X/Z combo is known as the **heightmap**. The heightmap of your current position is displayed on the debug screen as "CH S".
+
+![heightmap](resources/spawning/debugscreen_ch.png)
+
+You can also use the [MiniHUD](https://www.curseforge.com/minecraft/mc-mods/minihud) mod to overlay heightmap indicators over the regular world.
+
+</aside>
+
+The heightmap is the reason why farms perform best at lower Y-levels. In the optimal configuration, the farm's lowest spawning platform is at the minimum build height and there are no blocks above the highest spawning spaces. This way, if a spawn attempt lands within the X/Z bounds of the farm, it will not end up below or above the farm. Of course, if you farm is situated at the bottom of the world you will also need to spawnproof within a 128-block radius of your AFK spot. If you are willing to put in the time, you can kill two stones with one bird by excavating a [perimeter](resources/spawning/perimeter.webp).
+
+<figure style="max-width: 1708px">
+    <img src="resources/spawning/comparison.png" alt="effect of a platform on mob spawning">
+    <figcaption>The platform on the left had a layer of blocks above it at Y=255, while the platform on the right was not covered. Both platforms were allowed to spawn mobs for 15 seconds. There are nearly twice as many mobs on the uncovered platform compared to the covered one, demonstrating the importance of keeping the heightmap low in a mob farm.</figcaption>
+</figure>
+
+
+Once a location is picked, the game runs some preliminary checks to determine whether it should attemt to spawn mobs there. If the block at the position is a full block, soul sand, or mud, the attempt immediately ends. Otherwise, it will make up to three attempts to spawn a pack of mobs near that location.
+
+## Pack Spawning
+
+Minecraft spawns all mobs in packs, meaning that one spawn attempt may result in multiple mobs being spawned. Keep in mind that the algorithm can be rather idiosyncratic and knowing all the details is not too important when it comes to farm optimization.
+
+The game starts by setting a counter for the number of remaining attempts to spawn a pack of mobs. This counter is initialized with a random value from 1 to 5.
+
+Next, the game adds a random X and Z offset between -5 and 5 to the current position. These values are picked so that smaller offsets are more common than further offsets; specifically, they follow a [triangular distribution](https://en.wikipedia.org/wiki/Triangular_distribution). Next, the game checks if the spot is within 24 blocks of the player or the world spawn point. If either of these conditions is met, the game repeats the process. Note that each time, the offset is added to the already-offsetted position, which means that pack spawn attempts can wander rather far away from the initial position. However, in practice, this is unlikely; here's a heatmap showing the spatial distribution of pack spawn attempts.
+
+![pack spawn heatmap](resources/spawning/packspawn-heatmap.png)
+
+As you can see, most of the attempts end up pretty close to the initial location; around 76% of all attempts are within 5 blocks of the initial location. Pack spawning is why building an overhang in a mob farm may increase its rates; by raising the heightmap in the blocks surrounding the spawning platforms, spawn attempts that begin outside of the farm could still find their way in. This is also why you should never place solid opaque blocks at foot level at any location in the farm, since if a spawn attempt begins at that position it will instantly end.
+
+<figure style="max-width: 560px">
+    <img src="resources/spawning/footlevel.png" alt="explanation of why foot level blocks are bad">
+    <figcaption>Do not do this. I have ways of finding you.</figcaption>
+</figure>
+
+Anyways, if the position is *not* within 24 blocks of the player/world spawn and its chunk is loaded, the game gets the biome at that position and checks which mobs can spawn. At this stage, if the biome is a river biome and the category is water ambient mobs, there is a 98% chance that the spawn attempt will fail. Here are the mobs which will spawn in various biomes and their weights; note that within a Nether fortress the fortress spawns override all biome spawns.
+
+## Monster Spawn Weights
+
+
+var18 = [1-4]
+var13, var14 = [-5, 5] triangular distr
+var10 = the offset loc
+
+get nearest player
+if distance to player or world spawnpoint < 24 blocks, abort
+if chunk is not ticking, abort
+    - entities can spawn in lazy chunks at low render distance
+
+get biome at position
+- if this is empty, abort
 
 # Despawning
 
