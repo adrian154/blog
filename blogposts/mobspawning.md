@@ -123,7 +123,7 @@ There is a narrow class of mobs that contribute to the monster mob cap but do no
 
 # Spawning
 
-Now, the game actually starts looking for a location to spawn a mob. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block. Once a location is picked, the game checks if the block at that location is a full block, soul sand or mud. If so, the spawn attempt immediately ends. Otherwise, it will make up to three attempts to spawn a pack of mobs near that location.
+Now, the game actually starts looking for a location to spawn a mob. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block. Once a location is picked, the game checks if the block at that location is a full block, soul sand or mud. If so, the spawn attempt immediately ends. Otherwise, it will make up to **three** attempts to spawn a pack of mobs near that location.
 
 <aside>
 
@@ -148,28 +148,63 @@ The heightmap is a critical factor in the performance of a farm. Spawning attemp
     <figcaption>The platform on the left had a layer of blocks above it at Y=255, while the platform on the right was not covered. Both platforms were allowed to spawn mobs for 15 seconds. There are nearly twice as many mobs on the uncovered platform compared to the covered one, demonstrating the importance of keeping the heightmap low in a mob farm.</figcaption>
 </figure>
 
-## Pack Spawning
+Keep in mind that there are practical tradeoffs to these recommendations. For instance, if you build your farm very low in the world, you will need to eliminate all spawnable spaces within 128 blocks of its proximity to prevent those spawns from filling up the mob cap. This means either lighting up all the caves within that radius or excavating a perimeter. I am way too lazy to do either of those things, so I usually build my farms above ground so I can position my AFK spot such that there are no unwanted spawnable spaces. 
 
-Minecraft spawns all mobs in packs, meaning that one spawn attempt may result in multiple mobs being spawned. Keep in mind that the algorithm can be rather idiosyncratic and knowing all the details is not too important when it comes to farm optimization.
+## Pack Spawning Mechanics
 
-The game starts by setting a counter for the number of remaining attempts to spawn a pack of mobs. This counter is initialized with a random value from 1 to 5.
+Minecraft spawns all mobs in packs, meaning that one spawn attempt generally results in multiple mobs being spawned. Keep in mind that the algorithm can be rather idiosyncratic and knowing all the details is not too important when it comes to farm optimization.
 
-Next, the game adds a random X and Z offset between -5 and 5 to the current position. These values are picked so that smaller offsets are more common than further offsets; specifically, they follow a [triangular distribution](https://en.wikipedia.org/wiki/Triangular_distribution). Next, the game checks if the spot is within 24 blocks of the player or the world spawn point. If either of these conditions is met, the game repeats the process. Note that each time, the offset is added to the already-offsetted position, which means that pack spawn attempts can wander rather far away from the initial position (up to 20 blocks for a pack size of 4). However, in practice, this is unlikely; here's a heatmap showing the spatial distribution of pack spawn attempts.
+The idea behind pack spawning is that the game starts from the initial position and "wanders" from it by adding random offsets to the position's X and Z coordinates, attempting to spawn a mob each time. Specifically, the game picks two random numbers between -5 and 5 to add to the X and Z. These values are picked so that smaller offsets are more common than further offsets; specifically, they follow a [triangular distribution](https://en.wikipedia.org/wiki/Triangular_distribution). 
 
-![pack spawn heatmap](resources/spawning/packspawn-heatmap.png)
+When the position is offset for the first time, the game checks the biome at that position, and retrieves the list of mobs in the current category that can spawn in that biome. That list looks something like this:
 
-As you can see, most of the attempts end up pretty close to the initial location; in fact, around 76% of all attempts are within 5 blocks of the initial location.
+| Mob Type            | Weight |
+|---------------------|--------|
+| Spider              | 100    |
+| Zombie              | 95     |
+| Zombie Villager     | 5      |
+| Skeleton            | 100    |
+| Creeper             | 100    |
+| Slime               | 100    |
+| Enderman            | 10     |
+| Witch               | 5      |
 
-Pack spawning is why building an overhang in a mob farm may increase its rates. By raising the heightmap in the blocks surrounding the spawning platforms, spawn attempts that begin outside of the farm could still find their way in. This is also why you should never place solid opaque blocks at foot level anywhere in the farm, since if a spawn attempt begins at that position it will instantly end. This includes the walls of the farm.
+*The mob spawning weights and pack sizes are documented [here](mob-spawning-weights.html).*
+
+The odds of a mob type being selected is equal to its weight divided by the total weight of all the mob types in that category. In this case, the probability that a zombie is picked to be spawned is `\frac{95}{515}`.
+
+## Spawn Conditions
+
+Over time, the rules that decide whether a mob should be allowed to spawn have grown into a sprawling, Byzantine mess. I will attempt to give a mostly complete description of them here.
+
+For starters, all attempts to spawn a mob as part of a pack fail if they are within 24 blocks of the player or the world spawn point. The position must also be within a loaded chunk and within the world border. However, the chunk does not have to be *entity* ticking, so it's possible for mobs to spawn in lazy chunks that never despawn. These mobs still contribute to the mobcap, so it may lead to situations where the mob cap gets quickly taken up. This phenomenon was once classified as a [bug](https://bugs.mojang.com/browse/MC-155289), but for unknown reasons this behavior was reintroduced in 1.17. Generally speaking, this is only a problem if you play on a very low simulation distance.
+
+-----
+Anyways, now for the practical implications. Pack spawning is why building an overhang in a mob farm may increase its rates. By raising the heightmap in the blocks surrounding the spawning platforms, spawn attempts that begin outside of the farm could still find their way in. 
+
+This is also why you should never place solid opaque blocks at foot level anywhere in the farm, since if the game randomly selects that block nothing will spawn in that chunk for that tick. This includes the walls of the farm and positions outside of the farm.
 
 <figure style="max-width: 560px">
     <img src="resources/spawning/footlevel.png" alt="explanation of why foot level blocks are bad">
     <figcaption>Do not do this. I have ways of finding you.</figcaption>
 </figure>
+-----
 
-Anyways, if the position is *not* within 24 blocks of the player/world spawn and its chunk is loaded, the game gets the biome at that position and checks which mobs can spawn. At this stage, if the biome is a river biome and the category is water ambient mobs, there is a 98% chance that the spawn attempt will fail. At that point, the game moves the position by a random offset and checks the biome again until the attempt succeeds or the counter is exhausted.
+ Next, the game checks if the spot is within 24 blocks of the player or the world spawn point. If either of these conditions is met, the game repeats the process. Note that each time, the offset is added to the already-offsetted position, which means that pack spawn attempts can wander rather far away from the initial position (up to 20 blocks for a pack size of 4). However, in practice, this is unlikely; here's a heatmap showing the spatial distribution of pack spawn attempts.
 
-Each biome has specific settings for what mobs can spawn, the relative frequency of each mob type, and their pack sizes. The [Minecraft Wiki](https://minecraft.fandom.com/wiki/Minecraft_Wiki) has this information on each of their biome pages, but I found that some of those figures are out of date, so I decided to make a page containing all the relevant. [Check it out](mob-spawning-weights.html)!
+![pack spawn heatmap](resources/spawning/packspawn-heatmap.png)
+
+As you can see, most of the attempts end up pretty close to the initial location; in fact, over 75% of all attempts are within 10 blocks of the initial location.
+
+Since I am a total nerd, we can also use this data to create a distribution of pack spawns according to distance. Here's what that looks like:
+
+![cumulative distribution of pack spawn distance](resources/spawning/distance-distr.png)
+
+*Just for fun :)*
+
+If the position is *not* within 24 blocks of the player/world spawn and its chunk is loaded, the game gets the biome at that position and checks which mobs can spawn. At this stage, if the biome is a river biome and the category is water ambient mobs, there is a ~98% chance that the spawn attempt will fail.
+
+Each biome has specific settings for what mobs can spawn, the relative frequency of each mob type, and their pack sizes. The [Minecraft Wiki](https://minecraft.fandom.com/wiki/Minecraft_Wiki) has this information on each of their biome pages, but I wanted to have all of those values in one place, so I made a page based on the values found in the game code. [Check it out](mob-spawning-weights.html)!
 
 To find the probability of a mob type being chosen, simply divide its weight by the total of the weights of all mob types that could spawn in a given biome. For example, consider the plains monster weights:
 
