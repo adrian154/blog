@@ -6,7 +6,7 @@
 };
 
 loadSetting("serif");
-loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/mobspawning.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">July 8, 2022</p><h1 style="margin-top: 0">Minecraft Mob Spawning, Explained (1.19)</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap"><p>Mob Cap</p></a><a href="#practical-example"><p>Practical Example</p></a><a href="#mob-cap-quirks"><p>Mob Cap Quirks</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a><a href="#spawning"><p>Spawning</p></a><a href="#pack-spawning"><p>Pack Spawning</p></a><a href="#axolotl"><p>Axolotl</p></a><a href="#water-animals"><p>Water Animals</p></a><a href="#drowned"><p>Drowned</p></a><a href="#guardian"><p>Guardian</p></a><a href="#tropical-fish"><p>Tropical Fish</p></a><a href="#monsters"><p>Monsters</p></a><a href="#animals"><p>Animals</p></a><a href="#frog"><p>Frog</p></a><a href="#ghast"><p>Ghast</p></a><a href="#glow-squid"><p>Glow Squid</p></a><a href="#goat"><p>Goat</p></a><a href="#husk"><p>Husk</p></a><a href="#magma-cube"><p>Magma Cube</p></a><a href="#mooshroom"><p>Mooshroom</p></a><a href="#ocelot"><p>Ocelot</p></a><a href="#parrot"><p>Parrot</p></a><a href="#hoglin"><p>Hoglin</p></a><a href="#piglin"><p>Piglin</p></a><a href="#polar-bear"><p>Polar Bear</p></a><a href="#rabbit"><p>Rabbit</p></a><a href="#slime"><p>Slime</p></a><a href="#stray"><p>Stray</p></a><a href="#strider"><p>Strider</p></a><a href="#turtle"><p>Turtle</p></a><a href="#wolf"><p>Wolf</p></a><a href="#despawning"><p>Despawning</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p><strong>Prologue:</strong> Thanks to all the members of the technical Minecraft community who answered my requests for comments and clarifications.</p>
+loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/mobspawning.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">July 8, 2022</p><h1 style="margin-top: 0">Minecraft Mob Spawning, Explained (1.19)</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap"><p>Mob Cap</p></a><a href="#practical-example"><p>Practical Example</p></a><a href="#mob-cap-quirks"><p>Mob Cap Quirks</p></a><a href="#spawning"><p>Spawning</p></a><a href="#pack-spawning"><p>Pack Spawning</p></a><a href="#axolotl"><p>Axolotl</p></a><a href="#water-animals"><p>Water Animals</p></a><a href="#drowned"><p>Drowned</p></a><a href="#guardian"><p>Guardian</p></a><a href="#tropical-fish"><p>Tropical Fish</p></a><a href="#monsters"><p>Monsters</p></a><a href="#animals"><p>Animals</p></a><a href="#frog"><p>Frog</p></a><a href="#ghast"><p>Ghast</p></a><a href="#glow-squid"><p>Glow Squid</p></a><a href="#goat"><p>Goat</p></a><a href="#husk"><p>Husk</p></a><a href="#magma-cube"><p>Magma Cube</p></a><a href="#mooshroom"><p>Mooshroom</p></a><a href="#ocelot"><p>Ocelot</p></a><a href="#parrot"><p>Parrot</p></a><a href="#hoglin"><p>Hoglin</p></a><a href="#piglin"><p>Piglin</p></a><a href="#polar-bear"><p>Polar Bear</p></a><a href="#rabbit"><p>Rabbit</p></a><a href="#slime"><p>Slime</p></a><a href="#stray"><p>Stray</p></a><a href="#strider"><p>Strider</p></a><a href="#turtle"><p>Turtle</p></a><a href="#wolf"><p>Wolf</p></a><a href="#despawning"><p>Despawning</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p><strong>Prologue:</strong> Thanks to all the members of the technical Minecraft community who answered my requests for comments and clarifications.</p>
 <p>This article aims to fully describe the Minecraft spawning algorithm as it exists in <strong>Java Edition 1.19</strong>.</p>
 <p>These are the major steps in the spawning algorithm, in order:</p>
 <ul>
@@ -141,7 +141,15 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 
 <h2 id="mob-cap-quirks">Mob Cap Quirks <a class="section-link" href="#mob-cap-quirks">&sect;</a></h2><p>Generally speaking, monsters that have special attributes preventing them from despawning do not contribute to the mobcap, so the following groups aren&#39;t counted:</p>
 <ul>
-<li>Mobs with the <code>PersistenceRequired</code> tag set to true (e.g. mobs that have been nametagged)</li>
+<li>Mobs with the <code>PersistenceRequired</code> tag set to true, including:<ul>
+<li>Zombie piglins created when pigs are struck by lightning</li>
+<li>Witches created when villagers are struck by lightning</li>
+<li>All elder guardians</li>
+<li>Duplicated allays</li>
+<li>Skeletons created from skeleton traps</li>
+<li>Most mobs spawned as part of a structure, e.g. the black cat in a witch hut</li>
+</ul>
+</li>
 <li>Mobs that are riding an entity/vehicle</li>
 <li>Fish and axolotls from buckets</li>
 <li>Endermen carrying blocks</li>
@@ -152,74 +160,28 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <li>Shulkers</li>
 <li>Wardens</li>
 <li>Withers</li>
-<li>Zombie villagers which have been traded with before</li>
+<li>Zombie villagers which are converting or have been traded with before</li>
 </ul>
-<h2 id="spawning-potentials">Spawning Potentials <a class="section-link" href="#spawning-potentials">&sect;</a></h2><p>In soul sand valleys and warped forests, a special &quot;potential&quot;-based mechanic is used to reduce the number of mob spawns without adjusting the mob caps themselves. If a mob is in one of these biomes, their position is recorded. Here are the relevant charge/energy values:</p>
-<h3 style="text-align: center">Soul Sand Valley</h3>
-
-<table>
-<thead>
-<tr>
-<th>Mob Type</th>
-<th>Total Energy</th>
-<th>Charge</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Skeleton</td>
-<td>0.7</td>
-<td>0.15</td>
-</tr>
-<tr>
-<td>Ghast</td>
-<td>0.7</td>
-<td>0.15</td>
-</tr>
-<tr>
-<td>Enderman</td>
-<td>0.7</td>
-<td>0.15</td>
-</tr>
-<tr>
-<td>Strider</td>
-<td>0.7</td>
-<td>0.15</td>
-</tr>
-</tbody></table>
-<h3 style="text-align: center">Warped Forest</h3>
-
-<table>
-<thead>
-<tr>
-<th>Mob Type</th>
-<th>Total Energy</th>
-<th>Charge</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Enderman</td>
-<td>1.0</td>
-<td>0.12</td>
-</tr>
-</tbody></table>
-<p>The positions of the counted mobs and their charge can be used to calculate a potential value for any block position. This potential value is used to nerf mob spawns; the exact algorithm is explained later in this article.</p>
-<h1 id="spawning">Spawning <a class="section-link" href="#spawning">&sect;</a></h1><p>Now, the game actually starts looking for a location to spawn a mob. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block.</p>
+<h1 id="spawning">Spawning <a class="section-link" href="#spawning">&sect;</a></h1><p>Now, the game actually starts looking for a location to spawn a mob. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block. Once a location is picked, the game checks if the block at that location is a full block, soul sand or mud. If so, the spawn attempt immediately ends. Otherwise, it will make up to three attempts to spawn a pack of mobs near that location.</p>
 <aside>
 
 <p>The Y-value of the highest block for every X/Z combo is known as the <strong>heightmap</strong>. The heightmap of your current position is displayed on the debug screen as &quot;CH S&quot;.</p>
 <p><img src="resources/spawning/debugscreen_ch.png" alt="heightmap"></p>
-<p>It might actually be &quot;SH S&quot;; admittedly, I&#39;m not sure if these values ever differ.</p>
+<p>(Technically the server uses &quot;SH S&quot;, but these values rarely differ.)</p>
 <p>You can also use the <a href="https://www.curseforge.com/minecraft/mc-mods/minihud">MiniHUD</a> mod to overlay heightmap indicators over the regular world.</p>
 </aside>
 
-<p>The heightmap is the reason why farms perform best at lower Y-levels. In the optimal configuration, the farm&#39;s lowest spawning platform is at the minimum build height and there are no blocks above the highest spawning spaces. This way, if a spawn attempt lands within the X/Z bounds of the farm, it will not end up below or above the farm. Of course, if you farm is situated at the bottom of the world you will also need to spawnproof within a 128-block radius of your AFK spot. If you are willing to put in the time, you can kill two stones with one bird by excavating a <a href="resources/spawning/perimeter.webp">perimeter</a>.</p>
+<p>The heightmap is a critical factor in the performance of a farm. Spawning attempts are evenly distributed along the Y-axis, so you want to minimize the chance that a spawn attempt occurs above or below your farm. Thus, there are two things you should keep in mind:</p>
+<ul>
+<li>Always try to build mob farms as low as possible.</li>
+<li>Avoid placing solid blocks above mob farms.</li>
+</ul>
+<p><img src="resources/spawning/heightmap.png" alt="diagram of impact of heightmap on spawning"></p>
 <figure style="max-width: 1708px">
     <img src="resources/spawning/comparison.png" alt="effect of a platform on mob spawning">
     <figcaption>The platform on the left had a layer of blocks above it at Y=255, while the platform on the right was not covered. Both platforms were allowed to spawn mobs for 15 seconds. There are nearly twice as many mobs on the uncovered platform compared to the covered one, demonstrating the importance of keeping the heightmap low in a mob farm.</figcaption>
 </figure>
 
-
-<p>Once a location is picked, the game checks if the block at that location is a full block, soul sand or mud. If so, the spawn attempt immediately ends. Otherwise, it will make up to three attempts to spawn a pack of mobs near that location.</p>
 <h2 id="pack-spawning">Pack Spawning <a class="section-link" href="#pack-spawning">&sect;</a></h2><p>Minecraft spawns all mobs in packs, meaning that one spawn attempt may result in multiple mobs being spawned. Keep in mind that the algorithm can be rather idiosyncratic and knowing all the details is not too important when it comes to farm optimization.</p>
 <p>The game starts by setting a counter for the number of remaining attempts to spawn a pack of mobs. This counter is initialized with a random value from 1 to 5.</p>
 <p>Next, the game adds a random X and Z offset between -5 and 5 to the current position. These values are picked so that smaller offsets are more common than further offsets; specifically, they follow a <a href="https://en.wikipedia.org/wiki/Triangular_distribution">triangular distribution</a>. Next, the game checks if the spot is within 24 blocks of the player or the world spawn point. If either of these conditions is met, the game repeats the process. Note that each time, the offset is added to the already-offsetted position, which means that pack spawn attempts can wander rather far away from the initial position (up to 20 blocks for a pack size of 4). However, in practice, this is unlikely; here&#39;s a heatmap showing the spatial distribution of pack spawn attempts.</p>
@@ -333,15 +295,6 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 </li>
 </ul>
 <p>The no despawn distance is always 32, while the despawn distance depends on the mob&#39;s category. All mob categories despawn at a distance of 128 blocks except water ambient mobs, which start despawning at just 64 blocks away.</p>
-<p>The <code>PersistenceRequired</code> NBT tag is set when mobs are named with nametags. It is also set on certain mobs created through natural processes, such as the following (not a comprehensive list):</p>
-<ul>
-<li>Zombie piglins created when pigs are struck by lightning</li>
-<li>Witches created when villagers are struck by lightning</li>
-<li>All elder guardians</li>
-<li>Duplicated allays</li>
-<li>Skeletons created from skeleton traps</li>
-<li>Most if not all mobs spawned as part of a structure, e.g. the black cat in a witch hut</li>
-</ul>
 <p>Here are the rules for whether a mob should despawn when far away.</p>
 <ul>
 <li>Default: despawn</li>
@@ -362,4 +315,53 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <li>Villager: never despawn</li>
 </ul>
 <p>Endermites will disappear after 2,400 ticks unless the <code>PersistenceRequired</code> tag is set, but this mechanic is implemented separately from regular despawning.</p>
+<h2 id="spawning-potentials">Spawning Potentials <a class="section-link" href="#spawning-potentials">&sect;</a></h2><p>In soul sand valleys and warped forests, a special &quot;potential&quot;-based mechanic is used to reduce the number of mob spawns without adjusting the mob caps themselves. If a mob is in one of these biomes, their position is recorded. Here are the relevant charge/energy values:</p>
+<h3 style="text-align: center">Soul Sand Valley</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Total Energy</th>
+<th>Charge</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Skeleton</td>
+<td>0.7</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>Ghast</td>
+<td>0.7</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>0.7</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>Strider</td>
+<td>0.7</td>
+<td>0.15</td>
+</tr>
+</tbody></table>
+<h3 style="text-align: center">Warped Forest</h3>
+
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Total Energy</th>
+<th>Charge</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Enderman</td>
+<td>1.0</td>
+<td>0.12</td>
+</tr>
+</tbody></table>
+<p>The positions of the counted mobs and their charge can be used to calculate a potential value for any block position. This potential value is used to nerf mob spawns; the exact algorithm is explained later in this article.</p>
 <img id="img-view" style="display: none"><h1>Comments</h1><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="preferred-color-scheme"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>

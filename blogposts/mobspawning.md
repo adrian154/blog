@@ -103,7 +103,13 @@ Unfortunately, this line isn't available when playing on a multiplayer server; i
 ## Mob Cap Quirks
 
 Generally speaking, monsters that have special attributes preventing them from despawning do not contribute to the mobcap, so the following groups aren't counted:
-- Mobs with the `PersistenceRequired` tag set to true (e.g. mobs that have been nametagged)
+- Mobs with the `PersistenceRequired` tag set to true, including:
+    - Zombie piglins created when pigs are struck by lightning
+    - Witches created when villagers are struck by lightning
+    - All elder guardians
+    - Duplicated allays
+    - Skeletons created from skeleton traps
+    - Most mobs spawned as part of a structure, e.g. the black cat in a witch hut
 - Mobs that are riding an entity/vehicle
 - Fish and axolotls from buckets
 - Endermen carrying blocks
@@ -113,11 +119,11 @@ There is a narrow class of mobs that contribute to the monster mob cap but do no
 - Shulkers
 - Wardens
 - Withers
-- Zombie villagers which have been traded with before
+- Zombie villagers which are converting or have been traded with before
 
 # Spawning
 
-Now, the game actually starts looking for a location to spawn a mob. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block.
+Now, the game actually starts looking for a location to spawn a mob. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block. Once a location is picked, the game checks if the block at that location is a full block, soul sand or mud. If so, the spawn attempt immediately ends. Otherwise, it will make up to three attempts to spawn a pack of mobs near that location.
 
 <aside>
 
@@ -125,21 +131,22 @@ The Y-value of the highest block for every X/Z combo is known as the **heightmap
 
 ![heightmap](resources/spawning/debugscreen_ch.png)
 
-It might actually be "SH S"; admittedly, I'm not sure if these values ever differ.
+(Technically the server uses "SH S", but these values rarely differ.)
 
 You can also use the [MiniHUD](https://www.curseforge.com/minecraft/mc-mods/minihud) mod to overlay heightmap indicators over the regular world.
 
 </aside>
 
-The heightmap is the reason why farms perform best at lower Y-levels. In the optimal configuration, the farm's lowest spawning platform is at the minimum build height and there are no blocks above the highest spawning spaces. This way, if a spawn attempt lands within the X/Z bounds of the farm, it will not end up below or above the farm. Of course, if you farm is situated at the bottom of the world you will also need to spawnproof within a 128-block radius of your AFK spot. If you are willing to put in the time, you can kill two stones with one bird by excavating a [perimeter](resources/spawning/perimeter.webp).
+The heightmap is a critical factor in the performance of a farm. Spawning attempts are evenly distributed along the Y-axis, so you want to minimize the chance that a spawn attempt occurs above or below your farm. Thus, there are two things you should keep in mind:
+* Always try to build mob farms as low as possible.
+* Avoid placing solid blocks above mob farms.
+
+![diagram of impact of heightmap on spawning](resources/spawning/heightmap.png)
 
 <figure style="max-width: 1708px">
     <img src="resources/spawning/comparison.png" alt="effect of a platform on mob spawning">
     <figcaption>The platform on the left had a layer of blocks above it at Y=255, while the platform on the right was not covered. Both platforms were allowed to spawn mobs for 15 seconds. There are nearly twice as many mobs on the uncovered platform compared to the covered one, demonstrating the importance of keeping the heightmap low in a mob farm.</figcaption>
 </figure>
-
-
-Once a location is picked, the game checks if the block at that location is a full block, soul sand or mud. If so, the spawn attempt immediately ends. Otherwise, it will make up to three attempts to spawn a pack of mobs near that location.
 
 ## Pack Spawning
 
@@ -278,14 +285,6 @@ Every tick, entites check whether they should despawn according to the following
     - If the distance is greater than the no despawn distance, the mob should despawn when far away, and over 600 ticks have elapsed, the mob has a 1/800 chance of despawning each tick
 
 The no despawn distance is always 32, while the despawn distance depends on the mob's category. All mob categories despawn at a distance of 128 blocks except water ambient mobs, which start despawning at just 64 blocks away.
-
-The `PersistenceRequired` NBT tag is set when mobs are named with nametags. It is also set on certain mobs created through natural processes, such as the following (not a comprehensive list):
-- Zombie piglins created when pigs are struck by lightning
-- Witches created when villagers are struck by lightning
-- All elder guardians
-- Duplicated allays
-- Skeletons created from skeleton traps
-- Most if not all mobs spawned as part of a structure, e.g. the black cat in a witch hut
 
 Here are the rules for whether a mob should despawn when far away.
 - Default: despawn
