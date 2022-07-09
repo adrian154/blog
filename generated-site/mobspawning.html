@@ -6,14 +6,15 @@
 };
 
 loadSetting("serif");
-loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/mobspawning.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">July 5, 2022</p><h1 style="margin-top: 0">Minecraft Mob Spawning, Explained (1.19)</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap-basics"><p>Mob Cap Basics</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a><a href="#mob-cap-calculation"><p>Mob Cap Calculation</p></a><a href="#spawning"><p>Spawning</p></a><a href="#pack-spawning"><p>Pack Spawning</p></a><a href="#despawning"><p>Despawning</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p><strong>Prologue:</strong> Thanks to all the members of the technical Minecraft community who answered my requests for comments and clarifications.</p>
-<p>This article aims to document all the details of the Minecraft spawning algorithm as it exists in <strong>Java Edition 1.19</strong>.</p>
+loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/mobspawning.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">July 8, 2022</p><h1 style="margin-top: 0">Minecraft Mob Spawning, Explained (1.19)</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap"><p>Mob Cap</p></a><a href="#practical-example"><p>Practical Example</p></a><a href="#mob-cap-quirks"><p>Mob Cap Quirks</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a><a href="#spawning"><p>Spawning</p></a><a href="#pack-spawning"><p>Pack Spawning</p></a><a href="#axolotl"><p>Axolotl</p></a><a href="#water-animals"><p>Water Animals</p></a><a href="#drowned"><p>Drowned</p></a><a href="#guardian"><p>Guardian</p></a><a href="#tropical-fish"><p>Tropical Fish</p></a><a href="#monsters"><p>Monsters</p></a><a href="#animals"><p>Animals</p></a><a href="#frog"><p>Frog</p></a><a href="#ghast"><p>Ghast</p></a><a href="#glow-squid"><p>Glow Squid</p></a><a href="#goat"><p>Goat</p></a><a href="#husk"><p>Husk</p></a><a href="#magma-cube"><p>Magma Cube</p></a><a href="#mooshroom"><p>Mooshroom</p></a><a href="#ocelot"><p>Ocelot</p></a><a href="#parrot"><p>Parrot</p></a><a href="#hoglin"><p>Hoglin</p></a><a href="#piglin"><p>Piglin</p></a><a href="#polar-bear"><p>Polar Bear</p></a><a href="#rabbit"><p>Rabbit</p></a><a href="#slime"><p>Slime</p></a><a href="#stray"><p>Stray</p></a><a href="#strider"><p>Strider</p></a><a href="#turtle"><p>Turtle</p></a><a href="#wolf"><p>Wolf</p></a><a href="#despawning"><p>Despawning</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p><strong>Prologue:</strong> Thanks to all the members of the technical Minecraft community who answered my requests for comments and clarifications.</p>
+<p>This article aims to fully describe the Minecraft spawning algorithm as it exists in <strong>Java Edition 1.19</strong>.</p>
 <p>These are the major steps in the spawning algorithm, in order:</p>
 <ul>
 <li>Collect mob cap data</li>
-<li>Run spawning attempts, depending on mob caps </li>
+<li>Run spawning attempts, depending on mob caps</li>
 <li>Despawn entities</li>
 </ul>
+<p>But without further ado, let&#39;s dive in!</p>
 <h1 id="mob-categories">Mob Categories <a class="section-link" href="#mob-categories">&sect;</a></h1><p>The spawning algorithm categorizes all mobs into one of several categories, which are listed here.</p>
 <table>
 <thead>
@@ -55,9 +56,90 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <td>Boats, minecarts, etc.</td>
 </tr>
 </tbody></table>
-<p>Mobs in the miscellaneous category are generally not involved in mob spawning.</p>
-<h1 id="mob-cap-basics">Mob Cap Basics <a class="section-link" href="#mob-cap-basics">&sect;</a></h1><p>The first spawning-related action that occurs during a game tick is the evaluation of the mob caps. During this step, the game iterates through all loaded entities and counts how many mobs in each category exist. The basic idea behind the mob cap is that the number of mobs in each category that can spawn in the world is limited to a base setting for that category times the number of players. (Technically, the global mob cap is based on the number of loaded chunks, but this fact isn&#39;t really important unless players are clumped close together.)</p>
-<p>Generally speaking, monsters that have special attributes preventing them from despawning do not contribute to the mobcap, so the following groups aren&#39;t counted:</p>
+<p>Mobs in the miscellaneous category are not involved in natural mob spawning.</p>
+<h1 id="mob-cap">Mob Cap <a class="section-link" href="#mob-cap">&sect;</a></h1><p>Spawning for each mob category can only occur if the number of mobs in loaded chunks belonging to that category is lower than a value called the mob cap.</p>
+<p>The mob cap for each category is calculated from a base value and scales linearly with the number of loaded chunks. Here is the exact formula:</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>global-mobcap</mtext><mo>=</mo><mfrac><mrow><mtext>mobcap-value</mtext><mo>×</mo><mtext>spawnable-chunks</mtext></mrow><mn>289</mn></mfrac></mrow><annotation encoding="application/x-tex">\text{global-mobcap} = \frac{\text{mobcap-value} \times \text{spawnable-chunks}}{289}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">global-mobcap</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0574em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">289</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">mobcap-value</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">spawnable-chunks</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<table>
+<thead>
+<tr>
+<th>Mob Category</th>
+<th>Base mob cap</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Monster</td>
+<td>70</td>
+</tr>
+<tr>
+<td>Creature</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Ambient</td>
+<td>15</td>
+</tr>
+<tr>
+<td>Axolotls</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Underground water creatures</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Water creatures</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Water ambient</td>
+<td>20</td>
+</tr>
+</tbody></table>
+<p>The number of spawnable chunks is the number of loaded chunks that are within 8 chunks of a player. In other words, ever player has 17x17 grid of spawnable chunks centered on them. </p>
+<figure style="max-width: 512px">
+    <img src="resources/spawning/spawnable-chunks.png" alt="diagram of spawnable chunks">
+    <figcaption>A diagram of spawnable chunks surrounding the player's chunk, which is represented in green.</figcaption>
+</figure>
+
+<p>This is where the 289 found in the mob cap equation comes from; in singleplayer, there will always be 289 spawnable chunks since there is only one player in the game, so the mob cap will be equal to the base value for every category.</p>
+<p>On a server, if all the players are spread out so that none of their 17x17 chunk regions overlap, the global mobcap for each category will be equal to the singleplayer mobcap multiplied by the number of players; if there is overlap, the global mobcap will be less.</p>
+<figure style="max-width: 512px">
+    <img src="resources/spawning/spawnable-chunks-overlap.png" alt="diagram of two players' spawnable chunks overlapping">
+    <figcaption>These two players' spawnable chunks overlap, so there are only 434 spawnable chunks instead of 2 &times; 289 = 578. This means that the global mobcap will only be ~1.5&times; greater than the singleplayer value, instead of 2&times;.</figcaption>
+</figure>
+
+<p>If the number of mobs in a category exceeds the global mobcap, spawning for that category is entirely skipped. Note that if the number of mobs does not exceed the mob cap, spawning will proceed; however, by the end of the spawning cycle, the number of mobs may <em>exceed</em> the mob cap. This is possible because the mob cap is only evaluated once at the start of spawning for each tick.</p>
+<p>If the global mob cap is not met, the game then checks the local mob cap on a chunk-by-chunk basis. Each player has a local mob cap, which simply counts the number of mobs in each category within the spawnable chunks surrounding that player. For a given category and chunk, if there is at least one player within range whose local mob cap isn&#39;t filled, spawning can proceed.</p>
+<h2 id="practical-example">Practical Example <a class="section-link" href="#practical-example">&sect;</a></h2><p>Suppose the game is currently evaluating monster spawning for the chunk highlighted in red.</p>
+<img style="max-width: 512px" src="resources/spawning/spawnable-chunks-highlighted.png" alt="the same diagram of two players' spawnable chunks, with one chunk between the two players highlighted in red">
+
+<p>There are 434 loaded chunks, so the global monster mob cap is <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>70</mn><mo>×</mo><mn>434</mn><mi mathvariant="normal">/</mi><mn>289</mn><mo>=</mo><mn>105</mn></mrow><annotation encoding="application/x-tex">70 \times 434 / 289 = 105</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">70</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">434/289</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">105</span></span></span></span>. If the total number of monsters in the world is greater than 105, no monster spawning will happen in any chunks.</p>
+<p>If the global mob cap is not met, the game proceeds to check each player&#39;s local mob cap. First, it retrieves the number of monsters within player 1&#39;s spawnable chunks, highlighted in blue here:</p>
+<img style="max-width: 512px" src="resources/spawning/chunks-p1.png">
+
+<p>If there are fewer than 70 monsters in the blue chunks, monsters can spawn in the red chunk. Otherwise, the game moves on to player 2&#39;s local mob cap.</p>
+<img style="max-width: 512px" src="resources/spawning/chunks-p2.png">
+
+<p>The local mob cap helps ensure that that no player can take up an excessive portion of the mob cap. Before 1.18, if multiple players were online and occupying different parts of the world, odds are the vast majority of spawning spaces would be outside of a mob farm, which would severely impact the number of spawns in a mob farm. Now, players in non-spawnproofed areas have minimal effect on mob spawning beyond their spawnable chunks because their local mob cap will prevent them from taking up more of the global mob cap. </p>
+<aside>
+
+<p>A lot of information relevant to mob spawning is available on the debug screen nowadays. If you look at the line on the top-left part of the screen starting with &quot;SC&quot;, you will find:</p>
+<ul>
+<li>SC: number of spawning chunks</li>
+<li>M: monster mob cap</li>
+<li>C: creature mob cap</li>
+<li>A: ambient mob cap</li>
+<li>A: axolotl mob cap</li>
+<li>U: underground water creatures mob cap</li>
+<li>W: water creatures mob cap</li>
+<li>W: water ambient mob cap</li>
+</ul>
+<p><img src="resources/spawning/debugscreen_sc.png" alt="debug screen"></p>
+<p>Unfortunately, this line isn&#39;t available when playing on a multiplayer server; instead, you&#39;ll  need to use a mod like <a href="https://github.com/gnembon/fabric-carpet">Carpet</a> to view global mob cap statistics.</p>
+</aside>
+
+<h2 id="mob-cap-quirks">Mob Cap Quirks <a class="section-link" href="#mob-cap-quirks">&sect;</a></h2><p>Generally speaking, monsters that have special attributes preventing them from despawning do not contribute to the mobcap, so the following groups aren&#39;t counted:</p>
 <ul>
 <li>Mobs with the <code>PersistenceRequired</code> tag set to true (e.g. mobs that have been nametagged)</li>
 <li>Mobs that are riding an entity/vehicle</li>
@@ -72,7 +154,6 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <li>Withers</li>
 <li>Zombie villagers which have been traded with before</li>
 </ul>
-<p>I&#39;m mostly certain that these are all the exceptions that exist, but on the off chance that I have missed one, please let me know.</p>
 <h2 id="spawning-potentials">Spawning Potentials <a class="section-link" href="#spawning-potentials">&sect;</a></h2><p>In soul sand valleys and warped forests, a special &quot;potential&quot;-based mechanic is used to reduce the number of mob spawns without adjusting the mob caps themselves. If a mob is in one of these biomes, their position is recorded. Here are the relevant charge/energy values:</p>
 <h3 style="text-align: center">Soul Sand Valley</h3>
 
@@ -122,93 +203,6 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 </tr>
 </tbody></table>
 <p>The positions of the counted mobs and their charge can be used to calculate a potential value for any block position. This potential value is used to nerf mob spawns; the exact algorithm is explained later in this article.</p>
-<aside>
-
-<p>The mob caps are only evaluated once per tick, meaning that by the end of the tick the number of mobs in the world may exceed the mob cap. Thus, the mob cap should not be considered a hard limit.</p>
-</aside>
-
-<h1 id="mob-cap-calculation">Mob Cap Calculation <a class="section-link" href="#mob-cap-calculation">&sect;</a></h1><p>Before spawning can begin, the game first checks the global mob cap for each mob category, which is calculated using the following formula:</p>
-<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>global-mobcap</mtext><mo>=</mo><mfrac><mrow><mtext>mobcap-value</mtext><mo>×</mo><mtext>spawnable-chunks</mtext></mrow><mn>289</mn></mfrac></mrow><annotation encoding="application/x-tex">\text{global-mobcap} = \frac{\text{mobcap-value} \times \text{spawnable-chunks}}{289}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">global-mobcap</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0574em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">289</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">mobcap-value</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">spawnable-chunks</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
-<p>Here are the base mob cap values:</p>
-<table>
-<thead>
-<tr>
-<th>Mob Category</th>
-<th>Mob cap</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Monster</td>
-<td>70</td>
-</tr>
-<tr>
-<td>Creature</td>
-<td>10</td>
-</tr>
-<tr>
-<td>Ambient</td>
-<td>15</td>
-</tr>
-<tr>
-<td>Axolotls</td>
-<td>5</td>
-</tr>
-<tr>
-<td>Underground water creatures</td>
-<td>5</td>
-</tr>
-<tr>
-<td>Water creatures</td>
-<td>5</td>
-</tr>
-<tr>
-<td>Water ambient</td>
-<td>20</td>
-</tr>
-</tbody></table>
-<p>The number of spawnable chunks is the number of loaded chunks that are within 8 chunks of a player. In other words, ever player has 17x17 grid of spawnable chunks centered on them. </p>
-<figure style="max-width: 512px">
-    <img src="resources/spawning/spawnable-chunks.png" alt="diagram of spawnable chunks">
-    <figcaption>A diagram of spawnable chunks surrounding the player's chunk, which is represented in green.</figcaption>
-</figure>
-
-<p>This is where the 289 found in the mob cap equation comes from; in singleplayer, there will always be 289 spawnable chunks (unless you&#39;ve set your simulation distance extremely low), so the mob cap will be equal to the constant for each category.</p>
-<p>On a server, if all the players are spread out so that none of their 17x17 chunk regions overlap, the global mobcap for each category will be equal to the singleplayer mobcap multiplied by the number of players; if there is overlap, the global mobcap will be less.</p>
-<figure style="max-width: 512px">
-    <img src="resources/spawning/spawnable-chunks-overlap.png" alt="diagram of two players' spawnable chunks overlapping">
-    <figcaption>These two players' spawnable chunks overlap, so there are only 434 spawnable chunks instead of 2 &times; 289 = 578. This means that the global mobcap will only be ~1.5&times; greater than the singleplayer value, instead of 2&times;.</figcaption>
-</figure>
-
-<p>If the number of mobs in a category exceeds the global mobcap, spawning for that category is entirely skipped.</p>
-<p>If the global mob cap is not met, the game then checks the local mob cap on a chunk-by-chunk basis. For a given chunk, the game looks at all the players which have that chunk inside their spawnable chunks area. The game then compares the player&#39;s local mob cap to the base value; if it is below the limit, spawning for that category will proceed.</p>
-<p>I know that explanation may have been a little confusing, so here&#39;s a practical example. Let&#39;s go back to our two-player scenario from earlier. Suppose the game is currently evaluating monster spawning for the chunk highlighted in red.</p>
-<img style="max-width: 512px" src="resources/spawning/spawnable-chunks-highlighted.png" alt="the same diagram of two players' spawnable chunks, with one chunk between the two players highlighted in red">
-
-<p>The global monster mob cap is <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>70</mn><mo>×</mo><mn>434</mn><mi mathvariant="normal">/</mi><mn>289</mn><mo>=</mo><mn>105</mn></mrow><annotation encoding="application/x-tex">70 \times 434 / 289 = 105</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">70</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">434/289</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">105</span></span></span></span>. If the total number of monsters in the world is greater than 105, no monster spawning will happen in any chunks.</p>
-<p>If the global mob cap is not met, the game proceeds to check each player&#39;s local mob cap. First, it retrieves the number of monsters within player 1&#39;s chunks, highlighted in blue here:</p>
-<img style="max-width: 512px" src="resources/spawning/chunks-p1.png">
-
-<p>If there are fewer than 70 monsters in the blue chunks, monsters can spawn in the red chunk. Otherwise, the game checks player 2&#39;s local mob cap. As long as there is at least one player in range whose local mob cap is not met, spawning may occur.</p>
-<img style="max-width: 512px" src="resources/spawning/chunks-p2.png">
-
-<p>What effect does the local mob cap have on mob spawning? Well, it helps ensure that no player can take up ane excessive portion of the mob cap. Before 1.18, if multiple players were online and occupying different parts of the world, odds are the vast majority of spawning spaces would be outside of a mob farm. Thus, mob farms were prone to severe rate reductions without coordination between players. Now, players in non-spawnproofed areas have minimal effect on mob spawning beyond their spawnable chunks because their local mob cap will prevent them from taking up more of the global mob cap.</p>
-<aside>
-
-<p>A lot of information relevant to mob spawning is available on the debug screen nowadays. If you look at the line on the top-left part of the screen starting with &quot;SC&quot;, you will find:</p>
-<ul>
-<li>SC: number of spawning chunks</li>
-<li>M: monster mob cap</li>
-<li>C: creature mob cap</li>
-<li>A: ambient mob cap</li>
-<li>A: axolotl mob cap</li>
-<li>U: underground water creatures mob cap</li>
-<li>W: water creatures mob cap</li>
-<li>W: water ambient mob cap</li>
-</ul>
-<p><img src="resources/spawning/debugscreen_sc.png" alt="debug screen"></p>
-<p>Unfortunately, this line isn&#39;t available when playing on a multiplayer server; instead, you&#39;ll  need to use a mod like <a href="https://github.com/gnembon/fabric-carpet">Carpet</a> to view global mob cap statistics.</p>
-</aside>
-
 <h1 id="spawning">Spawning <a class="section-link" href="#spawning">&sect;</a></h1><p>Now, the game actually starts looking for a location to spawn a mob. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block.</p>
 <aside>
 
@@ -315,11 +309,16 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 </li>
 </ul>
 </li>
-<li></li>
 </ul>
 </li>
+<li>The mob is not colliding with a block or entity at the spawn position</li>
 </ul>
-<h1 id="despawning">Despawning <a class="section-link" href="#despawning">&sect;</a></h1><p>Every tick, entites check whether they should despawn according to the following rules.</p>
+<p>TODO: table of mob -&gt; placement type</p>
+<p>There are also further mob-specific rules that need to be satisfied for the spawning attempt to continue.</p>
+<h3 id="axolotl">Axolotl <a class="section-link" href="#axolotl">&sect;</a></h3><p>The block underneath the position must be clay.</p>
+<h3 id="water-animals">Water Animals <a class="section-link" href="#water-animals">&sect;</a></h3><p>The position&#39;s Y-level may be between zero and 13 blocks below the sea level, inclusive. The block below the position and the block above the position must be water. (It&#39;s possible that the bottom block can be flowing water&mdash;I have yet to verify this.)</p>
+<h3 id="drowned">Drowned <a class="section-link" href="#drowned">&sect;</a></h3><p>The block below the position must be water, </p>
+<h3 id="guardian">Guardian <a class="section-link" href="#guardian">&sect;</a></h3><h3 id="tropical-fish">Tropical Fish <a class="section-link" href="#tropical-fish">&sect;</a></h3><h3 id="monsters">Monsters <a class="section-link" href="#monsters">&sect;</a></h3><h3 id="animals">Animals <a class="section-link" href="#animals">&sect;</a></h3><h3 id="frog">Frog <a class="section-link" href="#frog">&sect;</a></h3><h3 id="ghast">Ghast <a class="section-link" href="#ghast">&sect;</a></h3><h3 id="glow-squid">Glow Squid <a class="section-link" href="#glow-squid">&sect;</a></h3><h3 id="goat">Goat <a class="section-link" href="#goat">&sect;</a></h3><h3 id="husk">Husk <a class="section-link" href="#husk">&sect;</a></h3><h3 id="magma-cube">Magma Cube <a class="section-link" href="#magma-cube">&sect;</a></h3><h3 id="mooshroom">Mooshroom <a class="section-link" href="#mooshroom">&sect;</a></h3><h3 id="ocelot">Ocelot <a class="section-link" href="#ocelot">&sect;</a></h3><h3 id="parrot">Parrot <a class="section-link" href="#parrot">&sect;</a></h3><h3 id="hoglin">Hoglin <a class="section-link" href="#hoglin">&sect;</a></h3><h3 id="piglin">Piglin <a class="section-link" href="#piglin">&sect;</a></h3><h3 id="polar-bear">Polar Bear <a class="section-link" href="#polar-bear">&sect;</a></h3><h3 id="rabbit">Rabbit <a class="section-link" href="#rabbit">&sect;</a></h3><h3 id="slime">Slime <a class="section-link" href="#slime">&sect;</a></h3><h3 id="stray">Stray <a class="section-link" href="#stray">&sect;</a></h3><h3 id="strider">Strider <a class="section-link" href="#strider">&sect;</a></h3><h3 id="turtle">Turtle <a class="section-link" href="#turtle">&sect;</a></h3><h3 id="wolf">Wolf <a class="section-link" href="#wolf">&sect;</a></h3><h1 id="despawning">Despawning <a class="section-link" href="#despawning">&sect;</a></h1><p>Every tick, entites check whether they should despawn according to the following rules.</p>
 <ul>
 <li>If the difficulty is peaceful, despawn hostile mobs</li>
 <li>If the mob is an enderman, don&#39;t despawn if carrying a block</li>

@@ -1,11 +1,13 @@
 **Prologue:** Thanks to all the members of the technical Minecraft community who answered my requests for comments and clarifications.
 
-This article aims to document all the details of the Minecraft spawning algorithm as it exists in **Java Edition 1.19**.
+This article aims to fully describe the Minecraft spawning algorithm as it exists in **Java Edition 1.19**.
 
 These are the major steps in the spawning algorithm, in order:
 - Collect mob cap data
-- Run spawning attempts, depending on mob caps 
+- Run spawning attempts, depending on mob caps
 - Despawn entities
+
+But without further ado, let's dive in!
 
 # Mob Categories
 
@@ -22,71 +24,25 @@ The spawning algorithm categorizes all mobs into one of several categories, whic
 | Water ambient               | Fish                   |
 | Miscellaneous               | Boats, minecarts, etc. |
 
-Mobs in the miscellaneous category are generally not involved in mob spawning.
+Mobs in the miscellaneous category are not involved in natural mob spawning.
 
-# Mob Cap Basics
+# Mob Cap
 
-The first spawning-related action that occurs during a game tick is the evaluation of the mob caps. During this step, the game iterates through all loaded entities and counts how many mobs in each category exist. The basic idea behind the mob cap is that the number of mobs in each category that can spawn in the world is limited to a base setting for that category times the number of players. (Technically, the global mob cap is based on the number of loaded chunks, but this fact isn't really important unless players are clumped close together.)
+Spawning for each mob category can only occur if the number of mobs in loaded chunks belonging to that category is lower than a value called the mob cap.
 
-Generally speaking, monsters that have special attributes preventing them from despawning do not contribute to the mobcap, so the following groups aren't counted:
-- Mobs with the `PersistenceRequired` tag set to true (e.g. mobs that have been nametagged)
-- Mobs that are riding an entity/vehicle
-- Fish and axolotls from buckets
-- Endermen carrying blocks
-- Raiders that are part of raids
-
-There is a narrow class of mobs that contribute to the monster mob cap but do not despawn, meaning that if enough of these mobs are accumulated to fill the mob cap hostile mob spawning will be disabled for the entire world. Such a device is called a mobswitch. Examples include:
-- Shulkers
-- Wardens
-- Withers
-- Zombie villagers which have been traded with before
-
-I'm mostly certain that these are all the exceptions that exist, but on the off chance that I have missed one, please let me know.
-
-## Spawning Potentials
-
-In soul sand valleys and warped forests, a special "potential"-based mechanic is used to reduce the number of mob spawns without adjusting the mob caps themselves. If a mob is in one of these biomes, their position is recorded. Here are the relevant charge/energy values:
-
-<h3 style="text-align: center">Soul Sand Valley</h3>
-
-| Mob Type | Total Energy | Charge |
-|----------|--------------|--------|
-| Skeleton | 0.7          | 0.15   |
-| Ghast    | 0.7          | 0.15   |
-| Enderman | 0.7          | 0.15   |
-| Strider  | 0.7          | 0.15   |
-
-<h3 style="text-align: center">Warped Forest</h3>
-
-| Mob Type | Total Energy | Charge |
-|----------|--------------|--------|
-| Enderman | 1.0          | 0.12   |
-
-The positions of the counted mobs and their charge can be used to calculate a potential value for any block position. This potential value is used to nerf mob spawns; the exact algorithm is explained later in this article.
-
-<aside>
-
-The mob caps are only evaluated once per tick, meaning that by the end of the tick the number of mobs in the world may exceed the mob cap. Thus, the mob cap should not be considered a hard limit.
-
-</aside>
-
-# Mob Cap Calculation
-
-Before spawning can begin, the game first checks the global mob cap for each mob category, which is calculated using the following formula:
+The mob cap for each category is calculated from a base value and scales linearly with the number of loaded chunks. Here is the exact formula:
 
 $$\text{global-mobcap} = \frac{\text{mobcap-value} \times \text{spawnable-chunks}}{289}$$
 
-Here are the base mob cap values:
-
-| Mob Category                | Mob cap |
-|-----------------------------|---------|
-| Monster                     | 70      |
-| Creature                    | 10      |
-| Ambient                     | 15      |
-| Axolotls                    | 5       |
-| Underground water creatures | 5       |
-| Water creatures             | 5       |
-| Water ambient               | 20      |
+| Mob Category                | Base mob cap |
+|-----------------------------|--------------|
+| Monster                     | 70           |
+| Creature                    | 10           |
+| Ambient                     | 15           |
+| Axolotls                    | 5            |
+| Underground water creatures | 5            |
+| Water creatures             | 5            |
+| Water ambient               | 20           |
 
 The number of spawnable chunks is the number of loaded chunks that are within 8 chunks of a player. In other words, ever player has 17x17 grid of spawnable chunks centered on them. 
 
@@ -95,7 +51,7 @@ The number of spawnable chunks is the number of loaded chunks that are within 8 
     <figcaption>A diagram of spawnable chunks surrounding the player's chunk, which is represented in green.</figcaption>
 </figure>
 
-This is where the 289 found in the mob cap equation comes from; in singleplayer, there will always be 289 spawnable chunks (unless you've set your simulation distance extremely low), so the mob cap will be equal to the constant for each category.
+This is where the 289 found in the mob cap equation comes from; in singleplayer, there will always be 289 spawnable chunks since there is only one player in the game, so the mob cap will be equal to the base value for every category.
 
 On a server, if all the players are spread out so that none of their 17x17 chunk regions overlap, the global mobcap for each category will be equal to the singleplayer mobcap multiplied by the number of players; if there is overlap, the global mobcap will be less.
 
@@ -104,25 +60,27 @@ On a server, if all the players are spread out so that none of their 17x17 chunk
     <figcaption>These two players' spawnable chunks overlap, so there are only 434 spawnable chunks instead of 2 &times; 289 = 578. This means that the global mobcap will only be ~1.5&times; greater than the singleplayer value, instead of 2&times;.</figcaption>
 </figure>
 
-If the number of mobs in a category exceeds the global mobcap, spawning for that category is entirely skipped.
+If the number of mobs in a category exceeds the global mobcap, spawning for that category is entirely skipped. Note that if the number of mobs does not exceed the mob cap, spawning will proceed; however, by the end of the spawning cycle, the number of mobs may *exceed* the mob cap. This is possible because the mob cap is only evaluated once at the start of spawning for each tick.
 
-If the global mob cap is not met, the game then checks the local mob cap on a chunk-by-chunk basis. For a given chunk, the game looks at all the players which have that chunk inside their spawnable chunks area. The game then compares the player's local mob cap to the base value; if it is below the limit, spawning for that category will proceed.
+If the global mob cap is not met, the game then checks the local mob cap on a chunk-by-chunk basis. Each player has a local mob cap, which simply counts the number of mobs in each category within the spawnable chunks surrounding that player. For a given category and chunk, if there is at least one player within range whose local mob cap isn't filled, spawning can proceed.
 
-I know that explanation may have been a little confusing, so here's a practical example. Let's go back to our two-player scenario from earlier. Suppose the game is currently evaluating monster spawning for the chunk highlighted in red.
+## Practical Example
+
+Suppose the game is currently evaluating monster spawning for the chunk highlighted in red.
 
 <img style="max-width: 512px" src="resources/spawning/spawnable-chunks-highlighted.png" alt="the same diagram of two players' spawnable chunks, with one chunk between the two players highlighted in red">
 
-The global monster mob cap is $70 \times 434 / 289 = 105$. If the total number of monsters in the world is greater than 105, no monster spawning will happen in any chunks.
+There are 434 loaded chunks, so the global monster mob cap is $70 \times 434 / 289 = 105$. If the total number of monsters in the world is greater than 105, no monster spawning will happen in any chunks.
 
-If the global mob cap is not met, the game proceeds to check each player's local mob cap. First, it retrieves the number of monsters within player 1's chunks, highlighted in blue here:
+If the global mob cap is not met, the game proceeds to check each player's local mob cap. First, it retrieves the number of monsters within player 1's spawnable chunks, highlighted in blue here:
 
 <img style="max-width: 512px" src="resources/spawning/chunks-p1.png">
 
-If there are fewer than 70 monsters in the blue chunks, monsters can spawn in the red chunk. Otherwise, the game checks player 2's local mob cap. As long as there is at least one player in range whose local mob cap is not met, spawning may occur.
+If there are fewer than 70 monsters in the blue chunks, monsters can spawn in the red chunk. Otherwise, the game moves on to player 2's local mob cap.
 
 <img style="max-width: 512px" src="resources/spawning/chunks-p2.png">
 
-What effect does the local mob cap have on mob spawning? Well, it helps ensure that no player can take up ane excessive portion of the mob cap. Before 1.18, if multiple players were online and occupying different parts of the world, odds are the vast majority of spawning spaces would be outside of a mob farm. Thus, mob farms were prone to severe rate reductions without coordination between players. Now, players in non-spawnproofed areas have minimal effect on mob spawning beyond their spawnable chunks because their local mob cap will prevent them from taking up more of the global mob cap.
+The local mob cap helps ensure that that no player can take up an excessive portion of the mob cap. Before 1.18, if multiple players were online and occupying different parts of the world, odds are the vast majority of spawning spaces would be outside of a mob farm, which would severely impact the number of spawns in a mob farm. Now, players in non-spawnproofed areas have minimal effect on mob spawning beyond their spawnable chunks because their local mob cap will prevent them from taking up more of the global mob cap. 
 
 <aside>
 
@@ -141,6 +99,21 @@ A lot of information relevant to mob spawning is available on the debug screen n
 Unfortunately, this line isn't available when playing on a multiplayer server; instead, you'll  need to use a mod like [Carpet](https://github.com/gnembon/fabric-carpet) to view global mob cap statistics.
 
 </aside>
+
+## Mob Cap Quirks
+
+Generally speaking, monsters that have special attributes preventing them from despawning do not contribute to the mobcap, so the following groups aren't counted:
+- Mobs with the `PersistenceRequired` tag set to true (e.g. mobs that have been nametagged)
+- Mobs that are riding an entity/vehicle
+- Fish and axolotls from buckets
+- Endermen carrying blocks
+- Raiders that are part of raids
+
+There is a narrow class of mobs that contribute to the monster mob cap but do not despawn, meaning that if enough of these mobs are accumulated to fill the mob cap hostile mob spawning will be disabled for the entire world. Such a device is called a mobswitch. Examples include:
+- Shulkers
+- Wardens
+- Withers
+- Zombie villagers which have been traded with before
 
 # Spawning
 
@@ -229,7 +202,67 @@ Once a mob type is picked, the game resets the aformentioned counter to the pack
                 * Only wither skeletons can spawn in wither roses
                 * Only polar bears, snow golems, and strays can spawn in powder snow
             * Mobs cannot spawn in berry bushes or cacti
-    * 
+* The mob is not colliding with a block or entity at the spawn position
+
+TODO: table of mob -> placement type
+
+There are also further mob-specific rules that need to be satisfied for the spawning attempt to continue.
+
+### Axolotl
+
+The block underneath the position must be clay.
+
+### Water Animals
+
+The position's Y-level may be between zero and 13 blocks below the sea level, inclusive. The block below the position and the block above the position must be water. (It's possible that the bottom block can be flowing water&mdash;I have yet to verify this.)
+
+### Drowned
+
+The block below the position must be water, 
+
+### Guardian
+
+### Tropical Fish
+
+### Monsters
+
+### Animals
+
+### Frog
+
+### Ghast
+
+### Glow Squid
+
+### Goat
+
+### Husk
+
+### Magma Cube
+
+### Mooshroom
+
+### Ocelot
+
+### Parrot
+
+### Hoglin
+
+### Piglin
+
+### Polar Bear
+
+### Rabbit
+
+### Slime
+
+### Stray
+
+### Strider
+
+### Turtle
+
+### Wolf
 
 # Despawning
 
@@ -269,3 +302,43 @@ Here are the rules for whether a mob should despawn when far away.
 - Villager: never despawn
 
 Endermites will disappear after 2,400 ticks unless the `PersistenceRequired` tag is set, but this mechanic is implemented separately from regular despawning.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Spawning Potentials
+
+In soul sand valleys and warped forests, a special "potential"-based mechanic is used to reduce the number of mob spawns without adjusting the mob caps themselves. If a mob is in one of these biomes, their position is recorded. Here are the relevant charge/energy values:
+
+<h3 style="text-align: center">Soul Sand Valley</h3>
+
+| Mob Type | Total Energy | Charge |
+|----------|--------------|--------|
+| Skeleton | 0.7          | 0.15   |
+| Ghast    | 0.7          | 0.15   |
+| Enderman | 0.7          | 0.15   |
+| Strider  | 0.7          | 0.15   |
+
+<h3 style="text-align: center">Warped Forest</h3>
+
+| Mob Type | Total Energy | Charge |
+|----------|--------------|--------|
+| Enderman | 1.0          | 0.12   |
+
+The positions of the counted mobs and their charge can be used to calculate a potential value for any block position. This potential value is used to nerf mob spawns; the exact algorithm is explained later in this article.
