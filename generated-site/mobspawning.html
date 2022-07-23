@@ -6,7 +6,7 @@
 };
 
 loadSetting("serif");
-loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/mobspawning.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">July 8, 2022</p><h1 style="margin-top: 0">Minecraft Mob Spawning, Explained (1.19)</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap"><p>Mob Cap</p></a><a href="#practical-example"><p>Practical Example</p></a><a href="#mob-cap-quirks"><p>Mob Cap Quirks</p></a><a href="#spawning"><p>Spawning</p></a><a href="#pack-spawning-mechanics"><p>Pack Spawning Mechanics</p></a><a href="#axolotl"><p>Axolotl</p></a><a href="#water-animals"><p>Water Animals</p></a><a href="#drowned"><p>Drowned</p></a><a href="#guardian"><p>Guardian</p></a><a href="#tropical-fish"><p>Tropical Fish</p></a><a href="#monsters"><p>Monsters</p></a><a href="#animals"><p>Animals</p></a><a href="#frog"><p>Frog</p></a><a href="#ghast"><p>Ghast</p></a><a href="#glow-squid"><p>Glow Squid</p></a><a href="#goat"><p>Goat</p></a><a href="#husk"><p>Husk</p></a><a href="#magma-cube"><p>Magma Cube</p></a><a href="#mooshroom"><p>Mooshroom</p></a><a href="#ocelot"><p>Ocelot</p></a><a href="#parrot"><p>Parrot</p></a><a href="#hoglin"><p>Hoglin</p></a><a href="#piglin"><p>Piglin</p></a><a href="#polar-bear"><p>Polar Bear</p></a><a href="#rabbit"><p>Rabbit</p></a><a href="#slime"><p>Slime</p></a><a href="#stray"><p>Stray</p></a><a href="#strider"><p>Strider</p></a><a href="#turtle"><p>Turtle</p></a><a href="#wolf"><p>Wolf</p></a><a href="#despawning"><p>Despawning</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p><strong>Prologue:</strong> Thanks to all the members of the technical Minecraft community who answered my requests for comments and clarifications.</p>
+loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/mobspawning.html"></head><body><header><a href="/"><img src="static/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">July 15, 2022</p><h1 style="margin-top: 0">Minecraft Mob Spawning, Explained (1.19)</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap"><p>Mob Cap</p></a><a href="#practical-example"><p>Practical Example</p></a><a href="#mob-cap-quirks"><p>Mob Cap Quirks</p></a><a href="#spawning"><p>Spawning</p></a><a href="#pack-spawning-mechanics"><p>Pack Spawning Mechanics</p></a><a href="#spawn-conditions"><p>Spawn Conditions</p></a><a href="#axolotl"><p>Axolotl</p></a><a href="#cod-dolphin-pufferfish-salmon-squid-tropical-fish"><p>Cod, Dolphin, Pufferfish, Salmon, Squid, Tropical Fish</p></a><a href="#drowned"><p>Drowned</p></a><a href="#guardian"><p>Guardian</p></a><a href="#monsters"><p>Monsters</p></a><a href="#blaze"><p>Blaze</p></a><a href="#animals"><p>Animals</p></a><a href="#frog"><p>Frog</p></a><a href="#ghast"><p>Ghast</p></a><a href="#glow-squid"><p>Glow Squid</p></a><a href="#goat"><p>Goat</p></a><a href="#husk"><p>Husk</p></a><a href="#magma-cube"><p>Magma Cube</p></a><a href="#mooshroom"><p>Mooshroom</p></a><a href="#ocelot"><p>Ocelot</p></a><a href="#parrot"><p>Parrot</p></a><a href="#hoglin"><p>Hoglin</p></a><a href="#piglin"><p>Piglin</p></a><a href="#polar-bear"><p>Polar Bear</p></a><a href="#rabbit"><p>Rabbit</p></a><a href="#slime"><p>Slime</p></a><a href="#stray"><p>Stray</p></a><a href="#strider"><p>Strider</p></a><a href="#turtle"><p>Turtle</p></a><a href="#wolf"><p>Wolf</p></a><a href="#despawning"><p>Despawning</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p><strong>Prologue:</strong> Thanks to all the members of the technical Minecraft community who answered my requests for comments and clarifications.</p>
 <p>This article aims to fully describe the Minecraft spawning algorithm as it exists in <strong>Java Edition 1.19</strong>.</p>
 <p>These are the major steps in the spawning algorithm, in order:</p>
 <ul>
@@ -147,10 +147,11 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <li>All elder guardians</li>
 <li>Duplicated allays</li>
 <li>Skeletons created from skeleton traps</li>
+<li>Zombies holding items</li>
 <li>Most mobs spawned as part of a structure, e.g. the black cat in a witch hut</li>
 </ul>
 </li>
-<li>Mobs that are riding an entity/vehicle</li>
+<li>Mobs that are riding another entity (such as a boat or a minecart)</li>
 <li>Fish and axolotls from buckets</li>
 <li>Endermen carrying blocks</li>
 <li>Raiders that are part of raids</li>
@@ -162,45 +163,44 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <li>Withers</li>
 <li>Zombie villagers which are converting or have been traded with before</li>
 </ul>
-<h1 id="spawning">Spawning <a class="section-link" href="#spawning">&sect;</a></h1><p>Now, the game actually starts looking for a location to spawn a mob. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block. Once a location is picked, the game checks if the block at that location is a full block, soul sand or mud. If so, the spawn attempt immediately ends. Otherwise, it will make up to <strong>three</strong> attempts to spawn a pack of mobs near that location.</p>
+<h1 id="spawning">Spawning <a class="section-link" href="#spawning">&sect;</a></h1><p>Every tick, the game looks through all spawning chunks and checks which categories of mobs may spawn there. Then, for each category, it selects a random position within the chunk which will be used for mob spawning. It begins by selecting a random X and Z value; next, it looks up the height of the highest non-air block at that X/Z combo, and picks a random Y-value between the minimum build height and the Y-coordinate of air block above the highest block.</p>
 <aside>
 
-<p>The Y-value of the highest block for every X/Z combo is known as the <strong>heightmap</strong>. The heightmap of your current position is displayed on the debug screen as &quot;CH S&quot;.</p>
+<p>The Y-value of the highest block for every X/Z combo is known as the <strong>heightmap</strong>. The heightmap of your current position is displayed on the debug screen as &quot;CH S&quot; or &quot;SH S&quot;.</p>
 <p><img src="resources/spawning/debugscreen_ch.png" alt="heightmap"></p>
-<p>(Technically the server uses &quot;SH S&quot;, but these values rarely differ.)</p>
 <p>You can also use the <a href="https://www.curseforge.com/minecraft/mc-mods/minihud">MiniHUD</a> mod to overlay heightmap indicators over the regular world.</p>
 </aside>
 
+<p>Once a location is picked, the game checks if the block at that location is a redstone conductor (i.e. all full solid blocks, as well as soul sand and mud). If so, the spawn attempt immediately ends. Otherwise, it will make up to <strong>three</strong> attempts to spawn a pack of mobs near that location.</p>
 <p>The heightmap is a critical factor in the performance of a farm. Spawning attempts are evenly distributed along the Y-axis, so you want to minimize the chance that a spawn attempt occurs above or below your farm. Thus, there are two things you should keep in mind:</p>
 <ul>
 <li>Always try to build mob farms as low as possible.</li>
 <li>Avoid placing solid blocks above mob farms.</li>
 </ul>
 <p><img src="resources/spawning/heightmap.png" alt="diagram of impact of heightmap on spawning"></p>
-<figure style="max-width: 1708px">
-    <img src="resources/spawning/comparison.png" alt="effect of a platform on mob spawning">
-    <figcaption>The platform on the left had a layer of blocks above it at Y=255, while the platform on the right was not covered. Both platforms were allowed to spawn mobs for 15 seconds. There are nearly twice as many mobs on the uncovered platform compared to the covered one, demonstrating the importance of keeping the heightmap low in a mob farm.</figcaption>
-</figure>
-
-<p>Keep in mind that there are practical tradeoffs to these recommendations. For instance, if you build your farm very low in the world, you will need to eliminate all spawnable spaces within 128 blocks of its proximity to prevent those spawns from filling up the mob cap. This means either lighting up all the caves within that radius or excavating a perimeter. I am way too lazy to do either of those things, so I usually build my farms above ground so I can position my AFK spot such that there are no unwanted spawnable spaces. </p>
-<h2 id="pack-spawning-mechanics">Pack Spawning Mechanics <a class="section-link" href="#pack-spawning-mechanics">&sect;</a></h2><p>Minecraft spawns all mobs in packs, meaning that one spawn attempt may result in multiple mobs being spawned. Keep in mind that the algorithm can be rather idiosyncratic and knowing all the details is not too important when it comes to farm optimization.</p>
-<p>The game starts by setting a counter for the number of remaining attempts to spawn a pack of mobs. This counter is initialized with a random value from 1 to 5.</p>
-<p>Next, the game adds a random X and Z offset between -5 and 5 to the current position. These values are picked so that smaller offsets are more common than further offsets; specifically, they follow a <a href="https://en.wikipedia.org/wiki/Triangular_distribution">triangular distribution</a>. Next, the game checks if the spot is within 24 blocks of the player or the world spawn point. If either of these conditions is met, the game repeats the process. Note that each time, the offset is added to the already-offsetted position, which means that pack spawn attempts can wander rather far away from the initial position (up to 20 blocks for a pack size of 4). However, in practice, this is unlikely; here&#39;s a heatmap showing the spatial distribution of pack spawn attempts.</p>
-<p><img src="resources/spawning/packspawn-heatmap.png" alt="pack spawn heatmap"></p>
-<p>As you can see, most of the attempts end up pretty close to the initial location; in fact, over 75% of all attempts are within 10 blocks of the initial location.</p>
-<p>Since I am a total nerd, we can also use this data to create a distribution of pack spawns according to distance. Here&#39;s what that looks like:</p>
-<p><img src="resources/spawning/distance-distr.png" alt="cumulative distribution of pack spawn distance"></p>
-<p><em>Just for fun :)</em></p>
-<p>Anyways, now for the practical implications. Pack spawning is why building an overhang in a mob farm may increase its rates. By raising the heightmap in the blocks surrounding the spawning platforms, spawn attempts that begin outside of the farm could still find their way in. </p>
-<p>This is also why you should never place solid opaque blocks at foot level anywhere in the farm, since if the game randomly selects that block nothing will spawn in that chunk for that tick. This includes the walls of the farm and positions outside of the farm.</p>
+<p>Unfortunately, if you build your farm very low in the world to maximize its rates, you will need to eliminate all spawnable spaces within 128 blocks of its proximity to prevent those spawns from filling up the mob cap. This means either lighting up all the caves within that radius or excavating a perimeter. I am way too lazy to do either of those things, so I usually build my farms above ground so I can position my AFK spot such that there are no unwanted spawnable spaces. </p>
+<p>Another thing to keep in mind is that the game doesn&#39;t try to spawn a mob directly at the selected location; instead, it picks random positions in a square surrounding the initial position using the rules outlined in the following section. This means that spawn attempts which begin outside of your farm may still contribute to its rates. This yields two more pieces of advice:</p>
+<ul>
+<li>Build an overhang directly above the highest spawning platform in your mob farm to raise the heightmap in the columns surrounding the farm so that spawn attempts which occur there may produce spawns within the farm. </li>
+<li>Never place solid blocks at foot level around the farm, since they will instantly cause a spawn attempt to end.</li>
+</ul>
 <figure style="max-width: 560px">
     <img src="resources/spawning/footlevel.png" alt="explanation of why foot level blocks are bad">
     <figcaption>Do not do this. I have ways of finding you.</figcaption>
 </figure>
 
-<p>Anyways, if the position is <em>not</em> within 24 blocks of the player/world spawn and its chunk is loaded, the game gets the biome at that position and checks which mobs can spawn. At this stage, if the biome is a river biome and the category is water ambient mobs, there is a 98% chance that the spawn attempt will fail. At that point, the game moves the position by a random offset and checks the biome again until the attempt succeeds or the counter is exhausted.</p>
-<p>Each biome has specific settings for what mobs can spawn, the relative frequency of each mob type, and their pack sizes. The <a href="https://minecraft.fandom.com/wiki/Minecraft_Wiki">Minecraft Wiki</a> has this information on each of their biome pages, but I wanted to have all of those values in one place, so I made a page based on the values found in the game code. <a href="mob-spawning-weights.html">Check it out</a>!</p>
-<p>To find the probability of a mob type being chosen, simply divide its weight by the total of the weights of all mob types that could spawn in a given biome. For example, consider the plains monster weights:</p>
+<h2 id="pack-spawning-mechanics">Pack Spawning Mechanics <a class="section-link" href="#pack-spawning-mechanics">&sect;</a></h2><p>Minecraft spawns all mobs in packs, meaning that one spawn attempt generally results in multiple mobs being spawned. Keep in mind that the algorithm can be rather idiosyncratic and knowing all the details is not too important when it comes to farm optimization.</p>
+<p>The idea behind pack spawning is that the game starts from the initial position and &quot;wanders&quot; from it by adding random offsets to the position&#39;s X and Z coordinates, attempting to spawn a mob each time. Specifically, the game picks two random numbers between -5 and 5 to add to the X and Z. These values are picked so that smaller offsets are more common than further offsets; specifically, they follow a <a href="https://en.wikipedia.org/wiki/Triangular_distribution">triangular distribution</a>. </p>
+<aside>
+
+<p>Pack spawns can potentially spawn mobs very far away from the origin of the spawn attempt. For example, if the selected mob type&#39;s pack size is 4, the final spawn location could be anywhere within a 41x41 region around the original position. However, in practice, this is unlikely. Check out this heatmap showing the spatial distribution of spawn attempts.</p>
+<p><img src="resources/spawning/packspawn-heatmap.png" alt="pack spawn heatmap"></p>
+<p>As you can see, most of the attempts end up pretty close to the initial location; in fact, over 75% of all attempts are within 10 blocks of the initial location. We can find the cumulative distribution of pack spawn distance to determine how much overhang we need.</p>
+<p><img src="resources/spawning/distance-distr.png" alt="cumulative distribution of pack spawn distance"></p>
+<p>As you can see, bigger is always better, but the benefit you get from building a bigger overhang quickly decreases past ~12 blocks.</p>
+</aside>
+
+<p>When the position is offset for the first time, the game checks the biome at that position, and retrieves the list of mobs in the current category that can spawn in that biome. That list looks something like this:</p>
 <table>
 <thead>
 <tr>
@@ -241,51 +241,87 @@ loadSetting("darkmode");</script><script defer src="static/scripts/ui.js"></scri
 <td>5</td>
 </tr>
 </tbody></table>
-<p>The sum of these weights is 515, so there&#39;s a <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>95</mn><mn>515</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{95}{515}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">515</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">95</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> chance that the game will pick a zombie to be spawned.</p>
-<p>Once a mob type is picked, the game resets the aformentioned counter to the pack size of the mob. It then checks whether the selected position is valid for the mob using the following process:</p>
+<p><em>The mob spawning weights and pack sizes are documented <a href="mob-spawning-weights.html">here</a>.</em></p>
+<p>The odds of a mob type being selected is equal to its weight divided by the total weight of all the mob types in that category. In this case, the probability that a zombie is picked to be spawned is <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>95</mn><mn>515</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{95}{515}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">515</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">95</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>.</p>
+<h2 id="spawn-conditions">Spawn Conditions <a class="section-link" href="#spawn-conditions">&sect;</a></h2><p>Over time, the rules that decide whether a mob should be allowed to spawn have grown into a sprawling, Byzantine mess. I will attempt to give a mostly complete description of them here.</p>
+<p>For starters, all attempts to spawn a mob as part of a pack fail if they are within 24 blocks of the player or the world spawn point. The position must also be within a loaded chunk and within the world border. However, the chunk does not have to be <em>entity</em> ticking, so it&#39;s possible for mobs to spawn in lazy chunks that never despawn. These mobs still contribute to the mobcap, so it may lead to situations where the mob cap gets quickly taken up. This phenomenon was once classified as a <a href="https://bugs.mojang.com/browse/MC-155289">bug</a>, but for unknown reasons this behavior was reintroduced in 1.17. Generally speaking, this is only a problem if you play on a very low simulation distance.</p>
+<p>Once a mob type is picked, the game checks whether the selected position is valid for the mob according to the following rules:</p>
 <ul>
-<li>Check the distance to the nearest player. If the distance is greater than the mob&#39;s despawn distance:<ul>
-<li>If the mob type is a creature, pillager, or shulker, continue.</li>
-<li>Otherwise, fail.</li>
+<li>The distance between the position and the nearest player cannot be greater than the mob&#39;s despawn distance.<ul>
+<li>Creatures are not affected by this.</li>
 </ul>
 </li>
-<li>Look up the biome of the current position. If it is different from the biome where the mob type was first selected, fail.</li>
-<li>If the mob&#39;s spawn placement type is not <code>NO_RESTRICTIONS</code>, then run the following checks:<ul>
-<li><code>IN_WATER</code>: the block at the position is water and the block above it is not a full opaque block or soul sand/mud</li>
-<li><code>IN_LAVA</code>: the block at the position is lava</li>
-<li><code>ON_GROUND</code>:<ul>
-<li>The upper face of the block below the position is full and it emits a light level less than 14, with exceptions:<ul>
-<li>Tedrock, barriers, glass, and tinted glass are not spawnable</li>
-<li>Trapdoors are not spawnable regardless of their position</li>
-<li>Soul sand and mud are spawnable</li>
-<li>Mangrove leaves and regular leaves are only spawnable for ocelots and parrots</li>
-<li>Ice is only spawnable for polar bears</li>
-<li>Magma blocks are only spawnable for fire immune mobs</li>
-</ul>
-</li>
-<li>For the block at the position and above the position:<ul>
-<li>The block at the position is not a full block, redstone component, rail, or a fluid  </li>
-<li>If the block at the position causes damage, a mob <em>may</em> still spawn if it does not collide and the mob is immune; for example: <ul>
+<li>If the mob&#39;s spawn placement type is <code>ON_GROUND</code>:<ul>
+<li>The upper face of the block below the position must be full and cannot emit a light level greater than 13.</li>
+<li>Bedrock, barries, glass, and tinted glass are not spawnable.</li>
+<li>Trapdoors are not spawnable regardless of their position.</li>
+<li>Soul sand and mud are spawnable despite their upper face not being full.</li>
+<li>Mangrove leaves and regular leaves are only spawnable for ocelots and parrots.</li>
+<li>Ice is only spawnable for polar bears.</li>
+<li>Magma blocks are only spawnable for fire immune mobs.</li>
+<li>The block at the position and above the position must be valid for mob spawns:<ul>
+<li>The blocks cannot be full.</li>
+<li>The blocks cannot be redstone components.</li>
+<li>The blocks cannot have liquid.</li>
+<li>The block cannot be a rail.</li>
+<li>The block cannot harm the mob being spawned:<ul>
 <li>Non-fire immune mobs cannot spawn in fire</li>
 <li>Only wither skeletons can spawn in wither roses</li>
 <li>Only polar bears, snow golems, and strays can spawn in powder snow</li>
-</ul>
-</li>
-<li>Mobs cannot spawn in berry bushes or cacti</li>
+<li>No mobs with the placement type <code>ON_GROUND</code> can spawn in berry bushes. This does not include foxes.</li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li>The mob is not colliding with a block or entity at the spawn position</li>
+<li>If the mob&#39;s spawn placement type is <code>IN_WATER</code>:<ul>
+<li>The block at the position must be water, and the block above it may not be a redstone conductor (full blocks, soul sand, mud).</li>
 </ul>
-<p>TODO: table of mob -&gt; placement type</p>
+</li>
+<li>If the mob&#39;s spawn placement type is <code>IN_LAVA</code>:<ul>
+<li>The block at the position must be lava.</li>
+</ul>
+</li>
+<li>The mob must not collide with a block or another entity at the position.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Spawn Placement</th>
+<th>Mobs</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>IN_WATER</code></td>
+<td>Axolotl, Cod, Dolphin, Drowned, Guardian, Pufferfish, Salmon, Squid, Tropical Fish, Glow Squid</td>
+</tr>
+<tr>
+<td><code>ON_GROUND</code></td>
+<td>Bat, Blaze, Cave Spider, Chicken, Cow, Creeper, Donkey, Enderman, Frog, Ghast, Goat, Horse, Husk, Iron Golem, Llama, Magma Cube, Mooshroom, Ocelot, Parrot, Pig, Hoglin, Piglin, Polar Bear, Rabbit, Sheep, Skeleton, Slime, Spider, Stray, Turtle, Witch, Wither Skeleton, Wolf, Zombie, Zombified Piglin, Zombie Villager</td>
+</tr>
+<tr>
+<td><code>IN_LAVA</code></td>
+<td>Strider</td>
+</tr>
+<tr>
+<td><code>NO_RESTRICTIONS</code></td>
+<td>Fox, Panda</td>
+</tr>
+</tbody></table>
 <p>There are also further mob-specific rules that need to be satisfied for the spawning attempt to continue.</p>
 <h3 id="axolotl">Axolotl <a class="section-link" href="#axolotl">&sect;</a></h3><p>The block underneath the position must be clay.</p>
-<h3 id="water-animals">Water Animals <a class="section-link" href="#water-animals">&sect;</a></h3><p>The position&#39;s Y-level may be between zero and 13 blocks below the sea level, inclusive. The block below the position and the block above the position must be water. (It&#39;s possible that the bottom block can be flowing water&mdash;I have yet to verify this.)</p>
-<h3 id="drowned">Drowned <a class="section-link" href="#drowned">&sect;</a></h3><p>The block below the position must be water, </p>
-<h3 id="guardian">Guardian <a class="section-link" href="#guardian">&sect;</a></h3><h3 id="tropical-fish">Tropical Fish <a class="section-link" href="#tropical-fish">&sect;</a></h3><h3 id="monsters">Monsters <a class="section-link" href="#monsters">&sect;</a></h3><h3 id="animals">Animals <a class="section-link" href="#animals">&sect;</a></h3><h3 id="frog">Frog <a class="section-link" href="#frog">&sect;</a></h3><h3 id="ghast">Ghast <a class="section-link" href="#ghast">&sect;</a></h3><h3 id="glow-squid">Glow Squid <a class="section-link" href="#glow-squid">&sect;</a></h3><h3 id="goat">Goat <a class="section-link" href="#goat">&sect;</a></h3><h3 id="husk">Husk <a class="section-link" href="#husk">&sect;</a></h3><h3 id="magma-cube">Magma Cube <a class="section-link" href="#magma-cube">&sect;</a></h3><h3 id="mooshroom">Mooshroom <a class="section-link" href="#mooshroom">&sect;</a></h3><h3 id="ocelot">Ocelot <a class="section-link" href="#ocelot">&sect;</a></h3><h3 id="parrot">Parrot <a class="section-link" href="#parrot">&sect;</a></h3><h3 id="hoglin">Hoglin <a class="section-link" href="#hoglin">&sect;</a></h3><h3 id="piglin">Piglin <a class="section-link" href="#piglin">&sect;</a></h3><h3 id="polar-bear">Polar Bear <a class="section-link" href="#polar-bear">&sect;</a></h3><h3 id="rabbit">Rabbit <a class="section-link" href="#rabbit">&sect;</a></h3><h3 id="slime">Slime <a class="section-link" href="#slime">&sect;</a></h3><h3 id="stray">Stray <a class="section-link" href="#stray">&sect;</a></h3><h3 id="strider">Strider <a class="section-link" href="#strider">&sect;</a></h3><h3 id="turtle">Turtle <a class="section-link" href="#turtle">&sect;</a></h3><h3 id="wolf">Wolf <a class="section-link" href="#wolf">&sect;</a></h3><h1 id="despawning">Despawning <a class="section-link" href="#despawning">&sect;</a></h1><p>Every tick, entites check whether they should despawn according to the following rules.</p>
+<h3 id="cod-dolphin-pufferfish-salmon-squid-tropical-fish">Cod, Dolphin, Pufferfish, Salmon, Squid, Tropical Fish <a class="section-link" href="#cod-dolphin-pufferfish-salmon-squid-tropical-fish">&sect;</a></h3><p>The position&#39;s Y-level may be between zero and 13 blocks below the sea level, inclusive. The block below the position and the block above the position must be water. The block above may not be waterlogged or a bubble column. In Lush Caves, tropical fish may spawn at any Y-level.</p>
+<h3 id="drowned">Drowned <a class="section-link" href="#drowned">&sect;</a></h3><p>The block below the position must be water, and the light level must be zero. In rivers, there is a <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mn>16</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{16}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">16</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> chance of the spawn attempt succeeding. In all other biomes, the chance is <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mn>40</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{40}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">40</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>, and the position must also be over 5 blocks below the sea level.</p>
+<h3 id="guardian">Guardian <a class="section-link" href="#guardian">&sect;</a></h3><p>The block below the position must be water. If the position is exposed to the sky, there is a 95% chance of the spawn attempt failing.</p>
+<h3 id="monsters">Monsters <a class="section-link" href="#monsters">&sect;</a></h3><p>In the Overworld, the light level must be zero. In the Nether, the light level must be less than 11.</p>
+<h3 id="blaze">Blaze <a class="section-link" href="#blaze">&sect;</a></h3><p>Blaze spawns are not affected by light level. (???)</p>
+<h3 id="animals">Animals <a class="section-link" href="#animals">&sect;</a></h3><p>The block below the position must be a grass block and the light level must be above 8.</p>
+<h3 id="frog">Frog <a class="section-link" href="#frog">&sect;</a></h3><p>The block below the position must be  a grass block, mud, mangrove roots, or muddy mangrove roots, and the light level must be above 8.</p>
+<h3 id="ghast">Ghast <a class="section-link" href="#ghast">&sect;</a></h3><p>The spawn attempt has a 95% chance of failing.</p>
+<h3 id="glow-squid">Glow Squid <a class="section-link" href="#glow-squid">&sect;</a></h3><p>Funnily enough, the method that checks whether a glow squid can spawn has been misspelled as <code>checkGlow<b>Squide</b>SpawnRules</code> since 1.18.</p>
+<h3 id="goat">Goat <a class="section-link" href="#goat">&sect;</a></h3><h3 id="husk">Husk <a class="section-link" href="#husk">&sect;</a></h3><h3 id="magma-cube">Magma Cube <a class="section-link" href="#magma-cube">&sect;</a></h3><h3 id="mooshroom">Mooshroom <a class="section-link" href="#mooshroom">&sect;</a></h3><h3 id="ocelot">Ocelot <a class="section-link" href="#ocelot">&sect;</a></h3><h3 id="parrot">Parrot <a class="section-link" href="#parrot">&sect;</a></h3><h3 id="hoglin">Hoglin <a class="section-link" href="#hoglin">&sect;</a></h3><h3 id="piglin">Piglin <a class="section-link" href="#piglin">&sect;</a></h3><h3 id="polar-bear">Polar Bear <a class="section-link" href="#polar-bear">&sect;</a></h3><h3 id="rabbit">Rabbit <a class="section-link" href="#rabbit">&sect;</a></h3><h3 id="slime">Slime <a class="section-link" href="#slime">&sect;</a></h3><h3 id="stray">Stray <a class="section-link" href="#stray">&sect;</a></h3><h3 id="strider">Strider <a class="section-link" href="#strider">&sect;</a></h3><h3 id="turtle">Turtle <a class="section-link" href="#turtle">&sect;</a></h3><h3 id="wolf">Wolf <a class="section-link" href="#wolf">&sect;</a></h3><p>success chance affected by light level: drowned, monster</p>
+<h1 id="despawning">Despawning <a class="section-link" href="#despawning">&sect;</a></h1><p>Every tick, entites check whether they should despawn according to the following rules.</p>
 <ul>
 <li>If the difficulty is peaceful, despawn hostile mobs</li>
 <li>If the mob is an enderman, don&#39;t despawn if carrying a block</li>
