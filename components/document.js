@@ -42,7 +42,7 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
             raw("&copy; 2022 "),
             a({href: "https://bithole.dev/"}, "Adrian Zhang"),
             raw(" &bull; "),
-            a({href: "rss.xml"}, "rss"),
+            a({href: "/rss.xml"}, "rss"),
             raw(" &bull; "),
             a({href: "https://github.com/adrian154/blog"}, "source"),
             raw(" &bull; "),

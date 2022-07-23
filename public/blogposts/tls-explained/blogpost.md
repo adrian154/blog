@@ -549,7 +549,7 @@ serverHandshakeIV = hkdfExpandLabel(serverHandshakeTrafficSecret, "iv", Buffer.a
 
 The initialization vector (IV) ensures that every ciphertext is unique. Without a unique IV for each message, encrypting the same plaintext would produce the same ciphertext, which exposes a ton of information to attackers.
 
-The code used to explain this section is available [here](https://github.com/adrian154/blog/blob/main/generated-site//blogposts/tls-explained/key-schedule.js). 
+The code used to explain this section is available [here](https://github.com/adrian154/blog/blob/main/public/blogposts/tls-explained/key-schedule.js). 
 
 ## Perfect Forward Secrecy
 
@@ -617,7 +617,7 @@ The last byte denotes the actual record type (22 for handshake).
 </div>
 </div>
 
-You can check out the code I used to decrypt the message [here](https://github.com/adrian154/blog/blob/main/generated-site//blogposts/tls-explained/decrypt.js).
+You can check out the code I used to decrypt the message [here](https://github.com/adrian154/blog/blob/main/public/blogposts/tls-explained/decrypt.js).
 
 # S → C: Certificate
 
@@ -1155,7 +1155,7 @@ console.log(crypto.verify(
 )); // -> "true"
 ```
 
-Even if a single bit of any of the inputs is modified, the signature will fail to verify. You can check out the full script [here](https://github.com/adrian154/blog/blob/main/generated-site//blogposts/tls-explained/certificate-verify.js).
+Even if a single bit of any of the inputs is modified, the signature will fail to verify. You can check out the full script [here](https://github.com/adrian154/blog/blob/main/public/blogposts/tls-explained/certificate-verify.js).
 
 </div>
 <div class="segment" data-hex="16" data-name="Data Type">

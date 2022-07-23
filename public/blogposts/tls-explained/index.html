@@ -460,7 +460,7 @@ clientHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(cl
 <span class="hljs-comment">// server credentials</span>
 serverHandshakeKey = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;key&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">32</span>);
 serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(serverHandshakeTrafficSecret, <span class="hljs-string">&quot;iv&quot;</span>, <span class="hljs-title class_">Buffer</span>.<span class="hljs-title function_">alloc</span>(<span class="hljs-number">0</span>), <span class="hljs-number">12</span>);</code></pre><p>The initialization vector (IV) ensures that every ciphertext is unique. Without a unique IV for each message, encrypting the same plaintext would produce the same ciphertext, which exposes a ton of information to attackers.</p>
-<p>The code used to explain this section is available <a href="https://github.com/adrian154/blog/blob/main/generated-site//blogposts/tls-explained/key-schedule.js">here</a>. </p>
+<p>The code used to explain this section is available <a href="https://github.com/adrian154/blog/blob/main/public/blogposts/tls-explained/key-schedule.js">here</a>. </p>
 <h2 id="perfect-forward-secrecy">Perfect Forward Secrecy <a class="section-link" href="#perfect-forward-secrecy">&sect;</a></h2><p>One important property offered by this complex key schedule is <a href="https://en.wikipedia.org/wiki/Forward_secrecy">perfect forward secrecy</a>: even if the server&#39;s certificate private key is eventually compromised, a client cannot decrypt recorded TLS traffic sent before the compromise. It&#39;s easy to see why this is the case: the public key the server sent in its key_share has nothing to do with the keypair in the server&#39;s certificate, so the keys used to calculate the shared secret are referred to as <em>ephemeral</em>. As long as these ephemeral keys aren&#39;t saved in a place where an attacker could obtain them eventually, the forward secrecy remains unbroken. Indeed, the TLS 1.3 RFC recommends immediately overwriting these values in  memory to reduce potential exposures.  </p>
 <p>The only reason we&#39;re able to decrypt the capture is because I passed a flag to OpenSSL telling it to log some of the values used in key exchange (such as the handshake traffic secrets) to a text file that can be parsed by tools such as <a href="https://www.wireshark.org/">Wireshark</a>.</p>
 <h1 id="s--c-change-cipher-spec">S → C: Change Cipher Spec <a class="section-link" href="#s--c-change-cipher-spec">&sect;</a></h1><p>Next, the server sends the Change Cipher Spec message. This isn&#39;t used in TLS 1.3, but to avoid confusing intermediate nodes, this message is still sent. From this point on, the rest of the handshake is encrypted.</p>
@@ -514,7 +514,7 @@ serverHandshakeIV = <span class="hljs-title function_">hkdfExpandLabel</span>(se
 </div>
 </div>
 
-<p>You can check out the code I used to decrypt the message <a href="https://github.com/adrian154/blog/blob/main/generated-site//blogposts/tls-explained/decrypt.js">here</a>.</p>
+<p>You can check out the code I used to decrypt the message <a href="https://github.com/adrian154/blog/blob/main/public/blogposts/tls-explained/decrypt.js">here</a>.</p>
 <h1 id="s--c-certificate">S → C: Certificate <a class="section-link" href="#s--c-certificate">&sect;</a></h1><p>The server sends its certificate to the client. Here, the certificate message is abridged since most of it consists of the actual certificate itself, which is explained below.</p>
 <p><em>Only the decrypted message is shown.</em></p>
 <div class="server packet">
@@ -1042,7 +1042,7 @@ Certificate:
     data,
     {key, <span class="hljs-attr">padding</span>: crypto.<span class="hljs-property">constants</span>.<span class="hljs-property">RSA_PKCS1_PSS_PADDING</span>},
     signature
-)); <span class="hljs-comment">// -&gt; &quot;true&quot;</span></code></pre><p>Even if a single bit of any of the inputs is modified, the signature will fail to verify. You can check out the full script <a href="https://github.com/adrian154/blog/blob/main/generated-site//blogposts/tls-explained/certificate-verify.js">here</a>.</p>
+)); <span class="hljs-comment">// -&gt; &quot;true&quot;</span></code></pre><p>Even if a single bit of any of the inputs is modified, the signature will fail to verify. You can check out the full script <a href="https://github.com/adrian154/blog/blob/main/public/blogposts/tls-explained/certificate-verify.js">here</a>.</p>
 </div>
 <div class="segment" data-hex="16" data-name="Data Type">
 
@@ -1263,4 +1263,4 @@ secureSocket.<span class="hljs-title function_">on</span>(<span class="hljs-stri
 <li><a href="https://certificate.transparency.dev/howctworks/">Certificate Transparency - How CT Works</a></li>
 <li><a href="https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/">Let&#39;s Encrypt - A Warm Welcome to ASN.1 and DER</a></li>
 </ul>
-<img id="img-view" style="display: none"><h1>Comments</h1><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="preferred-color-scheme"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>
+<img id="img-view" style="display: none"><h1>Comments</h1><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="preferred-color-scheme"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="/rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>

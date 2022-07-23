@@ -17,8 +17,12 @@ blogposts.forEach(post => {
         const startTime = Date.now();
         fs.writeFileSync(destPath, blogpostTemplate(post, fs.readFileSync(mdPath, "utf-8")), "utf-8");
         console.log(`rendered ${post.id} in ${Date.now() - startTime}ms`);
+    } else if(goal === "clean") {
+        if(fs.existsSync(destPath)) {
+            fs.unlinkSync(destPath);
+        }
     } else {
-        fs.unlinkSync(destPath);
+        throw new Error("Unknown goal");
     }
 
 });

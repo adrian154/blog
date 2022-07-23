@@ -130,7 +130,7 @@ rl.on("line", line => {
 
 Great, but it's running slow as a dog. A little profiling reveals the problem, and it's SQLite. If we comment out the line which inserts the record into the database, we can blast through the dataset at around 600,000 lines per second. Uncomment it, and that rate absolutely plummets. I took the liberty of making a chart to illustrate the difference.
 
-![line chart showing processing rates with and without the sqlite insert](/blogposts/mc-census/hart.png)
+![line chart showing processing rates with and without the sqlite insert](/blogposts/mc-census/chart.png)
 
 Yeah... not very promising. It starts out slow, and quickly falls off a cliff into the absolutely abysmal range. At this rate, I calculated that it would take almost two hours for the data to be fully processed, and I wasn't even 50% done with the scan!  We need to figure out how to drastically increase our SQLite insert rate, or I may have to ditch SQLite altogether.
 
@@ -228,7 +228,7 @@ and the ten lowest player counts:
 
 <p style="text-align: center; word-spacing: 1.0em">-1337 -46 -2 -1 -1 -1 -1 -1 -1 -1</p>
 
-Minecraft servers also send a sample of the online players by default, letting us make an incomplete list of who's online at any given moment. I couldn't think of anything to do with this data, but [maybe your name's in the list](/blogposts/mc-censuss/players.txt)!
+Minecraft servers also send a sample of the online players by default, letting us make an incomplete list of who's online at any given moment. I couldn't think of anything to do with this data, but [maybe your name's in the list](/blogposts/mc-census/players.txt)!
 
 <aside>
 

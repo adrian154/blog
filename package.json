@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "render": "node generate-site.js render",
+    "clean": "node generate-site.js clean"
   },
   "repository": {
     "type": "git",
