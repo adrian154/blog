@@ -34,7 +34,8 @@ module.exports = (properties, src) => {
                 script({
                     src: "https://utteranc.es/client.js",
                     crossorigin: "anonymous",
-                    ...commentsSettings        
+                    ...commentsSettings,
+                    issueNumber: properties.issueNumber        
                 })
             ])
         )

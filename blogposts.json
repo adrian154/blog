@@ -9,14 +9,16 @@
         "title": "Discord QR Code Phishing",
         "description": "How your friends are getting pwned by Discord's terrible QR code login",
         "timestamp": 1652162796067,
-        "publish": true
+        "publish": true,
+        "issueNumber": 9
     },
     {
         "id": "dissecting-log4shell",
         "title": "Dissecting a Log4Shell Attack",
         "description": "Taking apart an attempted Log4Shell attack on my Minecraft server, with some interesting discoveries",
         "timestamp": 1642141626850,
-        "publish": true
+        "publish": true,
+        "issueNumber": 3
     },
     {
         "id": "dns-explained",
@@ -30,7 +32,8 @@
         "title": "The Internet, Explained",
         "description": "So what makes this thing tick, anyways?",
         "timestamp": 1641357338707,
-        "publish": true
+        "publish": true,
+        "issueNumber": 10
     },
     {
         "id": "jpeg-explained",
@@ -38,14 +41,16 @@
         "description": "The fascinating algorithms behind an otherwise mundane image format",
         "scripts": ["/scripts/jpeg.js"],
         "stylesheets": ["/stylesheets/jpeg.css"],
-        "interactive": true
+        "interactive": true,
+        "issueNumber": 6
     },
     {
         "id": "decompiling-minecraft",
         "title": "Minecraft Decompilation Guide",
         "description": "An tutorial on how to decompile modern versions of Minecraft using Mojang's official mappings",
         "timestamp": 1655268355160,
-        "publish": true
+        "publish": true,
+        "issueNumber": 12
     },
     {
         "id": "mc-census",
@@ -53,14 +58,16 @@
         "description": "Searching four billion IP addresses for friends to play with",
         "timestamp": 1648747843094,
         "stylesheets": ["/stylesheets/mcmap.css"],
-        "publish": true
+        "publish": true,
+        "issueNumber": 8
     },
     {
         "id": "mc-report-system",
         "title": "A Deep Dive into Minecraft Chat Reports",
         "description": "Deconstructing the new chat reporting feature to understand its implications for the game",
         "timestamp": 1656104241340,
-        "publish": true
+        "publish": true,
+        "issueNumber": 11
     },
     {
         "id": "mob-spawning",
@@ -77,7 +84,8 @@
         "title": "Retrieving the Spanish Wordle Wordlist",
         "description": "It's as stupid as it sounds",
         "timestamp": 1644036481518,
-        "publish": true
+        "publish": true,
+        "issueNumber": 4
     },
     {
         "id": "tls-explained",
@@ -87,6 +95,7 @@
         "publish": true,
         "interactive": true,
         "scripts": ["/scripts/packetview.js"],
-        "stylesheets": ["/stylesheets/packetview.css"]
+        "stylesheets": ["/stylesheets/packetview.css"],
+        "issueNumber": 5
     }
 ]

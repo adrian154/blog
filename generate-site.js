@@ -21,8 +21,6 @@ blogposts.forEach(post => {
         if(fs.existsSync(destPath)) {
             fs.unlinkSync(destPath);
         }
-    } else {
-        throw new Error("Unknown goal");
     }
 
 });
