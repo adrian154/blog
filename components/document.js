@@ -2,7 +2,7 @@ const { html, head, meta, title, link, p, body, a, img, script, header, footer, 
 const { stylesheet, optional } = require("./helpers");
 const fs = require("fs");
 
-const APPLY_SETTINGS_CODE = fs.readFileSync("generated-site/static/scripts/apply-settings-stub.js", "utf-8");
+const APPLY_SETTINGS_CODE = fs.readFileSync("public/scripts/apply-settings-stub.js", "utf-8");
 
 module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en", class: "serif"},
     head(
@@ -20,23 +20,23 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
         ],
 
         // stylesheets
-        stylesheet("static/stylesheets/highlight-style.css"),
+        stylesheet("/stylesheets/highlight-style.css"),
         stylesheet("https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"),
-        stylesheet("static/stylesheets/main.css"),
+        stylesheet("/stylesheets/main.css"),
         properties.stylesheets?.map(stylesheet),
 
         // scripts
         properties.scripts?.map(scriptSrc => script({defer: null, src: scriptSrc})),
         script(raw(APPLY_SETTINGS_CODE)),
-        script({defer: null, src: "static/scripts/ui.js"}),
+        script({defer: null, src: "/scripts/ui.js"}),
 
         // misc.
-        link({rel: "icon", type: "image/png", sizes: "16x16", href: "static/images/favicon.png"}),
+        link({rel: "icon", type: "image/png", sizes: "16x16", href: "/images/favicon.png"}),
         properties.canonicalURL && link({rel: "canonical", href: properties.canonicalURL})
     
     ),
     body(
-        optional(!properties.document, header(a({href: "/"}, img({src: "static/images/banner.jpg", alt: "blog banner"})))),
+        optional(!properties.document, header(a({href: "/"}, img({src: "/images/banner.jpg", alt: "blog banner"})))),
         ...content,
         footer(p(
             raw("&copy; 2022 "),

@@ -1,0 +1,92 @@
+[
+    {
+        "id": "bitcoin-explained",
+        "title": "Yet Another Bitcoin Explanation",
+        "description": "Because why not?"
+    },
+    {
+        "id": "discord-qr-code-phishing",
+        "title": "Discord QR Code Phishing",
+        "description": "How your friends are getting pwned by Discord's terrible QR code login",
+        "timestamp": 1652162796067,
+        "publish": true
+    },
+    {
+        "id": "dissecting-log4shell",
+        "title": "Dissecting a Log4Shell Attack",
+        "description": "Taking apart an attempted Log4Shell attack on my Minecraft server, with some interesting discoveries",
+        "timestamp": 1642141626850,
+        "publish": true
+    },
+    {
+        "id": "dns-explained",
+        "title": "DNS, Explained",
+        "description": "Examining an often-overlooked component of the Internet: how are domains resolved, anyways?",
+        "timestamp": 1643000114865,
+        "publish": true
+    },
+    {
+        "id": "internet-explained",
+        "title": "The Internet, Explained",
+        "description": "So what makes this thing tick, anyways?",
+        "timestamp": 1641357338707,
+        "publish": true
+    },
+    {
+        "id": "jpeg-explained",
+        "title": "What's In a JPEG?",
+        "description": "The fascinating algorithms behind an otherwise mundane image format",
+        "scripts": ["/scripts/jpeg.js"],
+        "stylesheets": ["/stylesheets/jpeg.css"],
+        "interactive": true
+    },
+    {
+        "id": "decompiling-minecraft",
+        "title": "Minecraft Decompilation Guide",
+        "description": "An tutorial on how to decompile modern versions of Minecraft using Mojang's official mappings",
+        "timestamp": 1655268355160,
+        "publish": true
+    },
+    {
+        "id": "mc-census",
+        "title": "A Census of Minecraft Servers",
+        "description": "Searching four billion IP addresses for friends to play with",
+        "timestamp": 1648747843094,
+        "stylesheets": ["/stylesheets/mcmap.css"],
+        "publish": true
+    },
+    {
+        "id": "mc-report-system",
+        "title": "A Deep Dive into Minecraft Chat Reports",
+        "description": "Deconstructing the new chat reporting feature to understand its implications for the game",
+        "timestamp": 1656104241340,
+        "publish": true
+    },
+    {
+        "id": "mob-spawning",
+        "title": "Mastering Mob Spawning",
+        "description": "All the questions you were afraid to ask, answered"
+    },
+    {
+        "id": "mob-spawning-weights",
+        "title": "Minecraft Mob Spawning Weights",
+        "document": true
+    },
+    {
+        "id": "wordle-es-wordlist",
+        "title": "Retrieving the Spanish Wordle Wordlist",
+        "description": "It's as stupid as it sounds",
+        "timestamp": 1644036481518,
+        "publish": true
+    },
+    {
+        "id": "tls-explained",
+        "title": "TLS, Demystified",
+        "description": "Learn how TLS secures the modern web by examining a real session, down to the byte level",
+        "timestamp": 1645857396650,
+        "publish": true,
+        "interactive": true,
+        "scripts": ["/scripts/packetview.js"],
+        "stylesheets": ["/stylesheets/packetview.css"]
+    }
+]

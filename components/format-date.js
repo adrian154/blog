@@ -1,1 +1,2 @@
-module.exports = date => `${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+module.exports = date => `${MONTHS[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;

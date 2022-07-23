@@ -8,7 +8,7 @@ module.exports = blogposts => document(
         title: "Adrian's Blog",
         description: "A collection of potentially interesting posts.",
         canonicalURL: baseURL,
-        stylesheets: ["static/stylesheets/homepage.css"]
+        stylesheets: ["/stylesheets/homepage.css"]
     },
     div({id: "blog-intro"},
         p("Hello, I'm Adrian. Welcome to my blog, a loose collection of technology-related ramblings on various topics. Hopefully, you'll find them interesting."),

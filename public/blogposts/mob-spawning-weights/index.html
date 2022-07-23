@@ -1,0 +1,1841 @@
+<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Minecraft Mob Spawning Weights</title><meta property="og:title" content="Minecraft Mob Spawning Weights"><meta property="og:type" content="website"><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><script>const loadSetting = name => {
+    if(localStorage.getItem(name) === "true")
+        document.documentElement.classList.add(name);
+    else
+        document.documentElement.classList.remove(name);
+};
+
+loadSetting("serif");
+loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/mob-spawning-weights"></head><body><main><h1 style="margin-top: 0">Minecraft Mob Spawning Weights</h1><nav><div id="contents"><p>Table of Contents</p><a href="#overworld-biomes"><p>Overworld Biomes</p></a><a href="#plains"><p>Plains</p></a><a href="#sunflower-plains"><p>Sunflower Plains</p></a><a href="#snowy-plains"><p>Snowy Plains</p></a><a href="#ice-spikes"><p>Ice Spikes</p></a><a href="#desert"><p>Desert</p></a><a href="#swamp"><p>Swamp</p></a><a href="#mangrove-swamp"><p>Mangrove Swamp</p></a><a href="#forest"><p>Forest</p></a><a href="#flower-forest"><p>Flower Forest</p></a><a href="#birch-forest"><p>Birch Forest</p></a><a href="#dark-forest"><p>Dark Forest</p></a><a href="#old-growth-birch-forest"><p>Old Growth Birch Forest</p></a><a href="#old-growth-pine-taiga"><p>Old Growth Pine Taiga</p></a><a href="#old-growth-spruce-taiga"><p>Old Growth Spruce Taiga</p></a><a href="#taiga"><p>Taiga</p></a><a href="#snowy-taiga"><p>Snowy Taiga</p></a><a href="#savanna"><p>Savanna</p></a><a href="#savanna-plateau"><p>Savanna Plateau</p></a><a href="#windswept-hills"><p>Windswept Hills</p></a><a href="#windswept-gravelly-hills"><p>Windswept Gravelly Hills</p></a><a href="#windswept-forest"><p>Windswept Forest</p></a><a href="#windswept-savanna"><p>Windswept Savanna</p></a><a href="#jungle"><p>Jungle</p></a><a href="#sparse-jungle"><p>Sparse Jungle</p></a><a href="#bamboo-jungle"><p>Bamboo Jungle</p></a><a href="#eroded-badlands"><p>Eroded Badlands</p></a><a href="#wooded-badlands"><p>Wooded Badlands</p></a><a href="#meadow"><p>Meadow</p></a><a href="#grove"><p>Grove</p></a><a href="#snowy-slopes"><p>Snowy Slopes</p></a><a href="#frozen-peaks"><p>Frozen Peaks</p></a><a href="#jagged-peaks"><p>Jagged Peaks</p></a><a href="#stony-peaks"><p>Stony Peaks</p></a><a href="#river"><p>River</p></a><a href="#frozen-river"><p>Frozen River</p></a><a href="#beach"><p>Beach</p></a><a href="#snowy-beach"><p>Snowy Beach</p></a><a href="#stony-shore"><p>Stony Shore</p></a><a href="#warm-ocean"><p>Warm Ocean</p></a><a href="#lukewarm-ocean"><p>Lukewarm Ocean</p></a><a href="#deep-lukewarm-ocean"><p>Deep Lukewarm Ocean</p></a><a href="#ocean"><p>Ocean</p></a><a href="#deep-ocean"><p>Deep Ocean</p></a><a href="#cold-ocean"><p>Cold Ocean</p></a><a href="#deep-cold-ocean"><p>Deep Cold Ocean</p></a><a href="#frozen-ocean"><p>Frozen Ocean</p></a><a href="#mushroom-fields"><p>Mushroom Fields</p></a><a href="#dripstone-caves"><p>Dripstone Caves</p></a><a href="#lush-caves"><p>Lush Caves</p></a><a href="#deep-dark"><p>Deep Dark</p></a><a href="#nether-biomes"><p>Nether Biomes</p></a><a href="#nether-wastes"><p>Nether Wastes</p></a><a href="#warped-forest"><p>Warped Forest</p></a><a href="#crimson-forest"><p>Crimson Forest</p></a><a href="#soul-sand-valley"><p>Soul Sand Valley</p></a><a href="#basalt-deltas"><p>Basalt Deltas</p></a><a href="#nether-fortress"><p>Nether Fortress</p></a><a href="#end-biomes"><p>End Biomes</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>If a mob category is not listed, no mobs in that category spawn for the biome.</p>
+<p>Also, check out the companion article about <a href="mobspawning.html">mob spawning mechanics</a>!</p>
+<h1 id="overworld-biomes">Overworld Biomes <a class="section-link" href="#overworld-biomes">&sect;</a></h1><h2 id="plains">Plains <a class="section-link" href="#plains">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Horse</td>
+<td>5</td>
+<td>2&ndash;6</td>
+</tr>
+<tr>
+<td>Donkey</td>
+<td>1</td>
+<td>1&ndash;3</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spider</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie</td>
+<td>95</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie Villager</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Creeper</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>10</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Witch</td>
+<td>5</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bat</td>
+<td>10</td>
+<td>8</td>
+</tr>
+</tbody></table>
+<p><strong>Underground Water</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Glow Squid</td>
+<td>10</td>
+<td>4&ndash;6</td>
+</tr>
+</tbody></table>
+<h2 id="sunflower-plains">Sunflower Plains <a class="section-link" href="#sunflower-plains">&sect;</a></h2><p>Same as <a href="#plains">Plains</a></p>
+<h2 id="snowy-plains">Snowy Plains <a class="section-link" href="#snowy-plains">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Horse</td>
+<td>5</td>
+<td>2&ndash;6</td>
+</tr>
+<tr>
+<td>Donkey</td>
+<td>1</td>
+<td>1&ndash;3</td>
+</tr>
+<tr>
+<td>Rabbit</td>
+<td>10</td>
+<td>2&ndash;3</td>
+</tr>
+<tr>
+<td>Polar Bear</td>
+<td>1</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spider</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie</td>
+<td>95</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie Villager</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>20</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Creeper</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>10</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Witch</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Stray</td>
+<td>80</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="ice-spikes">Ice Spikes <a class="section-link" href="#ice-spikes">&sect;</a></h2><p>Same as <a href="#snowy-plains">Snowy Plains</a></p>
+<h2 id="desert">Desert <a class="section-link" href="#desert">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Rabbit</td>
+<td>4</td>
+<td>2&ndash;3</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spider</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie</td>
+<td>19</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie Villager</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Creeper</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>10</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Witch</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Husk</td>
+<td>80</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="swamp">Swamp <a class="section-link" href="#swamp">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Frog</td>
+<td>10</td>
+<td>2&ndash;5</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spider</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie</td>
+<td>95</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie Villager</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Creeper</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>10</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Witch</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="mangrove-swamp">Mangrove Swamp <a class="section-link" href="#mangrove-swamp">&sect;</a></h2><p><strong>Creatures</strong></p>
+<p>Same as <a href="#swamp">Swamp</a></p>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#swamp">Swamp</a></p>
+<p><strong>Ambient</strong> </p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Water Ambient</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tropical Fish</td>
+<td>25</td>
+<td>8</td>
+</tr>
+</tbody></table>
+<h2 id="forest">Forest <a class="section-link" href="#forest">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Wolf</td>
+<td>5</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="flower-forest">Flower Forest <a class="section-link" href="#flower-forest">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Rabbit</td>
+<td>4</td>
+<td>2&ndash;3</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="birch-forest">Birch Forest <a class="section-link" href="#birch-forest">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="dark-forest">Dark Forest <a class="section-link" href="#dark-forest">&sect;</a></h2><p><strong>Creatures</strong></p>
+<p>Same as <a href="#birch-forest">Birch Forest</a></p>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="old-growth-birch-forest">Old Growth Birch Forest <a class="section-link" href="#old-growth-birch-forest">&sect;</a></h2><p>Same as <a href="#birch-forest">Birch Forest</a></p>
+<h2 id="old-growth-pine-taiga">Old Growth Pine Taiga <a class="section-link" href="#old-growth-pine-taiga">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Wolf</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Rabbit</td>
+<td>4</td>
+<td>2&ndash;3</td>
+</tr>
+<tr>
+<td>Fox</td>
+<td>8</td>
+<td>2&ndash;4</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spider</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie Villager</td>
+<td>25</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Creeper</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>10</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Witch</td>
+<td>5</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="old-growth-spruce-taiga">Old Growth Spruce Taiga <a class="section-link" href="#old-growth-spruce-taiga">&sect;</a></h2><p><strong>Creatures</strong></p>
+<p>Same as <a href="#old-growth-pine-taiga">Old Growth Pine Taiga</a></p>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="taiga">Taiga <a class="section-link" href="#taiga">&sect;</a></h2><p><strong>Creatures</strong></p>
+<p>Same as <a href="#old-growth-pine-taiga">Old Growth Pine Taiga</a></p>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="snowy-taiga">Snowy Taiga <a class="section-link" href="#snowy-taiga">&sect;</a></h2><p>Same as <a href="#taiga">Taiga</a></p>
+<h2 id="savanna">Savanna <a class="section-link" href="#savanna">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Horse</td>
+<td>1</td>
+<td>2&ndash;6</td>
+</tr>
+<tr>
+<td>Donkey</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="savanna-plateau">Savanna Plateau <a class="section-link" href="#savanna-plateau">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Horse</td>
+<td>1</td>
+<td>2&ndash;6</td>
+</tr>
+<tr>
+<td>Donkey</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Llama</td>
+<td>8</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="windswept-hills">Windswept Hills <a class="section-link" href="#windswept-hills">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Llama</td>
+<td>5</td>
+<td>4&ndash;6</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="windswept-gravelly-hills">Windswept Gravelly Hills <a class="section-link" href="#windswept-gravelly-hills">&sect;</a></h2><p>Same as <a href="#windswept-hills">Windswept Hills</a></p>
+<h2 id="windswept-forest">Windswept Forest <a class="section-link" href="#windswept-forest">&sect;</a></h2><p>Same as <a href="#windswept-hills">Windswept Hills</a></p>
+<h2 id="windswept-savanna">Windswept Savanna <a class="section-link" href="#windswept-savanna">&sect;</a></h2><p>Same as <a href="#savanna-plateau">Savanna Plateau</a></p>
+<h2 id="jungle">Jungle <a class="section-link" href="#jungle">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>20</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Parrot</td>
+<td>40</td>
+<td>1&ndash;2</td>
+</tr>
+<tr>
+<td>Panda</td>
+<td>1</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spider</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie</td>
+<td>95</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie Villager</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Creeper</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>10</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Witch</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Ocelot</td>
+<td>2</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>Yes, ocelots spawn with monsters for some reason.</p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="sparse-jungle">Sparse Jungle <a class="section-link" href="#sparse-jungle">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>20</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="bamboo-jungle">Bamboo Jungle <a class="section-link" href="#bamboo-jungle">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sheep</td>
+<td>12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>20</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Cow</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Parrot</td>
+<td>40</td>
+<td>1&ndash;2</td>
+</tr>
+<tr>
+<td>Panda</td>
+<td>80</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#jungle">Jungle</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="eroded-badlands">Eroded Badlands <a class="section-link" href="#eroded-badlands">&sect;</a></h2><p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="wooded-badlands">Wooded Badlands <a class="section-link" href="#wooded-badlands">&sect;</a></h2><p>Same as <a href="#eroded-badlands">Eroded Badlands</a></p>
+<h2 id="meadow">Meadow <a class="section-link" href="#meadow">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Donkey</td>
+<td>1</td>
+<td>1&ndash;2</td>
+</tr>
+<tr>
+<td>Rabbit</td>
+<td>2</td>
+<td>2&ndash;6</td>
+</tr>
+<tr>
+<td>Sheep</td>
+<td>2</td>
+<td>2&ndash;4</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="grove">Grove <a class="section-link" href="#grove">&sect;</a></h2><p><strong>Creatures</strong></p>
+<p>Same as <a href="#old-growth-pine-taiga">Old Growth Pine Taiga</a></p>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="snowy-slopes">Snowy Slopes <a class="section-link" href="#snowy-slopes">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Rabbit</td>
+<td>4</td>
+<td>2&ndash;3</td>
+</tr>
+<tr>
+<td>Goat</td>
+<td>5</td>
+<td>1&ndash;3</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="frozen-peaks">Frozen Peaks <a class="section-link" href="#frozen-peaks">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Goat</td>
+<td>5</td>
+<td>1&ndash;3</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="jagged-peaks">Jagged Peaks <a class="section-link" href="#jagged-peaks">&sect;</a></h2><p>Same as <a href="#frozen-peaks">Frozen Peaks</a></p>
+<h2 id="stony-peaks">Stony Peaks <a class="section-link" href="#stony-peaks">&sect;</a></h2><p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="river">River <a class="section-link" href="#river">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Squid</td>
+<td>2</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Salmon</td>
+<td>5</td>
+<td>1&ndash;5</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spider</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie</td>
+<td>95</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie Villager</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Creeper</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>10</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Witch</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Drowned</td>
+<td>100</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="frozen-river">Frozen River <a class="section-link" href="#frozen-river">&sect;</a></h2><p>Same as <a href="#river">River</a></p>
+<h2 id="beach">Beach <a class="section-link" href="#beach">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Turtle</td>
+<td>5</td>
+<td>2&ndash;5</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="snowy-beach">Snowy Beach <a class="section-link" href="#snowy-beach">&sect;</a></h2><p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="stony-shore">Stony Shore <a class="section-link" href="#stony-shore">&sect;</a></h2><p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="warm-ocean">Warm Ocean <a class="section-link" href="#warm-ocean">&sect;</a></h2><p><strong>Water Ambient</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pufferfish</td>
+<td>15</td>
+<td>1&ndash;3</td>
+</tr>
+<tr>
+<td>Tropical Fish</td>
+<td>25</td>
+<td>8</td>
+</tr>
+</tbody></table>
+<p><strong>Water Creature</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Squid</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Dolphin</td>
+<td>2</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spider</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie</td>
+<td>95</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie Villager</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Creeper</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>10</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Witch</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Drowned</td>
+<td>5</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="lukewarm-ocean">Lukewarm Ocean <a class="section-link" href="#lukewarm-ocean">&sect;</a></h2><p><strong>Monsters</strong></p>
+<p>Same as <a href="#warm-ocean">Warm Ocean</a></p>
+<p><strong>Water Ambient</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pufferfish</td>
+<td>5</td>
+<td>1&ndash;3</td>
+</tr>
+<tr>
+<td>Tropical Fish</td>
+<td>25</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Cod</td>
+<td>15</td>
+<td>3&ndash;6</td>
+</tr>
+</tbody></table>
+<p><strong>Water Creature</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Squid</td>
+<td>10</td>
+<td>1&ndash;2</td>
+</tr>
+<tr>
+<td>Dolphin</td>
+<td>2</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="deep-lukewarm-ocean">Deep Lukewarm Ocean <a class="section-link" href="#deep-lukewarm-ocean">&sect;</a></h2><p><strong>Monsters</strong></p>
+<p>Same as <a href="#warm-ocean">Warm Ocean</a></p>
+<p><strong>Water Ambient</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pufferfish</td>
+<td>5</td>
+<td>1&ndash;3</td>
+</tr>
+<tr>
+<td>Tropical Fish</td>
+<td>25</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Cod</td>
+<td>8</td>
+<td>3&ndash;6</td>
+</tr>
+</tbody></table>
+<p><strong>Water Creature</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Squid</td>
+<td>8</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Dolphin</td>
+<td>2</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="ocean">Ocean <a class="section-link" href="#ocean">&sect;</a></h2><p><strong>Monsters</strong></p>
+<p>Same as <a href="#warm-ocean">Warm Ocean</a></p>
+<p><strong>Water Ambient</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cod</td>
+<td>10</td>
+<td>3&ndash;6</td>
+</tr>
+</tbody></table>
+<p><strong>Water Creature</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Squid</td>
+<td>1</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Dolphin</td>
+<td>1</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="deep-ocean">Deep Ocean <a class="section-link" href="#deep-ocean">&sect;</a></h2><p>Same as <a href="#ocean">Ocean</a></p>
+<h2 id="cold-ocean">Cold Ocean <a class="section-link" href="#cold-ocean">&sect;</a></h2><p><strong>Monsters</strong></p>
+<p>Same as <a href="#warm-ocean">Warm Ocean</a></p>
+<p><strong>Water Ambient</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cod</td>
+<td>15</td>
+<td>3&ndash;6</td>
+</tr>
+<tr>
+<td>Salmon</td>
+<td>15</td>
+<td>1&ndash;5</td>
+</tr>
+</tbody></table>
+<p><strong>Water Creature</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Squid</td>
+<td>3</td>
+<td>1&ndash;4</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="deep-cold-ocean">Deep Cold Ocean <a class="section-link" href="#deep-cold-ocean">&sect;</a></h2><p>Same as <a href="#cold-ocean">Cold Ocean</a></p>
+<h2 id="frozen-ocean">Frozen Ocean <a class="section-link" href="#frozen-ocean">&sect;</a></h2><p><strong>Monsters</strong></p>
+<p>Same as <a href="#warm-ocean">Warm Ocean</a></p>
+<p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Polar Bear</td>
+<td>1</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<p><strong>Water Ambient</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Salmon</td>
+<td>15</td>
+<td>1&ndash;5</td>
+</tr>
+</tbody></table>
+<p><strong>Water Creature</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Squid</td>
+<td>1</td>
+<td>1&ndash;4</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="mushroom-fields">Mushroom Fields <a class="section-link" href="#mushroom-fields">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mooshroom</td>
+<td>8</td>
+<td>4&ndash;8</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="dripstone-caves">Dripstone Caves <a class="section-link" href="#dripstone-caves">&sect;</a></h2><p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spider</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie</td>
+<td>95</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombie Villager</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Creeper</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Slime</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>10</td>
+<td>1&ndash;4</td>
+</tr>
+<tr>
+<td>Witch</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Drowned</td>
+<td>95</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="lush-caves">Lush Caves <a class="section-link" href="#lush-caves">&sect;</a></h2><p><strong>Monsters</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Axolotls</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Axolotl</td>
+<td>10</td>
+<td>4&ndash;6</td>
+</tr>
+</tbody></table>
+<p><strong>Water Ambient</strong></p>
+<p>Same as <a href="#mangrove-swamp">Mangrove Swamp</a></p>
+<p><strong>Ambient</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<p><strong>Underground Water</strong></p>
+<p>Same as <a href="#plains">Plains</a></p>
+<h2 id="deep-dark">Deep Dark <a class="section-link" href="#deep-dark">&sect;</a></h2><p>No mobs naturally spawn in the Deep Dark.</p>
+<h1 id="nether-biomes">Nether Biomes <a class="section-link" href="#nether-biomes">&sect;</a></h1><h2 id="nether-wastes">Nether Wastes <a class="section-link" href="#nether-wastes">&sect;</a></h2><p><strong>Creatures</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Strider</td>
+<td>60</td>
+<td>1&ndash;2</td>
+</tr>
+</tbody></table>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Ghast</td>
+<td>50</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Zombified Piglin</td>
+<td>100</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Magma Cube</td>
+<td>2</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Piglin</td>
+<td>15</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<h2 id="warped-forest">Warped Forest <a class="section-link" href="#warped-forest">&sect;</a></h2><p><strong>Creatures</strong></p>
+<p>Same as <a href="#nether-wastes">Nether Wastes</a></p>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Enderman</td>
+<td>1</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<h2 id="crimson-forest">Crimson Forest <a class="section-link" href="#crimson-forest">&sect;</a></h2><p><strong>Creatures</strong></p>
+<p>Same as <a href="#nether-wastes">Nether Wastes</a></p>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Zombified Piglin</td>
+<td>1</td>
+<td>2&ndash;4</td>
+</tr>
+<tr>
+<td>Hoglin</td>
+<td>9</td>
+<td>3&ndash;4</td>
+</tr>
+<tr>
+<td>Piglin</td>
+<td>5</td>
+<td>3&ndash;4</td>
+</tr>
+</tbody></table>
+<h2 id="soul-sand-valley">Soul Sand Valley <a class="section-link" href="#soul-sand-valley">&sect;</a></h2><p><strong>Creatures</strong></p>
+<p>Same as <a href="#nether-wastes">Nether Wastes</a></p>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Skeleton</td>
+<td>20</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Ghast</td>
+<td>50</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enderman</td>
+<td>1</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<h2 id="basalt-deltas">Basalt Deltas <a class="section-link" href="#basalt-deltas">&sect;</a></h2><p><strong>Creatures</strong></p>
+<p>Same as <a href="#nether-wastes">Nether Wastes</a></p>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Ghast</td>
+<td>40</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Magma Cube</td>
+<td>100</td>
+<td>2&ndash;5</td>
+</tr>
+</tbody></table>
+<h2 id="nether-fortress">Nether Fortress <a class="section-link" href="#nether-fortress">&sect;</a></h2><table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Blaze</td>
+<td>10</td>
+<td>2&ndash;3</td>
+</tr>
+<tr>
+<td>Zombified Piglin</td>
+<td>5</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Wither Skeleton</td>
+<td>8</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Skeleton</td>
+<td>2</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Magma Cube</td>
+<td>3</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<h1 id="end-biomes">End Biomes <a class="section-link" href="#end-biomes">&sect;</a></h1><p>All End biomes have the same spawning settings.</p>
+<p><strong>Monsters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mob Type</th>
+<th>Weight</th>
+<th>Pack Size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Enderman</td>
+<td>10</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<img id="img-view" style="display: none"></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>

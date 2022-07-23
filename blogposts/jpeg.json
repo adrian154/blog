@@ -1,9 +1,0 @@
-{
-    "title": "What's in a JPEG?",
-    "description": "They say picture is worth a thousand words, so I took it upon myself to write a thousand words about a picture. Today, we examine the remarkable technology behind the humble JPEG format.",
-    "timestamp": 0,
-    "publish": false,
-    "scripts": ["static/scripts/jpeg.js"],
-    "stylesheets": ["static/stylesheets/jpeg.css"],
-    "interactive": true
-}

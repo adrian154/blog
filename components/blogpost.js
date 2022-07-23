@@ -1,5 +1,5 @@
-const {commentsSettings} = require("../config.json");
 const {script, h1, p, a, noscript, b, div, button, img, main, nav, raw} = require("html-generator");
+const {commentsSettings} = require("../config.json");
 const renderMarkdown = require("./markdown.js");
 const formatDate = require("./format-date.js");
 const {optional} = require("./helpers");
@@ -19,7 +19,7 @@ module.exports = (properties, src) => {
     return document(
         {
             ...properties,
-            canonicalURL: new URL(`/${properties.id}.html`, baseURL).href
+            canonicalURL: new URL(`/blogposts/${properties.id}`, baseURL).href
         },
         main(
             optional(properties.interactive, noscript(p({style: "color: #ff0000"}, "Warning: If you are seeing this message, JS isn't supported; unfortunately, since this page relies on JS to dynamically generate content, parts of the page may be missing or brutally disfigured."))),
