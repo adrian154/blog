@@ -14,7 +14,21 @@ const tableOfContents = fragments => nav(
     button({id: "show-toc"}, raw("&#9776; Contents"))
 );
 
+const comments = properties => {
+    const settings = Object.assign({}, commentsSettings);
+    if(properties.issueNumber) {
+        delete settings["issue-term"];
+        settings["issue-number"] = properties.issueNumber;
+    }
+    return script({
+        src: "https://utteranc.es/client.js",
+        crossorigin: "anonymous",
+        ...commentsSettings,    
+    });
+};
+
 module.exports = (properties, src) => {
+
     const body = renderMarkdown(src);
     return document(
         {
@@ -31,12 +45,7 @@ module.exports = (properties, src) => {
             optional(!properties.document, [
                 h1("Comments"),
                 noscript(b("Please enable Javascript to view the comments on this post.")),
-                script({
-                    src: "https://utteranc.es/client.js",
-                    crossorigin: "anonymous",
-                    ...commentsSettings,
-                    "issue-number": properties.issueNumber        
-                })
+                comments(properties)
             ])
         )
     );
