@@ -1,5 +1,3 @@
-[*This post is part of a series.*](internet-series.html)
-
 The Internet is, by default, not secure. In TCP and below, everything is transferred in plaintext; an attacker could snoop on your communications or, worse, masquerade as the person you think you're talking to. Yet today, most users don't have to worry about those kinds of attacks. Why not? The answer is the **Transport Layer Security** protocol, which transparently secures much of the modern Web. Strap in, because we're about to learn some cryptography.
 
 # Conceptual Overview
@@ -1383,8 +1381,6 @@ And, at long last, the client and server have a secure channel which they can co
 # Epilogue
 
 This article only shows part of what makes TLS tick. There's much more beneath the surface; things like 0-RTT messages, client authentication, SNI, ALPN, the list goes on. Not to mention the fact that TLS 1.3 is vastly different from TLS 1.2 in many ways&mdash;though I specifically chose TLS 1.3 since it is more elegant than TLS 1.2, which is more nuanced thanks to several well-known security holes. To learn more, the RFCs are your best friend. Skip ahead to the Further Reading section for some good references.
-
-Oh, and if you liked this article, good news: there are [more like it](internet-series.html) on my blog.
 
 # Behind the Scenes 
 
