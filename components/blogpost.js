@@ -23,7 +23,7 @@ const comments = properties => {
     return script({
         src: "https://utteranc.es/client.js",
         crossorigin: "anonymous",
-        ...commentsSettings,    
+        ...settings   
     });
 };
 
@@ -49,4 +49,5 @@ module.exports = (properties, src) => {
             ])
         )
     );
+
 }
