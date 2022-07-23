@@ -16,7 +16,7 @@ module.exports = blogposts => document(
     ),
     blogposts.map(blogpost => article(
         p({class: "date"}, formatDate(new Date(blogpost.timestamp))),
-        a({href: blogpost.id + ".html"}, h1(blogpost.title)),
+        a({href: `/blogposts/${blogpost.id}/`}, h1(blogpost.title)),
         p(blogpost.description),
     ))
 );
