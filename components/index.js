@@ -14,9 +14,11 @@ module.exports = blogposts => document(
         p("Hello, I'm Adrian. Welcome to my blog, a loose collection of technology-related ramblings on various topics. Hopefully, you'll find them interesting."),
         button({id: "toggle-serif"}, "Toggle serif"), " ", button({id: "toggle-darkmode"}, "Toggle darkmode")
     ),
-    blogposts.map(blogpost => article(
-        p({class: "date"}, formatDate(new Date(blogpost.timestamp))),
-        a({href: `/blogposts/${blogpost.id}/`}, h1(blogpost.title)),
-        p(blogpost.description),
-    ))
+    div({id: "blogposts"},
+        blogposts.map(blogpost => article(
+            p({class: "date"}, formatDate(new Date(blogpost.timestamp))),
+            a({href: `/blogposts/${blogpost.id}/`}, h1(blogpost.title)),
+            p(blogpost.description),
+        ))
+    )
 );

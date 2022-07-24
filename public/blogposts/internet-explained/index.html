@@ -123,7 +123,7 @@ fetch("https://v6-api.bithole.dev/ip").then(resp => resp.text()).then(ip => show
 </div>
 <div class="segment" data-part="ipv6" data-hex="3a" data-name="Next Header">
 
-<p>This field indicates the type of data contained within the IPv6 header. <code>0x3a</code> is the assigned number for ICMPv6.</p>
+<p>In this packet, the IPv6 header is followed immediately by the packet payload, so the Next Header value is equal to <code>0x3a</code> since that is the assigned number for ICMPv6.</p>
 </div>
 <div class="segment" data-part="ipv6" data-hex="40" data-name="Hop Limit">
 
@@ -181,18 +181,27 @@ fetch("https://v6-api.bithole.dev/ip").then(resp => resp.text()).then(ip => show
 <p>Okay, so we&#39;ve obtained an IP address. Now what?</p>
 <p><img src="/blogposts/internet-explained/ip-lan.png" alt="diagram of an IP LAN"></p>
 <p>Suppose computer 10.0.0.2 wants to send a message to 10.0.0.3. In order to actually deliver a message to 10.0.0.3, our sender needs to know which MAC address to send packets to. It can obtain this information via the <a href="https://en.wikipedia.org/wiki/Address_Resolution_Protocol">Address Resolution Protocol</a> (ARP).</p>
-<h2 id="obtaining-an-ip-address-ipv6-style">Obtaining an IP Address, IPv6 Style <a class="section-link" href="#obtaining-an-ip-address-ipv6-style">&sect;</a></h2><p>DHCP exists for IPv6 in the form of DHCPv6, but several alternative ways to obtain an address are also provided.</p>
+<h2 id="obtaining-an-ip-address-ipv6-style">Obtaining an IP Address, IPv6 Style <a class="section-link" href="#obtaining-an-ip-address-ipv6-style">&sect;</a></h2><p>DHCP exists for IPv6 in the form of DHCPv6, but several alternative ways to obtain an address are also provided. In this section, we&#39;re going to be covering StateLess Address AutoConfiguration (SLAAC).</p>
 <p>TODO</p>
-<h2 id="address-resolution-protocol">Address Resolution Protocol <a class="section-link" href="#address-resolution-protocol">&sect;</a></h2><p>ARP is a protocol that enables the resolution of IP addresses to MAC addresses on a network. It operates on the link-layer. When a computer needs to determine the MAC address given an IP address, it broadcasts an ARP request to the local network. This is done by sending frames addressed to a MAC address of FF:FF:FF:FF:FF:FF, which signals to the switch that the message should be relayed to all connected devices. The device which has the corresponding IP responds to the request with its MAC and IP address. Both of these devices may cache each others&#39; IP and MAC addresses to avoid making another ARP request in the future.</p>
-<p>There also exists a second method for the discovery of IP-to-MAC mappings. Under certain circumstances, such as when a device joins a network or obtains a new IP address, it may publish an ARP announcement that prompts all other devices to update their ARP caches.</p>
+<h2 id="address-resolution-protocol">Address Resolution Protocol <a class="section-link" href="#address-resolution-protocol">&sect;</a></h2><p>If you want to send a packet to some IP address, the process goes something like this:</p>
+<ul>
+<li>Determine which MAC address represents that IP</li>
+<li>Create the IP packet</li>
+<li>Encapsulate the IP packet in an Ethernet frame</li>
+<li>Send the frame to that MAC address</li>
+</ul>
+<p>How do we look up the MAC address for a given IP? This is where the Address Resolution Protocol (ARP) steps in. ARP operates on the link layer, meaning that ARP packets are not encapsulated in IP packets. When a computer needs to determine the MAC address for an IP address, it broadcasts an ARP request to the local network. This is done by sending frames addressed to a MAC address of FF:FF:FF:FF:FF:FF, which signals to the switch that the message should be relayed to all connected devices. The device which has the corresponding IP responds to the request with its MAC and IP address. Both of these devices may cache each others&#39; IP and MAC addresses to avoid making another ARP request in the future. In the future, when a device joins a network or obtains a new IP address, it may publish an ARP announcement that prompts all other devices to update their ARP caches.</p>
 <aside>
 
 <p>One major weakness of ARP is its vulnerability to <a href="https://en.wikipedia.org/wiki/ARP_spoofing">spoofing attacks</a>, wherein a malicious device publishes an ARP announcement or responds to an ARP request not intended for them in order to masquerade as another device. For this reason, IPv6 uses <a href="https://en.wikipedia.org/wiki/Neighbor_Discovery_Protocol">Neighbor Discovery Protocol</a> (NDP) instead of ARP. NDP seeks to address some of the security and usability problems which have traditionally affected ARP. To learn more, check out <a href="https://superuser.com/questions/969831/why-is-arp-replaced-by-ndp-in-ipv6">this thread</a> on StackExchange.</p>
 </aside>
 
 <p>ARP is ubiquitous among IEEE 802 networks. If your computer is on a WiFi or Ethernet-based network, you can install <a href="https://www.wireshark.org/">Wireshark</a> and observe ARP requests happening right before your eyes.</p>
-<p><img src="/blogposts/internet-explained/arp-capture.png" alt="arp requests on my LAN, as seen by wireshark"></p>
-<p><em>Some ARP requests seen on my local network.</em></p>
+<figure style="max-width: 878px">
+    <img src="/blogposts/internet-explained/arp-capture.png" alt="arp requests on my LAN, as seen by wireshark">
+    <figcaption>Some ARP requests seen on my local network.</figcaption>
+</figure>
+
 <p>Your computer doesn&#39;t make an ARP request for every single outgoing IPv4 connection. If configured correctly, your computer should be able to tell which addresses belong to the local network (i.e. they can be reached by MAC address) and which reside on the public internet. </p>
 <h2 id="introduction-to-cidr">Introduction to CIDR <a class="section-link" href="#introduction-to-cidr">&sect;</a></h2><p>During the Internet&#39;s infancy, the format of IP addresses was much simpler. As seen in <a href="https://datatracker.ietf.org/doc/html/rfc760#section-3.1">RFC 760</a>, published in January 1980, the first 8 bits of each IP address identified which network it originated from, and the remaining 24 bits were unique to each host. This limited the Internet to just 256 networks (technically 254 since addresses beginning with 0 are reserved for local use and addresses beginning with 255 are used for broadcast). It soon become apparent that the Internet would grow to encompass much more than just 256 networks, so the <a href="https://en.wikipedia.org/wiki/Classful_network">classful network</a> scheme was adopted.</p>
 <p>Under classful networking, each network belongs to one of three classes:</p>

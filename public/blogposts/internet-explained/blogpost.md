@@ -161,7 +161,7 @@ The length of the IPv6 packet's payload, 64 bytes in this case.
 </div>
 <div class="segment" data-part="ipv6" data-hex="3a" data-name="Next Header">
 
-This field indicates the type of data contained within the IPv6 header. `0x3a` is the assigned number for ICMPv6.
+In this packet, the IPv6 header is followed immediately by the packet payload, so the Next Header value is equal to `0x3a` since that is the assigned number for ICMPv6.
 
 </div>
 <div class="segment" data-part="ipv6" data-hex="40" data-name="Hop Limit">
@@ -238,15 +238,19 @@ Suppose computer 10.0.0.2 wants to send a message to 10.0.0.3. In order to actua
 
 ## Obtaining an IP Address, IPv6 Style
 
-DHCP exists for IPv6 in the form of DHCPv6, but several alternative ways to obtain an address are also provided.
+DHCP exists for IPv6 in the form of DHCPv6, but several alternative ways to obtain an address are also provided. In this section, we're going to be covering StateLess Address AutoConfiguration (SLAAC).
 
 TODO
 
 ## Address Resolution Protocol
 
-ARP is a protocol that enables the resolution of IP addresses to MAC addresses on a network. It operates on the link-layer. When a computer needs to determine the MAC address given an IP address, it broadcasts an ARP request to the local network. This is done by sending frames addressed to a MAC address of FF:FF:FF:FF:FF:FF, which signals to the switch that the message should be relayed to all connected devices. The device which has the corresponding IP responds to the request with its MAC and IP address. Both of these devices may cache each others' IP and MAC addresses to avoid making another ARP request in the future.
+If you want to send a packet to some IP address, the process goes something like this:
+* Determine which MAC address represents that IP
+* Create the IP packet
+* Encapsulate the IP packet in an Ethernet frame
+* Send the frame to that MAC address
 
-There also exists a second method for the discovery of IP-to-MAC mappings. Under certain circumstances, such as when a device joins a network or obtains a new IP address, it may publish an ARP announcement that prompts all other devices to update their ARP caches.
+How do we look up the MAC address for a given IP? This is where the Address Resolution Protocol (ARP) steps in. ARP operates on the link layer, meaning that ARP packets are not encapsulated in IP packets. When a computer needs to determine the MAC address for an IP address, it broadcasts an ARP request to the local network. This is done by sending frames addressed to a MAC address of FF:FF:FF:FF:FF:FF, which signals to the switch that the message should be relayed to all connected devices. The device which has the corresponding IP responds to the request with its MAC and IP address. Both of these devices may cache each others' IP and MAC addresses to avoid making another ARP request in the future. In the future, when a device joins a network or obtains a new IP address, it may publish an ARP announcement that prompts all other devices to update their ARP caches.
 
 <aside>
 
@@ -256,9 +260,10 @@ One major weakness of ARP is its vulnerability to [spoofing attacks](https://en.
 
 ARP is ubiquitous among IEEE 802 networks. If your computer is on a WiFi or Ethernet-based network, you can install [Wireshark](https://www.wireshark.org/) and observe ARP requests happening right before your eyes.
 
-![arp requests on my LAN, as seen by wireshark](/blogposts/internet-explained/arp-capture.png)
-
-*Some ARP requests seen on my local network.*
+<figure style="max-width: 878px">
+    <img src="/blogposts/internet-explained/arp-capture.png" alt="arp requests on my LAN, as seen by wireshark">
+    <figcaption>Some ARP requests seen on my local network.</figcaption>
+</figure>
 
 Your computer doesn't make an ARP request for every single outgoing IPv4 connection. If configured correctly, your computer should be able to tell which addresses belong to the local network (i.e. they can be reached by MAC address) and which reside on the public internet. 
 

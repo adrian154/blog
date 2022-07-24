@@ -1,10 +1,17 @@
+body {
+    max-width: 55rem;
+    margin-top: 0;
+    padding-top: 0;
+}
+
 h1 {
     display: inline-block;
     margin: 0;
     border: 0;
     padding: 0;
     cursor: pointer;
-    font-size: 2.0em;
+    font-size: 1.3em !important; /* FIXME */
+    font-weight: 500;
 }
 
 h1:hover {
@@ -19,4 +26,21 @@ h1:hover {
 
 html.darkmode #blog-intro {
     background-color: rgba(0, 0, 0, 50%);
+}
+
+#blogposts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2em;
+}
+
+article p {
+    margin-top: 0.5em;
+    opacity: 85%;
+    font-size: 12pt;
+}
+
+footer {
+    margin-top: 3.0em;
+    text-align: center;
 }
