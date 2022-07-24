@@ -36,7 +36,7 @@ document.getElementById("button").addEventListener("click", async event => {
 
         // trigger a DNS query to our server
         const name = `${randomid()}.g4vmltbq.xyz.`
-        await fetch(`http://${name}/`).catch(() => {});
+        await fetch(`https://${name}/`).catch(() => {});
         
         i++;
 
