@@ -1,0 +1,26 @@
+#button {
+    display: block;
+    margin: auto;
+    border: none;
+    background-color: #dddddd;
+    font-family: inherit;
+    font-size: 1.0em;
+    padding: 0.5em 1.0em;
+}
+
+#button:hover {
+    background-color: #cacaca;
+}
+
+#resolvers {
+    max-width: 27em;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1em;
+}
+
+#resolvers span {
+    font-family: monospace;
+    font-size: 13pt;
+}

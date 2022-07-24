@@ -1,5 +1,13 @@
 [
     {
+        "id": "detecting-dns-resolvers",
+        "title": "Detecting Users' DNS Resolvers",
+        "description": "Utilizing DNS tomfoolery for fun and profit. Well, actually, just fun.",
+        "stylesheets": ["/blogposts/detecting-dns-resolvers/styles.css"],
+        "timestamp": 1658683083044,
+        "publish": true
+    },
+    {
         "id": "bitcoin-explained",
         "title": "Yet Another Bitcoin Explanation",
         "description": "Because why not?"
