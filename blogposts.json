@@ -33,7 +33,9 @@
         "description": "So what makes this thing tick, anyways?",
         "timestamp": 1641357338707,
         "publish": true,
-        "issueNumber": 10
+        "issueNumber": 10,
+        "scripts": ["/scripts/packetview.js"],
+        "stylesheets": ["/stylesheets/packetview.css"]
     },
     {
         "id": "jpeg-explained",

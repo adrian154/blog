@@ -9,7 +9,7 @@ module.exports = blogposts => '<?xml version="1.0" encoding="UTF-8" ?>' + tag("r
         tag("language", "en-us"),
         tag("lastBuildDate", new Date().toUTCString()),
         blogposts.map(blogpost => {
-            const url = new URL(`/${blogpost.id}.html`, config.baseURL).toString();
+            const url = new URL(`/blogposts/${blogpost.id}/`, config.baseURL).toString();
             return tag("item", 
                 tag("title", blogpost.title),
                 tag("link", url),

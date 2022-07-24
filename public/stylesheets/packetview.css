@@ -62,10 +62,32 @@
 }
 
 /* server/client color schemes */
-.client .container { background-color: rgba(12, 255, 0, 10%); }
-.client .hex-segment:hover, .client .highlighted .hex-segment { background-color: rgba(12, 255, 0, 25%); }
-.server .container { background-color: rgba(255, 0, 0, 10%); }
-.server .hex-segment:hover, .server .highlighted .hex-segment { background-color: rgba(255, 0, 0, 25%); }
+.client .container,
+.client .hex-segment:hover,
+.client .highlighted .hex-segment {
+    background-color: rgba(12, 255, 0, 25%);
+}
+
+.server .container,
+.server .hex-segment:hover,
+.server .highlighted .hex-segment {
+    background-color: rgba(255, 0, 0, 25%);
+}
+
+.ethernet.container,
+.ethernet .hex-segment {
+    background-color: rgba(255, 173, 8, 25%);
+}
+
+.ipv6.container,
+.ipv6 .hex-segment {
+    background-color: rgba(8, 197, 255, 25%);
+}
+
+.icmpv6.container,
+.icmpv6 .hex-segment {
+    background-color: rgba(155, 66, 245, 25%);
+}
 
 /* show label on hover/highlight */
 .hex-segment:hover + .label-outer, .highlighted .label-outer {

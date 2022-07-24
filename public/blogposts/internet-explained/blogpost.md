@@ -1,30 +1,26 @@
-Some time ago, it occurred to me that I didn't *really* understand what made the Internet work. Sure, I am all too familiar with what the user experience is like, and my adventures in web development have forced me to acquire a fair bit of networking knowledge, but between the bits of light there existed vast chasms of confusion. So I decided to do some reading, some soul-searching, and publish my findings in the form of a blog post.
+Some time ago, it occurred to me that I didn't *really* understand what made the Internet work. Sure, I am all too familiar with what the user experience is like, and my adventures in web development have forced me to acquire a bit of networking knowledge, but between the bits of light here and there existed vast chasms of confusion. So I decided to do some reading, some soul-searching, and publish my findings in the form of a blog post.
 
-Please note that this post is by no means a comprehensive overview of *all* the technologies involved in the Internet; that would require far more lifetimes than the one which I have to waste. I probably won't cover the Internet's history in very much depth, either, though that is a fascinating topic that I strongly encourage you to look into.
-
-The word "internet" itself offers some hints about its architecture. "Internet" is short for *internetworking*, the act of unifying numerous computer networks under one protocol. That's essentially what the Internet is, a bunch of independently maintained networks that are joined together such that any two computers on the Internet can reach each other.
-
-## A Word on Layers
-
-The Internet is powered by an ever-expanding family of technologies and protocols. These systems are segregated into layers, and each layer is responsible for providing an interface that allows the next layer to do its job. This layered model serves as a great way to understand the Internet starting from the ground up. In reality, the divisions between these layers are not as concrete as one would hope, and as a result there is quite a bit of disagreement over how to best model the Internet stack (primarily between supporters of the [OSI model](https://en.wikipedia.org/wiki/OSI_model) and the [TCP/IP model](https://en.wikipedia.org/wiki/Internet_protocol_suite#Comparison_of_TCP/IP_and_OSI_layering)). Since this debate is incredibly contentious, I will do my best to avoid it.
+The word "internet" itself offers some hints about its architecture. "Internet" is short for *internetworking*, the act of unifying numerous computer networks under one protocol. That's essentially what the Internet is, a bunch of independently maintained networks that are joined together such that any two computers on the Internet can reach each other, even if the physical protocols that the two devices use to reach their peers are completely incompatible.
 
 # Physical Layer
 
-Let's start from the very bottom. No Internet, no networks even. Consider two computers: how can digital data be transferred from one to another? The answer to this question is the **physical layer**, which describes how to transmit ones and zeroes over a physical transmission medium. This involves everything from the actual physical connectors or radio bands used for communication, to the [line codes](https://en.wikipedia.org/wiki/Line_code) which specify how to extract a bitstream from the measured values of a signal.
+Let's start from the very bottom. No Internet, no networks even. Our goal is to simply transfer some information from point A to point B. It turns out that there are incredibly many ways to accomplish this, each with its own strengths and weaknesses.
 
-The physical layer is closely tied to the **link layer**, which leverages the physical layer's capabilities to transfer full *frames* of data over a network that may be more complicated than a single point-to-point link. It may also take on responsibilities such as error correction and automatic retransmission.
+In the context of the Internet, we refer to the rules which govern how data is encoded and transmitted through a physical medium as the **physical layer**. This involves everything from the actual connectors or radio bands used for communication, to the [line codes](https://en.wikipedia.org/wiki/Line_code) which specify how to extract a bitstream from the measured values of a signal.
+
+The physical layer is closely tied to the **link layer**, which leverages the physical layer's capabilities to transfer discrete units of data ("frames") over a network, especially one with topology more complicated than a single point-to-point link. It may also take on responsibilities such as error correction and automatic retransmission.
 
 <aside>
 
-The idea of a "frame" is a little vague since their implementation varies a great deal between different protocols. However, for every network, there is a maximum frame size that it can accept, known as the [maximum transmission unit](https://en.wikipedia.org/wiki/Maximum_transmission_unit) or MTU. This is an important property of the link-layer network that higher layers need to be aware of.
+For every network, there is a maximum frame size that it can accept, known as the [maximum transmission unit](https://en.wikipedia.org/wiki/Maximum_transmission_unit) or MTU. This is an important property of the link-layer network that higher layers need to be aware of.
 
 </aside>
 
 The physical layer and link layer are generally tightly coupled (out of necessity), which is the source of endless frustration. For example, the term "Ethernet" might refer to the physical cable standard, but it could also refer to the Ethernet protocol used to transfer frames over those cables. Which is it?
 
-The full answer is that Ethernet spans several network layers, because it supports a variety of physical transmission media. There's of course the classical [twisted pair cable](https://en.wikipedia.org/wiki/Category_6_cable), but Ethernet also works over coaxial cable and optical fiber. Each of these physical layers are managed by different standards, which are collectively maintained by [https://en.wikipedia.org/wiki/IEEE_802.3].
+The full answer is that Ethernet spans several network layers, because it supports a variety of physical transmission media. There's of course the classical [twisted pair cable](https://en.wikipedia.org/wiki/Category_6_cable), but Ethernet also works over coaxial cable and optical fiber. Ethernet itself belongs to a bigger group of [IEEE 802](https://en.wikipedia.org/wiki/IEEE_802) technologies, which also includes protocols like Wi-Fi. All IEEE 802 protocols implement a link-layer interface called **medium access control** (MAC), allowing interoperation between them.
 
-Ethernet itself belongs to a bigger group of [IEEE 802](https://en.wikipedia.org/wiki/IEEE_802) technologies, which all support a link-layer interface called **medium access control** (MAC). MAC abstracts away some of the details of the physical layer, and allows devices on the same **local area network** (LAN) to communicate. Each device (specifically, each [interface](https://en.wikipedia.org/wiki/Network_interface_controller)) has a unique 48-bit identifier, known as a MAC address. These addresses are allocated by IEEE to manufacturers of network equipment, though some mobile devices simply generate a [random MAC address](https://support.apple.com/guide/security/wi-fi-privacy-secb9cb3140c/web) for privacy reasons. We'll see how MAC addresses are used in routing later.
+Under MAC, each network interface has a unique 48-bit identifier known as a MAC address. These addresses are allocated by IEEE to manufacturers of network equipment, though some mobile devices simply generate a [random MAC address](https://support.apple.com/guide/security/wi-fi-privacy-secb9cb3140c/web) for privacy reasons. We'll see how MAC addresses are used in routing later.
 
 Beyond Ethernet, there are no shortage of other physical and link-layer technologies. Here are some prolific examples:
 * WiFi ([IEEE 802.11](https://en.wikipedia.org/wiki/IEEE_802.11))
@@ -40,24 +36,24 @@ There are also plenty of obscure and dead LAN technologies. One example is [Toke
     <figcaption>An Ethernet switch. <a href="https://commons.wikimedia.org/wiki/File:Netgear_Gigabit_Switch_5-port.jpg">Image</a> by <a href="https://commons.wikimedia.org/wiki/User:LivingShadow">Simon A. Eugster</a> / <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.en">CC-BY</a></figcaption>
 </figure>
 
-Devices called [network switches](https://en.wikipedia.org/wiki/Network_switch) allow communication between nodes on the same LAN. A switch is basically an embedded device with a large number of Ethernet ports. Because all devices on the network communicate with each other by talking through the switch, a [star topology](https://en.wikipedia.org/wiki/Star_network) is formed.
+Devices called [network switches](https://en.wikipedia.org/wiki/Network_switch) allow communication between interfaces on the same LAN. A switch is basically an embedded device with a large number of Ethernet ports. Because all devices on the network communicate with each other by talking through the switch, a [star topology](https://en.wikipedia.org/wiki/Star_network) is formed.
 
 <figure style="max-width: 481px">
     <img src="/blogposts/internet-explained/switch-star-topology.png" alt="star topology diagram">
     <figcaption>In case you can't tell, I'm not exactly the best at making diagrams.</figcaption>
 </figure>
 
-Ethernet frames are fairly simple in structure. As expected, each frame contains the source MAC address and destination MAC address (along with other fields such as a checksum) before the payload, so that the frame can be routed to the correct recipient. 
+Ethernet frames are fairly simple in structure. Each frame contains the source MAC address and destination MAC address (along with other fields such as a checksum) before the payload, so that the frame can be routed to the correct recipient. 
 
-When computer A wants to send a message to computer B, it sends a frame to the switch with computer B's MAC address. However, the switch doesn't know which physical port the connection to computer B is located on, so it relays the frame to all connected computers, hoping that one of them is the intended recipient. When computer B receives the frame, it might reply with another frame. That frame would contain computer B's MAC address as the source, allowing the switch to internally associate the connection it received the frame on with computer B. In the future, when the switch receives a frame with computer B as its destination, it can simply relay the frame on the correct link instead of *flooding*.
+When computer A wants to send a message to computer B, it sends a frame to the switch with computer B's MAC address. However, the switch doesn't know which physical port the connection to computer B is located on, so it relays the frame to every connected device in hopes that one of them is the intended recipient (a practice known as flooding). When computer B receives the frame, it might reply with another frame. That frame would contain computer B's MAC address as the source, allowing the switch to internally associate the physical port it received the frame on with computer B's MAC address. In the future, when the switch receives a frame with computer B as its destination, it knows exactly where to send the frame.
 
 <aside>
 
 Back in the day, when everything was slightly worse, networks were often created using [hubs](https://en.wikipedia.org/wiki/Ethernet_hub) instead of switches. Hubs are much simpler devices which simply retransmit everything that it receives on every port. Because of their relative lack of sophistication, hubs suffer from a littany of problems:
 * Since every device needs to be able to receive the data being transmitted by the hub, if one device was slower than the others, *every* link on the switch would be forced to operate at that speed.
-* Multiple devices trying to transmit at the same time would result in both devices talking over each other (a condition known as a [collision](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_detection)), requiring them to detect the conflict and stop transmitting. This strategy known as [Carrier-Sense Multiple Access with Collision Detection](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_detection), or CSMA/CD. "Carrier-Sense" refers to how transmitting devices were responsible for detecting a colliding signal and deferring their transmission. This resulted in degraded network performance as more devices were attached to the hub.
+* Multiple devices trying to transmit at the same time would result in both devices talking over each other (a condition known as a collision), requiring them to detect the conflict and stop transmitting. Collisions were avoided using a protocol known as [Carrier-Sense Multiple Access with Collision Detection](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_detection), or CSMA/CD. "Carrier-Sense" refers to how transmitting devices were responsible for detecting a colliding signal and stopping their transmission. This resulted in degraded network performance as more devices were attached to the hub.
 
-Today, hubs have been made obsolete in favor of switches and are rarely used outside of special conditions (though evidently my school's IT department hasn't gotten the memo). Even in the early days of Ethernet, it was apparent that collisions posed a challenging problem, so other protocols approached access control differently. For example, in Token Ring setups, there is no central switch or hub; nodes are connected in a ring, and transmission rights are passed around the ring, so no collisions were possible. When one node was done transmitting, it passed the *token* to the next node, hence the name "Token Ring". \*roll credits\*
+Today, hubs have been made obsolete in favor of switches and are rarely used outside of special conditions (though evidently my school's IT department hasn't gotten the memo). Even in the early days of Ethernet, it was apparent that collisions posed a challenging problem, so other protocols approached access control differently. For example, in Token Ring setups, there is no central switch or hub; nodes are connected in a ring, and transmission rights are passed around the ring, so no collisions were possible. When one node was done transmitting, it passed the *token* to the next node, hence the name "Token Ring".
 
 </aside>
 
@@ -65,54 +61,166 @@ Switches are one of the most ubiquitous building blocks of computer networks, so
 
 ## WiFi
 
-Ethernet is *the* most common standard for wired communications, but most people access their network wirelessly when at home. So let's talk about WiFi, which is standardized by [IEEE 802.11](https://en.wikipedia.org/wiki/IEEE_802.11). The biggest difference in wireless networking is that for the purposes of a residential LAN, point-to-point links don't exist. Instead, devices communicate with the LAN by broadcasting on a predetermined frequency. All devices on the LAN receive and decode incoming frames, and simply filter out the ones which aren't intended for them.
+Ethernet is *the* most common standard for wired communications, but most people access their network wirelessly when at home. So let's talk about WiFi, which is standardized in [IEEE 802.11](https://en.wikipedia.org/wiki/IEEE_802.11). The biggest difference in wireless networking is that for the purposes of a residential LAN, point-to-point links don't exist. Instead, devices communicate with the LAN by broadcasting on a predetermined frequency. All devices on the LAN receive and decode incoming frames, and simply filter out the ones which aren't intended for them.
 
-However, this comes with the pitfall that only one device can transmit at a given time per channel. If you've ever heard a faint broadcast from a different station while listening to the radio, you've experienced this effect; however, unlike humans, computers cannot distinguish two simultaneous transmissions, so algorithms like [Carrier-Sense Multiple Access with Collision Avoidance](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_avoidance) are necessary. WiFi can't use CSMA/CD because CSMA/CD relies on transmitters being able to listen for a colliding signal while transmitting; that's easy for wired network devices, which transmit and receive on physically isolated wires, but WiFi transceivers have to stop receiving while transmitting, or they'd only be able to hear their own signal. Thus, collision *avoidance* is used, where transceivers wait until the network has been quiet for some time before starting to transmit. Optionally, channel access can be explicitly mediated through messages that indicate when a node intends to begin transmitting, a scheme called [RTS/CTS](https://en.wikipedia.org/wiki/IEEE_802.11_RTS/CTS).
+However, this comes with the pitfall that only one device can transmit at a time on a given channel. The situation is similar to what happens when multiple people try to have a conversation in a small room. WiFi can't use CSMA/CD either, because CSMA/CD relies on transmitters being able to listen for a colliding signal while transmitting; that's easy for wired network devices, which transmit and receive on physically isolated wires, but WiFi transceivers have to stop receiving while transmitting or they'd only be able to hear their own signal. Thus, collision *avoidance* is used, where transceivers wait until the network has been quiet for some time before starting to transmit.
 
-We established that in the case of wired networks, your router is directly responsible for routing frames between physical links, but that's unnecessary in the case of WiFi. In fact, any device with a WiFi transceiver can [broadcast its own network](https://en.wikipedia.org/wiki/Wireless_ad_hoc_network); Windows even [natively supports](https://answers.microsoft.com/en-us/windows/forum/all/how-do-i-set-up-an-ad-hoc-wifi-network-in-windows/0caa92d8-e02f-4e7f-aa5c-0abf10ed2039) this feature. Instead, your router plays the role of a [wireless access point](https://en.wikipedia.org/wiki/Wireless_access_point), aptly abbreviated to **WAP**. (In light of "WAP" becoming rather vulgar in recent years, I will use the more succinct abbreviation of just **AP** for the rest of this post.) The job of an AP is simple; it just serves as an interface between the wireless network and the *gateway*, which has access to the public Internet. Speaking of which...
+![illustration of the hidden node problem](/blogposts/internet-explained/hidden-node-problem.png)
+
+Collision avoidance sometimes fails, though. Check out this diagram, where the red and blue circles represent the range which devices A and B can receive communications, respectively. Device A cannot hear device B, so it has no way to avoid transmitting at the same time as device B. If that happens, the device at the center (which is in range of both device A and device B) will be unable to decipher either device's transmission. This is called the *hidden node problem*.
+
+To alleviate the hidden node problem, WiFi implements an algorithm called Request-to-Send/Clear-to-Send, or RTS/CTS. With RTS/CTS, every node asks the access point whether it's okay for them to transmit in combination with checking if the channel is quiet. Only when a clear-to-send message is received from the access point does the device send the packet. RTS/CTS is always used, but under the right conditions it is shown to give a fairly significant boost to network throughput.
+
+Speaking of which, what *is* an access point, anyways? We've already established that unlike in a wired network, a central switching point is not strictly necessary for wireless networks; every device includes a transceiver, so any two WiFi-enabled devices can talk to each other without external help. Instead, the job of a wireless access point is to serve as the gateway between the local network and greater Internet. Speaking of which&hellip;
 
 # Internet Layer
 
 We've finally reached the Internet layer of the Internet. This is where all the action happens! Buckle up, and let's explore how it works.
 
-Relatively few protocols live in the Internet layer itself. Its primary inhabitants are the [Internet Protocol](https://en.wikipedia.org/wiki/Internet_Protocol) (IP) and [Internet Control Message Protocol](https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol) (ICMP). There are two currently deployed versions of IP, IPv4 and IPv6, which are generally very similar but vary in subtle yet important ways.
+Unsurprisingly, the Internet is powered by the [Internet Protocol](https://en.wikipedia.org/wiki/Internet_Protocol). There are actually two different versions of IP with widespread deployment: IPv4, and IPv6. The fundamental concepts are very similar, but there are important differences between the two protocols.
 
-In IP, every network interface (usually just one per computer) is associated with an IP address. In IPv4, this address is 32-bits long, and usually written as a series of four numbers (each corresponding to a byte or *octet* of the IP address) and separated by periods. For example, the IP of this blog at the time of writing is 142.93.26.121. IP addresses are managed by the [Internet Assigned Numbers Authority](https://en.wikipedia.org/wiki/Internet_Assigned_Numbers_Authority), which assigns blocks of IP addresses to the five [Regional Internet Registries](https://en.wikipedia.org/wiki/Regional_Internet_registry). The RIRs, in turn, deal with requests from individuals and businesses for IP allocations.
+In IP, every network interface is associated with an IP address. In IPv4, this address is 32-bits long, and usually written as a series of four numbers (each corresponding to a byte or *octet* of the IP address) separated by periods. For example, the IP of this blog at the time of writing is 142.93.26.121. IP addresses are managed by the [Internet Assigned Numbers Authority](https://en.wikipedia.org/wiki/Internet_Assigned_Numbers_Authority), which assigns blocks of IP addresses to the five [Regional Internet Registries](https://en.wikipedia.org/wiki/Regional_Internet_registry). The RIRs, in turn, deal with requests from individuals and businesses for IP allocations.
 
-## IPv4 Exhaustion
-
-Because IPv4 addresses are only 32 bits long, there can only be 2<sup>32</sup> = ~4 billion unique IPv4 addresses. That seems like a lot, but as early as the 90s the threat of [running out of IPv4 addresses](https://en.wikipedia.org/wiki/IPv4_address_exhaustion) has continually loomed over the Internet, made worse by the fact that many parts of IPv4 space are [reserved](https://en.wikipedia.org/wiki/Reserved_IP_addresses) for various purposes. To fix this issue, IPv6 was created. IPv6 addresses are 128 bits long, which is more than enough to serve humanity's needs at the moment. (If all IPv6 addresses were distributed equally among all living humans, every individual could have 47 octillion addresses. It's safe to say that we won't be running out any time soon, especially because sadly a lot of the Internet is still stuck on IPv4.)
+Because IPv4 addresses are only 32 bits long, there can only be 2<sup>32</sup> = ~4 billion unique IPv4 addresses. That seems like a lot, but as early as the 90s the threat of running out of IPv4 addresses has continually loomed over the Internet, made worse by the fact that many parts of IPv4 space are [reserved](https://en.wikipedia.org/wiki/Reserved_IP_addresses) for various purposes.
 
 <figure style="max-width: 740px">
     <img src="/blogposts/internet-explained/xkcd-internet-map.jpg" alt="xkcd internet map">
     <figcaption><a href="https://xkcd.com/195/">xkcd 195</a>: a map of IPv4 space circa 2006. Things have only gotten more crowded since then.</figcaption>
 </figure>
 
+To fix this issue, IPv6 was created. IPv6 addresses are 128 bits long, which is more than enough to serve humanity's needs at the moment; for reference, you could assign each human alive a trillion IPv6 addresses and it wouldn't even scratch 1% of the full IPv6 space. IPv6 addresses are written as a series of two-octet groups, like `2607:f8b0:4005:080b:0000:0000:0000:200e`. Sequential groups of zeroes can omitted, so the previous address would be written as `2607:f8b0:4005:80b::200e`.
+
 <aside>
 
-*Why can't MAC addresses just be used for routing?*, you might ask. The biggest reason is that IP is meant to be mostly agnostic of the protocols used in the underlying link layer. Using MAC addresses would violate that principle; networks not running on IEEE 802 technologies wouldn't be able to join the Internet, which defeats its whole purpose of connecting numerous heterogeneous networks.
+<p id="v4-addr" style="display: none">Your IPv4 address is <code></code>.</p>
+
+<p id="v6-addr" style="display: none">Your IPv6 address is <code></code>.</p>
+
+<noscript>Enable JavaScript to see your IPv4 and IPv6 address here!</noscript>
+
+<script>
+const showIP = (elem, value) => {
+    elem.style.display = "";
+    elem.querySelector("code").textContent = value;
+};
+
+const showErr = (elem, v6) => {
+    elem.style.display = "";
+    elem.textContent = v6 ? "Your IPv6 address could not be determined. You probably don't have it." : "Your IPv4 address could not be determined.";
+};
+
+const v4addr = document.getElementById("v4-addr"), 
+      v6addr = document.getElementById("v6-addr");
+
+fetch("https://v4-api.bithole.dev/ip").then(resp => resp.text()).then(ip => showIP(v4addr, ip)).catch(() => showErr(v4addr));
+
+fetch("https://v6-api.bithole.dev/ip").then(resp => resp.text()).then(ip => showIP(v6addr, ip)).catch(() => showErr(v6addr, true));
+</script>
 
 </aside>
 
 ## Packets
 
-One of the key innovations that made the Internet possible was [packet switching](https://en.wikipedia.org/wiki/Packet_switching), the idea of transferring digital data throughout a computer network by splitting it into chunks called *packets* and allowing intermediate nodes (routers) to decide where to send the packet next. Thanks to its ubiquity, packet switching probably seems incredibly mundane and obvious to most programmers today, but at the time (when the predominant paradigm for telecommunications was [circuit switching](https://en.wikipedia.org/wiki/Circuit_switching)), packet switching was revolutionary. Compared to circuit switching, packet switching allows for much more diverse network topologies, and does not require all the packets in a single data stream to travel to the recipient via the same route, making Internet routing incredibly dynamic. All of these attributes have helped the Internet scale to billions of connected devices.
+One of the key innovations that made the Internet possible was [packet switching](https://en.wikipedia.org/wiki/Packet_switching). The idea behind packet switching is to split digital data to be transferred into discrete chunks, or packets. Whenever a machine receives a packet, it consults its routing table to determine which host to send the packet to next. Thanks to its ubiquity, packet switching probably seems fairly mundane to most programmers today, but at the time (when the predominant paradigm for telecommunications was [circuit switching](https://en.wikipedia.org/wiki/Circuit_switching)), packet switching was revolutionary.
 
-An IPv4 packet consists of two parts: a header, which provides information about the packet itself, and the data contained within the packet. Some of the info contained within the header includes:
-* The destination address
-* The length of the packet's data
-* The [type of data](https://en.wikipedia.org/wiki/Differentiated_services) in the packet, used by routers to determine how to best handle the packet (e.g. whether to prioritize latency or throughput)
-* A number identifying which protocol the underlying data is being used for; see the IANA [list of protocol numbers](https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml).
-* A [time to live](https://en.wikipedia.org/wiki/Time_to_live) value, an integer which is decremented each time the packet is retransmitted until it reaches zero, at which point the packet is dropped. Used to prevent packets from being circulated infinitely in the event of a [routing loop](https://en.wikipedia.org/wiki/Routing_loop).
-* The checksum of the header, to detect whether it was corrupted during transit. Integrity of the packet payload is not handled by IP; that responsibility is delegated to whatever protocol is built on top of IP.
-* Fragmentation information. A router may break an IP packet into fragments for various reasons, usually to fit into the MTU of the link between the router and the next recipient. Packet fragments contain their offset within the original packet and a bitfield indicating whether there are more fragments, allowing for seamless reassembly along the packet's route.
+Compared to circuit switching, packet switching allows for much more diverse network topologies. This is because each packet is delivered independently, so they can take whatever route happens to be best at the moment. Compare that to a telephone call, where a physical circuit is established between the two parties and maintained for the duration of the call. Packet switching also makes it easy to bridge networks running different link-layer protocols. All of these attributes have helped the Internet scale to billions of connected devices.
 
-So how exactly do IP packets find their way to their final destination? That's a big question. Let's figure it out.
+So what's *in* a packet? Well&hellip; see for yourself! Here, I've got a Ethernet frame produced by the `ping` command. The Ethernet header is orange. Within the frame is an IPv6 packet (blue), which contains an ICMPv6 message (purple).
+
+**Guide**: Click on a section of the packet to see a description of its significance. Click the hex preview on the left to return to the top. Try enabling "show all" if you want to read all the section descriptions.
+
+<div class="packet">
+<div class="segment" data-part="ethernet" data-hex="402b50dc01dc" data-name="Destination MAC">
+
+The destination MAC address, my router.
+
+</div>
+<div class="segment" data-part="ethernet" data-hex="80ce62320df8" data-name="Source MAC">
+
+The source MAC address, my laptop.
+
+</div>
+<div class="segment" data-part="ethernet" data-hex="86dd" data-name="Type">
+
+The type of data contained within the frame. `0x86dd` indicates that the frame contains an IPv6 packet.
+
+</div>
+<div class="segment" data-part="ipv6" data-hex="60064d6f" data-name="Version / Traffic Class / Flow Label">
+
+The upper 4 bits of these bytes indicate the Internet Protocol version in use. In this case, it's 6 for IPv6.
+
+The next 8 bits are the traffic class, which gives routers hints about how the packet should be handled. For example, a video conferencing application might set this field to prioritize low latency over delivery reliability. In this case, the value is set to zero, which is the default value (best effort).
+
+The last 20 bits are the flow label (`0x64d6f`). Flow labels are pseudorandom numbers that serve to group packets belonging to the same "flow". For example, all the packets in a TCP session might be sent with the same flow label. This is mainly used for quality-of-service purposes.
+
+</div>
+<div class="segment" data-part="ipv6" data-hex="0040" data-name="Payload Length">
+
+The length of the IPv6 packet's payload, 64 bytes in this case.
+
+</div>
+<div class="segment" data-part="ipv6" data-hex="3a" data-name="Next Header">
+
+This field indicates the type of data contained within the IPv6 header. `0x3a` is the assigned number for ICMPv6.
+
+</div>
+<div class="segment" data-part="ipv6" data-hex="40" data-name="Hop Limit">
+
+The hop limit is a special field which is used to mitigate the effects of [routing loops](https://en.wikipedia.org/wiki/Routing_loop). Every time a router forwards an IPv6 packet, it decrements the hop limit by one. Once the value reaches zero, if it still hasn't reached the destination host, the packet is discarded. 
+
+In IPv4 packets this field is called the time-to-live (TTL), so you will see the same concept referred to by two different names.
+
+</div>
+<div class="segment" data-part="ipv6" data-hex="2601064246010210889f9e722b7649dc" data-name="Source Address">
+
+The IPv6 address of the host sending the packet.
+
+</div>
+<div class="segment" data-part="ipv6" data-hex="2604a880000200d0000000000eac6001" data-name="Destination Address">
+
+The IPv6 address of the destination host. In this case, it's the IPv6 address of `bithole.dev`.
+
+</div>
+<div class="segment" data-part="icmpv6" data-hex="80" data-name="Type">
+
+The type of ICMPv6 packet. `0x80` equals Echo Request, meaning that the client is requesting that the server respond with another ICMP packet to test the connection between the two.
+
+</div>
+<div class="segment" data-part="icmpv6" data-hex="00" data-name="Code">
+
+This field is always zero for echo requests.
+
+</div>
+<div class="segment" data-part="icmpv6" data-hex="e2fe" data-name="Checksum">
+
+A two-byte checksum value is calculated and included with every ICMPv6 message. This allows recipients to determine if the packet has been corrupted in transit.
+
+</div>
+<div class="segment" data-part="icmpv6" data-hex="0004" data-name="Identifier">
+
+When the server receives the Echo Request, it will send back an Echo Reply with the same identifier. This helps match echo replies with echo requests.
+
+</div>
+<div class="segment" data-part="icmpv6" data-hex="0013" data-name="Sequence Number">
+
+Similar to the identifier, this is another field used to distinguish echo requests/replies.
+
+</div>
+<div class="segment" data-part="icmpv6" data-hex="1c7fdc620000000094fd010000000000101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f3031323334353637" data-name="Data" data-preview-truncate="39">
+
+Arbitrary data that the server will also include in the echo reply, hence "echo".
+
+</div>
+</div>
+
+For this illustration I chose to use an IPv6 packet since they are slightly simpler than IPv4 packets, but the fields contained are basically the same. There is one key difference, however: IPv4 also supports a feature called *fragmentation*. Remember what I mentioned earlier about the maximum transmission unit (MTU)? MTUs are not consistent everywhere, so occasionally a router may encounter a scenario where it is unable to relay an IP packet as-is because it is too large to fit within the next link's MTU. In that situation, IPv4 routers may choose to break the packet into multiple smaller fragments, which will be reassembled later down the line.
+
+Fragmentation is not free, however. Not only does fragmentation increase overhead, it can exacerbate problems such as packets arriving out of order. Worse, applications that don't properly handle fragmented packets (such as firewalls) may be vulnerable to [fragmentation attacks](https://en.wikipedia.org/wiki/IP_fragmentation_attack). For this reason, IPv6 routers are not allowed to fragment packets; if a packet is too big to be relayed, an error is sent to the sender through ICMPv6. Hosts are responsible for determining the largest packet that can be transmitted by the routers between the source and the recipient. This process is known as [path MTU discovery](https://en.wikipedia.org/wiki/Path_MTU_Discovery).
 
 ## Obtaining an IP address
 
 In order to send or receive IP traffic, you first need an IP address. Your computer could obtain one through several methods:
-* It has already been configured to use a preset static IP address.
+* It is configured to use a specific static IP address.
 * It receives an IP address while connecting to the network, via the [Dynamic Host Configuration Protocol](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol) (DHCP).
 * (other less straightforward schemes)
 
@@ -127,6 +235,12 @@ Okay, so we've obtained an IP address. Now what?
 ![diagram of an IP LAN](/blogposts/internet-explained/ip-lan.png)
 
 Suppose computer 10.0.0.2 wants to send a message to 10.0.0.3. In order to actually deliver a message to 10.0.0.3, our sender needs to know which MAC address to send packets to. It can obtain this information via the [Address Resolution Protocol](https://en.wikipedia.org/wiki/Address_Resolution_Protocol) (ARP).
+
+## Obtaining an IP Address, IPv6 Style
+
+DHCP exists for IPv6 in the form of DHCPv6, but several alternative ways to obtain an address are also provided.
+
+TODO
 
 ## Address Resolution Protocol
 

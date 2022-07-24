@@ -43,6 +43,9 @@ document.querySelectorAll(".packet").forEach(packet => {
         // clone node and create header
         const container = document.createElement("div");
         container.classList.add("container");
+        if(section.dataset.part) {
+            container.classList.add(section.dataset.part);
+        }
         container.style.position = "relative";
         containers.push(container);
 
@@ -76,6 +79,9 @@ document.querySelectorAll(".packet").forEach(packet => {
         preview.classList.add("hex-segment");
         preview.textContent = section.dataset.previewTruncate ? bytes.slice(0, section.dataset.previewTruncate).join(" ") + " .." : bytes.join(" ");
         preview.classList.add("preview");
+        if(section.dataset.part) {
+            preview.classList.add(section.dataset.part);
+        }
         container.append(preview);
         container.append(header, content);
 
@@ -86,6 +92,10 @@ document.querySelectorAll(".packet").forEach(packet => {
         // create span
         const spanOuter = document.createElement("span");
         spanOuter.style.position = "relative";
+        if(section.dataset.part) {
+            spanOuter.classList.add(section.dataset.part);
+        }
+
         const span = document.createElement("span");
         span.classList.add("hex-segment");
         span.textContent = bytes.join(" ");
