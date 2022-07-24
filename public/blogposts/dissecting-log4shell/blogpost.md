@@ -1,9 +1,3 @@
-**Prologue:** If you are here because you have been exposed to a Log4Shell attack or want to know how to protect your server, TL;DR:
-* **Patch. Your. Server.** That's it. There is no better way. Fixes have been backported to pretty much every relevant version of Forge, Fabric, Spigot, Paper, etc. 
-* **Whitelist doesn't help.** Minecraft still logs (among other things) the username of every single login attempt, even if the username is way too long or contains illegal characters. If your server isn't patched, someone could execute an attack on it without even having a Minecraft account.
-* **Hiding your IP doesn't help.** Just because you didn't tell anyone your server's IP doesn't mean malicious actors can't find it.
-* Last but not least, **patch your freakin' server!** 
-
 In case you haven't heard, there's been a bit of an illness going around. No, not COVID. I'm talking about [Log4Shell](https://en.wikipedia.org/wiki/Log4Shell), possibly one of the worst zero-day vulnerabilities in the history of cybersecurity. It originates from [Log4j2](https://logging.apache.org/log4j/2.x/), the premier logging framework for modern Java, which can be found in thousands of applications (including Minecraft). The power of Log4Shell cannot be understated; an attacker may be able to get remote code execution simply by making a vulnerable server simply log a specific string.
 
 Today I checked the Discord server for my SMP, and was greeted with a rather unexpected surprsie:
@@ -152,9 +146,7 @@ Running `strings` on the payload also reveals a wealth of interesting informatio
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOjnUF/J249WuSeaDSlEnOeP1n/75iHQxRK8xjuB1J0FWTATtZcmBjtsGFX6nvv0vkS3kkhp7+Ba+B0GurEK+hdsPYvqMAPydq02iuPojsKOrDuVaPAox+kbmNTR3NEZ/rfd7OYzYNoK+mA/wqJl8K5+BaxUlXbNkKaO5IUbKP2XxLHz4IxRfNEAtl1iscTi0ckdrs4ZNK+PSKE+/Q0seOicuTlkRViP+M1G67mOi9Q12khrRlXwR0nsYuNFc73jWNH2oKoCllUqPHcHsfspvFZ56XzgTx3tZG1L57kfQCF6ErpbTyG8C0ov0rNm7fbcH8sRjYglnA1qc8mV1gVPc8VOZZp+0vvaA+Kv2ZEmMSbhyORC/HM8uCYGbZ8oW1jxZKaSpVasVT8UsbR5bHKM67xXsgZrIvXLGzIDu7QAe3VL1rm7MMe25K10kSkWi6ZuH1UVSuNw+y75igRxOHIox9PElUvVnVTEgIpHTjirY0g/PNmaQ6BlPuRvRFJF3SIKOy5gsZbATj7jhhI5Hj3LvioRwgYe1f0rnn0/Yx7r9tAq5edVk9rkLCUcWh8lbGoZ4Vr/qTYMn4dMPCr78oQ3nX/W6PuDdH8Dxmulq9alrotNcGaznnxnaOixZOCaRKbrMGLje+tXMTSvIJ8aN7Z+puvkIBE4fxMBt2GznN9Whg0Q== rafael@rafael-acer
 ```
 
-Rafael, you sly dog! If you had used C, I might respect you a little more. Scrolling through the absolutely enormous output reminds me that golang still lacks a functional tree shaker, or at least it's not doing its job. The numerous mentions to `ssh` suggest that the binary establishes a reverse shell so that Mr. Rafael here can log into your server to further pursue his shenanigans. 
-
-I've set up a VM to further investigate what Rafael is up to with his attacks. In the meantime, [here](/blogposts/dissecting-log4shell/log4shell-payload.bin) is the download link for the payload if you'd like to look to examine it, though obviously don't be stupid with it since it's live malware.
+Rafael, you sly dog! If you had used C, I might respect you a little more. Scrolling through the absolutely enormous output reminds me that golang still lacks a functional tree shaker, or at least it's not doing its job. The numerous mentions to `ssh` suggest that the binary establishes a reverse shell so that Mr. Rafael here can log into your server to further pursue his shenanigans. Indeed, a little more investigation shows that this is merely an off-the-shelf [reverse SSH](https://github.com/Fahrj/reverse-ssh) server whose source can be found on GitHub. 
 
 # Epilogue
 
