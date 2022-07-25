@@ -49,8 +49,8 @@
         "id": "jpeg-explained",
         "title": "What's In a JPEG?",
         "description": "The fascinating algorithms behind an otherwise mundane image format.",
-        "scripts": ["/scripts/jpeg.js"],
-        "stylesheets": ["/stylesheets/jpeg.css"],
+        "scripts": ["/blogposts/jpeg-explained/jpeg.js"],
+        "stylesheets": ["/blogposts/jpeg-explained/styles.css"],
         "interactive": true,
         "issueNumber": 6
     },
@@ -58,7 +58,7 @@
         "id": "decompiling-minecraft",
         "title": "Minecraft Decompilation Guide",
         "description": "An tutorial on how to decompile modern versions of Minecraft using Mojang's official mappings.",
-        "timestamp": 1655268355160,
+        "timestamp": 1655268355160, 
         "publish": true,
         "issueNumber": 12
     },

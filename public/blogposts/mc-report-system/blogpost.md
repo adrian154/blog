@@ -1,3 +1,5 @@
+**Foreword:** Since the writing of this article (around the release of 1.19pre1), some significant changes have been made to the chat reporting system, rendering parts of this article obsolete. For a fairly detailed description of the chat reporting system, check out [this diagram](https://camo.githubusercontent.com/55063c3d3a211b6bf5648f559ee00579f03b1bd651e3980aa358d203a0ca7443/68747470733a2f2f692e696d6775722e636f6d2f6c6a69666d79302e706e67) by [@cubxity](https://twitter.com/cubxity).
+
 Mojang recently announced that a [chat report system](https://www.minecraft.net/en-us/article/minecraft-1-19-1-pre-release-1) would be coming to Minecraft in 1.19.1, which has sparked a great deal of controversy amongst players. I'm not going to discuss whether this is a good idea in this article; instead, we're going to be taking a look at how exactly the reporting system works and what this means for server operators. Hopefully this will allow for some more enlightened discussion.
 
 # Crypto Background: Digital Signatures

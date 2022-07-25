@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>What's In a JPEG?</title><meta property="og:title" content="What's In a JPEG?"><meta property="og:type" content="website"><meta property="og:description" content="The fascinating algorithms behind an otherwise mundane image format"><meta name="description" content="The fascinating algorithms behind an otherwise mundane image format"><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><link rel="stylesheet" href="/stylesheets/jpeg.css"><script defer src="/scripts/jpeg.js"></script><script>const loadSetting = name => {
+<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>What's In a JPEG?</title><meta property="og:title" content="What's In a JPEG?"><meta property="og:type" content="website"><meta property="og:description" content="The fascinating algorithms behind an otherwise mundane image format."><meta name="description" content="The fascinating algorithms behind an otherwise mundane image format."><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><link rel="stylesheet" href="/blogposts/jpeg-explained/styles.css"><script defer src="/blogposts/jpeg-explained/jpeg.js"></script><script>const loadSetting = name => {
     if(localStorage.getItem(name) === "true")
         document.documentElement.classList.add(name);
     else
@@ -17,7 +17,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p>This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. One can imagine a coordinate system where we align the cube such that the luminance component (Y) extends along this line. We can then extract a slice of the cube for any given luminance, and assign the remaining two degrees of freedom to Cb and Cr.</p>
 <p>This is essentially how YCbCr works, except the RGB values are first processed so that the cube ends up looking more like a slanted rectangular prism. (For the more math-inclined readers, you might recognize this as an affine transformation, hence why the RGB-YCbCr conversion is often described in terms of matrix multiplication). Here&#39;s a demo that shows the Cb-Cr planes as we adjust Y. </p>
 <figure style="max-width: 480px">
-    <video loop controls autoplay><source src="/blogposts/jpeg-explained/jpeg/ycbcr-slices.mp4" type="video/mp4"></video>
+    <video loop controls autoplay><source src="/blogposts/jpeg-explained/ycbcr-slices.mp4" type="video/mp4"></video>
     <figcaption>No, that Y is definitely not backwards.</figcaption>
 </figure>
 
@@ -34,7 +34,10 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p>If we zoom in close on the two highlighted regions, it becomes clear that not all image data is created equal. The one on the left contains much more information than the one on the right, yet they occupy the same amount of space.</p>
 <p><img src="/blogposts/jpeg-explained/flower-regions-comparison.png" alt="zoom in on sections of flower image"></p>
 <p>Like last time, the problem now becomes representing the image data in a way that lets us separate the important parts from the unimportant parts. JPEG accomplishes this using the <strong>discrete cosine transform (DCT)</strong>.</p>
-<p>To understand the discrete cosine transform, we need to start viewing the image as a function. For example, a grid of pixels is really just a function mapping a position in space to color. However, there are other ways of representing the image. Enter the <a href="https://en.wikipedia.org/wiki/Fourier_transform">Fourier Transform</a>, a mathematical tool that allows you to decompose <em>any</em> signal into a series of sine waves. Yes, you heard me right: by adding up an (infinite) series of sine waves, you can reproduce any function. Let&#39;s dig a little deeper into this amazing insight.</p>
+<p>Before we jump into compressing image data, let&#39;s establish the basics of DCT using simpler one-dimensional functions. Let&#39;s say I have the following signal:</p>
+<p><canvas id="signal-only"></canvas></p>
+<p>If you&#39;ve ever heard of the Fourier transform, you know that we can express this signal as the sum of multiple sine waves with different frequencies. We can do that with cosines, too.</p>
+<p>/<em>To understand the discrete cosine transform, we need to start thinking in the frequency domain.</em>/</p>
 <h2 id="the-frequency-domain">The Frequency Domain <a class="section-link" href="#the-frequency-domain">&sect;</a></h2><p>TODO: Fourier Transform</p>
 <ul>
 <li>what goes into a circle?</li>

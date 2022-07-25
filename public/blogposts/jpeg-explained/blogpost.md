@@ -21,7 +21,7 @@ This cube has one important property: there exists a line through the cube where
 This is essentially how YCbCr works, except the RGB values are first processed so that the cube ends up looking more like a slanted rectangular prism. (For the more math-inclined readers, you might recognize this as an affine transformation, hence why the RGB-YCbCr conversion is often described in terms of matrix multiplication). Here's a demo that shows the Cb-Cr planes as we adjust Y. 
 
 <figure style="max-width: 480px">
-    <video loop controls autoplay><source src="/blogposts/jpeg-explained/jpeg/ycbcr-slices.mp4" type="video/mp4"></video>
+    <video loop controls autoplay><source src="/blogposts/jpeg-explained/ycbcr-slices.mp4" type="video/mp4"></video>
     <figcaption>No, that Y is definitely not backwards.</figcaption>
 </figure>
 
@@ -48,12 +48,18 @@ In the previous step, we reduced size by getting rid of color information. Howev
 ![macro photograph of a pepper flower](/blogposts/jpeg-explained/test-2-reference.png)
 
 If we zoom in close on the two highlighted regions, it becomes clear that not all image data is created equal. The one on the left contains much more information than the one on the right, yet they occupy the same amount of space.
-
+ 
 ![zoom in on sections of flower image](/blogposts/jpeg-explained/flower-regions-comparison.png)
 
 Like last time, the problem now becomes representing the image data in a way that lets us separate the important parts from the unimportant parts. JPEG accomplishes this using the **discrete cosine transform (DCT)**.
 
-To understand the discrete cosine transform, we need to start viewing the image as a function. For example, a grid of pixels is really just a function mapping a position in space to color. However, there are other ways of representing the image. Enter the [Fourier Transform](https://en.wikipedia.org/wiki/Fourier_transform), a mathematical tool that allows you to decompose *any* signal into a series of sine waves. Yes, you heard me right: by adding up an (infinite) series of sine waves, you can reproduce any function. Let's dig a little deeper into this amazing insight.
+Before we jump into compressing image data, let's establish the basics of DCT using simpler one-dimensional functions. Let's say I have the following signal:
+
+<canvas id="signal-only"></canvas>
+
+If you've ever heard of the Fourier transform, you know that we can express this signal as the sum of multiple sine waves with different frequencies. We can do that with cosines, too.
+
+/*To understand the discrete cosine transform, we need to start thinking in the frequency domain.*/
 
 ## The Frequency Domain
 
