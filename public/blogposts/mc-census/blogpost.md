@@ -20,7 +20,7 @@ $ cat pingpayload | nc mc.bithole.dev 25565
 With that, I started coding. The process was rather uneventful, save for a couple brief moments of frustration which have since been memorialized in my commit history.
 
 <figure style="max-width: 294px">
-    <img src="/blogposts/mc-census/frustration.png" alt="humorous git commit history">
+    <img src="frustration.png" alt="humorous git commit history">
     <figcaption>This was after I realized that the reason the masscan binary kept disappearing was that Windows Defender was flagging it as malware and deleting it.</figcaption>
 </figure>
 
@@ -130,7 +130,7 @@ rl.on("line", line => {
 
 Great, but it's running slow as a dog. A little profiling reveals the problem, and it's SQLite. If we comment out the line which inserts the record into the database, we can blast through the dataset at around 600,000 lines per second. Uncomment it, and that rate absolutely plummets. I took the liberty of making a chart to illustrate the difference.
 
-![line chart showing processing rates with and without the sqlite insert](/blogposts/mc-census/chart.png)
+![line chart showing processing rates with and without the sqlite insert](chart.png)
 
 Yeah... not very promising. It starts out slow, and quickly falls off a cliff into the absolutely abysmal range. At this rate, I calculated that it would take almost two hours for the data to be fully processed, and I wasn't even 50% done with the scan!  We need to figure out how to drastically increase our SQLite insert rate, or I may have to ditch SQLite altogether.
 
@@ -169,13 +169,13 @@ Much nicer!
 There was another, bigger problem, though. In my attempts to [fix](https://github.com/adrian154/masscan/commit/2b3ee07704b3f863fef481f6422394d5740dcf43) my hopelessly broken packet parser, I ended up getting rid of the code which actually reads the response length, instead opting to log everything received from the server after the packet header as part of the banner. This resulted in a lot of JSON with extra garbage at the end, which greatly upsets `JSON.parse`. I needed a way to figure out where the actual JSON ended... but how?
 
 <figure style="max-width: 501px">
-    <img src="/blogposts/mc-census/advice.png" alt="advice from a wise sage">
+    <img src="advice.png" alt="advice from a wise sage">
     <figcaption>Thanks, kind stranger!</figcaption>
 </figure>
 
 Before I got to work on that, I decided to first sift through the data and identify any oddities&mdash;things that definitely weren't Minecraft servers. These were quite numerous; about 68% of the responses did not begin with an opening brace `{`. Of these, the vast majority just sent back the probe baked into our custom build of MASSCAN. Three Minecraft servers had somehow made their way into this dejected pile of rejects, far too few for me to go about diagnosing the issue. There were also plenty of MySQL/MariaDB servers, and whatever this is:
 
-![weird response](/blogposts/mc-census/weird-server.png)
+![weird response](weird-server.png)
 
 Ok, back to work. My first attempt at extracting the JSON actually made things *much* worse, but a couple stabs at the problem brought me to this:
 
@@ -208,7 +208,7 @@ const extractJSON = str => {
 This takes us down to around 4,530 unparseable responses. Of these, 891 responses start with a '{' yet cannot be extracted currently. A cursory look at these misfits suggests that most of them were cut off&mdash;maybe re-scan these later? That'll have to wait until another day. (Keep in mind that the scan still hasn't finished yet, but since MASSCAN iterates through IPs randomly, I can be fairly confident that these numbers will be representative of our final dataset.)
 
 <figure style="max-width: 475px">
-    <img src="/blogposts/mc-census/funny-server.png" alt="funny server">
+    <img src="funny-server.png" alt="funny server">
     <figcaption>Me too, buddy. Me too.</figcaption>
 </figure>
 
@@ -228,7 +228,7 @@ and the ten lowest player counts:
 
 <p style="text-align: center; word-spacing: 1.0em">-1337 -46 -2 -1 -1 -1 -1 -1 -1 -1</p>
 
-Minecraft servers also send a sample of the online players by default, letting us make an incomplete list of who's online at any given moment. I couldn't think of anything to do with this data, but [maybe your name's in the list](/blogposts/mc-census/players.txt)!
+Minecraft servers also send a sample of the online players by default, letting us make an incomplete list of who's online at any given moment. I couldn't think of anything to do with this data, but [maybe your name's in the list](players.txt)!
 
 <aside>
 
@@ -240,7 +240,7 @@ There are mods/plugins which allow you to summon fake players under any name; te
 
 Where are most Minecraft servers located? We can make a map of which countries have the most Minecraft servers:
 
-![choropleth of mc servers per country](/blogposts/mc-census/geomap.png)
+![choropleth of mc servers per country](geomap.png)
 
 The US is quite Minecraft server-dense, with over one server per 10,000 people. However, Germany ends up taking the prize for most Minecraft servers per capita, with a whopping four servers for every 10,000 people. This is probably thanks to cheap hosting offerings from companies like [Hetzner](https://www.hetzner.com/).
 
@@ -255,7 +255,7 @@ Did you know this type of map is called a [choropleth](https://en.wikipedia.org/
 The ping response includes a "version" field, which can be used to determine what software a server is running. There's a problem, though: you can use plugins to display a custom version in place of the default version message, resulting in thousands of unique "versions" being recorded. I had to manually go through and remove all of these while taking care to not discard any legitimate version strings. In the process, I discovered dozens of obscure server softwares that I had no idea existed (mostly shitty Spigot forks), and learned how to say "maintenance" in at least five languages. Anyways, here's a look at the most common servers:
 
 <figure style="max-width: 1898px">
-    <img src="/blogposts/mc-census/versions-chart.png" alt="versions chart">
+    <img src="versions-chart.png" alt="versions chart">
     <figcaption>Click the image to enlarge it.</figcaption>
 </figure>
 
@@ -263,10 +263,10 @@ I also matched the strings for certain keywords to identify which specific serve
 
 I also compared the popularity of different server software "brands".
 
-![brands chart](/blogposts/mc-census/version-brands-chart.png)
+![brands chart](version-brands-chart.png)
 
 <figure style="max-width: 1217px">
-    <img src="/blogposts/mc-census/brands-chart-inner.png" alt="brands chart inner">
+    <img src="brands-chart-inner.png" alt="brands chart inner">
     <figcaption>The last chart was getting a little crowded, so here's the inner pie chart representing the more minor brands. I still haven't figured out how to do a proper pie-of-pie chart in Google Sheets yet. Are the pie charts getting a little redundant? As you can tell, I have zero data visualization skills.</figcaption>
 </figure>
 
@@ -276,7 +276,7 @@ One statistic that I unwittingly collected during the scan was the number of ser
 
 We're able to detect IPs representing proxies for these two providers thanks to the fact that when pinging a server, a Minecraft client will send the hostname used to connect to the server. However, in our case, our probe uses the same hostname ("example.com") every time; normal Minecraft servers ignore this value, but DDoS proxies will detect that an invalid hostname was used and deny the connection. Here's what it looks like when you try to join a DDoS-protected server using its IP:
 
-![tcpshield join error](/blogposts/mc-census/tcp-shield.png)
+![tcpshield join error](tcp-shield.png)
 
 We can search the dataset for ping responses which look like this. Turns out there are about **742** TCPShield proxies and **1,139** Cosmic Guard proxies on the public Internet.
 
@@ -304,8 +304,8 @@ Mods marked with a &dagger; are library mods, which are used as dependencies by 
 Before we start, here's some eye candy:
 
 <figure style="max-width: 1024x">
-    <img src="/blogposts/mc-census/hilbert-map.png" alt="map of server IPs along hilbert curve">
-    <figcaption>It's beautiful in a grotesque way, like bird poop speckled on some poor motorist's windshield. Almost vaguely reminiscent of a Jackson Pollock painting. Check out the <a href="/blogposts/mc-census/hilbert-map-labeled.png">labeled version</a>, too.</figcaption>
+    <img src="hilbert-map.png" alt="map of server IPs along hilbert curve">
+    <figcaption>It's beautiful in a grotesque way, like bird poop speckled on some poor motorist's windshield. Almost vaguely reminiscent of a Jackson Pollock painting. Check out the <a href="hilbert-map-labeled.png">labeled version</a>, too.</figcaption>
 </figure>
 
 What you're looking at is every online Minecraft server in IPv4 space, plotted along a Hilbert curve (a style of visualization that was pioneered by [xkcd](https://xkcd.com/195/)). I won't go into too much detail here, but essentially the Hilbert curve is a way of arranging linear points in 2D space such that a sequence of points will always end up in a compact region (unlike other mappings, where two adjacent points might end up far apart because of wrapping).
@@ -332,8 +332,8 @@ Each IP is associated with an autonomous system; by grouping IPs with ASNs, we c
 Oh, and just for fun, we can label the servers on the Hilbert map according to ASN. (I ran out of colors after about 15, unfortunately.)
 
 <figure style="max-width: 1350px">
-    <img src="/blogposts/mc-census/hilbert-map-asn.png" alt="map of server IPs along hilbert curve, colored based on ASN">
-    <figcaption>There's also a <a href="/blogposts/mc-census/hilbert-map-asn-large.png">much larger version</a> for your viewing pleasure. You'll probably want to zoom in.</figcaption>
+    <img src="hilbert-map-asn.png" alt="map of server IPs along hilbert curve, colored based on ASN">
+    <figcaption>There's also a <a href="hilbert-map-asn-large.png">much larger version</a> for your viewing pleasure. You'll probably want to zoom in.</figcaption>
 </figure>
 
 # Epilogue

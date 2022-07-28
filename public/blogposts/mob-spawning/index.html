@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mastering Mob Spawning</title><meta property="og:title" content="Mastering Mob Spawning"><meta property="og:type" content="website"><meta property="og:description" content="All the questions you were afraid to ask, answered"><meta name="description" content="All the questions you were afraid to ask, answered"><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><script>const loadSetting = name => {
+<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mastering Mob Spawning</title><meta property="og:title" content="Mastering Mob Spawning"><meta property="og:type" content="website"><meta property="og:description" content="All the questions you were afraid to ask, answered."><meta name="description" content="All the questions you were afraid to ask, answered."><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><script>const loadSetting = name => {
     if(localStorage.getItem(name) === "true")
         document.documentElement.classList.add(name);
     else
@@ -98,28 +98,28 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 </tbody></table>
 <p>The number of spawnable chunks is the number of loaded chunks that are within 8 chunks of a player. In other words, ever player has 17x17 grid of spawnable chunks centered on them. </p>
 <figure style="max-width: 512px">
-    <img src="/blogposts/mob-spawning/spawnable-chunks.png" alt="diagram of spawnable chunks">
+    <img src="spawnable-chunks.png" alt="diagram of spawnable chunks">
     <figcaption>A diagram of spawnable chunks surrounding the player's chunk, which is represented in green.</figcaption>
 </figure>
 
 <p>This is where the 289 found in the mob cap equation comes from; in singleplayer, there will always be 289 spawnable chunks since there is only one player in the game, so the mob cap will be equal to the base value for every category.</p>
 <p>On a server, if all the players are spread out so that none of their 17x17 chunk regions overlap, the global mobcap for each category will be equal to the singleplayer mobcap multiplied by the number of players; if there is overlap, the global mobcap will be less.</p>
 <figure style="max-width: 512px">
-    <img src="/blogposts/mob-spawning/spawnable-chunks-overlap.png" alt="diagram of two players' spawnable chunks overlapping">
+    <img src="spawnable-chunks-overlap.png" alt="diagram of two players' spawnable chunks overlapping">
     <figcaption>These two players' spawnable chunks overlap, so there are only 434 spawnable chunks instead of 2 &times; 289 = 578. This means that the global mobcap will only be ~1.5&times; greater than the singleplayer value, instead of 2&times;.</figcaption>
 </figure>
 
 <p>If the number of mobs in a category exceeds the global mobcap, spawning for that category is entirely skipped. Note that if the number of mobs does not exceed the mob cap, spawning will proceed; however, by the end of the spawning cycle, the number of mobs may <em>exceed</em> the mob cap. This is possible because the mob cap is only evaluated once at the start of spawning for each tick.</p>
 <p>If the global mob cap is not met, the game then checks the local mob cap on a chunk-by-chunk basis. Each player has a local mob cap, which simply counts the number of mobs in each category within the spawnable chunks surrounding that player. For a given category and chunk, if there is at least one player within range whose local mob cap isn&#39;t filled, spawning can proceed.</p>
 <h2 id="practical-example">Practical Example <a class="section-link" href="#practical-example">&sect;</a></h2><p>Suppose the game is currently evaluating monster spawning for the chunk highlighted in red.</p>
-<img style="max-width: 512px" src="/blogposts/mob-spawning/spawnable-chunks-highlighted.png" alt="the same diagram of two players' spawnable chunks, with one chunk between the two players highlighted in red">
+<img style="max-width: 512px" src="spawnable-chunks-highlighted.png" alt="the same diagram of two players' spawnable chunks, with one chunk between the two players highlighted in red">
 
 <p>There are 434 loaded chunks, so the global monster mob cap is <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>70</mn><mo>×</mo><mn>434</mn><mi mathvariant="normal">/</mi><mn>289</mn><mo>=</mo><mn>105</mn></mrow><annotation encoding="application/x-tex">70 \times 434 / 289 = 105</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">70</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">434/289</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">105</span></span></span></span>. If the total number of monsters in the world is greater than 105, no monster spawning will happen in any chunks.</p>
 <p>If the global mob cap is not met, the game proceeds to check each player&#39;s local mob cap. First, it retrieves the number of monsters within player 1&#39;s spawnable chunks, highlighted in blue here:</p>
-<img style="max-width: 512px" src="/blogposts/mob-spawning/chunks-p1.png">
+<img style="max-width: 512px" src="chunks-p1.png">
 
 <p>If there are fewer than 70 monsters in the blue chunks, monsters can spawn in the red chunk. Otherwise, the game moves on to player 2&#39;s local mob cap.</p>
-<img style="max-width: 512px" src="/blogposts/mob-spawning/chunks-p2.png">
+<img style="max-width: 512px" src="chunks-p2.png">
 
 <p>The local mob cap helps ensure that that no player can take up an excessive portion of the mob cap. Before 1.18, if multiple players were online and occupying different parts of the world, odds are the vast majority of spawning spaces would be outside of a mob farm, which would severely impact the number of spawns in a mob farm. Now, players in non-spawnproofed areas have minimal effect on mob spawning beyond their spawnable chunks because their local mob cap will prevent them from taking up more of the global mob cap. </p>
 <aside>
@@ -135,7 +135,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <li>W: water creatures mob cap</li>
 <li>W: water ambient mob cap</li>
 </ul>
-<p><img src="/blogposts/mob-spawning/debugscreen_sc.png" alt="debug screen"></p>
+<p><img src="debugscreen_sc.png" alt="debug screen"></p>
 <p>Unfortunately, this line isn&#39;t available when playing on a multiplayer server; instead, you&#39;ll  need to use a mod like <a href="https://github.com/gnembon/fabric-carpet">Carpet</a> to view global mob cap statistics.</p>
 </aside>
 
@@ -167,7 +167,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <aside>
 
 <p>The Y-value of the highest block for every X/Z combo is known as the <strong>heightmap</strong>. The heightmap of your current position is displayed on the debug screen as &quot;CH S&quot; or &quot;SH S&quot;.</p>
-<p><img src="/blogposts/mob-spawning/debugscreen_ch.png" alt="heightmap"></p>
+<p><img src="debugscreen_ch.png" alt="heightmap"></p>
 <p>You can also use the <a href="https://www.curseforge.com/minecraft/mc-mods/minihud">MiniHUD</a> mod to overlay heightmap indicators over the regular world.</p>
 </aside>
 
@@ -177,7 +177,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <li>Always try to build mob farms as low as possible.</li>
 <li>Avoid placing solid blocks above mob farms.</li>
 </ul>
-<p><img src="/blogposts/mob-spawning/heightmap.png" alt="diagram of impact of heightmap on spawning"></p>
+<p><img src="heightmap.png" alt="diagram of impact of heightmap on spawning"></p>
 <p>Unfortunately, if you build your farm very low in the world to maximize its rates, you will need to eliminate all spawnable spaces within 128 blocks of its proximity to prevent those spawns from filling up the mob cap. This means either lighting up all the caves within that radius or excavating a perimeter. I am way too lazy to do either of those things, so I usually build my farms above ground so I can position my AFK spot such that there are no unwanted spawnable spaces. </p>
 <p>Another thing to keep in mind is that the game doesn&#39;t try to spawn a mob directly at the selected location; instead, it picks random positions in a square surrounding the initial position using the rules outlined in the following section. This means that spawn attempts which begin outside of your farm may still contribute to its rates. This yields two more pieces of advice:</p>
 <ul>
@@ -185,7 +185,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <li>Never place solid blocks at foot level around the farm, since they will instantly cause a spawn attempt to end.</li>
 </ul>
 <figure style="max-width: 560px">
-    <img src="/blogposts/mob-spawning/footlevel.png" alt="explanation of why foot level blocks are bad">
+    <img src="footlevel.png" alt="explanation of why foot level blocks are bad">
     <figcaption>Do not do this. I have ways of finding you.</figcaption>
 </figure>
 
@@ -194,9 +194,9 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <aside>
 
 <p>Pack spawns can potentially spawn mobs very far away from the origin of the spawn attempt. For example, if the selected mob type&#39;s pack size is 4, the final spawn location could be anywhere within a 41x41 region around the original position. However, in practice, this is unlikely. Check out this heatmap showing the spatial distribution of spawn attempts.</p>
-<p><img src="/blogposts/mob-spawning/packspawn-heatmap.png" alt="pack spawn heatmap"></p>
+<p><img src="packspawn-heatmap.png" alt="pack spawn heatmap"></p>
 <p>As you can see, most of the attempts end up pretty close to the initial location; in fact, over 75% of all attempts are within 10 blocks of the initial location. We can find the cumulative distribution of pack spawn distance to determine how much overhang we need.</p>
-<p><img src="/blogposts/mob-spawning/distance-distr.png" alt="cumulative distribution of pack spawn distance"></p>
+<p><img src="distance-distr.png" alt="cumulative distribution of pack spawn distance"></p>
 <p>As you can see, bigger is always better, but the benefit you get from building a bigger overhang quickly decreases past ~12 blocks.</p>
 </aside>
 

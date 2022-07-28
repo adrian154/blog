@@ -2,7 +2,7 @@ If you've ever tried optimizing a farm in Minecraft, you know that there are man
 
 Decompiling Minecraft wasn't always an option. The game is obfuscated to prevent its source code from being understood, meaning that all variable, method, and class names are randomized. Here's what that obfuscation looks like:
 
-![picture of decompiled MC source, showing randomized names](/blogposts/decompiling-minecraft/obfuscated.png)
+![picture of decompiled MC source, showing randomized names](obfuscated.png)
 
 As you can see, this is code is essentially impossible to understand. Yet a very determined group of individuals analyzed the decompiled source and assigned each obfuscated identifier a meaningful name, creating the [Mod Coder Pack](https://github.com/ModCoderPack). For a long time, this was the only way to view Minecraft's source code. However, when snapshot 19w36a was released in March 2019, Mojang announced that they would be [releasing official obfuscation maps](https://www.minecraft.net/en-us/article/minecraft-snapshot-19w36a) alongside future releases to make modding easier. This changed everything; suddenly, *every* obfuscated name (save for local variables) can be deobfuscated. For [various reasons](http://cpw.github.io/MinecraftMappingData.html), the biggest Minecraft modding project (Forge) was unable to directly use the maps. However, for curious players like you and I, decompiling Minecraft using the official maps is the best way to go if your goal is to understand Minecraft's mechanics.
 
@@ -14,7 +14,7 @@ You may not know this, but the location of all Minecraft game files is available
 
 <aside>
 
-For convenience, I made a page with links to the downloads for all versions released at the time of writing with obfuscation maps available; check it out [here](/blogposts/decompiling-minecraft/links.html).
+For convenience, I made a page with links to the downloads for all versions released at the time of writing with obfuscation maps available; check it out [here](links.html).
 
 </aside>
 

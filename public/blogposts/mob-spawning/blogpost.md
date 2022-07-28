@@ -47,7 +47,7 @@ $$\text{global-mobcap} = \frac{\text{mobcap-value} \times \text{spawnable-chunks
 The number of spawnable chunks is the number of loaded chunks that are within 8 chunks of a player. In other words, ever player has 17x17 grid of spawnable chunks centered on them. 
 
 <figure style="max-width: 512px">
-    <img src="/blogposts/mob-spawning/spawnable-chunks.png" alt="diagram of spawnable chunks">
+    <img src="spawnable-chunks.png" alt="diagram of spawnable chunks">
     <figcaption>A diagram of spawnable chunks surrounding the player's chunk, which is represented in green.</figcaption>
 </figure>
 
@@ -56,7 +56,7 @@ This is where the 289 found in the mob cap equation comes from; in singleplayer,
 On a server, if all the players are spread out so that none of their 17x17 chunk regions overlap, the global mobcap for each category will be equal to the singleplayer mobcap multiplied by the number of players; if there is overlap, the global mobcap will be less.
 
 <figure style="max-width: 512px">
-    <img src="/blogposts/mob-spawning/spawnable-chunks-overlap.png" alt="diagram of two players' spawnable chunks overlapping">
+    <img src="spawnable-chunks-overlap.png" alt="diagram of two players' spawnable chunks overlapping">
     <figcaption>These two players' spawnable chunks overlap, so there are only 434 spawnable chunks instead of 2 &times; 289 = 578. This means that the global mobcap will only be ~1.5&times; greater than the singleplayer value, instead of 2&times;.</figcaption>
 </figure>
 
@@ -68,17 +68,17 @@ If the global mob cap is not met, the game then checks the local mob cap on a ch
 
 Suppose the game is currently evaluating monster spawning for the chunk highlighted in red.
 
-<img style="max-width: 512px" src="/blogposts/mob-spawning/spawnable-chunks-highlighted.png" alt="the same diagram of two players' spawnable chunks, with one chunk between the two players highlighted in red">
+<img style="max-width: 512px" src="spawnable-chunks-highlighted.png" alt="the same diagram of two players' spawnable chunks, with one chunk between the two players highlighted in red">
 
 There are 434 loaded chunks, so the global monster mob cap is $70 \times 434 / 289 = 105$. If the total number of monsters in the world is greater than 105, no monster spawning will happen in any chunks.
 
 If the global mob cap is not met, the game proceeds to check each player's local mob cap. First, it retrieves the number of monsters within player 1's spawnable chunks, highlighted in blue here:
 
-<img style="max-width: 512px" src="/blogposts/mob-spawning/chunks-p1.png">
+<img style="max-width: 512px" src="chunks-p1.png">
 
 If there are fewer than 70 monsters in the blue chunks, monsters can spawn in the red chunk. Otherwise, the game moves on to player 2's local mob cap.
 
-<img style="max-width: 512px" src="/blogposts/mob-spawning/chunks-p2.png">
+<img style="max-width: 512px" src="chunks-p2.png">
 
 The local mob cap helps ensure that that no player can take up an excessive portion of the mob cap. Before 1.18, if multiple players were online and occupying different parts of the world, odds are the vast majority of spawning spaces would be outside of a mob farm, which would severely impact the number of spawns in a mob farm. Now, players in non-spawnproofed areas have minimal effect on mob spawning beyond their spawnable chunks because their local mob cap will prevent them from taking up more of the global mob cap. 
 
@@ -94,7 +94,7 @@ A lot of information relevant to mob spawning is available on the debug screen n
 * W: water creatures mob cap
 * W: water ambient mob cap
 
-![debug screen](/blogposts/mob-spawning/debugscreen_sc.png)
+![debug screen](debugscreen_sc.png)
 
 Unfortunately, this line isn't available when playing on a multiplayer server; instead, you'll  need to use a mod like [Carpet](https://github.com/gnembon/fabric-carpet) to view global mob cap statistics.
 
@@ -130,7 +130,7 @@ Every tick, the game looks through all spawning chunks and checks which categori
 
 The Y-value of the highest block for every X/Z combo is known as the **heightmap**. The heightmap of your current position is displayed on the debug screen as "CH S" or "SH S".
 
-![heightmap](/blogposts/mob-spawning/debugscreen_ch.png)
+![heightmap](debugscreen_ch.png)
 
 You can also use the [MiniHUD](https://www.curseforge.com/minecraft/mc-mods/minihud) mod to overlay heightmap indicators over the regular world.
 
@@ -142,7 +142,7 @@ The heightmap is a critical factor in the performance of a farm. Spawning attemp
 * Always try to build mob farms as low as possible.
 * Avoid placing solid blocks above mob farms.
 
-![diagram of impact of heightmap on spawning](/blogposts/mob-spawning/heightmap.png)
+![diagram of impact of heightmap on spawning](heightmap.png)
 
 Unfortunately, if you build your farm very low in the world to maximize its rates, you will need to eliminate all spawnable spaces within 128 blocks of its proximity to prevent those spawns from filling up the mob cap. This means either lighting up all the caves within that radius or excavating a perimeter. I am way too lazy to do either of those things, so I usually build my farms above ground so I can position my AFK spot such that there are no unwanted spawnable spaces. 
 
@@ -152,7 +152,7 @@ Another thing to keep in mind is that the game doesn't try to spawn a mob direct
 * Never place solid blocks at foot level around the farm, since they will instantly cause a spawn attempt to end.
 
 <figure style="max-width: 560px">
-    <img src="/blogposts/mob-spawning/footlevel.png" alt="explanation of why foot level blocks are bad">
+    <img src="footlevel.png" alt="explanation of why foot level blocks are bad">
     <figcaption>Do not do this. I have ways of finding you.</figcaption>
 </figure>
 
@@ -166,11 +166,11 @@ The idea behind pack spawning is that the game starts from the initial position 
 
 Pack spawns can potentially spawn mobs very far away from the origin of the spawn attempt. For example, if the selected mob type's pack size is 4, the final spawn location could be anywhere within a 41x41 region around the original position. However, in practice, this is unlikely. Check out this heatmap showing the spatial distribution of spawn attempts.
 
-![pack spawn heatmap](/blogposts/mob-spawning/packspawn-heatmap.png)
+![pack spawn heatmap](packspawn-heatmap.png)
 
 As you can see, most of the attempts end up pretty close to the initial location; in fact, over 75% of all attempts are within 10 blocks of the initial location. We can find the cumulative distribution of pack spawn distance to determine how much overhang we need.
 
-![cumulative distribution of pack spawn distance](/blogposts/mob-spawning/distance-distr.png)
+![cumulative distribution of pack spawn distance](distance-distr.png)
 
 As you can see, bigger is always better, but the benefit you get from building a bigger overhang quickly decreases past ~12 blocks.
 

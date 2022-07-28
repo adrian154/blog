@@ -2,7 +2,7 @@ My friend recently sent me a [Spanish version](https://wordle.danielfrg.com/) of
 
 # First Impressions
 
-The site appears to be built using [Next.js](https://nextjs.org/), so the source code is a frightening nightmare. There's two obfuscated scripts ([here](/blogposts/wordle-es-wordlist/wordle-invisible.js) and [here](/blogposts/wordle-es-wordlist/wordle-app.js)) that appears to implement the logic for the game. 
+The site appears to be built using [Next.js](https://nextjs.org/), so the source code is a frightening nightmare. There's two obfuscated scripts ([here](wordle-invisible.js) and [here](wordle-app.js)) that appears to implement the logic for the game. 
 
 # Experimentation
 
@@ -50,7 +50,7 @@ Some more probing shows that this function returns the correct answer in plainte
 
 Okay, now we just need to automate the process by fleshing out all the other details of this code; namely, how it gets the ciphertext, and how it picks which key to decrypt with.
 
-Some quick googling suggests that the site is probably using [crypto-js](https://www.npmjs.com/package/crypto-js) for its cryptographic primitives, meaning the array of values from earlier is probably a list of current and future ciphertexts. The key is just `atob("bGxhbm9z")`, or "llanos". And finally, decrypting the list of ciphertexts reveals the full [list of solutions](/blogposts/wordle-es-wordlist/wordle-words.txt).
+Some quick googling suggests that the site is probably using [crypto-js](https://www.npmjs.com/package/crypto-js) for its cryptographic primitives, meaning the array of values from earlier is probably a list of current and future ciphertexts. The key is just `atob("bGxhbm9z")`, or "llanos". And finally, decrypting the list of ciphertexts reveals the full [list of solutions](wordle-words.txt).
 
 # Closing Remarks
 

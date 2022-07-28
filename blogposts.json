@@ -1,5 +1,10 @@
 [
     {
+        "id": "ip-over-audio-jack",
+        "title": "IP over Audio Jack",
+        "description": "Browsing the Internet at a blazing 11 kbit/s"
+    },
+    {
         "id": "detecting-dns-resolvers",
         "title": "Detecting Users' DNS Resolvers",
         "description": "Utilizing DNS tomfoolery for fun and profit. Well, actually, just fun.",

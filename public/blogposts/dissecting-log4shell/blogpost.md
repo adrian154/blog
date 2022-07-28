@@ -3,7 +3,7 @@ In case you haven't heard, there's been a bit of an illness going around. No, no
 Today I checked the Discord server for my SMP, and was greeted with a rather unexpected surprsie:
 
 <figure style="max-width: 358px">
-    <img src="/blogposts/dissecting-log4shell/log4shell-bitcraft.png" alt="picture of the offending message">
+    <img src="log4shell-bitcraft.png" alt="picture of the offending message">
     <figcaption>This lovely Discord-Minecraft bridge is powered by <a href="https://github.com/adrian154/minelink">Minelink</a>.</figcaption>
 </figure>
 

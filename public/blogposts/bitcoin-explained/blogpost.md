@@ -21,7 +21,7 @@ Anyone can make a transaction as anybody else. For example, Jayant could fabrica
 ## Digital Signatures
 
 <figure style="max-width: 491px">
-    <img src="/blogposts/bitcoin-explained/digital-signature.png" alt="illustration of a digital signature scheme">
+    <img src="digital-signature.png" alt="illustration of a digital signature scheme">
     <figcaption>A diagram of a public-key digital signature scheme. <a href="https://en.wikipedia.org/wiki/File:Private_key_signing.svg">Image</a> by <a href="https://commons.wikimedia.org/wiki/User:FlippyFlink">FlippyFlink</a> / <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA</a></figcaption>
 </figure>
 
@@ -46,7 +46,7 @@ In the Bitcoin protocol, each transaction is an entity with inputs and outputs. 
 Here's an example of how UTXOs work. Suppose Akarsh sends me 10 coins. He would use one of his UTXOs as the input to the transaction, which would have an output of 10 coins to my public key and another output back to Akarsh if the value of the input was not exactly equal to 10, kind of like change in a cash transaction. If I wanted to send 7 coins to Jayant, I would create a transaction with the output of the prior transaction as the input. The new transaction would have two outputs, one addressed to Jayant worth 7 coins, and one addressed to me worth 3 coins. 
 
 <figure style="max-width: 793px">
-    <img src="/blogposts/bitcoin-explained/utxo.png" alt="diagram of the previously described exchange">
+    <img src="utxo.png" alt="diagram of the previously described exchange">
     <figcaption>A visual representation of the exchange, totally not drawn in MS Paint. Note that this is a simplification; today, most transactions have multiple inputs and outputs.</figcaption>
 </figure>
 
@@ -67,7 +67,7 @@ The way Bitcoin gets around this problem is insanely clever (in my book), but it
 # Blockchain and Proof of Work
 
 <figure style="max-width: 1022px">
-    <img src="/blogposts/bitcoin-explained/blockchain.png" alt="diagram of the blockchain from the bitcoin whitepaper">
+    <img src="blockchain.png" alt="diagram of the blockchain from the bitcoin whitepaper">
     <figcaption>The blockchain, as depicted in the Bitcoin whitepaper, in all its unadulterated glory.</figcaption>
 </figure>
 
