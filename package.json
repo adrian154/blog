@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "render": "node generate-site.js render",
-    "clean": "node generate-site.js clean"
+    "clean": "node generate-site.js clean",
+    "renderall": "node generate-site.js all"
   },
   "repository": {
     "type": "git",

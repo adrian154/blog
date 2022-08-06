@@ -2,11 +2,11 @@ QR codes have been in the news recently, and for good reason; we've spent years 
 
 It all starts with a message like this from a friend.
 
-![initial message](/blogposts/discord-qr-code-phishing/initial.png)
+![initial message](initial.png)
 
 So you join the server, and you're greeted with a request for verification:
 
-![verification prompt with qr code](/blogposts/discord-qr-code-phishing/verification.png)
+![verification prompt with qr code](verification.png)
 
 Once you scan the code, that's it&mdash;you've handed total access of your account to whoever generated the sign-in link.
 
@@ -14,19 +14,19 @@ Once you scan the code, that's it&mdash;you've handed total access of your accou
 
 If you haven't logged into Discord recently, here's what you are greeted with when you are not signed in to the app.
 
-![signin screen](/blogposts/discord-qr-code-phishing/signin-example.png)
+![signin screen](signin-example.png)
 
 Here's what the intended usage looks like: you scan the QR code on your phone (where you're already signed into Discord); this launches the app, which then prompts you whether you want to log in.
 
-<img style="max-width: 300px" src="/blogposts/discord-qr-code-phishing/phone-prompt.png" alt="phone prompt screen">
+<img style="max-width: 300px" src="phone-prompt.png" alt="phone prompt screen">
 
 If you tap "Yes, log me in", this triggers an authenticated request to Discord's servers, which then signs you in wherever the QR code was first generated. As you can see, this system is ripe for abuse when combined with a little bit of social engineering. If you are unlucky enough to sign in without heeding Discord's warning, this is what you're greeted with:
 
-![verified](/blogposts/discord-qr-code-phishing/verified.png)
+![verified](verified.png)
 
 And soon afterwards&hellip;
 
-![pwned](/blogposts/discord-qr-code-phishing/pwned.png)
+![pwned](pwned.png)
 
 &hellip;you become one with the horde.
 

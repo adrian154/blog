@@ -1,6 +1,6 @@
 Recently, I set out to create my own photo organizer, a project which eventually bloomed into [Photobox](https://github.com/adrian154/photobox). In doing so, I came across a great deal of mucking about with image formats and compression, and then it dawned on me: JPEGs are ridiculously good at compressing image data, far beyond what seems possible! Take this picture, for example:
 
-![a test image](/blogposts/jpeg-explained/test-compressed.jpg)
+![a test image](test-compressed.jpg)
 
 *This poor cormorant has no idea what he's about to go through.*
 
@@ -14,30 +14,30 @@ RGB isn't very conducive to chroma subsampling, though, because the brightness o
 
 But how is RGB mapped to YCbCr? In my opinion, the relationship between the two color spaces is best explained visually. We can imagine RGB as a cube, with *x*-axis as red, *y*-axis as green, and *z*-axis as blue.
 
-<video class="center" loop controls autoplay><source src="/blogposts/jpeg-explained/rgb-cube-animation.mp4" type="video/mp4"></video>
+<video class="center" loop controls autoplay><source src="rgb-cube-animation.mp4" type="video/mp4"></video>
 
 This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. One can imagine a coordinate system where we align the cube such that the luminance component (Y) extends along this line. We can then extract a slice of the cube for any given luminance, and assign the remaining two degrees of freedom to Cb and Cr.
 
 This is essentially how YCbCr works, except the RGB values are first processed so that the cube ends up looking more like a slanted rectangular prism. (For the more math-inclined readers, you might recognize this as an affine transformation, hence why the RGB-YCbCr conversion is often described in terms of matrix multiplication). Here's a demo that shows the Cb-Cr planes as we adjust Y. 
 
 <figure style="max-width: 480px">
-    <video loop controls autoplay><source src="/blogposts/jpeg-explained/ycbcr-slices.mp4" type="video/mp4"></video>
+    <video loop controls autoplay><source src="ycbcr-slices.mp4" type="video/mp4"></video>
     <figcaption>No, that Y is definitely not backwards.</figcaption>
 </figure>
 
 If you want a better view of what the Cb-Cr plane looks like, here is a labeled diagram rendered at Y = 0.5. 
 
-![ycbcr diagram](/blogposts/jpeg-explained/ycbcr.png)
+![ycbcr diagram](ycbcr.png)
 
 When an image is converted to JPEG, the first thing that happens is that the RGB colors are converted to YCbCr. The Cb and Cr channels are stored at half the resolution of the full image, a scheme which is referred to as **4:2:0**.
 
 Let's compare what the components of the image look like in the two color spaces. Here's what the image looks like in RGB.
 
-![rgb components of the image](/blogposts/jpeg-explained/rgb-components.png)
+![rgb components of the image](rgb-components.png)
 
 And here's what the image looks like in YCbCr:
 
-![image in ycbcr color space](/blogposts/jpeg-explained/ycbcr-components.png)
+![image in ycbcr color space](ycbcr-components.png)
 
 As you can see, the importance of the luminance channel really shines through here. There is very little appreciable detail in the Cb and Cr channels, unlike in RGB space, where each channel is perceived (roughly) equally in the final image. We can safely discard much of the detail in the chrominance channels without sacrificing too much quality in the final image. However, this still doesn't bring us to the astounding compression ratios that JPEG achieves on a regular basis. For that, we'll need to go deeper into the compression process.
 
@@ -45,11 +45,11 @@ As you can see, the importance of the luminance channel really shines through he
 
 In the previous step, we reduced size by getting rid of color information. However, we can also drastically reduce size by getting rid of unnecessary *spatial* information. What does that mean? Consider this photo of a flower.
 
-![macro photograph of a pepper flower](/blogposts/jpeg-explained/test-2-reference.png)
+![macro photograph of a pepper flower](test-2-reference.png)
 
 If we zoom in close on the two highlighted regions, it becomes clear that not all image data is created equal. The one on the left contains much more information than the one on the right, yet they occupy the same amount of space.
  
-![zoom in on sections of flower image](/blogposts/jpeg-explained/flower-regions-comparison.png)
+![zoom in on sections of flower image](flower-regions-comparison.png)
 
 Like last time, the problem now becomes representing the image data in a way that lets us separate the important parts from the unimportant parts. JPEG accomplishes this using the **discrete cosine transform (DCT)**.
 

@@ -20,7 +20,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p><strong>Transaction Authenticity</strong></p>
 <p>Anyone can make a transaction as anybody else. For example, Jayant could fabricate a transaction where I send him all of my funds, and broadcast it to the network. This is obviously unacceptable, but it&#39;s actually easily solved with cryptography.</p>
 <h2 id="digital-signatures">Digital Signatures <a class="section-link" href="#digital-signatures">&sect;</a></h2><figure style="max-width: 491px">
-    <img src="/blogposts/bitcoin-explained/digital-signature.png" alt="illustration of a digital signature scheme">
+    <img src="digital-signature.png" alt="illustration of a digital signature scheme">
     <figcaption>A diagram of a public-key digital signature scheme. <a href="https://en.wikipedia.org/wiki/File:Private_key_signing.svg">Image</a> by <a href="https://commons.wikimedia.org/wiki/User:FlippyFlink">FlippyFlink</a> / <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA</a></figcaption>
 </figure>
 
@@ -39,7 +39,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p>In the Bitcoin protocol, each transaction is an entity with inputs and outputs. Each input references the output of a previous transaction. By mandating that a given output can only be spent once, we prevent replay attacks from succeeding. This also simplifies transaction validation, since nodes can simply maintain a list of unspent transaction outputs (<a href="https://en.wikipedia.org/wiki/Unspent_transaction_output">UTXOs</a>) instead of going through every single transaction in the ledger.</p>
 <p>Here&#39;s an example of how UTXOs work. Suppose Akarsh sends me 10 coins. He would use one of his UTXOs as the input to the transaction, which would have an output of 10 coins to my public key and another output back to Akarsh if the value of the input was not exactly equal to 10, kind of like change in a cash transaction. If I wanted to send 7 coins to Jayant, I would create a transaction with the output of the prior transaction as the input. The new transaction would have two outputs, one addressed to Jayant worth 7 coins, and one addressed to me worth 3 coins. </p>
 <figure style="max-width: 793px">
-    <img src="/blogposts/bitcoin-explained/utxo.png" alt="diagram of the previously described exchange">
+    <img src="utxo.png" alt="diagram of the previously described exchange">
     <figcaption>A visual representation of the exchange, totally not drawn in MS Paint. Note that this is a simplification; today, most transactions have multiple inputs and outputs.</figcaption>
 </figure>
 
@@ -52,7 +52,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 </blockquote>
 <p>The way Bitcoin gets around this problem is insanely clever (in my book), but it is also the #1 contributor to Bitcoin&#39;s inefficiency and high environmental impact. Here&#39;s how it works.</p>
 <h1 id="blockchain-and-proof-of-work">Blockchain and Proof of Work <a class="section-link" href="#blockchain-and-proof-of-work">&sect;</a></h1><figure style="max-width: 1022px">
-    <img src="/blogposts/bitcoin-explained/blockchain.png" alt="diagram of the blockchain from the bitcoin whitepaper">
+    <img src="blockchain.png" alt="diagram of the blockchain from the bitcoin whitepaper">
     <figcaption>The blockchain, as depicted in the Bitcoin whitepaper, in all its unadulterated glory.</figcaption>
 </figure>
 

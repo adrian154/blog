@@ -12,7 +12,7 @@ Symmetric ciphers are great because they're usually very fast and very secure, b
 
 Enter the [Diffie-Hellman Key Exchange](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange). It enables a client and a server to generate the same secret value while only exchanging publicly knowable data, which sounds impossible until you take a look at how it works. Here's a diagram that explains the steps of Diffie-Hellman key exchange using colors of paint as a stand-in for cryptographic keys.
 
-![DHKE diagram using paint analogy](/blogposts/tls-explained/DHKE-paint-analogy.png)
+![DHKE diagram using paint analogy](DHKE-paint-analogy.png)
 
 <br>
 
@@ -61,13 +61,13 @@ Carol makes sure that the person she's talking to is actually Bob, and signs Bob
 This, in essence, is how TLS performs authentication. Carol represents a group of organizations known as [certificate authorities](https://en.wikipedia.org/wiki/Certificate_authority), whose public keys are hardcoded into web browsers. Certificates on the web generally don't link a human name to a public key; instead, the "useful identity" they try to anchor is usually a domain name. Furthermore, the CA may not directly sign a website's certificate. Instead, they may sign the certificate for an *intermediate* keypair, which does the task of actually signing end user certificates. This sequence can extend for as many signatures as necessary, creating a **chain of trust**.
 
 <figure style="max-width: 1280px">
-    <img src="/blogposts/tls-explained/certificate-chain-of-trust.png" alt="chain of trust diagram">
+    <img src="certificate-chain-of-trust.png" alt="chain of trust diagram">
     <figcaption>A rough diagram showing how a verifiable chain of trust is created using digital signatures. <a href="https://en.wikipedia.org/wiki/File:Chain_Of_Trust.svg">Image</a> by Yukhih / <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA</a>.</figcaption>
 </figure>
 
 You can see this at play for pretty much any website you visit. If you're on Chrome, simply click the padlock button next to the address bar in your browser, and you'll see the option to view the website's certification path. Here's what you would probably see for this page:
 
-![picture of the ssl cert for this site](/blogposts/tls-explained/windows-cert-view.png)
+![picture of the ssl cert for this site](windows-cert-view.png)
 
 During the TLS handshake process, all three of these certificates were sent from my server to your browser. The first certificate (bithole.dev) contains my server's public key, as well as a reference to `R3`'s public key and a signature made with that public key. In turn, R3 is signed by ISRG Root X1, whose fingerprint is hardcoded into your browser as one of several trusted **root certificates**. Your browser can follow this chain of signatures and verify that each certificate is valid.
 
@@ -999,7 +999,7 @@ The actual signature of the certificate.
 
 This certificate contains some information about where to proceed next in the chain of trust. The easiest way is to probably look for the certificate whose subject key identifier matches the authority key identifier listed here, which is `142eb31...14c2c6`. If we look at R3, we'll see that its subject key identifier has that value; we can then validate the signature included in `test.bithole.dev` using R3's public key. Repeat the process, and we reach ISRG Root X1, which is signed by itself since it's a root certificate.
 
-The three certificates are available for download: [test.bithole.dev](/blogposts/tls-explained/cert1.crt), [R3](/blogposts/tls-explained/cert2.crt), and [ISRG Root X1](/blogposts/tls-explained/cert3.crt). You can dump information about these certificates using OpenSSL from the terminal:
+The three certificates are available for download: [test.bithole.dev](cert1.crt), [R3](cert2.crt), and [ISRG Root X1](cert3.crt). You can dump information about these certificates using OpenSSL from the terminal:
 
 <div class="limited-height-code">
 
@@ -1453,7 +1453,7 @@ secureSocket.on("secureConnect", () => {
 
 I created a subdomain `test.bithole.dev` resolving to `127.0.0.1` and grabbed a certificate through Let's Encrypt to make this example a little more realistic.
 
-You can download the full packet capture of the exchange which this page is based on [here](/blogposts/tls-explained/capture.pcap). You'll also need the [keylog](/blogposts/tls-explained/keylog.txt) to decrypt the capture.
+You can download the full packet capture of the exchange which this page is based on [here](capture.pcap). You'll also need the [keylog](keylog.txt) to decrypt the capture.
 
 # Further Reading
 * [TLS 1.3 Illustrated](https://tls13.ulfheim.net/)
