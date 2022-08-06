@@ -1,5 +1,10 @@
 [
     {
+        "id": "404",
+        "title": "404 Not Found",
+        "document": true
+    },
+    {
         "id": "detecting-dns-resolvers",
         "title": "Detecting Users' DNS Resolvers",
         "description": "Utilizing DNS tomfoolery for fun and profit. Well, actually, just fun.",
