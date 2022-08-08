@@ -16,7 +16,7 @@ Okay, so `rand()` is not as *horrible* as I've made it out to be. Don't get me w
 
 <aside>
 
-Aside from `rand()`'s inherent issues, common practices associated with it are often be the source of additional evil. Common culprits are seeding the PRNG with unsuitable values or using the modulo operator to generate random numbers within a certain range. That's right&mdash;unless `RAND_MAX` is an exact multiple of your range, you are actually introducing a small amount of bias. But I digress&hellip;
+Aside from `rand()`'s inherent issues, common practices associated with it are often the source of additional evil. Common culprits are seeding the PRNG with unsuitable values or using the modulo operator to generate random numbers within a certain range. That's right&mdash;unless `RAND_MAX` is an exact multiple of your range, you are actually introducing a small amount of bias. But I digress&hellip;
 
 </aside>
 
