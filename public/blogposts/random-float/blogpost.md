@@ -20,7 +20,7 @@ Aside from `rand()`'s inherent issues, common practices associated with it are o
 
 </aside>
 
-Today, we're going to be using [xoshiro128+](https://prng.di.unimi.it/xoshiro128plus.c) as our PRNG. Admittedly, the choice of PRNG is not actually that important, which may come as a surprise after my rant about `rand()`. However, as long as you are not using a crappy or obscure generator, there are plenty of very fast, well-proven generators that will probably all be sufficient for your application.
+Today, we're going to be using [xoshiro128+](https://prng.di.unimi.it/xoshiro128plus.c) as our PRNG. Admittedly, the choice of PRNG is not actually that important, which may come as a surprise after my rant about `rand()`. However, as long as you are not using a crappy or obscure generator, there are plenty of very fast, well-proven generators that are probably sufficient for your application.
 
 # Introducing Floating Point
 
@@ -37,7 +37,7 @@ Instead, what we want to do is create a floating point number using bitwise oper
     <figcaption>The anatomy of a single-precision float. <a href="https://en.wikipedia.org/wiki/File:Float_example.svg">Image</a> by <a href="https://en.wikipedia.org/wiki/User:Fresheneesz">Fresheneesz</a></figcaption>
 </figure>
 
-If you ever learned scientific notation in school, a floating point number is a lot like that. Basically, a number is carved into three parts: the sign bit, the exponent, and the integer. The function of the sign bit is very simple; 0 is positive and 1 is negative. The real value represented by a float is basically equal to $\mathrm{fraction} \times 2^\mathrm{exponent}$.
+If you ever learned scientific notation in school, a floating point number is a lot like that. Basically, three fields are packed together: the sign bit, the exponent, and the integer. The function of the sign bit is very simple; 0 is positive and 1 is negative. The real value represented by a float is basically equal to $\mathrm{fraction} \times 2^\mathrm{exponent}$.
 
 There are a few pitfalls that we need to be aware of, however:
 - The exponent is stored with an offset of 127, so an exponent of 0 is equal to -127, an exponent of 127 is equal to 0, and an exponent of 255 is equal to 128. 
