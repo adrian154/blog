@@ -1,5 +1,12 @@
 [
     {
+        "id": "random-float",
+        "title": "Generating Random Floats in [0, 1)",
+        "description": "It's time to get real. *badum tss*",
+        "timestamp": 1659929750660,
+        "publish": true
+    },
+    {
         "id": "404",
         "title": "404 Not Found",
         "document": true
