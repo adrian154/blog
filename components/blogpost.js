@@ -30,6 +30,8 @@ const comments = properties => {
 module.exports = (properties, src) => {
 
     const body = renderMarkdown(src);
+    properties.wordCount = body.wordCount;
+
     return document(
         {
             ...properties,

@@ -1,5 +1,12 @@
 [
     {
+        "id": "dc30",
+        "title": "DEFCON Photo Dump",
+        "description": "Some pictures we took at DEFCON 30.",
+        "timestamp": 1660680609998,
+        "publish": true
+    },
+    {
         "id": "random-float",
         "title": "Generating Random Floats in [0, 1)",
         "description": "It's time to get real. *badum tss*",

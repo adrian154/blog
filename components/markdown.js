@@ -76,5 +76,5 @@ marked.use({
 
 module.exports = markdown => {
     fragments = {};
-    return {html: marked.parse(markdown), fragments};
+    return {html: marked.parse(markdown), fragments, wordCount: markdown.split(/\s+/).length};
 };
