@@ -11,7 +11,7 @@ I made the decision to visit DEFCON this year with some friends, which turned ou
 </figure>
 
 <figure style="max-width: 400px">
-    <video src="IMG_2608.mov" controls></video>
+    <video src="IMG_2608.mp4" controls></video>
     <figcaption>Badge shenanigans.</figcaption>
 </figure>
 
@@ -81,6 +81,6 @@ I made the decision to visit DEFCON this year with some friends, which turned ou
 </figure>
 
 <figure style="max-width: 500px">
-    <video src="IMG_2661.mov" controls></video>
+    <video src="IMG_2661.mp4" controls></video>
     <figcaption>...but not before one last LAN party! At 36,000 feet, no less.</figcaption>
 </figure>
