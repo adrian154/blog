@@ -1,5 +1,12 @@
 [
     {
+        "id": "nginx-sqlite-log",
+        "title": "Logging Requests with SQLite and Nginx",
+        "description": "A guide on how to configure Nginx to store requests in an SQLite table.",
+        "timestamp": 1661106917570,
+        "publish": true
+    },  
+    {
         "id": "dc30",
         "title": "DEFCON Photo Dump",
         "description": "Some pictures we took at DEFCON 30.",
