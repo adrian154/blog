@@ -20,7 +20,7 @@ This is not the exact scheme used by Minecraft, but it serves to explain the con
 
 # Minecraft Key Management
 
-First things first, let's understand how Minecraft manages the user's keypair. To do this, I decompiled the game, something which I recently wrote a [blogpost](decompiling-mc.html) about. Anyways, some digging around eventually brings us to a class called `ProfileKeyPairManager`, which reveals that your profile keys are stored in a JSON file in the `.minecraft/profilekeys` folder. A quick look at this file reveals its structure:
+First things first, let's understand how Minecraft manages the user's keypair. To do this, I decompiled the game, something which I recently wrote a [blogpost](../decompiling-mc/) about. Anyways, some digging around eventually brings us to a class called `ProfileKeyPairManager`, which reveals that your profile keys are stored in a JSON file in the `.minecraft/profilekeys` folder. A quick look at this file reveals its structure:
 
 ```json
 {

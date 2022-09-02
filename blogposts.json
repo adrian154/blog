@@ -1,5 +1,10 @@
 [
     {
+        "id": "internet-background-noise",
+        "title": "Meet the Noisy Neighbors of the Internet",
+        "description": "An analysis of Internet background traffic"
+    },
+    {
         "id": "nginx-sqlite-log",
         "title": "Logging Requests with SQLite and Nginx",
         "description": "A guide on how to configure Nginx to store requests in an SQLite table.",
