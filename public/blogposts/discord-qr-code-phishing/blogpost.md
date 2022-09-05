@@ -1,4 +1,4 @@
-QR codes have been in the news recently, and for good reason; we've spent years honing our suspicious link recognition instincts, only for them to be utterly sidestepped by our QR code scanning obsession. This has given rise to new versions of familiar old attacks with terrible names like "quishing". Today, we're going to be looking at how scammers are exploiting Discord's QR code login feature.
+QR codes have been in the news recently, and for good reason; we've spent years honing our suspicious link recognition instincts, only for them to be utterly sidestepped by our QR code scanning obsession. Here's a guide on how to recognize this scam.
 
 It all starts with a message like this from a friend.
 
@@ -10,13 +10,13 @@ So you join the server, and you're greeted with a request for verification:
 
 Once you scan the code, that's it&mdash;you've handed total access of your account to whoever generated the sign-in link.
 
-# How It Works
+# Why does this work?
 
 If you haven't logged into Discord recently, here's what you are greeted with when you are not signed in to the app.
 
 ![signin screen](signin-example.png)
 
-Here's what the intended usage looks like: you scan the QR code on your phone (where you're already signed into Discord); this launches the app, which then prompts you whether you want to log in.
+The indended flow looks something like this: when you scan the QR code on a device where you're already signed into Discord, you're prompted over whether you want to log in.
 
 <img style="max-width: 300px" src="phone-prompt.png" alt="phone prompt screen">
 
@@ -32,8 +32,8 @@ And soon afterwards&hellip;
 
 # How To Protect Yourself
 
-It's entirely up to you to stay safe against these types of attacks; the possibility of someone abusing this mechanism to gain access to your account is, unfortunately, **intended functionality**.
+Some time ago, Discord introduced a screen that is shown to the user before signing them in warning that they may be getting phished. This has helped reduce the impact of this scam, but there are still a few lessons to be learned:
+- Be careful about scanning weird QR codes! They are becoming increasingly popular as a phishing vector since users are much less careful to look at the actual URL.
+- I'm not sure who needs to hear this, but if your friend sends you a random server invite, it is usually not in your best interest to join. At least ask them for context frst.
 
-Luckily, the steps you need to take are simple. Simply avoid ever scanning an unfamiliar QR code in the Discord app; I would frankly recommend completely avoiding this method of sign-in.
-
-Sharing your QR code should not make you vulnerable as the QR codes do not appear to be associated with any user accounts&mdash;after all, they're generated *before* you've signed in. Still, I would err on the side of caution and not do that.
+If you see the Discord icon at the center of the QR code, that is a sure-fire sign that you are being phished. However, it is totally possible to generate a QR code without the Discord logo present.
