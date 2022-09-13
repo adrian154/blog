@@ -1,5 +1,12 @@
 [
     {
+        "id": "exfat-asm",
+        "title": "Reading ExFAT Volumes in Assembly",
+        "description": "A new episode in my OSDev saga.",
+        "scripts": ["/scripts/packetview.js"],
+        "stylesheets": ["/stylesheets/packetview.css"]
+    },
+    {
         "id": "internet-background-noise",
         "title": "Meet the Noisy Neighbors of the Internet",
         "description": "An analysis of Internet background traffic"
