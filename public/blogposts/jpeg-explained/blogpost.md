@@ -58,10 +58,16 @@ To understand what that means, we need to start thinking of the image as a funct
 
 The benefit of expressing the image in the frequency domain is that it allows us to discard unimportant high-frequency information. As we'll see later, we perceive low-frequency signals much more strongly than the higher frequency components.
 
-JPEG does not use the Fourier transform; instead, it uses the closely related [discrete cosine transform](https://en.wikipedia.org/wiki/Discrete_cosine_transform), whose characteristics make it better suited for use in lossy compression. Before we go further, try drawing a waveform below, and the discrete cosine transform will be shown.
+JPEG does not use the Fourier transform; instead, it uses the closely related [discrete cosine transform](https://en.wikipedia.org/wiki/Discrete_cosine_transform), whose characteristics make it better suited for use in lossy compression. Before we go further, try drawing a waveform below, and the signal as approximated by DCT will be shown on the right. You can use the slider to adjust the number of waveforms that are combined to form the approximation.
 
-<canvas id="signal"></canvas>
-<canvas id="transform"></canvas>
+<div id="dct-demo">
+    <canvas id="signal" width="256" height="256"></canvas>
+    <canvas id="transform" width="256" height="256"></canvas>
+</div>
+
+<input type="range" min="2" max="100" id="num-cosines">
+
+Notice how removing the higher-frequency components does not affect the quality of the approximation much. <TBC>
 
 # Huffman Coding
 

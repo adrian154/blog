@@ -2,24 +2,29 @@ const signalCtx = document.getElementById("signal").getContext("2d");
 const transformCtx = document.getElementById("transform").getContext("2d");
 
 const signal = new Array(256).fill(0);
+const approximatedSignal = new Array(signal.length).fill(0);
+const transform = new Array(signal.length / 2);
 
-const drawSignal = () => {
-    signalCtx.clearRect(0, 0, signalCtx.canvas.width, signalCtx.canvas.height);
-    signalCtx.beginPath();
+const drawSignal = (ctx, signal, color) => {
+    ctx.strokeStyle = color;
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.beginPath();
     for(let t = 0; t < signal.length; t++) {
 
-        const x = t / signal.length * signalCtx.canvas.width,
-              y = (signal[t] + 1) / 2 * signalCtx.canvas.height;
+        const x = t / signal.length * ctx.canvas.width,
+              y = (signal[t] + 1) / 2 * ctx.canvas.height;
 
         if(t == 0)
-            signalCtx.moveTo(x, y);
+            ctx.moveTo(x, y);
         else 
-            signalCtx.lineTo(x, y);
+            ctx.lineTo(x, y);
 
     }
-    signalCtx.stroke();
-    signalCtx.closePath();
+    ctx.stroke();
+    ctx.closePath();
 };
+
+const drawOriginal = drawSignal(signalCtx, signal, "#ff0000");
 
 // convert signal canvas coords to (i, y)
 const convertCoords = (x, y) => [Math.floor(x / signalCtx.canvas.width * signal.length), y / signalCtx.canvas.height * 2 - 1];
@@ -34,7 +39,7 @@ signalCtx.canvas.addEventListener("mousedown", event => {
     signal[i] = y;
     lasti = i;
     lasty = y;
-    drawSignal();
+    drawSignal(signalCtx, signal, "#ff0000");
 });
 
 signalCtx.canvas.addEventListener("mousemove", event => {
@@ -64,7 +69,7 @@ signalCtx.canvas.addEventListener("mousemove", event => {
 
         lasti = i;
         lasty = y;
-        drawSignal();
+        drawSignal(signalCtx, signal, "#ff0000");
 
     }
 
@@ -73,6 +78,40 @@ signalCtx.canvas.addEventListener("mousemove", event => {
 
 window.addEventListener("mouseup", event => {
     lasti = -1;
+    doTransform();
 });
 
-drawSignal();
+drawSignal(signalCtx, signal, "#ff0000");
+
+const doTransform = () => {
+
+    for(let f = 0; f < transform.length; f++) {
+        let sum = 0;
+        for(let i = 0; i < signal.length; i++) {
+            sum += signal[i] * Math.cos(Math.PI / signal.length * f * (i + 0.5));
+        }
+        transform[f] = sum / transform.length;
+    }
+
+    redrawTransform(50);
+
+};
+
+const redrawTransform = count => {
+
+    // draw components
+    for(let i = 0; i < approximatedSignal.length; i++) approximatedSignal[i] = 0;
+
+    for(let f = 0; f < count; f++) {
+        for(let i = 0; i < signal.length; i++) {
+            approximatedSignal[i] += Math.cos(Math.PI / signal.length * f * (i + 0.5)) * transform[f];
+        }
+    }
+
+    drawSignal(transformCtx, approximatedSignal, "#0000ff");
+
+}; 
+
+const slider = document.getElementById("num-cosines");
+slider.max = transform.length;
+slider.addEventListener("input", event => redrawTransform(event.target.value));

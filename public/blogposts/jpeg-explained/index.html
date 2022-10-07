@@ -39,9 +39,14 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p>Like last time, the problem now becomes representing the image data in a way that lets us separate the important parts from the unimportant parts. JPEG accomplishes this by converting the image to the <strong>frequency domain</strong>.</p>
 <p>To understand what that means, we need to start thinking of the image as a function. Right now, the image is best described as existing in the spatial domain, meaning it maps spatial inputs (pixel positions) to intensities. However, if you are familiar with the Fourier transform, you know that any signal can be expressed as the sum of sinusoidal waves.</p>
 <p>The benefit of expressing the image in the frequency domain is that it allows us to discard unimportant high-frequency information. As we&#39;ll see later, we perceive low-frequency signals much more strongly than the higher frequency components.</p>
-<p>JPEG does not use the Fourier transform; instead, it uses the closely related <a href="https://en.wikipedia.org/wiki/Discrete_cosine_transform">discrete cosine transform</a>, whose characteristics make it better suited for use in lossy compression. Before we go further, try drawing a waveform below, and the discrete cosine transform will be shown.</p>
-<p><canvas id="signal"></canvas>
-<canvas id="transform"></canvas></p>
+<p>JPEG does not use the Fourier transform; instead, it uses the closely related <a href="https://en.wikipedia.org/wiki/Discrete_cosine_transform">discrete cosine transform</a>, whose characteristics make it better suited for use in lossy compression. Before we go further, try drawing a waveform below, and the signal as approximated by DCT will be shown on the right. You can use the slider to adjust the number of waveforms that are combined to form the approximation.</p>
+<div id="dct-demo">
+    <canvas id="signal" width="256" height="256"></canvas>
+    <canvas id="transform" width="256" height="256"></canvas>
+</div>
+
+<input type="range" min="2" max="100" id="num-cosines">
+
 <h1 id="huffman-coding">Huffman Coding <a class="section-link" href="#huffman-coding">&sect;</a></h1><h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><ul>
 <li><a href="https://www.itu.int/rec/T-REC-T.871-201105-I/en">ITU - T.871: JPEG File Interchange Format (JFIF)</a></li>
 <li><a href="https://www.w3.org/Graphics/JPEG/itu-t81.pdf">CCITT - T.81: Digital Compression and Coding of Continuous-Tone Still Images - Requirements and Guidelines</a></li>
