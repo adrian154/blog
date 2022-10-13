@@ -124,13 +124,23 @@ For more info on the implementation details, check out [chain.h](https://github.
 
 </aside>
 
+# Weaknesses and Attacks
+
+Bitcoin works remarkably well, but the nature of its construction means that there are many weaknesses inherent to its design. Here, I'll be introducing what are (in my opinion) some of the most significant flaws associated with Bitcoin.
+
+## Lack of Anonymity
+
+This may come as a surprise, but Bitcoin is not anonymous. It's not inherently associated with your real-world identity like most conventional payment systems, but at the same time, all of your transactions are public. Combine that with the fact that many exchanges require various forms of PII when purchasing Bitcoin using fiat currency, and it becomes clear that you need to take extra measures to ensure your privacy when using Bitcoin.
+
+## Sybil Attack
+
+If an attacker managed to isolate your node from the network such that you were *only* connected to attacker-controlled nodes, it would make a double-spending attempt easier since the attacker would no longer need to compete with the rest of the network; since they control what blocks you see, .
+
 # Script
 
 # Forks in the Road
 
 # SegWit and the Lightning Network
-
-# Weaknesses and Attacks
 
 # References
 
