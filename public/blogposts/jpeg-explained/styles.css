@@ -1,12 +1,27 @@
 canvas {
-    border: 1px solid #ccc;
+    outline: 1px solid #ccc;
 }
 
 input[type="range"] {
-    width: 70%;
+    width: 512px;
 }
 
 #dct-demo {
     display: flex;
     flex-direction: row;
+}
+
+.dct {
+    font-family: monospace;
+}
+
+.dct td {
+    border: 1px solid #ccc;
+    text-align: left;
+    width: 2em;
+}
+
+.table-title {
+    text-align: center;
+    font-weight: bold;
 }

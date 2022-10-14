@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <body style="background-color: #ccc">
+        <canvas id="image" width="312" height="312"></canvas>
+        <script>
+            const canvas = document.getElementById("image");
+            const ctx = canvas.getContext("2d");
+
+            const drawBlock = (i, j, offsetx, offsety) => {
+                for(let x = 0; x < 8; x++) {
+                    for(let y = 0; y < 8; y++) {
+                        const real = Math.cos((2*x+1)*i*Math.PI/16) * Math.cos((2*y+1)*j*Math.PI/16);
+                        const value = (real + 1) / 2 * 256;
+                        ctx.fillStyle = `rgb(${value}, ${value}, ${value})`
+                        ctx.fillRect(x * 4 + offsetx, y * 4 + offsety, 4, 4);            
+                    }
+                }
+            };
+
+            for(let x = 0; x < 8; x++) {
+                for(let y = 0; y < 8; y++) {
+                    drawBlock(x, y, x * 40, y * 40);
+                }
+            }
+        </script>
+    </body>
+</html>

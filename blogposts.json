@@ -98,8 +98,8 @@
     {
         "id": "jpeg-explained",
         "title": "What's In a JPEG?",
-        "description": "The fascinating algorithms behind an otherwise mundane image format.",
-        "scripts": ["/blogposts/jpeg-explained/jpeg.js"],
+        "description": "The fascinating algorithms behind the quintessential image format.",
+        "scripts": ["/blogposts/jpeg-explained/1d-dct-demo.js"],
         "stylesheets": ["/blogposts/jpeg-explained/styles.css"],
         "interactive": true,
         "issueNumber": 6

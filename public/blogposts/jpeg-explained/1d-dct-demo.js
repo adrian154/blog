@@ -5,9 +5,16 @@ const signal = new Array(256).fill(0);
 const approximatedSignal = new Array(signal.length).fill(0);
 const transform = new Array(signal.length / 2);
 
-const drawSignal = (ctx, signal, color) => {
+const drawSignal = (ctx, signal, color, text) => {
+    
     ctx.strokeStyle = color;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    ctx.globalAlpha = 0.5;
+    ctx.font = "14px Consolas";
+    ctx.fillText(text, 4, 16);
+    ctx.globalAlpha = 1.0;
+
     ctx.beginPath();
     for(let t = 0; t < signal.length; t++) {
 
@@ -24,7 +31,7 @@ const drawSignal = (ctx, signal, color) => {
     ctx.closePath();
 };
 
-const drawOriginal = drawSignal(signalCtx, signal, "#ff0000");
+const drawOriginal = () => drawSignal(signalCtx, signal, "#ff0000", "Original");
 
 // convert signal canvas coords to (i, y)
 const convertCoords = (x, y) => [Math.floor(x / signalCtx.canvas.width * signal.length), y / signalCtx.canvas.height * 2 - 1];
@@ -39,7 +46,7 @@ signalCtx.canvas.addEventListener("mousedown", event => {
     signal[i] = y;
     lasti = i;
     lasty = y;
-    drawSignal(signalCtx, signal, "#ff0000");
+    drawOriginal();
 });
 
 signalCtx.canvas.addEventListener("mousemove", event => {
@@ -69,7 +76,7 @@ signalCtx.canvas.addEventListener("mousemove", event => {
 
         lasti = i;
         lasty = y;
-        drawSignal(signalCtx, signal, "#ff0000");
+        drawOriginal();
 
     }
 
@@ -81,7 +88,7 @@ window.addEventListener("mouseup", event => {
     doTransform();
 });
 
-drawSignal(signalCtx, signal, "#ff0000");
+drawOriginal();
 
 const doTransform = () => {
 
@@ -93,25 +100,26 @@ const doTransform = () => {
         transform[f] = sum / transform.length;
     }
 
-    redrawTransform(50);
+    redrawTransform();
 
 };
 
-const redrawTransform = count => {
+
+const slider = document.getElementById("num-cosines");
+slider.max = transform.length;
+slider.addEventListener("input", event => redrawTransform());
+
+const redrawTransform = () => {
 
     // draw components
     for(let i = 0; i < approximatedSignal.length; i++) approximatedSignal[i] = 0;
 
-    for(let f = 0; f < count; f++) {
+    for(let f = 0; f < slider.value; f++) {
         for(let i = 0; i < signal.length; i++) {
             approximatedSignal[i] += Math.cos(Math.PI / signal.length * f * (i + 0.5)) * transform[f];
         }
     }
 
-    drawSignal(transformCtx, approximatedSignal, "#0000ff");
+    drawSignal(transformCtx, approximatedSignal, "#0000ff", `Approximated (${slider.value} ${slider.value == 1 ? "coefficient" : "coefficients"})`);
 
 }; 
-
-const slider = document.getElementById("num-cosines");
-slider.max = transform.length;
-slider.addEventListener("input", event => redrawTransform(event.target.value));
