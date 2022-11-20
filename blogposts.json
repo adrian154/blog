@@ -107,7 +107,7 @@
     {
         "id": "decompiling-minecraft",
         "title": "Minecraft Decompilation Guide",
-        "description": "An tutorial on how to decompile modern versions of Minecraft using Mojang's official mappings.",
+        "description": "A tutorial on how to decompile modern versions of Minecraft using Mojang's official mappings.",
         "timestamp": 1655268355160, 
         "publish": true,
         "issueNumber": 12
