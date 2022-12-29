@@ -27,13 +27,13 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 </ul>
 <p>There are also plenty of obscure and dead LAN technologies. One example is <a href="https://en.wikipedia.org/wiki/Token_Ring">Token Ring</a>, IBM&#39;s Ethernet competitor, which was famously vanquished around the turn of the century.</p>
 <h1 id="switches">Switches <a class="section-link" href="#switches">&sect;</a></h1><figure style="max-width: 800px">
-    <img src="ethernet-switch.jpg" alt="ethernet switch">
+    <img loading="lazy" src="ethernet-switch.jpg" alt="ethernet switch">
     <figcaption>An Ethernet switch. <a href="https://commons.wikimedia.org/wiki/File:Netgear_Gigabit_Switch_5-port.jpg">Image</a> by <a href="https://commons.wikimedia.org/wiki/User:LivingShadow">Simon A. Eugster</a> / <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.en">CC-BY</a></figcaption>
 </figure>
 
 <p>Devices called <a href="https://en.wikipedia.org/wiki/Network_switch">network switches</a> allow communication between interfaces on the same LAN. A switch is basically an embedded device with a large number of Ethernet ports. Because all devices on the network communicate with each other by talking through the switch, a <a href="https://en.wikipedia.org/wiki/Star_network">star topology</a> is formed.</p>
 <figure style="max-width: 481px">
-    <img src="switch-star-topology.png" alt="star topology diagram">
+    <img loading="lazy" src="switch-star-topology.png" alt="star topology diagram">
     <figcaption>In case you can't tell, I'm not exactly the best at making diagrams.</figcaption>
 </figure>
 
@@ -52,7 +52,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p>Switches are one of the most ubiquitous building blocks of computer networks, so it&#39;s no surprise that they are all over the place. If your router has more than one Ethernet port, chances are it has a built-in switch.</p>
 <h2 id="wifi">WiFi <a class="section-link" href="#wifi">&sect;</a></h2><p>Ethernet is <em>the</em> most common standard for wired communications, but most people access their network wirelessly when at home. So let&#39;s talk about WiFi, which is standardized in <a href="https://en.wikipedia.org/wiki/IEEE_802.11">IEEE 802.11</a>. The biggest difference in wireless networking is that for the purposes of a residential LAN, point-to-point links don&#39;t exist. Instead, devices communicate with the LAN by broadcasting on a predetermined frequency. All devices on the LAN receive and decode incoming frames, and simply filter out the ones which aren&#39;t intended for them.</p>
 <p>However, this comes with the pitfall that only one device can transmit at a time on a given channel. The situation is similar to what happens when multiple people try to have a conversation in a small room. WiFi can&#39;t use CSMA/CD either, because CSMA/CD relies on transmitters being able to listen for a colliding signal while transmitting; that&#39;s easy for wired network devices, which transmit and receive on physically isolated wires, but WiFi transceivers have to stop receiving while transmitting or they&#39;d only be able to hear their own signal. Thus, collision <em>avoidance</em> is used, where transceivers wait until the network has been quiet for some time before starting to transmit.</p>
-<p><img src="hidden-node-problem.png" alt="illustration of the hidden node problem"></p>
+<p><img loading="lazy" src="hidden-node-problem.png" alt="illustration of the hidden node problem"></p>
 <p>Collision avoidance sometimes fails, though. Check out this diagram, where the red and blue circles represent the range which devices A and B can receive communications, respectively. Device A cannot hear device B, so it has no way to avoid transmitting at the same time as device B. If that happens, the device at the center (which is in range of both device A and device B) will be unable to decipher either device&#39;s transmission. This is called the <em>hidden node problem</em>.</p>
 <p>To alleviate the hidden node problem, WiFi implements an algorithm called Request-to-Send/Clear-to-Send, or RTS/CTS. With RTS/CTS, every node asks the access point whether it&#39;s okay for them to transmit in combination with checking if the channel is quiet. Only when a clear-to-send message is received from the access point does the device send the packet. RTS/CTS is always used, but under the right conditions it is shown to give a fairly significant boost to network throughput.</p>
 <p>Speaking of which, what <em>is</em> an access point, anyways? We&#39;ve already established that unlike in a wired network, a central switching point is not strictly necessary for wireless networks; every device includes a transceiver, so any two WiFi-enabled devices can talk to each other without external help. Instead, the job of a wireless access point is to serve as the gateway between the local network and greater Internet. Speaking of which&hellip;</p>
@@ -61,7 +61,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p>In IP, every network interface is associated with an IP address. In IPv4, this address is 32-bits long, and usually written as a series of four numbers (each corresponding to a byte or <em>octet</em> of the IP address) separated by periods. For example, the IP of this blog at the time of writing is 142.93.26.121. IP addresses are managed by the <a href="https://en.wikipedia.org/wiki/Internet_Assigned_Numbers_Authority">Internet Assigned Numbers Authority</a>, which assigns blocks of IP addresses to the five <a href="https://en.wikipedia.org/wiki/Regional_Internet_registry">Regional Internet Registries</a>. The RIRs, in turn, deal with requests from individuals and businesses for IP allocations.</p>
 <p>Because IPv4 addresses are only 32 bits long, there can only be 2<sup>32</sup> = ~4 billion unique IPv4 addresses. That seems like a lot, but as early as the 90s the threat of running out of IPv4 addresses has continually loomed over the Internet, made worse by the fact that many parts of IPv4 space are <a href="https://en.wikipedia.org/wiki/Reserved_IP_addresses">reserved</a> for various purposes.</p>
 <figure style="max-width: 740px">
-    <img src="xkcd-internet-map.jpg" alt="xkcd internet map">
+    <img loading="lazy" src="xkcd-internet-map.jpg" alt="xkcd internet map">
     <figcaption><a href="https://xkcd.com/195/">xkcd 195</a>: a map of IPv4 space circa 2006. Things have only gotten more crowded since then.</figcaption>
 </figure>
 
@@ -179,7 +179,7 @@ fetch("https://v6-api.bithole.dev/ip").then(resp => resp.text()).then(ip => show
 </ul>
 <p>To solve the first problem, clients use a source IP of 0.0.0.0 in their initial DHCP requests. The DHCP server distinguishes incoming requests not by source IP but by MAC address. To discover the DHCP server, all DHCP requests are directed to a special IPv4 address, 255.255.255.255, which broadcasts the packets to all nodes on the network. By seeing which IP replies, a device can figure out which IP the DHCP server is running on.</p>
 <p>Okay, so we&#39;ve obtained an IP address. Now what?</p>
-<p><img src="ip-lan.png" alt="diagram of an IP LAN"></p>
+<p><img loading="lazy" src="ip-lan.png" alt="diagram of an IP LAN"></p>
 <p>Suppose computer 10.0.0.2 wants to send a message to 10.0.0.3. In order to actually deliver a message to 10.0.0.3, our sender needs to know which MAC address to send packets to. It can obtain this information via the <a href="https://en.wikipedia.org/wiki/Address_Resolution_Protocol">Address Resolution Protocol</a> (ARP).</p>
 <h2 id="obtaining-an-ip-address-ipv6-style">Obtaining an IP Address, IPv6 Style <a class="section-link" href="#obtaining-an-ip-address-ipv6-style">&sect;</a></h2><p>DHCP exists for IPv6 in the form of DHCPv6, but several alternative ways to obtain an address are also provided. In this section, we&#39;re going to be covering StateLess Address AutoConfiguration (SLAAC).</p>
 <p>TODO</p>
@@ -198,7 +198,7 @@ fetch("https://v6-api.bithole.dev/ip").then(resp => resp.text()).then(ip => show
 
 <p>ARP is ubiquitous among IEEE 802 networks. If your computer is on a WiFi or Ethernet-based network, you can install <a href="https://www.wireshark.org/">Wireshark</a> and observe ARP requests happening right before your eyes.</p>
 <figure style="max-width: 878px">
-    <img src="arp-capture.png" alt="arp requests on my LAN, as seen by wireshark">
+    <img loading="lazy" src="arp-capture.png" alt="arp requests on my LAN, as seen by wireshark">
     <figcaption>Some ARP requests seen on my local network.</figcaption>
 </figure>
 
@@ -236,7 +236,7 @@ fetch("https://v6-api.bithole.dev/ip").then(resp => resp.text()).then(ip => show
 <p>As I write this blogpost, IPv6 will have been available for an entire decade in just a couple months, yet <a href="https://www.google.com/intl/en/ipv6/statistics.html">IPv6 adoption</a> still languishes at around 35%. As it stands, the <em>majority</em> of the Internet is only available over IPv4, yet IANA allocated all of its IP addresses to the RIRs in <a href="https://itp.cdn.icann.org/en/files/announcements/release-03feb11-en.pdf">2011</a>; <a href="https://www.ripe.net/">RIPE NCC</a>, one of the five RIRs, was the last to <a href="https://www.ripe.net/publications/news/about-ripe-ncc-and-ripe/the-ripe-ncc-has-run-out-of-ipv4-addresses">run out of addresses</a> in 2019. Nowadays, if you want to get your hands onto some IPv4 addresses, you&#39;ll have to turn to the <a href="https://auctions.ipv4.global/">IP aftermarket</a>, where you&#39;d be paying a price of anywhere from 40 to 120 bucks a pop. </p>
 <p>This ever-worsening drought of IP addresses has forced the Internet&#39;s biggest players, the ISPs, to get creative. One solution that has been used to combat IPv4 exhaustion is <a href="https://en.wikipedia.org/wiki/Network_address_translation">Network Address Translation</a> (NAT). NAT precludes the need to assign every device on a household network a unique IP address. Here&#39;s how it works.</p>
 <figure style="max-width: 481px">
-    <img src="nat.png" alt="nat diagram">
+    <img loading="lazy" src="nat.png" alt="nat diagram">
     <figcaption>A typical NAT setup.</figcaption>
 </figure>
 
@@ -258,7 +258,7 @@ fetch("https://v6-api.bithole.dev/ip").then(resp => resp.text()).then(ip => show
 <p>When you look at the Internet at the AS level, the illusion is truly stripped bare, and you can see the Internet for what it is: a bunch of servers, organized into ASes, with connections running between them.</p>
 <p>Routing between ASes is universally done via the <a href="https://en.wikipedia.org/wiki/Border_Gateway_Protocol">Border Gateway Protocol</a>, which is a <a href="https://en.wikipedia.org/wiki/Path-vector_routing_protocol">path vector routing protocol</a> as opposed to a link state routing protocol. Instead of broadcasting the existence of links throughout the network, BGP routers advertise which ASes they can reach and the path to take to their peers. This has the benefit of preventing the possibility of a loop, which would pose a serious problem at a global scale. In general, BGP is designed to reduce volatility in Internet routing. To reduce network usage and routing table size, BGP routers may use heuristics to selectively reject routes, a process known as <a href="https://en.wikipedia.org/wiki/Route_filtering">route filtering</a>. (The side-effect of route filtering is that no router on the Internet has a complete view of <em>all</em> routes, so collecting statistics on the routing table requires careful observation from numerous viewpoints.)</p>
 <figure style="max-width: 801px">
-    <img src="routing-protocols.png" alt="interaction between internal and external networks">
+    <img loading="lazy" src="routing-protocols.png" alt="interaction between internal and external networks">
     <figcaption>Diagram of the various routing protocols found on the Internet. Internal links are highighted in red; border routers are highlighted in green.</figcaption>
 </figure>
 
@@ -268,7 +268,7 @@ fetch("https://v6-api.bithole.dev/ip").then(resp => resp.text()).then(ip => show
 <li>Otherwise, it consults its routing table, finds the best next hop, and relays the packet to that BGP peer.</li>
 </ul>
 <p>Not every AS is connected with each other; often, Internet packets will travel through networks belonging to several ASes until they reach their destination. You can see this for yourself using the <a href="https://linux.die.net/man/8/traceroute">traceroute</a> utility. Many Internet infrastructure operators also run public <a href="https://en.wikipedia.org/wiki/Looking_Glass_server">Looking Glass</a> servers, which allow users to run traceroutes or retrieve BGP route information from their backbone servers. In particular, SdV operates a <a href="http://bgpmap.sdv.fr/">graphical traceroute tool</a> which lets you visualize all the routes to a certain IP available in their border gateways&#39; routing tables. Here&#39;s an example output for <a href="https://developers.google.com/speed/public-dns">8.8.8.8</a>, which is Google&#39;s public DNS project.</p>
-<p><img src="bgp-traceroute.gif" alt="bgp map to google dns"></p>
+<p><img loading="lazy" src="bgp-traceroute.gif" alt="bgp map to google dns"></p>
 <p>The red arrows signify the best path, the one that packets would actually follow in the network. As you can see, there is more than one way to reach the destination; Google is part of <a href="https://www.franceix.net/en/">France-IX</a>, which SdV is also a member of. The purple rectangles represent border routers within SdV&#39;s own network; they aren&#39;t shown for other networks since they are normally obscured from public view.</p>
 <aside>
 
@@ -287,12 +287,12 @@ fetch("https://v6-api.bithole.dev/ip").then(resp => resp.text()).then(ip => show
 <p>Note that peering and transit are the same thing from a technical standpoint. Also, <em>BGP peering</em> simply refers to the existence of a connection between two ASes. It doesn&#39;t necessarily mean that no settlement is involved. </p>
 <p>Another staple of backbone routing is the <a href="https://en.wikipedia.org/wiki/Internet_exchange_point">Internet Exchange Point</a> (IXP). IXPs are essentially a series of interconnected switches, usually managed by a non-profit organization, that allow many ASes to peer with each other without a huge number of cross-connections. </p>
 <figure style="max-width: 3888px">
-    <img src="internet-exchange.jpg" alt="internet exchange cables">
+    <img loading="lazy" src="internet-exchange.jpg" alt="internet exchange cables">
     <figcaption>One of many switches which make up <a href="https://en.wikipedia.org/wiki/Amsterdam_Internet_Exchange">AMS-IX</a>, one fo the world's largest Internet exchanges. <a href="https://en.wikipedia.org/wiki/File:AMS-IX_optical_patch_panel.jpg">Photo</a> by Fabienne Serriere / <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.en">CC BY-SA</a>.</figcaption>
 </figure>
 
 <p>IXPs are a pretty great thing for a number of reasons. They provide a way to peer with numerous other ASes, reducing latency for everyone, while avoiding the large number of physical connections that would be necessary to reach the same level of connectedness that would be necessary otherwise.</p>
-<p><img src="peering.png" alt="peering diagram"></p>
+<p><img loading="lazy" src="peering.png" alt="peering diagram"></p>
 <p>If you are interested in internet exchanges, I encourage you to checkout the <a href="https://fcix.net/">Fremont Cabal Internet Exchange</a>, a burgeoning IXP based out of Fremont, California (which is also my hometown!) The <a href="https://blog.thelifeofkenneth.com/2018/04/creating-internet-exchange-for-even.html">blogpost</a> about its creation is as informative as it is humorous.</p>
 <h2 id="not-all-ases-are-made-equal">Not All ASes Are Made Equal <a class="section-link" href="#not-all-ases-are-made-equal">&sect;</a></h2><p>Some ASes are more connected than others. You may hear talk about so-called &quot;tier 1&quot; networks; generally speaking, tier 1 networks are ASes which don&#39;t need to pay for transit to reach any other AS on the Internet. They are <a href="https://en.wikipedia.org/wiki/Tier_1_network#List_of_Tier_1_networks">few and far between</a>, mostly because the Internet has grown to the point where it&#39;s very hard to reach <em>every</em> network without at least paying somewhere along the way.</p>
 <p>Historically, many tier 1 networks were primarily located in the US, resulting in a lot of traffic flowing through US networks. This trend has <a href="https://www.nytimes.com/2008/08/30/business/30pipes.html?pagewanted=all">slowly eroded</a>, however, as Internet infrastructure becomes more advanced in other countries. Conversely, the NSA <a href="https://tcf.org/content/report/surveillance-without-borders-the-traffic-shaping-loophole-and-why-it-matters/">diverts American traffic</a> offshore so that it can legally perform surveillance.</p>
@@ -308,7 +308,7 @@ fetch("https://v6-api.bithole.dev/ip").then(resp => resp.text()).then(ip => show
 <p><strong>Anycast routing</strong> allows numerous geographically separate hosts to operate under the same IP. When you send a packet to an anycast address, it is delivered to the &quot;closest&quot; host as seen by the core routers along the path. This allows traffic to be automatically distributed between several servers, potentially reducing latency and increasing throughput. However, because IP is stateless, packets addressed to anycast packets are not guaranteed to arrive at the same host, which could potentially disrupt stateful protocols like TCP. As a result, anycast is most popular for scaling protocols where transactions are short-lived (and thus the odds of a connection being disrupted are low). In particular, many DNS services (such as all of the <a href="https://en.wikipedia.org/wiki/Root_name_server">root name servers</a> and many popular DNS resolvers) are scaled using anycast.</p>
 <p><strong>Multicast routing</strong> allows packets to be delivered to any hosts which have indicated that they are willing to participate in a given <em>multicast group</em>, managed by the <a href="https://en.wikipedia.org/wiki/Internet_Group_Management_Protocol">Internet Group Management Protocol</a> (IGMP). All multicast packets have destination addresses in the 224.0.0.0/4 range as <a href="https://datatracker.ietf.org/doc/html/rfc5771">reserved</a> by IANA. Senders of multicast periodically use IGMP to query the network for participants; hosts interested in receiving multicast packets on a specific address join that group by responding to the query. </p>
 <p>One of the most common protocols that uses multicast routing is <a href="https://en.wikipedia.org/wiki/Multicast_DNS">multicast DNS</a> (mDNS), which is essentially a variant of DNS that works over multicast. It is often used to discover devices on the LAN such as printers.</p>
-<p><img src="mdns-capture.png" alt="mdns traffic on my LAN"></p>
+<p><img loading="lazy" src="mdns-capture.png" alt="mdns traffic on my LAN"></p>
 <p><em>mDNS traffic on my LAN. I&#39;m pretty sure it&#39;s from my printer.</em></p>
 <p>Unlike anycast, multicast generally doesn&#39;t work outside of local networks; most providers do not route multicast traffic through their networks because it can potentially be used to amplify a <a href="https://en.wikipedia.org/wiki/Denial-of-service_attack">denial of service</a> attack, flooding hosts&#39; networks with packets and preventing users from accessing their services.</p>
 <h1 id="ipv6">IPv6 <a class="section-link" href="#ipv6">&sect;</a></h1><p>IPv6 is the successor of IPv4, created to solve various problems with the original Internet protocol (beyond just IPv4 exhaustion). However, it still fulfills the same role as IPv4, and as a result most protocols built on top of IP work fine with both protocols (though some modifications may be necessary to work with the longer addresses).</p>

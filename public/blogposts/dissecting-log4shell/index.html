@@ -9,7 +9,7 @@ loadSetting("serif");
 loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/dissecting-log4shell"></head><body><header><a href="/"><img src="/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">January 13, 2022</p><h1 style="margin-top: 0">Dissecting a Log4Shell Attack</h1><nav><div id="contents"><p>Table of Contents</p><a href="#epilogue"><p>Epilogue</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>In case you haven&#39;t heard, there&#39;s been a bit of an illness going around. No, not COVID. I&#39;m talking about <a href="https://en.wikipedia.org/wiki/Log4Shell">Log4Shell</a>, possibly one of the worst zero-day vulnerabilities in the history of cybersecurity. It originates from <a href="https://logging.apache.org/log4j/2.x/">Log4j2</a>, the premier logging framework for modern Java, which can be found in thousands of applications (including Minecraft). The power of Log4Shell cannot be understated; an attacker may be able to get remote code execution simply by making a vulnerable server simply log a specific string.</p>
 <p>Today I checked the Discord server for my SMP, and was greeted with a rather unexpected surprsie:</p>
 <figure style="max-width: 358px">
-    <img src="log4shell-bitcraft.png" alt="picture of the offending message">
+    <img loading="lazy" src="log4shell-bitcraft.png" alt="picture of the offending message">
     <figcaption>This lovely Discord-Minecraft bridge is powered by <a href="https://github.com/adrian154/minelink">Minelink</a>.</figcaption>
 </figure>
 

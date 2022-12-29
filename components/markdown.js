@@ -76,5 +76,6 @@ marked.use({
 
 module.exports = markdown => {
     fragments = {};
-    return {html: marked.parse(markdown), fragments, wordCount: markdown.split(/\s+/).length};
+    // KLUDGE: rewrite <img> tags to lazy load
+    return {html: marked.parse(markdown).replaceAll("<img", '<img loading="lazy"'), fragments, wordCount: markdown.split(/\s+/).length};
 };

@@ -9,7 +9,7 @@ loadSetting("serif");
 loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/random-float"></head><body><header><a href="/"><img src="/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">August 7, 2022</p><h1 style="margin-top: 0">Generating Random Floats in [0, 1)</h1><nav><div id="contents"><p>Table of Contents</p><a href="#introducing-floating-point"><p>Introducing Floating Point</p></a><a href="#actually-generating-floats"><p>Actually Generating Floats</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>Recently, I found myself in a situation where I needed to generate a random <code>float</code> between 0 and 1 using a random 32-bit integer in C. This subject has been done to death before, but I felt like feeling a little pain so I decided to figure it out myself before using someone else&#39;s better solution.</p>
 <p>First things first: we actually need to obtain some random integers. Easy, right? We&#39;ll just call <code>rand()</code> and&mdash;</p>
 <figure style="max-width: 512px">
-    <img src="eric-andre.gif" alt="GIF of Eric Andre shooting Hannibal">
+    <img loading="lazy" src="eric-andre.gif" alt="GIF of Eric Andre shooting Hannibal">
     <figcaption>This is what will happen to you if you even suggest using C's rand().</figcaption>
 </figure>
 
@@ -34,7 +34,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 </ul>
 <p>Instead, what we want to do is create a floating point number using bitwise operations. To do that, we need to familiarize ourselves with how floating point values are represented in memory; specifically, we&#39;re going to be focusing on <a href="https://en.wikipedia.org/wiki/IEEE_754">IEEE 754</a>, which is sort of required in the C standard.</p>
 <figure style="max-width: 640px">
-    <img src="float-layout.png" alt="diagram of the bits in a floating-point number (sign, exponent, mantissa)">
+    <img loading="lazy" src="float-layout.png" alt="diagram of the bits in a floating-point number (sign, exponent, mantissa)">
     <figcaption>The anatomy of a single-precision float. <a href="https://en.wikipedia.org/wiki/File:Float_example.svg">Image</a> by <a href="https://en.wikipedia.org/wiki/User:Fresheneesz">Fresheneesz</a></figcaption>
 </figure>
 

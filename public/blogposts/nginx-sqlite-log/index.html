@@ -33,7 +33,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
     &#x27;}&#x27;;</code></pre><p>Now, we just need to tell Nginx to use the <code>json_log</code> format, which gets our log lines looking like this:</p>
 <pre><code class="hljs">&lt;190&gt;Aug 21 11:11:16 bithole.dev nginx: {&quot;timestamp&quot;: 1661105476.291,&quot;requestLen&quot;: 28,&quot;status&quot;: 200,&quot;remoteAddr&quot;: &quot;127.0.0.1&quot;,&quot;requestMethod&quot;: &quot;GET&quot;,&quot;requestUri&quot;: &quot;/&quot;,&quot;protocol&quot;: &quot;HTTP/2.0&quot;,&quot;referrer&quot;: &quot;&quot;,&quot;userAgent&quot;: &quot;curl/7.68.0&quot;,&quot;host&quot;: &quot;bithole.dev&quot;}</code></pre><h1 id="storing-requests">Storing Requests <a class="section-link" href="#storing-requests">&sect;</a></h1><p>All we have left to do is actually implement the server. In theory, this is a trivial task, but, well&hellip; it was about 1 AM, so&hellip;</p>
 <figure style="max-width: 373px">
-    <img src="commits.png" alt="commit messages on 21 Aug 2022">
+    <img loading="lazy" src="commits.png" alt="commit messages on 21 Aug 2022">
     <figcaption>The commits messages say it all.</figcaption>
 </figure>
 

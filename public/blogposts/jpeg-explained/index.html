@@ -8,7 +8,7 @@
 loadSetting("serif");
 loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/jpeg-explained"></head><body><header><a href="/"><img src="/images/banner.jpg" alt="blog banner"></a></header><main><noscript><p style="color: #ff0000">Warning: If you are seeing this message, JS isn't supported; unfortunately, since this page relies on JS to dynamically generate content, parts of the page may be missing or brutally disfigured.</p></noscript><p id="date" class="date">undefined NaN, NaN</p><h1 style="margin-top: 0">What's In a JPEG?</h1><nav><div id="contents"><p>Table of Contents</p><a href="#chroma-subsampling"><p>Chroma Subsampling</p></a><a href="#discrete-cosine-transform"><p>Discrete Cosine Transform</p></a><a href="#quantization"><p>Quantization</p></a><a href="#lossless-compression"><p>Lossless Compression</p></a><a href="#further-reading"><p>Further Reading</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>Recently, I set out to create my own photo organizer, a project which eventually bloomed into <a href="https://github.com/adrian154/photobox">Photobox</a>. In doing so, I came across a great deal of mucking about with image formats and compression, and then it dawned on me: JPEGs are ridiculously good at compressing image data, far beyond what seems possible! Take this picture, for example:</p>
 <figure style="max-width: 299px">
-    <img src="test-compressed.jpg" alt="a cormorant">
+    <img loading="lazy" src="test-compressed.jpg" alt="a cormorant">
     <figcaption>This poor cormorant has no idea what he's about to go through.</figcaption>
 </figure>
 
@@ -26,17 +26,17 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 </figure>
 
 <p>If you want a better view of what the Cb-Cr plane looks like, here is a slice of the YCbCr gamut at Y = 0.5. </p>
-<p><img src="ycbcr.png" alt="ycbcr diagram"></p>
+<p><img loading="lazy" src="ycbcr.png" alt="ycbcr diagram"></p>
 <p>When an image is stored as JPEG, the first thing that happens is that the RGB colors are converted to YCbCr. The Cb and Cr channels are stored at half the resolution of the full image, a scheme which is referred to as <strong>4:2:0</strong>.</p>
 <p>Let&#39;s compare what the components of the image look like in the two color spaces. Here&#39;s what the image looks like in RGB.</p>
-<p><img src="rgb-components.png" alt="rgb components of the image"></p>
+<p><img loading="lazy" src="rgb-components.png" alt="rgb components of the image"></p>
 <p>And here&#39;s what the image looks like in YCbCr:</p>
-<p><img src="ycbcr-components.png" alt="image in ycbcr color space"></p>
+<p><img loading="lazy" src="ycbcr-components.png" alt="image in ycbcr color space"></p>
 <p>As you can see, the importance of the luminance channel really shines through here. There is very little appreciable detail in the Cb and Cr channels, unlike in RGB space, where each channel is perceived roughly equally in the final image. We can safely discard much of the detail in the chrominance channels without sacrificing too much quality in the final image. However, this still doesn&#39;t bring us to the astounding compression ratios that JPEG achieves on a regular basis. For that, we&#39;ll need to go deeper into the compression process.</p>
 <h1 id="discrete-cosine-transform">Discrete Cosine Transform <a class="section-link" href="#discrete-cosine-transform">&sect;</a></h1><p>In the previous step, we reduced size by getting rid of color information. However, we can also drastically reduce size by getting rid of unnecessary <em>spatial</em> information. What does that mean? Consider this photo of a flower.</p>
-<p><img src="test-2-reference.png" alt="macro photograph of a pepper flower"></p>
+<p><img loading="lazy" src="test-2-reference.png" alt="macro photograph of a pepper flower"></p>
 <p>If we zoom in close on the two highlighted regions, it becomes clear that not all image data is created equal. The one on the left contains much more detail than the one on the right, yet they are represented by the same amount of bytes.</p>
-<p><img src="flower-regions-comparison.png" alt="zoom in on sections of flower image"></p>
+<p><img loading="lazy" src="flower-regions-comparison.png" alt="zoom in on sections of flower image"></p>
 <p>Like last time, the problem now becomes representing the image data in a way that lets us separate the important parts from the unimportant parts. JPEG accomplishes this by converting the image to the <strong>frequency domain</strong>.</p>
 <p>Right now, the image exists in the spatial domain. We can think of it as a function that takes a pixel position and outputs an intensity value. However, thanks to the work of the French mathematician Joseph Fourier, we know that signals of this type can also be expressed as the sum of an infinite series of sinusoids with varying frequencies. From his insight came the concept of the Fourier transform, which converts our function from the spatial domain to the frequency domain (where the inputs are now the frequencies of the component sinusoids). This allows us to discard the high-frequency components, which aren&#39;t as important in reconstructing the signal.</p>
 <p>JPEG does not use the Fourier transform; instead, it uses the closely related <a href="https://en.wikipedia.org/wiki/Discrete_cosine_transform">discrete cosine transform</a>, whose characteristics make it better suited for use in lossy compression. Before we go further, try drawing a waveform using your mouse in the box on the left. The DCT of the signal will be taken and the signal will be reconstructed and displayed on the right.</p>
@@ -58,14 +58,14 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 
 <p>Notice how removing high-frequency components from the signal affects the quality much less than the lower-frequency components. JPEG essentially does the same thing, but in 2D. The image is broken up into 8x8 blocks, which are then decomposed into the sum of 64 two-dimensional cosine waves via DCT.</p>
 <figure style="max-width: 312px">
-    <img src="dct.png" alt="JPEG DCT matrix">
+    <img loading="lazy" src="dct.png" alt="JPEG DCT matrix">
     <figcaption>Every 8x8 block in a JPEG is expressed as a sum of these components.</figcaption>
 </figure>
 
 <p>Note that DCT itself doesn&#39;t actually save us any bytes. We started with 64 numbers (one per pixel), and ended with 64 numbers (each representing the strength of a DCT component).</p>
 <h1 id="quantization">Quantization <a class="section-link" href="#quantization">&sect;</a></h1><p>Instead of simply removing high-frequency components like we did in our 1D DCT example, JPEG uses a strategy called quantization. Essentially, each DCT coefficient is divided by the corresponding value in an 8x8 <em>quantization table</em>, and then rounded down. The result is that many components of the quantized DCT coefficients will be zero, making the data more conducive for lossless compression.</p>
 <p>Let&#39;s see how quantization works for ourselves. Say we&#39;ve just performed DCT on some image data:</p>
-<p><img src="dct-example.png" alt="example of DCT on a cat&#39;s eye"></p>
+<p><img loading="lazy" src="dct-example.png" alt="example of DCT on a cat&#39;s eye"></p>
 <p>We now have a table of DCT coefficients.</p>
 <p class="table-title">DCT Coefficients</p>
 <table class="dct"><tr><td>-138</td><td>68</td><td>192</td><td>2</td><td>69</td><td>-24</td><td>-7</td><td>-29</td></tr><tr><td>-4</td><td>73</td><td>1</td><td>-74</td><td>5</td><td>-6</td><td>18</td><td>0</td></tr><tr><td>166</td><td>13</td><td>-40</td><td>-60</td><td>-73</td><td>20</td><td>-16</td><td>42</td></tr><tr><td>10</td><td>3</td><td>-38</td><td>-23</td><td>48</td><td>29</td><td>-22</td><td>-7</td></tr><tr><td>9</td><td>5</td><td>-10</td><td>31</td><td>-61</td><td>49</td><td>26</td><td>-10</td></tr><tr><td>-5</td><td>-7</td><td>19</td><td>24</td><td>-17</td><td>9</td><td>-4</td><td>2</td></tr><tr><td>49</td><td>-6</td><td>-68</td><td>31</td><td>30</td><td>-9</td><td>13</td><td>-16</td></tr><tr><td>9</td><td>-6</td><td>-11</td><td>15</td><td>-3</td><td>-7</td><td>-2</td><td>-3</td></tr></table>
