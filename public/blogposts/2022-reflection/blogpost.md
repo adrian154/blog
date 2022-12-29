@@ -1,3 +1,9 @@
+<aside class="warning">
+
+<b>Warning!</b> Dopey contemplation ahead. Proceed at your own peril.
+
+</aside>
+
 As I write this blogpost, 2022 will meet its demise in the span of just three days. So I thought I'd take a moment to reflect on what a year it's been. Some highlights that come to mind:
 
 * I started a blog and proceeded to write over 45,000 words about my miscellaneous tinkerings. People seemed to really like it! I've received dozens of questions and comments from total strangers, and had many interesting conversations.
@@ -29,7 +35,7 @@ If you're disappointed that this isn't a technical blogpost, don't worry&mdash;t
 - Optimally Solving Rubik's Cube
 - Minecraft Server Census 2.0
 
-I've been in a bit of a rut recently when it comes to writing, but progress is still being made; I'll probably finish at least one of these by January. So buckle up and sit tight. We'll return to our regularly scheduled programming shortly.
+I've been in a bit of a rut recently when it comes to writing, but progress is still being made. The goal that I've set for myself is to finish at least one of these by the end of January. So buckle up and sit tight; we'll return to our regularly scheduled programming shortly.
 
 Oh, and if your name happens to be 2023, you'd better watch out. Because we're more ready than ever to kick your ass.
 
