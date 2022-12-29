@@ -61,7 +61,7 @@
         "id": "detecting-dns-resolvers",
         "title": "Detecting Users' DNS Resolvers",
         "description": "Utilizing DNS tomfoolery for fun and profit. Well, actually, just fun.",
-        "stylesheets": ["/blogposts/detecting-dns-resolvers/styles.css"],
+        "stylesheets": ["styles.css"],
         "timestamp": 1658683083044,
         "publish": true
     },
@@ -107,8 +107,8 @@
         "id": "jpeg-explained",
         "title": "What's In a JPEG?",
         "description": "The fascinating algorithms behind the quintessential image format.",
-        "scripts": ["/blogposts/jpeg-explained/1d-dct-demo.js"],
-        "stylesheets": ["/blogposts/jpeg-explained/styles.css"],
+        "scripts": ["1d-dct-demo.js"],
+        "stylesheets": ["styles.css"],
         "interactive": true,
         "issueNumber": 6
     },
@@ -125,7 +125,7 @@
         "title": "A Census of Minecraft Servers",
         "description": "Searching four billion IP addresses for friends to play with.",
         "timestamp": 1648747843094,
-        "stylesheets": ["/stylesheets/mcmap.css"],
+        "stylesheets": ["styles.css"],
         "publish": true,
         "issueNumber": 8
     },
