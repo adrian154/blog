@@ -4,7 +4,8 @@
         "title": "So Long, 2022",
         "description": "You were a hell of a year.",
         "timestamp": 1672285356112,
-        "publish": true
+        "publish": true,
+        "stylesheets": ["styles.css"]
     },
     {
         "id": "image-desaturation",
