@@ -16,6 +16,9 @@
 .left div { background-color: #f0f0f0; }
 .right div { background-color: #e5e5e5; }
 
+.darkmode .left div { background-color: #333333; }
+.darkmode .right div { background-color: #222222; }
+
 .highlights img {
     margin: 0;
     max-width: unset;
