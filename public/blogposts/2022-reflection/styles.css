@@ -13,8 +13,8 @@
     flex-grow: 1;
 }
 
-.left div { background-color: #f2f2f2; }
-.right div { background-color: #e8e8e8; }
+.left div { background-color: #f0f0f0; }
+.right div { background-color: #e5e5e5; }
 
 .highlights img {
     margin: 0;
