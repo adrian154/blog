@@ -3,7 +3,7 @@ const rssFeedTemplate = require("./components/rss-feed.js");
 const indexTemplate = require("./components/index.js");
 const fs = require("fs");
 
-const blogposts = require("./blogposts.json").sort((a, b) => b.timestamp - a.timestamp);
+const blogposts = require("./blogposts.json");
 const goal = process.argv[2] || "render";
 
 // render blogposts
@@ -26,6 +26,6 @@ blogposts.forEach(post => {
 });
 
 // generate index and RSS feed
-const published = blogposts.filter(post => post.publish);
+const published = blogposts.filter(post => post.publish).sort((a, b) => b.timestamp - a.timestamp);;
 fs.writeFileSync("public/index.html", indexTemplate(published), "utf-8");
 fs.writeFileSync("public/rss.xml", rssFeedTemplate(published), "utf-8");

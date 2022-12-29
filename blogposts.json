@@ -110,7 +110,9 @@
         "scripts": ["1d-dct-demo.js"],
         "stylesheets": ["styles.css"],
         "interactive": true,
-        "issueNumber": 6
+        "issueNumber": 6,
+        "publish": true,
+        "timestamp": 1672342894058
     },
     {
         "id": "decompiling-minecraft",

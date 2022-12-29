@@ -1,21 +1,19 @@
-Recently, I set out to create my own photo organizer, a project which eventually bloomed into [Photobox](https://github.com/adrian154/photobox). In doing so, I came across a great deal of mucking about with image formats and compression, and then it dawned on me: JPEGs are ridiculously good at compressing image data, far beyond what seems possible! Take this picture, for example:
+Recently, I set out to create my own photo organizer, a project which eventually bloomed into [Photobox](https://github.com/adrian154/photobox). In the process, I spent a lot of time experimenting with various image formats, which led me to an epiphany: JPEGs are ridiculously good at compressing image data, far beyond what seems possible! Take this picture, for example:
 
 <figure style="max-width: 299px">
     <img src="test-compressed.jpg" alt="a cormorant">
     <figcaption>This poor cormorant has no idea what he's about to go through.</figcaption>
 </figure>
 
-This image is 299 by 400 pixels. Each pixel consists of three components, red, green, and blue. The brightness of each component is encoded as an 8-bit value, where 0 is no light emitted and 2^8 - 1 = 255 is the maximum brightness your display can muster. So, each pixel contains at least three bytes of information. Multiply that by the number of pixels, and we get a file size of around 350 kilobytes! Yet the image shown above is actually only 43kB in size, just 12% of the value we just calculated. In other words, by encoding the image using the JPEG format, we can achieve a compression ratio of roughly 8:1. How is such an astonishing ratio achievable? The trick is, much of the information within an image can be removed without resulting in a noticeable difference. Let's see how JPEG does it.
+This image is 299 by 400 pixels. Each pixel consists of three components, red, green, and blue. The brightness of each component is encoded as an 8-bit value, so each pixel contains three bytes of information. Multiply that by the number of pixels, and we get a file size of around 350 kilobytes. Yet the image shown above is actually only 43kB in size, just 12% of the value we just calculated. In other words, by encoding the image using the JPEG format, we can achieve a compression ratio of roughly 8:1. How does JPEG accomplish this astonishing feat? Let's dive in. 
 
 # Chroma Subsampling
 
-The first trick that JPEG employs to remove unnecessary information is a technique called **chroma subsampling**. This step exploits the fact that our eyes are much more sensitive to changes in brightness than changes in color, partially due to the fact that our eyes have about 100 million brightness-sensitive rod cells versus just 5 million color-sensitive cones. We can store the color info in the image at a lower resolution without affecting the quality too much.
+The first trick that JPEG employs to remove unnecessary information is a technique called **chroma subsampling**. This step exploits the fact that our eyes are much more sensitive to changes in brightness than changes in color. After all, our eyes have about 100 million brightness-sensitive rod cells versus just 5 million color-sensitive cones. Thus, we can store the color info in the image at a lower resolution without losing too much quality.
 
-In order to chroma subsample, we must first separate the color of a pixel from its brightness. JPEG accomplishes this by converting images to a color space called [YCbCr](https://en.wikipedia.org/wiki/YCbCr), where **Y** is the luminance (brightness) of the pixel while **Cb** and **Cr** determine its color.
+In order to chroma subsample, we must first separate the color of a pixel from its brightness. JPEG accomplishes this by converting images to a color space called [YCbCr](https://en.wikipedia.org/wiki/YCbCr). Like RGB, YCbCr pixels also consist of three values; however, the meaning of the values are different. **Y** is the luminance (brightness) of the pixel, and **Cb** and **Cr** together represent the color of the pixel without any luminance info.
 
-Like RGB, YCbCr pixels also consist of three values; however, the meaning of the values are different. **Y** is the luminance (brightness) of the pixel, and **Cb** and **Cr** together represent the color of the pixel without any luminance info.
-
-But how is RGB mapped to YCbCr? In my opinion, the relationship between the two color spaces is best explained visually. We can imagine RGB as a cube, with *x*-axis as red, *y*-axis as green, and *z*-axis as blue.
+But how is RGB mapped to YCbCr? In my opinion, the relationship between the two color spaces is best explained visually. Imagine a coordinate space where the *x*, *y*, and *z* axes represented R, G, and B, respectively. This would form a cube containing all possible RGB colors.
 
 <video class="center" loop controls autoplay><source src="rgb-cube-animation.mp4" type="video/mp4"></video>
 
@@ -50,13 +48,13 @@ In the previous step, we reduced size by getting rid of color information. Howev
 
 ![macro photograph of a pepper flower](test-2-reference.png)
 
-If we zoom in close on the two highlighted regions, it becomes clear that not all image data is created equal. The one on the left contains much more detail than the one on the right, yet they are represented by the same amount of bytes.
+If we zoom in close on the two highlighted regions, it becomes clear that not all image data is created equal. The region on the left contains much more detail than the one on the right, yet they are currently represented in the same number of bytes.
  
 ![zoom in on sections of flower image](flower-regions-comparison.png)
 
 Like last time, the problem now becomes representing the image data in a way that lets us separate the important parts from the unimportant parts. JPEG accomplishes this by converting the image to the **frequency domain**.
 
-Right now, the image exists in the spatial domain. We can think of it as a function that takes a pixel position and outputs an intensity value. However, thanks to the work of the French mathematician Joseph Fourier, we know that signals of this type can also be expressed as the sum of an infinite series of sinusoids with varying frequencies. From his insight came the concept of the Fourier transform, which converts our function from the spatial domain to the frequency domain (where the inputs are now the frequencies of the component sinusoids). This allows us to discard the high-frequency components, which aren't as important in reconstructing the signal.
+Right now, the image exists in the spatial domain. We can think of it as a function that takes a pixel position and outputs an intensity value. However, thanks to the work of the French mathematician Joseph Fourier, we know that signals of this type can also be expressed as the sum of an infinite series of sinusoids with varying frequencies. From his insight came the concept of the Fourier transform, which converts our function from the spatial domain to the frequency domain (where it would map the frequency of each component to its amplitude). This allows us to discard the high-frequency components, which aren't as important in reconstructing the signal.
 
 JPEG does not use the Fourier transform; instead, it uses the closely related [discrete cosine transform](https://en.wikipedia.org/wiki/Discrete_cosine_transform), whose characteristics make it better suited for use in lossy compression. Before we go further, try drawing a waveform using your mouse in the box on the left. The DCT of the signal will be taken and the signal will be reconstructed and displayed on the right.
 
@@ -70,30 +68,30 @@ You can use the slider to change how many DCT coefficients are used to reconstru
 
 <aside>
 
-If you're anything like me, the idea of breaking up a signal into sinusoidal components seems liek nothing short of black magic. However, the actual implementation of DCT is surprisingly simple. We start with $N$ samples of some signal, which we'll call $x_0, x_1, \ldots x_{N-1}$. To calculate the DCT coefficient for a given frequency, we simply multiply each sample by the point on the wave at the corresponding position, and add up the values. In more concrete terms, 
+If you're anything like me, the idea of breaking up a signal into sinusoidal components seems like nothing short of black magic. However, the actual implementation of DCT is surprisingly simple. We start with $N$ samples of some signal, which we'll call $x_0, x_1, \ldots x_{N-1}$. To calculate the DCT coefficient for a given frequency, we simply multiply each sample by the value of the component at the corresponding time, and add up the values. In more concrete terms, 
 
 $$X_k = \sum_{n=0}^{N-1} x_n \cos \left[\frac{\pi}{N}\left(n + \frac12\right)k\right]$$
 
 for $k$ in $0, 1, \ldots N-1$.
 
-To reverse the DCT, we simply add up the components to obtain a reconstruction of the original signal:
+To reverse the DCT, we simply add up the components to recreate the original signal:
 
 $$x_n = \sum_{k=0}^{N-1} X_k \cos \left[\frac{\pi}{N}\left(n + \frac12\right)k\right]$$
 
 </aside>
 
-Notice how removing high-frequency components from the signal affects the quality much less than the lower-frequency components. JPEG essentially does the same thing, but in 2D. The image is broken up into 8x8 blocks, which are then decomposed into the sum of 64 two-dimensional cosine waves via DCT.
+Notice how removing high-frequency components from the signal affects the quality much less than the lower-frequency components. JPEG essentially does the same thing, but in 2D. The image is broken up into 8x8 blocks, which are then decomposed into a matrix of 64 coefficients.
 
 <figure style="max-width: 312px">
     <img src="dct.png" alt="JPEG DCT matrix">
     <figcaption>Every 8x8 block in a JPEG is expressed as a sum of these components.</figcaption>
 </figure>
 
-Note that DCT itself doesn't actually save us any bytes. We started with 64 numbers (one per pixel), and ended with 64 numbers (each representing the strength of a DCT component).
+Note that DCT itself doesn't actually save us any bytes. We started with 64 pixels, and ended with 64 DCT coefficients.
 
 # Quantization
 
-Instead of simply removing high-frequency components like we did in our 1D DCT example, JPEG uses a strategy called quantization. Essentially, each DCT coefficient is divided by the corresponding value in an 8x8 *quantization table*, and then rounded down. The result is that many components of the quantized DCT coefficients will be zero, making the data more conducive for lossless compression.
+Instead of simply removing all high frequency components after a certain cutoff like we did in our 1D DCT example, JPEG uses a strategy called quantization. Essentially, each DCT coefficient is divided by the corresponding value in an 8x8 *quantization table*, and then rounded down. The result is that many components of the quantized DCT coefficients will become zero, making the data more conducive for lossless compression.
 
 Let's see how quantization works for ourselves. Say we've just performed DCT on some image data:
 
@@ -128,7 +126,17 @@ If you have ever used a program that allows you to export images as JPEG, you ma
 
 # Lossless Compression
 
-In the final step of JPEG compression, 
+![jpeg zigzag pattern](zigzag.png)
+
+In the final step of JPEG compression, the DCT matrix is unraveled according to a zigzag pattern, and [Huffman coding](https://en.wikipedia.org/wiki/Huffman_coding) is applied to compress the data. How Huffman coding works is beyond the scope of this article, but if you want a concise, accessible explanation of the technique, I encourage you to check out Tom Scott's video on the subject.
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JsTptu56GM8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+# Conclusion
+
+If you've reached this point, congratulations; you now have a high-level understanding of the processes that take place every time you save an image as a JPEG.
+
+There is a lot that isn't covered here; if you want to know more about the mathematics of the Fourier transform, or explore the actual implementation details of the JPEG standard, I've included some links that you can follow to continue learning about the fascinating enigma that is the JPEG format.
 
 # Further Reading
 
