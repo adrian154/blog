@@ -5,7 +5,7 @@ As I write this blogpost, 2022 will meet its demise in the span of just three da
 * I went to DEF CON with friends.
 * I found love!! &lt;3
 * I compromised the digital ID app that my school adopted and met with the company's CEO.
-* I started speedsolving Rubik's cubes as a hobby. (Just yesterday, I set a new personal record of 18.85 seconds!)
+* I started speedsolving Rubik's cubes as a hobby. (Just today, I set a new personal record of 18.29 seconds!)
 * I applied to college. It was a long, grueling process.
 * I grew my hair out.
 * I talked on Discord. Maybe too much.
