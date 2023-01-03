@@ -1,4 +1,4 @@
-Have you ever uploaded an image to Reddit or Discord, only to find that the preview was noticeable desaturated from the original?
+Have you ever uploaded an image to Reddit or Discord, only to find that the preview was noticeabley desaturated from the original?
 
 It's not just you. In this article, I'll be exploring the technical reason for why this happens, and how you can avoid it.
 
