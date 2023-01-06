@@ -1,3 +1,3 @@
-No file exists at the URL you have requested.
+The file you've requested doesn't exist.
 
-I've rearranged the structure of the blog a few times in the past, so the page you are looking for probably still exists but may now have different path. Please check the [index](/).
+**But wait!** If you followed a link to an article, there's a good chance that it still exists at a different path. Please check the [index](/).
