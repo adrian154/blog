@@ -34,7 +34,9 @@ Wait a moment. This number is considerably bigger than the 43 quintillion figure
 
 # The Laws of the Cube
 
-For a second, let's ignore orientation and think only about permutation. 
+For a second, let's ignore orientation and think only about permutation. Suppose we kept track of the position of each cubie using a list of numbers $1$ through $20$. (This scheme is a tad stupid&mdash;a corner can never occupy a position normally occupied by an edge&mdash;but bear with me.) Mathematically, this list would be a permutation, since each value occurs exactly once.
+
+Permutations have an interesting property called parity. Just like integers, every permutation can be classified as odd or even. 
 
 # Exploiting Symmetry
 
@@ -44,4 +46,4 @@ Here's a bit of an experiment that you can try if you happen to own two or more 
 
 These two states are indisputably *different*, but clearly they are functionally identical&mdash;we can recolor the faces on one cube to turn it into the other one. Intuitively, these two cubes must also require the same number of moves to be solved, meaning that there's no point in storing entries for both in our pruning table.
 
-The potential for gains here is pretty huge. Each state can have up to 48 symmetry-equivalent variants (24 possible orientations, times two because we can mirror the scramble). Most states *do* have 48 symmetry equivalents, although some have less because they remain unchanged under reflection/rotation. The most extreme example of this is the solved cube; it has no symmetry equivalents besides itself because it looks the same from every angle.
+The potential for gains here is pretty huge. Each state can have up to 48 symmetry-equivalent siblings (24 possible orientations, times two because we can mirror the scramble). Most states *do* have 48 symmetry equivalents, although some have less because they remain unchanged under reflection/rotation. The most extreme example of this is the solved cube; it has no symmetry equivalents besides itself because it looks the same from every angle.
