@@ -1,34 +1,47 @@
-Optimally solving a Rubik's cube is a computationally challenging problem. Over 43 quintillion different states can be reached by simply scrambling the cube; for reference, this is an order of magnitude greater than the number of grains of sand on Earth. Quickly finding the shortest path from one of these states to the goal state requires some cleverness.
+Optimally solving a Rubik's cube is a computationally challenging problem. The puzzle can exist in over 43 quintillion distinct states; for reference, that's an order of magnitude greater than the number of grains of sand on Earth. Quickly finding the shortest path from one of these states to the goal state requires some cleverness.
 
-Let's start by taking apart the cube to see what really makes it tick. We see that the cube consists of a central structure, to which the six center pieces are attached. There are also 12 edge pieces and 8 corner pieces. Because the center pieces can't move, we only need to keep track of the position and orientation of the edge pieces.
+Before we even start concerning ourselves with solving the cube, let's take it apart to get an idea of how it *really* works.
 
-Using this information, we can start building an abstract representation of the cube. Each corner piece can be in 1 of 8 positions, and 1 of 3 orientations. Likewise, each edge piece can be in 1 of 8 positions, and 1 of 2 orientations. Putting these together, we get 
-
-$$12! \times 2^{12} \times 8! \times 3^8 = 519,024,039,293,878,272,000$$
-
-But wait, this number is clearly larger than the 43 quintillion we cited earlier. What gives?
-
-Well, it turns out that of all the ways you can assemble a cube from the pieces, only 1 in 12 can be solved. Let's take a second to understand why this is the case.
-
-# The Laws of the Cube
-
-Suppose we decided to keep track of the position of the cube's pieces by assigning a number 1&ndash;20 to each one and putting them in a list. Every time we apply a turn to the cube, we update the position of the pieces by swapping some of the elements in this list. Mathematically speaking, this structure would be a permutation, since the order matters (unlike a combination) and each value only occurs once.
-
-If you sketch it out, it's not too hard to see that any quarter turn swaps three corner pieces and three edges, making for six swaps in total. This is important; the laws of combinatorics tells us that if you have a permutation created by doing an even number of swaps, it is impossible to create that same permutation through an odd number of swaps, meaning that we can classify every permutation as having even or odd parity. Half of all possible permutations have odd parity; those states could never be solved because the parity of the cube is always even.
-
-<figure style="max-width: 200px">
-    <img src="unsolvable-permutation.png" alt="unsolvable Rubiks' cube; two edges have been swapped">
-    <figcaption>This cube is not solvable; only 1 swap has been applied to it, so its parity is odd.</figcaption>
+<figure style="max-width: 400px">
+    <img src="disassembled.jpg" alt="partially disassembled cube">
+    <figcaption>For those interested, the pictured cube is a MoYu RS3 M 2021.</figcaption>
 </figure>
 
-It doesn't really make sense to put the edge and corner pieces in the same permutation, however, since edges and corners occupy physically different positions. Therefore, let's think of the cube as two permutations, one for edges and one for corners, instead of one big permutation. The parity of these permutations is not necessarily always even, since we're applying three swaps at a time, so we have to restate our restriction: the parity of the corners must be equal to the parity of the edges.
+Upon disassembling the cube, we see that it is *not* composed of smaller cubes. Rather, it is made up of edge pieces and corner pieces, rotating around a fixed skeleton (to which the center pieces are attached). Broadly speaking, our goal becomes to put each piece on the 
+correct position and facing the correct direction.
 
-So far, we've eliminated half of all possible states. Edge orientation and corner orientation place some further constraints on solvability that bring us down to that magic 1/12th from earlier.
+# Thinking with Cubies
 
-## Edge Orientation
+*The moving pieces that comprise a Rubik's cube are referred to as "cubies" in the literature.*
 
-Every edge can be in one of two orientations, which we'll call $0$ and $1$. We only need to adjust edge orientation for turns along one axis, so we adopt the convention used by speedsolving (B/F turns). It's easy to see that in this frame of reference, L/R and U/D turns do not change edge orientation, giving rise to "good edges" (which can be solved using only $\braket{L, R, U, D, F^2, B^2}$) and "bad edges". Every move that affects EO flips an even number of edges, so the sum of the edges' orientation must always be even. This halves the number of solveable states, leaving only 1/4th solveable.
+Using this information, we can start building an abstract representation of the cube based on its mechanical properties. We can store the position of each corner/edge cubie using arrays of length 8 and 12, respectively. However, this is not enough to represent the entire cube. We still need to keep track of the orientation of each cubie, which requires us to establish some arbitrary conventions.
 
 ## Corner Orientation
 
-Like edges, not all corner orientation cases are solveable. However, things are a little more complicated because corners have three possible orientations.
+We'll start with corner orientation. Corner cubies will always reside in either the top or bottom layer of the cube. As a consequence, every corner will have a white or yellow sticker, which we can use as a point of reference. We'll say that if this sticker is facing up/down in the cubie's current position, the corner has an orientation of $0$. If the sticker is to the right of its natural position, a clockwise twist, the corner has an orientation of $1$. And finally, if the corner is left of its natural position, a counterclockwise twist, the corner has an orientation of $2$.
+
+## Edge Orientation
+
+Like corner orientation, we will stick with the strategy of assigning an arbitrary sticker on each edge cubie to serve as a reference. For the pieces in the top/bottom layers, we will use the white/yellow stickers. This leaves us with the four edges in the E-slice; for these, we will treat the stickers on the front or rear face as the point of reference. This gives each edge cubie two possible orientations: $0$ if the key sticker is facing one of the faces which we have chosen to use as references, or $1$ if the edge is facing the other way.
+
+If you are an intermediate speedcuber, you likely already have some degree of familiarity with the concept of edge orientation, because EO has some implications for speedsolving. Specifically, an oriented edge can be solved (put into the correct position with the correct orientation) using only the moves $\braket{L, R, U, D, F^2, B^2}$. This property is quite useful because it allows many parts of the solve to be completed without rotations of the entire cube, making the ability to recognize and control edge orientation invaluable for speedcubers.
+
+Using this information, we can calculate the number of total possible cubes:
+
+$$\underbrace{12! \times 2^{12}}_\text{edges} \times \underbrace{8! \times 3^8}_\text{corners} = 519,024,039,293,878,272,000$$
+
+Wait a moment. This number is considerably bigger than the 43 quintillion figure we cited earlier; exactly 12 times greater, to be exact. What gives? Well, it turns out that just because we can *physically* put together the pieces in a certain configuration doesn't mean that we can reach that state by applying moves to a solved cube. It behooves us to understand the conditions which determine what states can be solved.
+
+# The Laws of the Cube
+
+For a second, let's ignore orientation and think only about permutation. 
+
+# Exploiting Symmetry
+
+Here's a bit of an experiment that you can try if you happen to own two or more cubes. Let's say we apply some sequence of scrambling moves to both cubes, except we hold them in different initial orientations. Take a look at the two cubes&mdash;notice anything about them?
+
+![picture of symmetric cubes](symmetry.jpg)
+
+These two states are indisputably *different*, but clearly they are functionally identical&mdash;we can recolor the faces on one cube to turn it into the other one. Intuitively, these two cubes must also require the same number of moves to be solved, meaning that there's no point in storing entries for both in our pruning table.
+
+The potential for gains here is pretty huge. Each state can have up to 48 symmetry-equivalent variants (24 possible orientations, times two because we can mirror the scramble). Most states *do* have 48 symmetry equivalents, although some have less because they remain unchanged under reflection/rotation. The most extreme example of this is the solved cube; it has no symmetry equivalents besides itself because it looks the same from every angle.
