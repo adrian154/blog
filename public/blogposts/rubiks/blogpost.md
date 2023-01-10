@@ -36,7 +36,15 @@ Wait a moment. This number is considerably bigger than the 43 quintillion figure
 
 For a second, let's ignore orientation and think only about permutation. Suppose we kept track of the position of each cubie using a list of numbers $1$ through $20$. (This scheme is a tad stupid&mdash;a corner can never occupy a position normally occupied by an edge&mdash;but bear with me.) Mathematically, this list would be a permutation, since each value occurs exactly once.
 
-Permutations have an interesting property called parity. Just like integers, every permutation can be classified as odd or even. 
+Permutations have an interesting property called parity. Just like integers, every permutation can be classified as odd or even. Even permutations can only be obtained by performing an even number of swaps, and vice versa for odd permutations.
+
+When the cube is solved, we say that it has even parity, because zero swaps have been performed. Furthermore, a quarter turn can be expressed as six swaps, meaning that the overall parity of the cube will always be even. This eliminates **half** of all possible states: positions with odd parity will always remain odd no matter what moves we apply to it, so the cube can never be solved.
+
+Further reductions in the number of solvable states are explained by the rules surrounding corner and edge orientation.
+
+## EO Rules
+
+## CO Rules
 
 # Exploiting Symmetry
 
