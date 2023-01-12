@@ -86,7 +86,7 @@ Now that we have thoroughly explored the practical details of representing the c
 
 For starters, we can recognize that optimally solving a Rubik's cube is a graph search problem. Each possible state is a vertex in the graph, with the edges between vertices representing moves that transform one state into another. 
 
-If we treat this graph as a tree rooted in the initial state, we could traverse the tree in breadth-first fashion until we found a path to the goal state. However, all solutions of this type suffer from impractical space or time requirements. At any point, there are 18 distinct moves that we can apply to the cube&mdash;6 faces times three different degrees of turning (clockwise, 180&deg;, and counterclockwise). This causes the number of positions to grow exponentially with depth.
+If we treat this graph as a tree rooted in the initial state, we could traverse the tree in breadth-first fashion until we found a path to the goal state. However, BFS suffers from exploding space usage. At any point, there are 18 distinct moves that we can apply to the cube&mdash;6 faces times three different degrees of turning (clockwise, 180&deg;, and counterclockwise). This causes the number of positions to grow exponentially with depth.
 
 We can bring down the branching factor with some simple optimizations, as outlined by Richard Korf in his seminal 1997 paper on optimally solving the cube:
 
@@ -96,11 +96,34 @@ the same state as performing the same twists in the opposite order. Thus, for ea
 
 &hellip;but even with this reduced branching factor, searching the entire tree is still much too slow. 
 
-We can improve upon our existing method with a bidirectional search. By searching from both the goal state and the initial state until a connection is found between the two frontiers, we would only need to search to half the length of the optimal solution, which is much more feasible. 
+The alternative is to use depth-first search. A simple DFS does not work because the tree is infinite, so we must set a depth limit. In order to guarantee optimality, we can start with a depth limit of zero and successively increase the limit until a solution is found. This algorithm is called [iterative deepening depth-first search](https://en.wikipedia.org/wiki/Iterative_deepening_depth-first_search), or IDDFS.
 
-This still isn't *quite* within our reach; the median optimal solution length is [18 moves](http://kociemba.org/cube.htm), meaning that we would need to store the search frontier up to depth 9 in the bidirectional case. At that depth, there are some 18 billion positions, which is still about an order of magnitude too large to fit within RAM.
+IDDFS still explores every possible state, which is what we want to avoid. What we need is some heuristic which tells us which parts of the tree we don't need to search.
 
+## The Heuristic
 
+For our purposes, the heuristic will be some function that gives a lower bound on the number of moves required to solve a given state. At any point in our search, if the value of the heuristic plus the current depth exceeds the depth limit, we can stop searching that subtree. This is called *pruning*.
+
+<aside>
+
+By combining IDDFS with a heuristic, we've created an algorithm called [iterative deepening A*](https://en.wikipedia.org/wiki/Iterative_deepening_A*).
+
+</aside>
+
+The heuristic must never overestimate the number of moves it will take to solve a position, or else we may accidentally stop searching a branch that contains a solution. This condition is called admissibility. How do we construct an admissible heuristic?
+
+Ideally, we would have a lookup table that recorded the number of moves required to solve every possible state. However, such a table would be much too large to construct or store. Instead, we can compute the amount of moves necessary to solve *part* of the cube.
+
+For example, let's say we ignored the edges of the cube and focused our attention on the corners, essentially treating the cube as a 2x2x2. The corners can exist in $8! \times 3^7 = 88,179,840$ different configurations; we could run a BFS on the entire problem space in a short amount of time and save the result. Then, during our search, we can look up the number of moves necessary to solve the corners of the state that we are currently inspecting and use that value as the heuristic. This value is clearly admissible since any solution that solves the cube will also solve the corners.
+
+We want our table to be a linear array of distance values, meaning that we need to come up with a scheme to convert the corner configuration of a state to an integer index. We can break this down into two subproblems:
+
+- Mapping corner orientation to an integer
+- Mapping corner permutation to an integer
+
+Creating an index for corner orientation is fairly easy; we can treat the corner orientation values as digits of a base-3 number, giving us our index.
+
+Encoding a permutation as an integer is slightly more challenging. How this can be accomplished is outside the scope of this article, although if you want to learn about the solution, the term you want to Google is [Lehmer code](https://en.wikipedia.org/wiki/Lehmer_code).
 
 # Symmetry Reduction
 
