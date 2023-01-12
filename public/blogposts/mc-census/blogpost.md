@@ -1,3 +1,9 @@
+<aside class="warning">
+
+**Was your Minecraft server recently joined by someone named "masscan"?** It's not me. Read more about it [here](https://blog.bithole.dev/blogposts/mc-masscan-2023/).
+
+</aside>
+
 If you've ever read any of my other blogposts, you'll know that I often lament the fact that much of the Internet still runs on IPv4. Still, IPv6's sluggish rollout has some benefits; namely, because almost 100% of the Internet supports IPv4, I can do something I've always been curious about: scan the entire public Internet for Minecraft servers.
 
 *That can't possibly be possible!*, you might say. Well, it's actually not as Herculean a task as it seems. IPv4 addresses are 32 bits long, so there are around four billion possible IP addresses. Some of these are reserved for things like private networks or multicast, leaving us with about 3,970,693,888 hosts to scan. At 20,000 hosts/second, we'll have scanned every publicly accessible IP in under three days.
