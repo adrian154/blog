@@ -1,5 +1,9 @@
 [
     {
+        "id": "rubiks",
+        "title": "Optimally Solving Rubik's Cube"
+    },  
+    {
         "id": "mc-masscan-2023",
         "title": "Minecraft/Masscan Clarification",
         "timestamp": 1673492449673,

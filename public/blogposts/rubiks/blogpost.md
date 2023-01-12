@@ -7,14 +7,20 @@ Before we even start concerning ourselves with solving the cube, let's take it a
     <figcaption>For those interested, the pictured cube is a MoYu RS3 M 2021.</figcaption>
 </figure>
 
-Upon disassembling the cube, we see that it is *not* composed of smaller cubes. Rather, it is made up of edge pieces and corner pieces, rotating around a fixed skeleton (to which the center pieces are attached). Broadly speaking, our goal becomes to put each piece on the 
+Upon disassembling the cube, we see that it is *not* composed of smaller cubes. Rather, it is made up of edge pieces and corner pieces, rotating around a fixed skeleton (to which the immobile center pieces are attached). Broadly speaking, our goal becomes to put each piece on the 
 correct position and facing the correct direction.
+
+## A Quick Guide to Notation
+
+For those not familiar, the notation used by cubers to express moves on the cube is quite simple. Each move consists of a letter representing the face being turned (**U**p, **D**own, **L**eft, **R**ight, **F**ront, or **B**ack).
+
+After this letter, there *may* be a symbol indicating how much to turn. An unembellished letter is taken to mean a clockwise 90&deg; turn, while a "2" indicates a 180&deg; turn. Finally, an apostrophe (pronounced as "prime", a convention taken from mathematics) signifies a counterclockwise 90&deg; turn.
 
 # Thinking with Cubies
 
 *The moving pieces that comprise a Rubik's cube are referred to as "cubies" in the literature.*
 
-Using this information, we can start building an abstract representation of the cube based on its mechanical properties. We can store the position of each corner/edge cubie using arrays of length 8 and 12, respectively. However, this is not enough to represent the entire cube. We still need to keep track of the orientation of each cubie, which requires us to establish some arbitrary conventions.
+Now that we have some insight on the inner workings of the cube, we can start building an abstract representation of the puzzle that our solver can work with. We can store the position of each corner/edge cubie using arrays of length 8 and 12, respectively. However, this is not enough to represent the entire cube. We still need to keep track of the orientation of each cubie, which requires us to establish some conventions.
 
 ## Corner Orientation
 
@@ -40,15 +46,39 @@ Permutations have an interesting property called parity. Just like integers, eve
 
 When the cube is solved, we say that it has even parity, because zero swaps have been performed. Furthermore, a quarter turn can be expressed as six swaps, meaning that the overall parity of the cube will always be even. This eliminates **half** of all possible states: positions with odd parity will always remain odd no matter what moves we apply to it, so the cube can never be solved.
 
+<figure style="max-width: 256px">
+    <img src="unsolvable-permutation.png" alt="unsolvable permutation (two edges swapped)">
+    <figcaption>If we were to disassemble a clean cube and switch the position of two edges, it would become unsolvable. What we have done is perform one swap, which puts the cube into a state with odd parity.</figcaption>
+</figure>
+
 Further reductions in the number of solvable states are explained by the rules surrounding corner and edge orientation.
 
 ## EO Rules
 
-TODO
+Let's look at how certain moves affect edge orientation. It's clear to see that the moves $\braket{U, D, L, R, B^2, F^2}$ leave EO untouched, meaning we just need to concentrate our attention on $F$ and $B$. If you manually track the orientation of each edge in one of these layers before and after a quarter turn, a pattern emerges: both moves cause the orientation of every affected edge to flip. 
+
+From this, we can draw an important conclusion: **the number of flipped edges must always be even**. Every move that affects EO flips four edges, meaning that there is no sequence of moves that leaves exactly one edge flipped. This further reduces the number of solvable states by half.
+
+<figure style="max-width: 256px">
+    <img src="unsolvable-eo.png" alt="unsolvable edge orientation (one edge flipped)">
+    <figcaption>A cube where a single edge has been flipped is unsolvable.</figcaption>
+</figure>
 
 ## CO Rules
 
-TODO
+The rules surrounding corner orientation are a little less intuitive compared to EO, but they function in a pretty similar way. CO is affected by the moves $\braket{L, R, B, F}$; if you try some of these moves and analyze how they affect corner orientation, you'll see that **the sum of the corners' orientation is always divisible by three**. This makes two-thirds of all states unsolvable.
+
+<figure style="max-width: 256px">
+    <img src="unsolvable-co.png" alt="unsolvable corner orientation (one corner twisted)">
+    <figcaption>This cube has a total corner orientation of 1, which is unsolvable.</figcaption>
+</figure>
+
+
+With our newfound knowledge of the laws of the cube, we can rewrite our original expression:
+
+$$\underbrace{\frac12}_\text{parity} \times \underbrace{12! \times 2^{11}}_\text{edges} \times \underbrace{8! \times 3^7}_\text{corners} = 43,252,003,274,489,856,000$$
+
+Nice!
 
 # The Search Algorithm
 
@@ -68,7 +98,9 @@ the same state as performing the same twists in the opposite order. Thus, for ea
 
 We can improve upon our existing method with a bidirectional search. By searching from both the goal state and the initial state until a connection is found between the two frontiers, we would only need to search to half the length of the optimal solution, which is much more feasible. 
 
-This still isn't *quite* within our reach; the median optimal solution length is 18 TBC
+This still isn't *quite* within our reach; the median optimal solution length is [18 moves](http://kociemba.org/cube.htm), meaning that we would need to store the search frontier up to depth 9 in the bidirectional case. At that depth, there are some 18 billion positions, which is still about an order of magnitude too large to fit within RAM.
+
+
 
 # Exploiting Symmetry
 
