@@ -32,7 +32,7 @@ Like corner orientation, we will stick with the strategy of assigning an arbitra
 
 If you are an intermediate speedcuber, you likely already have some degree of familiarity with the concept of edge orientation, because EO has some implications for speedsolving. Specifically, an oriented edge can be solved (put into the correct position with the correct orientation) using only the moves $\braket{L, R, U, D, F^2, B^2}$. This property is quite useful because it allows many parts of the solve to be completed without rotations of the entire cube, making the ability to recognize and control edge orientation invaluable for speedcubers.
 
-Using this information, we can calculate the number of total possible cubes:
+We are now ready to calculate the number of total possible cubes:
 
 $$\underbrace{12! \times 2^{12}}_\text{edges} \times \underbrace{8! \times 3^8}_\text{corners} = 519,024,039,293,878,272,000$$
 
@@ -102,7 +102,7 @@ This still isn't *quite* within our reach; the median optimal solution length is
 
 
 
-# Exploiting Symmetry
+# Symmetry Reduction
 
 Here's a bit of an experiment that you can try if you happen to own two or more cubes. Let's say we apply some sequence of scrambling moves to both cubes, except we hold them in different initial orientations. Take a look at the two cubes&mdash;notice anything about them?
 
@@ -110,6 +110,10 @@ Here's a bit of an experiment that you can try if you happen to own two or more 
 
 These two states are indisputably *different*, but clearly they are functionally identical&mdash;we can recolor the faces on one cube to turn it into the other one. Intuitively, these two cubes must also require the same number of moves to be solved, meaning that there's no point in storing entries for both in our pruning table.
 
-The potential for gains here is pretty huge. Each state can have up to 48 symmetry-equivalent siblings (24 possible orientations, times two because we can mirror the scramble). Most states *do* have 48 symmetry equivalents, although some have less because they remain unchanged under reflection/rotation. The most extreme example of this is the solved cube; it has no symmetry equivalents besides itself because it looks the same from every angle.
+The potential for gains here is pretty huge. Each state can have up to 48 symmetry-equivalent siblings (24 possible orientations, times two because we can mirror the scramble). A small portion of states have fewer than 48 symmetry equivalents because they remain unchanged under reflection/rotation from certain angles. By applying symmetry reduction, we can effectively multiply the size of our pruning table 48x.
 
-Another useful tidbit is the fact that the *inverse* of a position is always at the same distance as the position itself. This lets us perform two pruning lookups and take the maximum as the value of the heuristic, allowing us to prune more.
+How do we actually make use of symmetry? For starters, let's first define it in terms of cubies instead of face colors, so that it is compatible with our cube representation.
+
+## The Inverse
+
+There's one last trick up our sleeve that we can use to further boost our pruning. Suppose $S$ is the sequence of moves that creates some position. We know that there is some sequence of moves $S^{-1}$ such that $S \times S^{-1}$ produces the solved state. Because of this relationship, we call $S^{-1}$ the *inverse* of $S$. The length of $S^{-1}$ cannot possibly be shorter than the length of $S$, so the positions must be at the same distance. Thus, we can look up both the current position **and** the inverse in the pruning table and take the value as the value of the heuristic.  
