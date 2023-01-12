@@ -44,7 +44,31 @@ Further reductions in the number of solvable states are explained by the rules s
 
 ## EO Rules
 
+TODO
+
 ## CO Rules
+
+TODO
+
+# The Search Algorithm
+
+Now that we have thoroughly explored the practical details of representing the cube, we can start thinking about how we're actually going to find an optimal solution.
+
+For starters, we can recognize that optimally solving a Rubik's cube is a graph search problem. Each possible state is a vertex in the graph, with the edges between vertices representing moves that transform one state into another. 
+
+If we treat this graph as a tree rooted in the initial state, we could traverse the tree in breadth-first fashion until we found a path to the goal state. However, all solutions of this type suffer from impractical space or time requirements. At any point, there are 18 distinct moves that we can apply to the cube&mdash;6 faces times three different degrees of turning (clockwise, 180&deg;, and counterclockwise). This causes the number of positions to grow exponentially with depth.
+
+We can bring down the branching factor with some simple optimizations, as outlined by Richard Korf in his seminal 1997 paper on optimally solving the cube:
+
+> Since twisting the same face twice in a row is redundant, ruling out such
+moves reduces the branching factor to 15 after the first move. Furthermore, twists of opposite faces of the cube are independent and commutative. For example, twisting the front face, then twisting the back face, leads to
+the same state as performing the same twists in the opposite order. Thus, for each pair of opposite faces we arbitrarily chose an order, and forbid moves that twist the two faces consecutively in the opposite order. This results in a search tree with an asymptotic branching factor of about 13.34847. 
+
+&hellip;but even with this reduced branching factor, searching the entire tree is still much too slow. 
+
+We can improve upon our existing method with a bidirectional search. By searching from both the goal state and the initial state until a connection is found between the two frontiers, we would only need to search to half the length of the optimal solution, which is much more feasible. 
+
+This still isn't *quite* within our reach; the median optimal solution length is 18 TBC
 
 # Exploiting Symmetry
 
@@ -55,3 +79,5 @@ Here's a bit of an experiment that you can try if you happen to own two or more 
 These two states are indisputably *different*, but clearly they are functionally identical&mdash;we can recolor the faces on one cube to turn it into the other one. Intuitively, these two cubes must also require the same number of moves to be solved, meaning that there's no point in storing entries for both in our pruning table.
 
 The potential for gains here is pretty huge. Each state can have up to 48 symmetry-equivalent siblings (24 possible orientations, times two because we can mirror the scramble). Most states *do* have 48 symmetry equivalents, although some have less because they remain unchanged under reflection/rotation. The most extreme example of this is the solved cube; it has no symmetry equivalents besides itself because it looks the same from every angle.
+
+Another useful tidbit is the fact that the *inverse* of a position is always at the same distance as the position itself. This lets us perform two pruning lookups and take the maximum as the value of the heuristic, allowing us to prune more.
