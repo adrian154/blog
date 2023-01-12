@@ -2,7 +2,7 @@ Optimally solving a Rubik's cube is a computationally challenging problem. The p
 
 Before we even start concerning ourselves with solving the cube, let's take it apart to get an idea of how it *really* works.
 
-<figure style="max-width: 400px">
+<figure style="max-width: 1080px">
     <img src="disassembled.jpg" alt="partially disassembled cube">
     <figcaption>For those interested, the pictured cube is a MoYu RS3 M 2021.</figcaption>
 </figure>
@@ -34,7 +34,7 @@ Wait a moment. This number is considerably bigger than the 43 quintillion figure
 
 # The Laws of the Cube
 
-For a second, let's ignore orientation and think only about permutation. Suppose we kept track of the position of each cubie using a list of numbers $1$ through $20$. (This scheme is a tad stupid&mdash;a corner can never occupy a position normally occupied by an edge&mdash;but bear with me.) Mathematically, this list would be a permutation, since each value occurs exactly once.
+For a second, let's ignore orientation and think only about permutation. Suppose we kept track of the position of each cubie using a list of numbers $1$ through $20$. (This scheme is a tad stupid&mdash;a corner can never occupy a position normally occupied by an edge&mdash;but bear with me.) Mathematically, this list would be a permutation, since each value occurs exactly once. We could simulate the effect of turning the cube by swapping elements in the list.
 
 Permutations have an interesting property called parity. Just like integers, every permutation can be classified as odd or even. Even permutations can only be obtained by performing an even number of swaps, and vice versa for odd permutations.
 
