@@ -54,7 +54,7 @@ $$\left(\int_0^\infty \int_0^{2\pi} e^{-\rho^2} \cdot \left|\begin{pmatrix}\cos\
 
 Evaluating the determinant:
 
-$$\left(\int_0^\infty \int_0^{2\pi} e^{-\rho^2} \cdot \rho\cos^2\theta + \rho\sin^2\theta \,d\theta \,d\rho\right)^\frac12$$
+$$\left(\int_0^\infty \int_0^{2\pi} e^{-\rho^2} \cdot (\rho\cos^2\theta + \rho\sin^2\theta) \,d\theta \,d\rho\right)^\frac12$$
 
 $e^{-\rho^2}$ does not vary with respect to $\theta$, so we can move it to the outer integral, giving
 
