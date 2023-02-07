@@ -18,7 +18,7 @@ Here are the preventative measures you should be taking:
 
 * Make sure that your server is running in online mode, which is the default. You can do this by opening your server.properties file and ensuring that the `online-mode` setting is set to `true`. If your server is running in offline mode, it blindly trusts that connecting clients are being honest about their identities instead of reaching out to Mojang's authentication servers, leaving your server vulnerable to all sorts of attacks.
 
-    The *only* valid reason to run a server in offline mode is if it is running behind a proxy as part of a multi-server network. If this describes your setup, ensure that people are not capable of directly protecting to the proxied server. This can be accomplished in a number of ways:
+    The *only* valid reason to run a server in offline mode is if it is running behind a proxy as part of a multi-server network. If this describes your setup, ensure that people are not capable of directly connecting to the proxied server. This can be accomplished in a number of ways:
 
     - If the proxy and the proxied server are running on the same machine, configuring the proxied server to bind to `localhost` will prevent it from receiving connections from external hosts.
 
