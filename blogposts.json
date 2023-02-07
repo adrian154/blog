@@ -1,5 +1,12 @@
 [
     {
+        "id": "i-hate-mylabmath",
+        "title": "I Hate MyLab Math",
+        "timestamp": 1675745576931,
+        "description": "It hates me right back.",
+        "document": true
+    },
+    {
         "id": "gaussian-integral",
         "title": "The Gaussian Integral",
         "timestamp": 1673822850097

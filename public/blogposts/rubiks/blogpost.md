@@ -20,42 +20,59 @@ After this letter, there *may* be a symbol indicating how much to turn. An unemb
 
 *The moving pieces that comprise a Rubik's cube are referred to as "cubies" in the literature.*
 
-Now that we have some insight on the inner workings of the cube, we can start building an abstract representation of the puzzle that our solver can work with. We can store the position of each corner/edge cubie using arrays of length 8 and 12, respectively. However, this is not enough to represent the entire cube. We still need to keep track of the orientation of each cubie, which requires us to establish some conventions.
+Now that we have some insight on the inner workings of the cube, we can start building an abstract representation of the puzzle that our solver can work with. We can store the position of each corner/edge cubie using arrays of length 8 and 12, respectively. However, the cubies can also be in different orientations, which we must keep track of. This requires us to establish some conventions.
 
 ## Corner Orientation
 
-We'll start with corner orientation. Corner cubies will always reside in either the top or bottom layer of the cube. As a consequence, every corner will have a white or yellow sticker, which we can use as a point of reference. We'll say that if this sticker is facing up/down in the cubie's current position, the corner has an orientation of $0$. If the sticker is to the right of its natural position, a clockwise twist, the corner has an orientation of $1$. And finally, if the corner is left of its natural position, a counterclockwise twist, the corner has an orientation of $2$.
+We'll start with corner orientation. Corner cubies will always reside in either the top or bottom layer of the cube. As a consequence, every corner will have a white or yellow sticker, which we can use as a point of reference. We'll say that if this sticker is facing up/down in the cubie's current position, the corner has an orientation of $0$. One clockwise twist of the corner from this position gives an orientation of $1$, and another clockwise twist gives an orientation of $2$.
 
 ## Edge Orientation
 
-Like corner orientation, we will stick with the strategy of assigning an arbitrary sticker on each edge cubie to serve as a reference. For the pieces in the top/bottom layers, we will use the white/yellow stickers. This leaves us with the four edges in the E-slice; for these, we will treat the stickers on the front or rear face as the point of reference. This gives each edge cubie two possible orientations: $0$ if the key sticker is facing one of the faces which we have chosen to use as references, or $1$ if the edge is facing the other way.
+Like corner orientation, we will stick with the strategy of assigning an arbitrary sticker on each edge cubie to serve as a reference. For the pieces in the top/bottom layers, we will use the white/yellow stickers. This leaves us with the four middle edges; for these, we will treat the stickers on the front or rear face as the point of reference. This gives each edge cubie two possible orientations: $0$ if the key sticker is facing one of the faces which we have chosen to use as references, or $1$ if the edge is facing the other way.
+
+<aside>
+
+If you find this explanation confusing, I encourage you to check out JPerm's [ZZ tutorial](https://www.youtube.com/watch?v=iNSUBnWaRxo), which opens with an excellent primer on edge orientation.
+
+</aside>
 
 If you are an intermediate speedcuber, you likely already have some degree of familiarity with the concept of edge orientation, because EO has some implications for speedsolving. Specifically, an oriented edge can be solved (put into the correct position with the correct orientation) using only the moves $\braket{L, R, U, D, F^2, B^2}$. This property is quite useful because it allows many parts of the solve to be completed without rotations of the entire cube, making the ability to recognize and control edge orientation invaluable for speedcubers.
 
-We are now ready to calculate the number of total possible cubes:
+Using this information, we can create a structure to represent a cube.
+
+```c
+struct Cube {
+    uint8_t corners[8];
+    uint8_t corner_twist[8];
+    uint8_t edges[12];
+    uint8_t edge_flip[12];
+};
+```
+
+We can also calculate the number of possible cubes:
 
 $$\underbrace{12! \times 2^{12}}_\text{edges} \times \underbrace{8! \times 3^8}_\text{corners} = 519,024,039,293,878,272,000$$
 
-Wait a moment. This number is considerably bigger than the 43 quintillion figure we cited earlier; exactly 12 times greater, to be exact. What gives? Well, it turns out that just because we can *physically* put together the pieces in a certain configuration doesn't mean that we can reach that state by applying moves to a solved cube. It behooves us to understand the conditions which determine what states can be solved.
+Wait a moment. This number is considerably bigger than the 43 quintillion figure we cited earlier. What gives? Well, it turns out that if you randomly reassemble a Rubik's cube, it will only be solvable 1 in 12 times. To understand how we arrive at this figure, let's take a look at the conditions for solvability.
 
 # The Laws of the Cube
 
-For a second, let's ignore orientation and think only about permutation. Suppose we kept track of the position of each cubie using a list of numbers $1$ through $20$. (This scheme is a tad stupid&mdash;a corner can never occupy a position normally occupied by an edge&mdash;but bear with me.) Mathematically, this list would be a permutation, since each value occurs exactly once. We could simulate the effect of turning the cube by swapping elements in the list.
+For a second, let's ignore orientation and think only about permutation. Suppose we kept track of the position of each cubie using a list of numbers $1$ through $20$. (This scheme is a tad stupid&mdash;a corner can never occupy a position normally occupied by an edge&mdash;but bear with me.) Mathematically, this list would be a permutation, an ordered list where each value occurs exactly once. We could simulate the effect of turning the cube by swapping elements in the list.
 
-Permutations have an interesting property called parity. Just like integers, every permutation can be classified as odd or even. Even permutations can only be obtained by performing an even number of swaps, and vice versa for odd permutations.
+Permutations have an interesting property called parity. Just like integers, every permutation can be classified as odd or even. Even permutations can **only** be obtained by performing an even number of swaps, and vice versa for odd permutations.
 
-When the cube is solved, we say that it has even parity, because zero swaps have been performed. Furthermore, a quarter turn can be expressed as six swaps, meaning that the overall parity of the cube will always be even. This eliminates **half** of all possible states: positions with odd parity will always remain odd no matter what moves we apply to it, so the cube can never be solved.
+When the cube is solved, it has even parity, because zero swaps have been performed. Furthermore, a quarter turn can be expressed as six swaps, meaning that the overall parity of the cube will always be even. This eliminates **half** of all possible states: if a position has odd parity, no matter what move we apply to it, it will always produce another position with odd parity, making it unsolvable.
 
 <figure style="max-width: 256px">
     <img src="unsolvable-permutation.png" alt="unsolvable permutation (two edges swapped)">
-    <figcaption>If we were to disassemble a clean cube and switch the position of two edges, it would become unsolvable. What we have done is perform one swap, which puts the cube into a state with odd parity.</figcaption>
+    <figcaption>If we disassemble a cube and swap two edges, the cube cannot be solved, since the position has odd parity.</figcaption>
 </figure>
 
 Further reductions in the number of solvable states are explained by the rules surrounding corner and edge orientation.
 
 ## EO Rules
 
-Let's look at how certain moves affect edge orientation. It's clear to see that the moves $\braket{U, D, L, R, B^2, F^2}$ leave EO untouched, meaning we just need to concentrate our attention on $F$ and $B$. If you manually track the orientation of each edge in one of these layers before and after a quarter turn, a pattern emerges: both moves cause the orientation of every affected edge to flip. 
+Let's look at how certain moves affect edge orientation. The moves $\braket{U, D, L, R, B^2, F^2}$ leave EO untouched, meaning we just need to concentrate our attention on $F$ and $B$. If you manually track the orientation of each edge in one of these layers before and after a quarter turn, a pattern emerges: both moves cause the orientation of every affected edge to flip. 
 
 From this, we can draw an important conclusion: **the number of flipped edges must always be even**. Every move that affects EO flips four edges, meaning that there is no sequence of moves that leaves exactly one edge flipped. This further reduces the number of solvable states by half.
 
@@ -66,7 +83,7 @@ From this, we can draw an important conclusion: **the number of flipped edges mu
 
 ## CO Rules
 
-The rules surrounding corner orientation are a little less intuitive compared to EO, but they function in a pretty similar way. CO is affected by the moves $\braket{L, R, B, F}$; if you try some of these moves and analyze how they affect corner orientation, you'll see that **the sum of the corners' orientation is always divisible by three**. This makes two-thirds of all states unsolvable.
+The rules surrounding corner orientation are a little less intuitive compared to EO, but they function in a pretty similar way. CO is affected by the moves $\braket{L, R, B, F}$; if you try some of these moves and analyze how they affect corner orientation, you'll see that **the sum of the corners' orientation is always divisible by three**. This makes another two-thirds of all states unsolvable.
 
 <figure style="max-width: 256px">
     <img src="unsolvable-co.png" alt="unsolvable corner orientation (one corner twisted)">
@@ -116,12 +133,29 @@ Ideally, we would have a lookup table that recorded the number of moves required
 
 For example, let's say we ignored the edges of the cube and focused our attention on the corners, essentially treating the cube as a 2x2x2. The corners can exist in $8! \times 3^7 = 88,179,840$ different configurations; we could run a BFS on the entire problem space in a short amount of time and save the result. Then, during our search, we can look up the number of moves necessary to solve the corners of the state that we are currently inspecting and use that value as the heuristic. This value is clearly admissible since any solution that solves the cube will also solve the corners.
 
-We want our table to be a linear array of distance values, meaning that we need to come up with a scheme to convert the corner configuration of a state to an integer index. We can break this down into two subproblems:
+This brings us to an interesting problem: how do we map the corner configuration of a cube to an array index? We can break this down into two subproblems:
 
 - Mapping corner orientation to an integer
 - Mapping corner permutation to an integer
 
 Creating an index for corner orientation is fairly easy; we can treat the corner orientation values as digits of a base-3 number, giving us our index.
+
+```c
+int compute_co_coord(struct Cube *cube) {
+    int coord = 0, base = 1;
+    for(int i = 0; i < 7; i++) {
+        coord += cube->corner_twist[cube->corners[i]] * base;
+        base *= 3;
+    }
+    return coord;
+}
+```
+
+<aside>
+
+We call these indexes "coordinates", the term used by most existing cube literature. Don't let this confuse you; they do not represent points in space.
+
+</aside>
 
 Encoding a permutation as an integer is slightly more challenging. How this can be accomplished is outside the scope of this article, although if you want to learn about the solution, the term you want to Google is [Lehmer code](https://en.wikipedia.org/wiki/Lehmer_code).
 
@@ -137,6 +171,8 @@ The potential for gains here is pretty huge. Each state can have up to 48 symmet
 
 How do we actually make use of symmetry? For starters, let's first define it in terms of cubies instead of face colors, so that it is compatible with our cube representation.
 
+TODO
+
 ## The Inverse
 
-There's one last trick up our sleeve that we can use to further boost our pruning. Suppose $S$ is the sequence of moves that creates some position. We know that there is some sequence of moves $S^{-1}$ such that $S \times S^{-1}$ produces the solved state. Because of this relationship, we call $S^{-1}$ the *inverse* of $S$. The length of $S^{-1}$ cannot possibly be shorter than the length of $S$, so the positions must be at the same distance. Thus, we can look up both the current position **and** the inverse in the pruning table and take the value as the value of the heuristic.  
+There's one last trick up our sleeve that we can use to further boost our pruning. Suppose $S$ is the sequence of moves that creates some position. We know that there is some sequence of moves $S^{-1}$ such that $S \times S^{-1}$ produces the solved state. Because of this relationship, we call $S^{-1}$ the *inverse* of $S$. These two positions must be at the same distance, but our pruning table might have a greater value for $S^{-1}$ than $S$. Thus, we can look up both positions and take the maximum of both lookups as the value of the heuristic, potentially boosting our pruning.

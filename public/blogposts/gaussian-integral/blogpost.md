@@ -9,7 +9,7 @@ We start with the Gaussian integral:
 
 $$\int_{-\infty}^{+\infty} e^{-x^2}\,dx$$
 
-It's called the Gaussian integral because it is the integral of the Gaussian function $f(x) = e^{-x^2}$. This function is pretty important, and shows up a ton of different domains like physics and signal processing. You're probably familiar with the graph of the function:
+It's called the Gaussian integral because it is the integral of the Gaussian function $f(x) = e^{-x^2}$. This function is pretty important, and shows up in a ton of different domains like physics and signal processing. You're probably familiar with the graph of the function:
 
 ![graph of gaussian function](gaussian-function.png)
 
