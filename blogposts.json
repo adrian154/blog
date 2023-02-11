@@ -9,7 +9,7 @@
     {
         "id": "gaussian-integral",
         "title": "The Gaussian Integral",
-        "timestamp": 1673822850097
+        "document": true
     },
     {
         "id": "rubiks",
@@ -26,7 +26,7 @@
         "id": "something-meaningful",
         "title": "Something Meaningful to Me",
         "timestamp": 1672967406350,
-        "publish": true
+        "document": true
     },
     {
         "id": "2022-reflection",
