@@ -206,9 +206,9 @@ Once a mob type is picked, the game checks whether the selected position is vali
     * Ice is only spawnable for polar bears.
     * Magma blocks are only spawnable for fire immune mobs.
     * The block *at* the position and above the position must be valid for mob spawns:
-        * The blocks cannot be full.
-        * The blocks cannot be redstone conductive.
-        * The blocks cannot have liquid.
+        * The block cannot be full.
+        * The block cannot be redstone conductive.
+        * The block cannot have liquid.
         * The block cannot be a rail.
         * The block cannot harm the mob being spawned:
             * Non-fire immune mobs cannot spawn in fire
@@ -239,7 +239,7 @@ The position's Y-level may be between 50 and 63, inclusive. The block below the 
 
 ### Drowned
 
-The block below the position must be water, and the light level must be zero. In rivers, there is a $\frac{1}{16}$ chance of the spawn attempt succeeding. In all other biomes, the chance is $\frac{1}{40}$, and the position must also be over 5 blocks below the sea level.
+The block at and below the position must be water. Drowned are subject to the same light level restrictions as other monsters. In rivers, there is a $\frac{1}{16}$ chance of the spawn attempt succeeding. In all other biomes, the chance is $\frac{1}{40}$, and the position must also be over 5 blocks below the sea level.
 
 ### Guardian
 
@@ -255,7 +255,7 @@ No additional conditions.
 
 ### Monsters
 
-In the Overworld, the light level must be zero. In the Nether, the light level must be less than 11.
+Each additional sky light level adds a $\frac{1}{32}$ chance of failure. In the Overworld and End, the block light level must be zero. In the Nether, the light level must be less than 11. 
 
 ### Animals
 
@@ -274,6 +274,8 @@ The spawn attempt has a 95% chance of failing.
 The Y-level of the position must be less than or equal to 30, the light level must be zero, and the block at the position must be water.
 
 Fun fact: the method that checks whether a glow squid can spawn has been misspelled as <code>checkGlow<b>Squide</b>SpawnRules</code> since 1.18.
+
+<blockquote class="twitter-tweet" data-conversation="none"><p lang="en" dir="ltr">Haha… just ye olde glow squide.</p>&mdash; slicedlime 💙💛 (@slicedlime) <a href="https://twitter.com/slicedlime/status/1548207094913835008?ref_src=twsrc%5Etfw">July 16, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 ### Goat
 
@@ -336,7 +338,7 @@ Endermites will disappear after 2,400 ticks unless the `PersistenceRequired` tag
 
 ## Spawning Potentials
 
-In addition to the mob cap, spawning is limited in soul sand valley and warped forest biomes through a new potential-based mechanic. Here's how it works.
+In addition to the mob cap, spawning is limited in soul sand valley and warped forest biomes through a new mechanic called **spawn potentials**. Here's how it works.
 
 Essentially, every mob emits a potential field that diminishes with distance. The strength of this potential at a given position is calculated according to the following equation:
 
@@ -344,7 +346,7 @@ $$\text{potential} = \frac{\text{charge}}{\text{distance-to-mob}}$$
 
 The charge value depends on the mob type and biome. 
 
-When spawning one of the mobs listed in the tables below, the potential contribution from all loaded mobs is added up and compared to a total energy value. The potential must be less than the total energy for the spawn attempt to continue.
+When spawning one of the mobs listed in the tables below, the potential contribution from all other mobs in potential-calculating biomes is added up and compared to a total energy value. The potential must be less than the total energy for the spawn attempt to continue.
 
 <h3 style="text-align: center">Soul Sand Valley</h3>
 
@@ -360,3 +362,5 @@ When spawning one of the mobs listed in the tables below, the potential contribu
 | Mob Type | Total Energy | Charge |
 |----------|--------------|--------|
 | Enderman | 1.0          | 0.12   |
+
+If a mob does not contribute to the mob cap, it also does not contribute to spawn potentials. The conditions for this are documented [here](#mob-cap-quirks).
