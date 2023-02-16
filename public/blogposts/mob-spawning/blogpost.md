@@ -241,21 +241,21 @@ The position's Y-level may be between 50 and 63, inclusive. The block below the 
 
 The block below the position must be water, and the light level must be zero. In rivers, there is a $\frac{1}{16}$ chance of the spawn attempt succeeding. In all other biomes, the chance is $\frac{1}{40}$, and the position must also be over 5 blocks below the sea level.
 
-### Bat
-
-The Y-level must be below 64. (TODO: light conditions, affected by halloween)
-
 ### Guardian
 
-The block below the position must be water. If the position is exposed to the sky, there is a 95% chance of the spawn attempt failing.
+The block at the position and below the position must contain water. If the position is exposed to the sky, there is a 95% chance of the spawn attempt failing.
+
+### Bat
+
+The Y-level must be below 64. The light level must be below 4, except around Halloween (Oct 20 - Nov 3), when the light level  must be below 7. The chance of a spawn attempt failing increases linearly. 
+
+### Blaze
+
+No additional conditions.
 
 ### Monsters
 
 In the Overworld, the light level must be zero. In the Nether, the light level must be less than 11.
-
-### Blaze
-
-Blaze spawns are not affected by light level. (???)
 
 ### Animals
 
@@ -313,38 +313,38 @@ success chance affected by light level: drowned, monster
 
 # Despawning
 
-Every tick, entites check whether they should despawn according to the following rules.
-- If the difficulty is peaceful, despawn hostile mobs
-- If the mob is an enderman, don't despawn if carrying a block
-- If the mob is an axolotl or fish, don't despawn if from a bucket
-- If the mob is a raider, don't despawn if part of a raid
-- If the `PersistenceRequired` NBT tag is set to true, don't despawn
-- If the mob is a passenger, don't despawn
+Golems, animals, allays, wandering traders, and villagers never despawn, with exceptions:
+- Untamed cats that are older than 2,4000 ticks can despawn.
+- Chickens that spawned as part of a chicken jockey can despawn.
+
+Shulkers are considered golems for some reason, so they don't despawn.
+
+In addition, certain mobs with special characteristics do not despawn:
+- Endermen carrying blocks
+- Axolotl and fish from buckets
+- Raiders that are participating in a raid
+- Mobs with the `PersistenceRequired` NBT tag set to true
+- Mobs riding another entity
+- Zombie villagers that are in the process of converting or have been traded with
+
+For mobs that can despawn, the following process is used:
 - Calculate the distance to the nearest player
-    - If the distance is greater than the despawn distance and the mob should despawn when far away, despawn.
-    - If the distance is greater than the no despawn distance, the mob should despawn when far away, and over 600 ticks have elapsed, the mob has a 1/800 chance of despawning each tick
-
-The no despawn distance is always 32, while the despawn distance depends on the mob's category. All mob categories despawn at a distance of 128 blocks except water ambient mobs, which start despawning at just 64 blocks away.
-
-Here are the rules for whether a mob should despawn when far away.
-- Default: despawn
-- Golems: never despawn
-    - Shulkers are considered golems for some bizarre reason, maybe because they shoot projectiles? Anyways, this is why they don't despawn.
-- Animals: never despawn
-    - Chickens: despawn if part of a chicken jockey
-    - Cats: despawn if not tame and alive for greater than 2,400 ticks
-- Allay: never despawn
-- Raiders: if part of a raid, never despawn; otherwise, despawn if not part of a patrol or over 128 blocks away
-- Zombie Villager: despawn if not converting and zero villager XP (i.e. if a villager which has been traded with is infected, the resulting zombie villager won't despawn)
-- Warden: never despawn
-- Wandering Trader: never despawn
-- Villager: never despawn
+    - If the distance is greater than 128 blocks (or 64 blocks for water ambient mobs), despawn immediately.
+    - If the distance is greater than 32 blocks and over 600 ticks have elapsed, the mob has a 1/800 chance of despawning each tick
 
 Endermites will disappear after 2,400 ticks unless the `PersistenceRequired` tag is set, but this mechanic is implemented separately from regular despawning.
 
 ## Spawning Potentials
 
-In soul sand valleys and warped forests, a special "potential"-based mechanic is used to reduce the number of mob spawns without adjusting the mob caps themselves. If a mob is in one of these biomes, their position is recorded. Here are the relevant charge/energy values:
+In addition to the mob cap, spawning is limited in soul sand valley and warped forest biomes through a new potential-based mechanic. Here's how it works.
+
+Essentially, every mob emits a potential field that diminishes with distance. The strength of this potential at a given position is calculated according to the following equation:
+
+$$\text{potential} = \frac{\text{charge}}{\text{distance-to-mob}}$$
+
+The charge value depends on the mob type and biome. 
+
+When spawning one of the mobs listed in the tables below, the potential contribution from all loaded mobs is added up and compared to a total energy value. The potential must be less than the total energy for the spawn attempt to continue.
 
 <h3 style="text-align: center">Soul Sand Valley</h3>
 
@@ -360,5 +360,3 @@ In soul sand valleys and warped forests, a special "potential"-based mechanic is
 | Mob Type | Total Energy | Charge |
 |----------|--------------|--------|
 | Enderman | 1.0          | 0.12   |
-
-The positions of the counted mobs and their charge can be used to calculate a potential value for any block position. This potential value is used to nerf mob spawns; the exact algorithm is explained later in this article.
