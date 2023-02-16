@@ -1,5 +1,17 @@
 [
     {
+        "id": "i-hate-mylabmath",
+        "title": "I Hate MyLab Math",
+        "timestamp": 1675745576931,
+        "description": "It hates me right back.",
+        "document": true
+    },
+    {
+        "id": "gaussian-integral",
+        "title": "The Gaussian Integral",
+        "document": true
+    },
+    {
         "id": "rubiks",
         "title": "Optimally Solving Rubik's Cube"
     },  
@@ -14,7 +26,7 @@
         "id": "something-meaningful",
         "title": "Something Meaningful to Me",
         "timestamp": 1672967406350,
-        "publish": true
+        "document": true
     },
     {
         "id": "2022-reflection",
