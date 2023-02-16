@@ -14,7 +14,7 @@ correct position and facing the correct direction.
 
 For those not familiar, the notation used by cubers to express moves on the cube is quite simple. Each move consists of a letter representing the face being turned (**U**p, **D**own, **L**eft, **R**ight, **F**ront, or **B**ack).
 
-After this letter, there *may* be a symbol indicating how much to turn. An unembellished letter is taken to mean a clockwise 90&deg; turn, while a "2" indicates a 180&deg; turn. Finally, an apostrophe (pronounced as "prime", a convention taken from mathematics) signifies a counterclockwise 90&deg; turn.
+After this letter, there *may* be a symbol indicating how much to turn. An unembellished letter is taken to mean a clockwise 90&deg; turn, while a "2" indicates a 180&deg; turn. Finally, an apostrophe (read as "prime", a convention taken from mathematics) signifies a counterclockwise 90&deg; turn.
 
 # Thinking with Cubies
 
@@ -86,9 +86,7 @@ Now that we have thoroughly explored the practical details of representing the c
 
 For starters, we can recognize that optimally solving a Rubik's cube is a graph search problem. Each possible state is a vertex in the graph, with the edges between vertices representing moves that transform one state into another. 
 
-If we treat this graph as a tree rooted in the initial state, we could traverse the tree in breadth-first fashion until we found a path to the goal state. However, BFS suffers from exploding space usage. At any point, there are 18 distinct moves that we can apply to the cube&mdash;6 faces times three different degrees of turning (clockwise, 180&deg;, and counterclockwise). This causes the number of positions to grow exponentially with depth.
-
-We can bring down the branching factor with some simple optimizations, as outlined by Richard Korf in his seminal 1997 paper on optimally solving the cube:
+If we treat this graph as a tree rooted in the initial state, we could traverse the tree in breadth-first fashion until we found a path to the goal state. However, BFS suffers from exploding space usage, since the number of nodes that we need to keep track of grows exponentially with depth. At any point, there are 18 distinct moves that we can apply to the cube&mdash;6 faces times three different degrees of turning (clockwise, 180&deg;, and counterclockwise). Thankfully, we can bring down the branching factor with some simple optimizations, as outlined by Richard Korf in his seminal 1997 paper on optimally solving the cube:
 
 > Since twisting the same face twice in a row is redundant, ruling out such
 moves reduces the branching factor to 15 after the first move. Furthermore, twists of opposite faces of the cube are independent and commutative. For example, twisting the front face, then twisting the back face, leads to
@@ -114,7 +112,7 @@ The heuristic must never overestimate the number of moves it will take to solve 
 
 Ideally, we would have a lookup table that recorded the number of moves required to solve every possible state. However, such a table would be much too large to construct or store. Instead, we can compute the amount of moves necessary to solve *part* of the cube.
 
-For example, let's say we ignored the edges of the cube and focused our attention on the corners, essentially treating the cube as a 2x2x2. The corners can exist in $8! \times 3^7 = 88,179,840$ different configurations; we could run a BFS on the entire problem space in a short amount of time and save the result. Then, during our search, we can look up the number of moves necessary to solve the corners of the state that we are currently inspecting and use that value as the heuristic. This value is clearly admissible since any solution that solves the cube will also solve the corners.
+For example, let's say we ignored the edges of the cube and focused our attention on the corners, essentially treating the cube as a 2x2x2. The corners can exist in $8! \times 3^7 = 88,179,840$ different configurations; we could run a BFS on the entire problem space in a short amount of time and save the resulting table. Then, during our search, we can look up the number of moves necessary to solve the corners of the state that we are currently inspecting and use that value as the heuristic. This value is clearly admissible since any solution that solves the cube will also solve the corners.
 
 We want our table to be a linear array of distance values, meaning that we need to come up with a scheme to convert the corner configuration of a state to an integer index. We can break this down into two subproblems:
 
@@ -123,7 +121,9 @@ We want our table to be a linear array of distance values, meaning that we need 
 
 Creating an index for corner orientation is fairly easy; we can treat the corner orientation values as digits of a base-3 number, giving us our index.
 
-Encoding a permutation as an integer is slightly more challenging. How this can be accomplished is outside the scope of this article, although if you want to learn about the solution, the term you want to Google is [Lehmer code](https://en.wikipedia.org/wiki/Lehmer_code).
+Mapping a permutation to an integer $\{0\ldots n!-1\}$ is slightly more challenging. How this can be accomplished is outside the scope of this article, although if you want to learn about the solution, the term you want to Google is [Lehmer code](https://en.wikipedia.org/wiki/Lehmer_code).
+
+Introducing the heuristic speeds up search a lot, but it's still not quite capable of solving a random state in a reasonable amount of time. To increase our pruning, we can include information from more pieces in our calculation of the table index, but this causes its size to grow dramatically. Adding the position and orientation of just one edge piece results in a 24&times; size increase. Quickly, we start to run up against the limits of RAM. Clearly, we need to control the size of the pruning table somehow. 
 
 # Symmetry Reduction
 
@@ -133,9 +133,9 @@ Here's a bit of an experiment that you can try if you happen to own two or more 
 
 These two states are indisputably *different*, but clearly they are functionally identical&mdash;we can recolor the faces on one cube to turn it into the other one. Intuitively, these two cubes must also require the same number of moves to be solved, meaning that there's no point in storing entries for both in our pruning table.
 
-The potential for gains here is pretty huge. Each state can have up to 48 symmetry-equivalent siblings (24 possible orientations, times two because we can mirror the scramble). A small portion of states have fewer than 48 symmetry equivalents because they remain unchanged under reflection/rotation from certain angles. By applying symmetry reduction, we can effectively multiply the size of our pruning table 48x.
+The potential for gains here is pretty huge. Each state can have up to 48 symmetry-equivalent siblings (24 possible orientations, times two because we can mirror the scramble). A small portion of states have fewer than 48 symmetry equivalents because they remain unchanged under reflection/rotation from certain angles. If we only stored one entry for all the symmetry equivalents of a given state, we can effectively multiply the size of our pruning table 48x.
 
-How do we actually make use of symmetry? For starters, let's first define it in terms of cubies instead of face colors, so that it is compatible with our cube representation.
+How do we actually make use of symmetry? For starters, let's first define it in terms of cubies instead of face colors, so that it is compatible with our cube representation. 
 
 ## The Inverse
 

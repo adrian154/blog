@@ -6,15 +6,13 @@
 };
 
 loadSetting("serif");
-loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/mob-spawning"></head><body><header><a href="/"><img src="/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">undefined NaN, NaN</p><h1 style="margin-top: 0">Mastering Mob Spawning</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap"><p>Mob Cap</p></a><a href="#practical-example"><p>Practical Example</p></a><a href="#mob-cap-quirks"><p>Mob Cap Quirks</p></a><a href="#spawning"><p>Spawning</p></a><a href="#pack-spawning-mechanics"><p>Pack Spawning Mechanics</p></a><a href="#spawn-conditions"><p>Spawn Conditions</p></a><a href="#axolotl"><p>Axolotl</p></a><a href="#cod-dolphin-pufferfish-salmon-squid-tropical-fish"><p>Cod, Dolphin, Pufferfish, Salmon, Squid, Tropical Fish</p></a><a href="#drowned"><p>Drowned</p></a><a href="#bat"><p>Bat</p></a><a href="#guardian"><p>Guardian</p></a><a href="#monsters"><p>Monsters</p></a><a href="#blaze"><p>Blaze</p></a><a href="#animals"><p>Animals</p></a><a href="#frog"><p>Frog</p></a><a href="#ghast"><p>Ghast</p></a><a href="#glow-squid"><p>Glow Squid</p></a><a href="#goat"><p>Goat</p></a><a href="#husk"><p>Husk</p></a><a href="#mooshroom"><p>Mooshroom</p></a><a href="#ocelot"><p>Ocelot</p></a><a href="#parrot"><p>Parrot</p></a><a href="#hoglin"><p>Hoglin</p></a><a href="#piglin"><p>Piglin</p></a><a href="#polar-bear"><p>Polar Bear</p></a><a href="#rabbit"><p>Rabbit</p></a><a href="#slime"><p>Slime</p></a><a href="#stray"><p>Stray</p></a><a href="#strider"><p>Strider</p></a><a href="#turtle"><p>Turtle</p></a><a href="#wolf"><p>Wolf</p></a><a href="#despawning"><p>Despawning</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p><strong>Prologue:</strong> Thanks to all the members of the technical Minecraft community who answered my requests for comments and clarifications.</p>
-<p>This article aims to fully describe the Minecraft spawning algorithm as it exists in <strong>Java Edition 1.19</strong>.</p>
-<p>These are the major steps in the spawning algorithm, in order:</p>
+loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/mob-spawning"></head><body><header><a href="/"><img src="/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">undefined NaN, NaN</p><h1 style="margin-top: 0">Mastering Mob Spawning</h1><nav><div id="contents"><p>Table of Contents</p><a href="#mob-categories"><p>Mob Categories</p></a><a href="#mob-cap"><p>Mob Cap</p></a><a href="#practical-example"><p>Practical Example</p></a><a href="#mob-cap-quirks"><p>Mob Cap Quirks</p></a><a href="#spawning"><p>Spawning</p></a><a href="#pack-spawning-mechanics"><p>Pack Spawning Mechanics</p></a><a href="#spawn-conditions"><p>Spawn Conditions</p></a><a href="#axolotl"><p>Axolotl</p></a><a href="#cod-dolphin-pufferfish-salmon-squid-tropical-fish"><p>Cod, Dolphin, Pufferfish, Salmon, Squid, Tropical Fish</p></a><a href="#drowned"><p>Drowned</p></a><a href="#bat"><p>Bat</p></a><a href="#guardian"><p>Guardian</p></a><a href="#monsters"><p>Monsters</p></a><a href="#blaze"><p>Blaze</p></a><a href="#animals"><p>Animals</p></a><a href="#frog"><p>Frog</p></a><a href="#ghast"><p>Ghast</p></a><a href="#glow-squid"><p>Glow Squid</p></a><a href="#goat"><p>Goat</p></a><a href="#husk"><p>Husk</p></a><a href="#mooshroom"><p>Mooshroom</p></a><a href="#ocelot"><p>Ocelot</p></a><a href="#parrot"><p>Parrot</p></a><a href="#hoglin"><p>Hoglin</p></a><a href="#piglin"><p>Piglin</p></a><a href="#polar-bear"><p>Polar Bear</p></a><a href="#rabbit"><p>Rabbit</p></a><a href="#slime"><p>Slime</p></a><a href="#stray"><p>Stray</p></a><a href="#strider"><p>Strider</p></a><a href="#turtle"><p>Turtle</p></a><a href="#wolf"><p>Wolf</p></a><a href="#despawning"><p>Despawning</p></a><a href="#spawning-potentials"><p>Spawning Potentials</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>This article aims to roughly describe the Minecraft spawning algorithm as it exists in <strong>Java Edition 1.19</strong>.</p>
+<p>Spawning consists of three phases, which run every tick:</p>
 <ul>
 <li>Collect mob cap data</li>
 <li>Run spawning attempts, depending on mob caps</li>
 <li>Despawn entities</li>
 </ul>
-<p>But without further ado, let&#39;s dive in!</p>
 <h1 id="mob-categories">Mob Categories <a class="section-link" href="#mob-categories">&sect;</a></h1><p>The spawning algorithm categorizes all mobs into one of several categories, which are listed here.</p>
 <table>
 <thead>
@@ -57,7 +55,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 </tr>
 </tbody></table>
 <p>Mobs in the miscellaneous category are not involved in natural mob spawning.</p>
-<h1 id="mob-cap">Mob Cap <a class="section-link" href="#mob-cap">&sect;</a></h1><p>Spawning for each mob category can only occur if the number of mobs in loaded chunks belonging to that category is lower than a value called the mob cap.</p>
+<h1 id="mob-cap">Mob Cap <a class="section-link" href="#mob-cap">&sect;</a></h1><p>Spawning for each mob category can only occur if the number of mobs in loaded chunks belonging to that category is lower than a value called the <strong>mob cap</strong>.</p>
 <p>The mob cap for each category is calculated from a base value and scales linearly with the number of loaded chunks. Here is the exact formula:</p>
 <p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>global-mobcap</mtext><mo>=</mo><mfrac><mrow><mtext>mobcap-value</mtext><mo>×</mo><mtext>spawnable-chunks</mtext></mrow><mn>289</mn></mfrac></mrow><annotation encoding="application/x-tex">\text{global-mobcap} = \frac{\text{mobcap-value} \times \text{spawnable-chunks}}{289}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">global-mobcap</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0574em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">289</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">mobcap-value</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">spawnable-chunks</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
 <table>
@@ -96,21 +94,21 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <td>20</td>
 </tr>
 </tbody></table>
-<p>The number of spawnable chunks is the number of loaded chunks that are within 8 chunks of a player. In other words, ever player has 17x17 grid of spawnable chunks centered on them. </p>
+<p>A chunk is considered spawnable if it is within 8 chunks of a player. In other words, ever player has 17x17 grid of spawnable chunks centered on them. </p>
 <figure style="max-width: 512px">
     <img loading="lazy" src="spawnable-chunks.png" alt="diagram of spawnable chunks">
     <figcaption>A diagram of spawnable chunks surrounding the player's chunk, which is represented in green.</figcaption>
 </figure>
 
 <p>This is where the 289 found in the mob cap equation comes from; in singleplayer, there will always be 289 spawnable chunks since there is only one player in the game, so the mob cap will be equal to the base value for every category.</p>
-<p>On a server, if all the players are spread out so that none of their 17x17 chunk regions overlap, the global mobcap for each category will be equal to the singleplayer mobcap multiplied by the number of players; if there is overlap, the global mobcap will be less.</p>
+<p>On a server, if all the players are spread out so that none of their 17x17 chunk regions overlap, the global mobcap for each category will be equal to the singleplayer mobcap multiplied by the number of players. If there is overlap, the global mobcap will be less.</p>
 <figure style="max-width: 512px">
     <img loading="lazy" src="spawnable-chunks-overlap.png" alt="diagram of two players' spawnable chunks overlapping">
-    <figcaption>These two players' spawnable chunks overlap, so there are only 434 spawnable chunks instead of 2 &times; 289 = 578. This means that the global mobcap will only be ~1.5&times; greater than the singleplayer value, instead of 2&times;.</figcaption>
+    <figcaption>In this situation, there are only 434 spawnable chunks, compared to the maximum possible value of 2 &times; 289 = 578 if the players were further apart.</figcaption>
 </figure>
 
-<p>If the number of mobs in a category exceeds the global mobcap, spawning for that category is entirely skipped. Note that if the number of mobs does not exceed the mob cap, spawning will proceed; however, by the end of the spawning cycle, the number of mobs may <em>exceed</em> the mob cap. This is possible because the mob cap is only evaluated once at the start of spawning for each tick.</p>
-<p>If the global mob cap is not met, the game then checks the local mob cap on a chunk-by-chunk basis. Each player has a local mob cap, which simply counts the number of mobs in each category within the spawnable chunks surrounding that player. For a given category and chunk, if there is at least one player within range whose local mob cap isn&#39;t filled, spawning can proceed.</p>
+<p>If the number of mobs in a category exceeds the global mobcap, spawning for that category is entirely skipped. The mob cap is only checked at the start of the spawning cycle, so by the end of the tick, the number of mobs may exceed the mob cap.</p>
+<p>The game also checks the local mob cap on a chunk-by-chunk basis. Each player has a local mob cap, which simply counts the number of mobs in each category within the spawnable chunks surrounding that player. For a given category and chunk, if there is at least one player within range whose local mob cap isn&#39;t filled, spawning can proceed.</p>
 <h2 id="practical-example">Practical Example <a class="section-link" href="#practical-example">&sect;</a></h2><p>Suppose the game is currently evaluating monster spawning for the chunk highlighted in red.</p>
 <img loading="lazy" style="max-width: 512px" src="spawnable-chunks-highlighted.png" alt="the same diagram of two players' spawnable chunks, with one chunk between the two players highlighted in red">
 
@@ -121,7 +119,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p>If there are fewer than 70 monsters in the blue chunks, monsters can spawn in the red chunk. Otherwise, the game moves on to player 2&#39;s local mob cap.</p>
 <img loading="lazy" style="max-width: 512px" src="chunks-p2.png">
 
-<p>The local mob cap helps ensure that that no player can take up an excessive portion of the mob cap. Before 1.18, if multiple players were online and occupying different parts of the world, odds are the vast majority of spawning spaces would be outside of a mob farm, which would severely impact the number of spawns in a mob farm. Now, players in non-spawnproofed areas have minimal effect on mob spawning beyond their spawnable chunks because their local mob cap will prevent them from taking up more of the global mob cap. </p>
+<p>The local mob cap helps ensure that spawns are equally distributed between players. Before 1.18, if multiple players were online and occupying different parts of the world, odds are the vast majority of spawning spaces would be outside of a mob farm, which would severely impact the number of spawns in the farm. Now, players in non-spawnproofed areas have minimal effect on mob spawning beyond their spawnable chunks because their local mob cap will prevent them from taking up more of the global mob cap. </p>
 <aside>
 
 <p>A lot of information relevant to mob spawning is available on the debug screen nowadays. If you look at the line on the top-left part of the screen starting with &quot;SC&quot;, you will find:</p>
@@ -136,7 +134,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <li>W: water ambient mob cap</li>
 </ul>
 <p><img loading="lazy" src="debugscreen_sc.png" alt="debug screen"></p>
-<p>Unfortunately, this line isn&#39;t available when playing on a multiplayer server; instead, you&#39;ll  need to use a mod like <a href="https://github.com/gnembon/fabric-carpet">Carpet</a> to view global mob cap statistics.</p>
+<p>Unfortunately, this line isn&#39;t available when playing on a multiplayer server; instead, you&#39;ll need to use a mod like <a href="https://github.com/gnembon/fabric-carpet">Carpet</a> to view global mob cap statistics.</p>
 </aside>
 
 <h2 id="mob-cap-quirks">Mob Cap Quirks <a class="section-link" href="#mob-cap-quirks">&sect;</a></h2><p>Generally speaking, monsters that have special attributes preventing them from despawning do not contribute to the mobcap, so the following groups aren&#39;t counted:</p>
@@ -186,18 +184,18 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 </ul>
 <figure style="max-width: 560px">
     <img loading="lazy" src="footlevel.png" alt="explanation of why foot level blocks are bad">
-    <figcaption>Do not do this. I have ways of finding you.</figcaption>
+    <figcaption>Do not do this.</figcaption>
 </figure>
 
 <h2 id="pack-spawning-mechanics">Pack Spawning Mechanics <a class="section-link" href="#pack-spawning-mechanics">&sect;</a></h2><p>Minecraft spawns all mobs in packs, meaning that one spawn attempt generally results in multiple mobs being spawned. Keep in mind that the algorithm can be rather idiosyncratic and knowing all the details is not too important when it comes to farm optimization.</p>
-<p>The idea behind pack spawning is that the game starts from the initial position and &quot;wanders&quot; from it by adding random offsets to the position&#39;s X and Z coordinates, attempting to spawn a mob each time. Specifically, the game picks two random numbers between -5 and 5 to add to the X and Z. These values are picked so that smaller offsets are more common than further offsets; specifically, they follow a <a href="https://en.wikipedia.org/wiki/Triangular_distribution">triangular distribution</a>. </p>
+<p>The idea behind pack spawning is that the game starts from the initial position, adds a random X and Z offset, and tries to spawn a mob. This process is repeated for every mob in the pack. The offsets are picked according to a <a href="https://en.wikipedia.org/wiki/Triangular_distribution">triangular distribution</a>, so smaller offsets occur more frequently. </p>
 <aside>
 
 <p>Pack spawns can potentially spawn mobs very far away from the origin of the spawn attempt. For example, if the selected mob type&#39;s pack size is 4, the final spawn location could be anywhere within a 41x41 region around the original position. However, in practice, this is unlikely. Check out this heatmap showing the spatial distribution of spawn attempts.</p>
 <p><img loading="lazy" src="packspawn-heatmap.png" alt="pack spawn heatmap"></p>
 <p>As you can see, most of the attempts end up pretty close to the initial location; in fact, over 75% of all attempts are within 10 blocks of the initial location. We can find the cumulative distribution of pack spawn distance to determine how much overhang we need.</p>
 <p><img loading="lazy" src="distance-distr.png" alt="cumulative distribution of pack spawn distance"></p>
-<p>As you can see, bigger is always better, but the benefit you get from building a bigger overhang quickly decreases past ~12 blocks.</p>
+<p>As you can see, bigger is better, but the benefit you get from building a bigger overhang gradually diminishes.</p>
 </aside>
 
 <p>When the position is offset for the first time, the game checks the biome at that position, and retrieves the list of mobs in the current category that can spawn in that biome. That list looks something like this:</p>
@@ -241,9 +239,9 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <td>5</td>
 </tr>
 </tbody></table>
-<p><em>The mob spawning weights and pack sizes are documented <a href="mob-spawning-weights.html">here</a>.</em></p>
+<p><em>The mob spawning weights and pack sizes are documented <a href="../mob-spawning-weights/">here</a>.</em></p>
 <p>The odds of a mob type being selected is equal to its weight divided by the total weight of all the mob types in that category. In this case, the probability that a zombie is picked to be spawned is <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>95</mn><mn>515</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{95}{515}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">515</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">95</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>.</p>
-<h2 id="spawn-conditions">Spawn Conditions <a class="section-link" href="#spawn-conditions">&sect;</a></h2><p>Over time, the rules that decide whether a mob should be allowed to spawn have grown into a sprawling, Byzantine mess. I will attempt to give a mostly complete description of them here.</p>
+<h2 id="spawn-conditions">Spawn Conditions <a class="section-link" href="#spawn-conditions">&sect;</a></h2><p>Over time, the rules that decide whether a mob should be allowed to spawn have grown quite Byzantine. I will attempt to give a mostly complete description of them here.</p>
 <p>For starters, all attempts to spawn a mob as part of a pack fail if they are within 24 blocks of the player or the world spawn point. The position must also be within a loaded chunk and within the world border. However, the chunk does not have to be <em>entity</em> ticking, so it&#39;s possible for mobs to spawn in lazy chunks that never despawn. These mobs still contribute to the mobcap, so it may lead to situations where the mob cap gets quickly taken up. This phenomenon was once classified as a <a href="https://bugs.mojang.com/browse/MC-155289">bug</a>, but for unknown reasons this behavior was reintroduced in 1.17. Generally speaking, this is only a problem if you play on a very low simulation distance.</p>
 <p>Once a mob type is picked, the game checks whether the selected position is valid for the mob according to the following rules:</p>
 <ul>
@@ -253,22 +251,20 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 </li>
 <li>If the mob&#39;s spawn placement type is <code>ON_GROUND</code>:<ul>
 <li>The upper face of the block below the position must be full and cannot emit a light level greater than 13.</li>
-<li>Bedrock, barries, glass, and tinted glass are not spawnable.</li>
-<li>Trapdoors are not spawnable regardless of their position.</li>
+<li>Bedrock, berries, glass, tinted glass, and trapdoors are not spawnable.</li>
 <li>Soul sand and mud are spawnable despite their upper face not being full.</li>
 <li>Mangrove leaves and regular leaves are only spawnable for ocelots and parrots.</li>
 <li>Ice is only spawnable for polar bears.</li>
 <li>Magma blocks are only spawnable for fire immune mobs.</li>
-<li>The block at the position and above the position must be valid for mob spawns:<ul>
+<li>The block <em>at</em> the position and above the position must be valid for mob spawns:<ul>
 <li>The blocks cannot be full.</li>
-<li>The blocks cannot be redstone components.</li>
+<li>The blocks cannot be redstone conductive.</li>
 <li>The blocks cannot have liquid.</li>
 <li>The block cannot be a rail.</li>
 <li>The block cannot harm the mob being spawned:<ul>
 <li>Non-fire immune mobs cannot spawn in fire</li>
 <li>Only wither skeletons can spawn in wither roses</li>
 <li>Only polar bears, snow golems, and strays can spawn in powder snow</li>
-<li>No mobs with the placement type <code>ON_GROUND</code> can spawn in berry bushes. This does not include foxes.</li>
 </ul>
 </li>
 </ul>
@@ -313,7 +309,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <h3 id="axolotl">Axolotl <a class="section-link" href="#axolotl">&sect;</a></h3><p>The block underneath the position must be clay.</p>
 <h3 id="cod-dolphin-pufferfish-salmon-squid-tropical-fish">Cod, Dolphin, Pufferfish, Salmon, Squid, Tropical Fish <a class="section-link" href="#cod-dolphin-pufferfish-salmon-squid-tropical-fish">&sect;</a></h3><p>The position&#39;s Y-level may be between 50 and 63, inclusive. The block below the position and the block above the position must be water. The block above may not be waterlogged or a bubble column. In Lush Caves, tropical fish may spawn at any Y-level.</p>
 <h3 id="drowned">Drowned <a class="section-link" href="#drowned">&sect;</a></h3><p>The block below the position must be water, and the light level must be zero. In rivers, there is a <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mn>16</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{16}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">16</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> chance of the spawn attempt succeeding. In all other biomes, the chance is <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mn>40</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{40}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">40</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>, and the position must also be over 5 blocks below the sea level.</p>
-<h3 id="bat">Bat <a class="section-link" href="#bat">&sect;</a></h3><p>The Y-level must be below 64. If </p>
+<h3 id="bat">Bat <a class="section-link" href="#bat">&sect;</a></h3><p>The Y-level must be below 64. (TODO: light conditions, affected by halloween)</p>
 <h3 id="guardian">Guardian <a class="section-link" href="#guardian">&sect;</a></h3><p>The block below the position must be water. If the position is exposed to the sky, there is a 95% chance of the spawn attempt failing.</p>
 <h3 id="monsters">Monsters <a class="section-link" href="#monsters">&sect;</a></h3><p>In the Overworld, the light level must be zero. In the Nether, the light level must be less than 11.</p>
 <h3 id="blaze">Blaze <a class="section-link" href="#blaze">&sect;</a></h3><p>Blaze spawns are not affected by light level. (???)</p>

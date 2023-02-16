@@ -23,6 +23,7 @@
     "highlight.js": "^11.3.1",
     "html-generator": "github:adrian154/html-generator",
     "katex": "^0.15.1",
-    "marked": "^4.0.8"
+    "marked": "^4.0.8",
+    "node-fetch": "^2.6.9"
   }
 }

@@ -6,15 +6,20 @@
 };
 
 loadSetting("serif");
-loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/discord-qr-code-phishing"></head><body><header><a href="/"><img src="/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">May 9, 2022</p><h1 style="margin-top: 0">Discord QR Code Phishing</h1><nav><div id="contents"><p>Table of Contents</p><a href="#why-does-this-work"><p>Why does this work?</p></a><a href="#how-to-protect-yourself"><p>How To Protect Yourself</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>QR codes have been in the news recently, and for good reason; we&#39;ve spent years honing our suspicious link recognition instincts, only for them to be utterly sidestepped by our QR code scanning obsession. Here&#39;s a guide on how to recognize this scam.</p>
-<p>It all starts with a message like this from a friend.</p>
+loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/discord-qr-code-phishing"></head><body><header><a href="/"><img src="/images/banner.jpg" alt="blog banner"></a></header><main><p id="date" class="date">May 9, 2022</p><h1 style="margin-top: 0">Discord QR Code Phishing</h1><nav><div id="contents"><p>Table of Contents</p><a href="#why-does-this-work"><p>Why does this work?</p></a><a href="#how-to-protect-yourself"><p>How To Protect Yourself</p></a></div><button id="show-toc">&#9776; Contents</button></nav><p>Here&#39;s a guide on how to recognize the Discord QR code scam, which is probably the #1 way accounts get compromised nowadays.</p>
+<p>It usually starts with a friend DMing you a server invite unprompted.</p>
 <p><img loading="lazy" src="initial.png" alt="initial message"></p>
 <p>So you join the server, and you&#39;re greeted with a request for verification:</p>
 <p><img loading="lazy" src="verification.png" alt="verification prompt with qr code"></p>
 <p>Once you scan the code, that&#39;s it&mdash;you&#39;ve handed total access of your account to whoever generated the sign-in link.</p>
-<h1 id="why-does-this-work">Why does this work? <a class="section-link" href="#why-does-this-work">&sect;</a></h1><p>If you haven&#39;t logged into Discord recently, here&#39;s what you are greeted with when you are not signed in to the app.</p>
+<p>Some things to note:</p>
+<ul>
+<li>This attack <strong>bypasses 2FA</strong>.</li>
+<li>Even though the QR code points to an official discord.com URL, you will still be hacked!</li>
+</ul>
+<h1 id="why-does-this-work">Why does this work? <a class="section-link" href="#why-does-this-work">&sect;</a></h1><p>Some time ago, Discord introduced a feature that streamlines signing in on a new device. Essentially, when you go to sign in, a QR code is generated:</p>
 <p><img loading="lazy" src="signin-example.png" alt="signin screen"></p>
-<p>The indended flow looks something like this: when you scan the QR code on a device where you&#39;re already signed into Discord, you&#39;re prompted over whether you want to log in.</p>
+<p>When you scan the QR code using a device where you&#39;re already signed into Discord, you&#39;re prompted over whether you want to log in.</p>
 <img loading="lazy" style="max-width: 300px" src="phone-prompt.png" alt="phone prompt screen">
 
 <p>If you tap &quot;Yes, log me in&quot;, this triggers an authenticated request to Discord&#39;s servers, which then signs you in wherever the QR code was first generated. As you can see, this system is ripe for abuse when combined with a little bit of social engineering. If you are unlucky enough to sign in without heeding Discord&#39;s warning, this is what you&#39;re greeted with:</p>
@@ -22,10 +27,8 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p>And soon afterwards&hellip;</p>
 <p><img loading="lazy" src="pwned.png" alt="pwned"></p>
 <p>&hellip;you become one with the horde.</p>
-<h1 id="how-to-protect-yourself">How To Protect Yourself <a class="section-link" href="#how-to-protect-yourself">&sect;</a></h1><p>Some time ago, Discord introduced a screen that is shown to the user before signing them in warning that they may be getting phished. This has helped reduce the impact of this scam, but there are still a few lessons to be learned:</p>
-<ul>
-<li>Be careful about scanning weird QR codes! They are becoming increasingly popular as a phishing vector since users are much less careful to look at the actual URL.</li>
-<li>I&#39;m not sure who needs to hear this, but if your friend sends you a random server invite, it is usually not in your best interest to join. At least ask them for context frst.</li>
+<h1 id="how-to-protect-yourself">How To Protect Yourself <a class="section-link" href="#how-to-protect-yourself">&sect;</a></h1><ul>
+<li>If a friend randomly sends you a server invite, don&#39;t join it! It&#39;s probably a scam&mdash;confirm that they still have control over the account first.</li>
+<li>Heed the warning given by the Discord app carefully. Never, ever click the &quot;Yes, log me in&quot; button unless the QR code you scanned came from the sign in page.</li>
 </ul>
-<p>If you see the Discord icon at the center of the QR code, that is a sure-fire sign that you are being phished. However, it is totally possible to generate a QR code without the Discord logo present.</p>
 <img id="img-view" style="display: none"><h1>Comments</h1><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" label="blog-post-comments" theme="preferred-color-scheme" issue-number="9"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="/rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>

@@ -1,7 +1,11 @@
+body {
+    max-width: 50em;
+    margin: 2em auto;
+}
+
 table {
     border-collapse: collapse;
-    max-width: 50em;
-    margin: 2.0em auto;
+    width: 100%;
 }
 
 td {

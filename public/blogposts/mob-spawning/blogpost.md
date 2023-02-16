@@ -1,13 +1,9 @@
-**Prologue:** Thanks to all the members of the technical Minecraft community who answered my requests for comments and clarifications.
+This article aims to roughly describe the Minecraft spawning algorithm as it exists in **Java Edition 1.19**.
 
-This article aims to fully describe the Minecraft spawning algorithm as it exists in **Java Edition 1.19**.
-
-These are the major steps in the spawning algorithm, in order:
+Spawning consists of three phases, which run every tick:
 - Collect mob cap data
 - Run spawning attempts, depending on mob caps
 - Despawn entities
-
-But without further ado, let's dive in!
 
 # Mob Categories
 
@@ -28,7 +24,7 @@ Mobs in the miscellaneous category are not involved in natural mob spawning.
 
 # Mob Cap
 
-Spawning for each mob category can only occur if the number of mobs in loaded chunks belonging to that category is lower than a value called the mob cap.
+Spawning for each mob category can only occur if the number of mobs in loaded chunks belonging to that category is lower than a value called the **mob cap**.
 
 The mob cap for each category is calculated from a base value and scales linearly with the number of loaded chunks. Here is the exact formula:
 
@@ -44,7 +40,7 @@ $$\text{global-mobcap} = \frac{\text{mobcap-value} \times \text{spawnable-chunks
 | Water creatures             | 5            |
 | Water ambient               | 20           |
 
-The number of spawnable chunks is the number of loaded chunks that are within 8 chunks of a player. In other words, ever player has 17x17 grid of spawnable chunks centered on them. 
+A chunk is considered spawnable if it is within 8 chunks of a player. In other words, ever player has 17x17 grid of spawnable chunks centered on them. 
 
 <figure style="max-width: 512px">
     <img src="spawnable-chunks.png" alt="diagram of spawnable chunks">
@@ -53,16 +49,16 @@ The number of spawnable chunks is the number of loaded chunks that are within 8 
 
 This is where the 289 found in the mob cap equation comes from; in singleplayer, there will always be 289 spawnable chunks since there is only one player in the game, so the mob cap will be equal to the base value for every category.
 
-On a server, if all the players are spread out so that none of their 17x17 chunk regions overlap, the global mobcap for each category will be equal to the singleplayer mobcap multiplied by the number of players; if there is overlap, the global mobcap will be less.
+On a server, if all the players are spread out so that none of their 17x17 chunk regions overlap, the global mobcap for each category will be equal to the singleplayer mobcap multiplied by the number of players. If there is overlap, the global mobcap will be less.
 
 <figure style="max-width: 512px">
     <img src="spawnable-chunks-overlap.png" alt="diagram of two players' spawnable chunks overlapping">
-    <figcaption>These two players' spawnable chunks overlap, so there are only 434 spawnable chunks instead of 2 &times; 289 = 578. This means that the global mobcap will only be ~1.5&times; greater than the singleplayer value, instead of 2&times;.</figcaption>
+    <figcaption>In this situation, there are only 434 spawnable chunks, compared to the maximum possible value of 2 &times; 289 = 578 if the players were further apart.</figcaption>
 </figure>
 
-If the number of mobs in a category exceeds the global mobcap, spawning for that category is entirely skipped. Note that if the number of mobs does not exceed the mob cap, spawning will proceed; however, by the end of the spawning cycle, the number of mobs may *exceed* the mob cap. This is possible because the mob cap is only evaluated once at the start of spawning for each tick.
+If the number of mobs in a category exceeds the global mobcap, spawning for that category is entirely skipped. The mob cap is only checked at the start of the spawning cycle, so by the end of the tick, the number of mobs may exceed the mob cap.
 
-If the global mob cap is not met, the game then checks the local mob cap on a chunk-by-chunk basis. Each player has a local mob cap, which simply counts the number of mobs in each category within the spawnable chunks surrounding that player. For a given category and chunk, if there is at least one player within range whose local mob cap isn't filled, spawning can proceed.
+The game also checks the local mob cap on a chunk-by-chunk basis. Each player has a local mob cap, which simply counts the number of mobs in each category within the spawnable chunks surrounding that player. For a given category and chunk, if there is at least one player within range whose local mob cap isn't filled, spawning can proceed.
 
 ## Practical Example
 
@@ -80,7 +76,7 @@ If there are fewer than 70 monsters in the blue chunks, monsters can spawn in th
 
 <img style="max-width: 512px" src="chunks-p2.png">
 
-The local mob cap helps ensure that that no player can take up an excessive portion of the mob cap. Before 1.18, if multiple players were online and occupying different parts of the world, odds are the vast majority of spawning spaces would be outside of a mob farm, which would severely impact the number of spawns in a mob farm. Now, players in non-spawnproofed areas have minimal effect on mob spawning beyond their spawnable chunks because their local mob cap will prevent them from taking up more of the global mob cap. 
+The local mob cap helps ensure that spawns are equally distributed between players. Before 1.18, if multiple players were online and occupying different parts of the world, odds are the vast majority of spawning spaces would be outside of a mob farm, which would severely impact the number of spawns in the farm. Now, players in non-spawnproofed areas have minimal effect on mob spawning beyond their spawnable chunks because their local mob cap will prevent them from taking up more of the global mob cap. 
 
 <aside>
 
@@ -96,7 +92,7 @@ A lot of information relevant to mob spawning is available on the debug screen n
 
 ![debug screen](debugscreen_sc.png)
 
-Unfortunately, this line isn't available when playing on a multiplayer server; instead, you'll  need to use a mod like [Carpet](https://github.com/gnembon/fabric-carpet) to view global mob cap statistics.
+Unfortunately, this line isn't available when playing on a multiplayer server; instead, you'll need to use a mod like [Carpet](https://github.com/gnembon/fabric-carpet) to view global mob cap statistics.
 
 </aside>
 
@@ -153,14 +149,14 @@ Another thing to keep in mind is that the game doesn't try to spawn a mob direct
 
 <figure style="max-width: 560px">
     <img src="footlevel.png" alt="explanation of why foot level blocks are bad">
-    <figcaption>Do not do this. I have ways of finding you.</figcaption>
+    <figcaption>Do not do this.</figcaption>
 </figure>
 
 ## Pack Spawning Mechanics
 
 Minecraft spawns all mobs in packs, meaning that one spawn attempt generally results in multiple mobs being spawned. Keep in mind that the algorithm can be rather idiosyncratic and knowing all the details is not too important when it comes to farm optimization.
 
-The idea behind pack spawning is that the game starts from the initial position and "wanders" from it by adding random offsets to the position's X and Z coordinates, attempting to spawn a mob each time. Specifically, the game picks two random numbers between -5 and 5 to add to the X and Z. These values are picked so that smaller offsets are more common than further offsets; specifically, they follow a [triangular distribution](https://en.wikipedia.org/wiki/Triangular_distribution). 
+The idea behind pack spawning is that the game starts from the initial position, adds a random X and Z offset, and tries to spawn a mob. This process is repeated for every mob in the pack. The offsets are picked according to a [triangular distribution](https://en.wikipedia.org/wiki/Triangular_distribution), so smaller offsets occur more frequently. 
 
 <aside>
 
@@ -172,7 +168,7 @@ As you can see, most of the attempts end up pretty close to the initial location
 
 ![cumulative distribution of pack spawn distance](distance-distr.png)
 
-As you can see, bigger is always better, but the benefit you get from building a bigger overhang quickly decreases past ~12 blocks.
+As you can see, bigger is better, but the benefit you get from building a bigger overhang gradually diminishes.
 
 </aside>
 
@@ -189,13 +185,13 @@ When the position is offset for the first time, the game checks the biome at tha
 | Enderman            | 10     |
 | Witch               | 5      |
 
-*The mob spawning weights and pack sizes are documented [here](mob-spawning-weights.html).*
+*The mob spawning weights and pack sizes are documented [here](../mob-spawning-weights/).*
 
 The odds of a mob type being selected is equal to its weight divided by the total weight of all the mob types in that category. In this case, the probability that a zombie is picked to be spawned is $\frac{95}{515}$.
 
 ## Spawn Conditions
 
-Over time, the rules that decide whether a mob should be allowed to spawn have grown into a sprawling, Byzantine mess. I will attempt to give a mostly complete description of them here.
+Over time, the rules that decide whether a mob should be allowed to spawn have grown quite Byzantine. I will attempt to give a mostly complete description of them here.
 
 For starters, all attempts to spawn a mob as part of a pack fail if they are within 24 blocks of the player or the world spawn point. The position must also be within a loaded chunk and within the world border. However, the chunk does not have to be *entity* ticking, so it's possible for mobs to spawn in lazy chunks that never despawn. These mobs still contribute to the mobcap, so it may lead to situations where the mob cap gets quickly taken up. This phenomenon was once classified as a [bug](https://bugs.mojang.com/browse/MC-155289), but for unknown reasons this behavior was reintroduced in 1.17. Generally speaking, this is only a problem if you play on a very low simulation distance.
 
@@ -204,22 +200,20 @@ Once a mob type is picked, the game checks whether the selected position is vali
     * Creatures are not affected by this.
 * If the mob's spawn placement type is `ON_GROUND`:
     * The upper face of the block below the position must be full and cannot emit a light level greater than 13.
-    * Bedrock, barries, glass, and tinted glass are not spawnable.
-    * Trapdoors are not spawnable regardless of their position.
+    * Bedrock, berries, glass, tinted glass, and trapdoors are not spawnable.
     * Soul sand and mud are spawnable despite their upper face not being full.
     * Mangrove leaves and regular leaves are only spawnable for ocelots and parrots.
     * Ice is only spawnable for polar bears.
     * Magma blocks are only spawnable for fire immune mobs.
-    * The block at the position and above the position must be valid for mob spawns:
+    * The block *at* the position and above the position must be valid for mob spawns:
         * The blocks cannot be full.
-        * The blocks cannot be redstone components.
+        * The blocks cannot be redstone conductive.
         * The blocks cannot have liquid.
         * The block cannot be a rail.
         * The block cannot harm the mob being spawned:
             * Non-fire immune mobs cannot spawn in fire
             * Only wither skeletons can spawn in wither roses
             * Only polar bears, snow golems, and strays can spawn in powder snow
-            * No mobs with the placement type `ON_GROUND` can spawn in berry bushes. This does not include foxes.
 * If the mob's spawn placement type is `IN_WATER`:
     * The block at the position must be water, and the block above it may not be a redstone conductor (full blocks, soul sand, mud).
 * If the mob's spawn placement type is `IN_LAVA`:
@@ -249,7 +243,7 @@ The block below the position must be water, and the light level must be zero. In
 
 ### Bat
 
-The Y-level must be below 64. If 
+The Y-level must be below 64. (TODO: light conditions, affected by halloween)
 
 ### Guardian
 
@@ -294,8 +288,6 @@ Regular monster spawn rules apply. The sky light at the position must also be 15
 The block below the position must be mycelium.
 
 ### Ocelot
-
-
 
 ### Parrot
 
@@ -349,25 +341,6 @@ Here are the rules for whether a mob should despawn when far away.
 - Villager: never despawn
 
 Endermites will disappear after 2,400 ticks unless the `PersistenceRequired` tag is set, but this mechanic is implemented separately from regular despawning.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Spawning Potentials
 
