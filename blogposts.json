@@ -171,7 +171,9 @@
     {
         "id": "mob-spawning",
         "title": "Mastering Mob Spawning",
-        "description": "All about mob spawning in Minecraft"
+        "description": "All about mob spawning in Minecraft",
+        "publish": true,
+        "timestamp": 1676619564846
     },
     {
         "id": "mob-spawning-weights",
