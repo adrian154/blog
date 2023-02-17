@@ -11,7 +11,6 @@ We need the deobfuscation mappings because Minecraft's source code is *obfuscate
 # Renaming
 
 The first thing we're gonna do is rename all the names in the game JAR using the obfuscation mappings. This can be accomplished using a tool called [SpecialSource](https://github.com/md-5/SpecialSource), which can be obtained through [Maven](https://search.maven.org/remotecontent?filepath=net/md-5/SpecialSource/1.11.0/SpecialSource-1.11.0-shaded.jar).
-
 Here's the usage for remapping a JAR:
 
 ```plaintext
@@ -19,6 +18,12 @@ java -jar SpecialSource-1.11.0-shaded.jar -i <original JAR> -o <output filename>
 ```
 
 The `--kill-lvt` flag tells SpecialSource to ignore local variables. We include it since Mojang's official mappings do not include local variable names.
+
+<aside>
+
+If you plan on decompiling the server, note that you may need to run it first and then remap the JAR file that is saved in the `versions` folder. The original `server.jar` file just downloads the correct version of the server and starts it.
+
+</aside>
 
 # Decompiling
 

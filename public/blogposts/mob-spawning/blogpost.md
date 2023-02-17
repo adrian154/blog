@@ -249,15 +249,15 @@ The block at the position and below the position must contain water. If the posi
 
 The Y-level must be below 64. The light level must be below 4, except around Halloween (Oct 20 - Nov 3), when the light level  must be below 7. The chance of a spawn attempt failing increases linearly. 
 
-### Blaze
-
-No additional conditions.
-
 ### Monsters
 
-Each additional sky light level adds a $\frac{1}{32}$ chance of failure. In the Overworld and End, the block light level must be zero. In the Nether, the light level must be less than 11. 
+*This includes cave spiders, creepers, endermen, skeletons, spiders, witches, wither skeletons, zombies, and zombie villagers.*
+
+Each additional sky light level adds a $\frac{1}{32}$ chance of failure. In the Overworld and End, the block light level must be zero. (TODO: Figure out the Nether stuff)
 
 ### Animals
+
+*This includes chickens, cows,donkeys, horses, llamas, mules, pigs, and sheep.*
 
 The block below the position must be a grass block and the light level must be above 8.
 
@@ -287,31 +287,53 @@ Regular monster spawn rules apply. The sky light at the position must also be 15
 
 ### Mooshroom
 
-The block below the position must be mycelium.
+The block below the position must be mycelium, and the light level must be above 8.
 
 ### Ocelot
 
+The spawn attempt has a $\frac13$ chance of failing.
+
 ### Parrot
 
-### Hoglin
+The block below the position must be grass, air, or a block with the `#leaves`/`#logs` tag, and the light level must be above 8.
 
-### Piglin
+### Hoglin, Piglin
+
+The block below the position must not be nether wart.
 
 ### Polar Bear
 
+The light level must be above 8. Also, if in a frozen ocean or deep frozen ocean biome, the block below the position must be ice; otherwise, the block below the position must be grass.
+
 ### Rabbit
+
+The block below the position must be grass, snow, or sand, and the light level must be above 8.
 
 ### Slime
 
+If in a swamp or mangrove swamp biome, a slime may spawn between Y-levels 50 and 70 (exclusive). The chance of the spawn attempt succeeding depends on the moon brightness, peaking at 50%. The light level must be 8 or below; higher light levels increase the chance of the attempt failing.
+
+Slimes also spawn in slime chunks in all biomes, where the Y-level must be below 40. The attempt has a 90% chance of failure.
+
 ### Stray
+
+The position must be able to see the sky, excluding any powdered snow blocks that might be in the way. Monster lighting conditions must also be met.
 
 ### Strider
 
+If the position is occupied by lava, the game will continually move up until it finds an air block. If an air block is not found, the spawn attempt fails.
+
 ### Turtle
+
+The Y-level must be no more than 4 blocks above sea level, the block below the position must be sand, and the light level must be above 8.
 
 ### Wolf
 
-success chance affected by light level: drowned, monster
+The block below the position must be grass, snow, or a snow block, and the light level must be above 8.
+
+### Fox
+
+The block below the position must be grass, snow, a snow block, podzol, or coarse dirt, and the light level must be above 8.
 
 # Despawning
 
