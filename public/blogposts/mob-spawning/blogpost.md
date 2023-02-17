@@ -140,7 +140,7 @@ The heightmap is a critical factor in the performance of a farm. Spawning attemp
 
 ![diagram of impact of heightmap on spawning](heightmap.png)
 
-Unfortunately, if you build your farm very low in the world to maximize its rates, you will need to eliminate all spawnable spaces within 128 blocks of its proximity to prevent those spawns from filling up the mob cap. This means either lighting up all the caves within that radius or excavating a perimeter. I am way too lazy to do either of those things, so I usually build my farms above ground so I can position my AFK spot such that there are no unwanted spawnable spaces. 
+Unfortunately, if you build your farm very low in the world to maximize its rates, you will need to eliminate all spawnable spaces within 128 blocks of its proximity to prevent those spawns from filling up the mob cap. This means either lighting up all the caves within that radius or excavating a perimeter. An alternative is to build a surface-level farm and position your AFK spot at a high Y-level to ensure that all spawnable spaces are restricted to the farm. Of course, spawn rates will be diminished.
 
 Another thing to keep in mind is that the game doesn't try to spawn a mob directly at the selected location; instead, it picks random positions in a square surrounding the initial position using the rules outlined in the following section. This means that spawn attempts which begin outside of your farm may still contribute to its rates. This yields two more pieces of advice:
 
@@ -273,9 +273,13 @@ The spawn attempt has a 95% chance of failing.
 
 The Y-level of the position must be less than or equal to 30, the light level must be zero, and the block at the position must be water.
 
+<aside>
+
 Fun fact: the method that checks whether a glow squid can spawn has been misspelled as <code>checkGlow<b>Squide</b>SpawnRules</code> since 1.18.
 
 <blockquote class="twitter-tweet" data-conversation="none"><p lang="en" dir="ltr">Haha… just ye olde glow squide.</p>&mdash; slicedlime 💙💛 (@slicedlime) <a href="https://twitter.com/slicedlime/status/1548207094913835008?ref_src=twsrc%5Etfw">July 16, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+</aside>
 
 ### Goat
 
@@ -338,7 +342,7 @@ The block below the position must be grass, snow, a snow block, podzol, or coars
 # Despawning
 
 Golems, animals, allays, wandering traders, and villagers never despawn, with exceptions:
-- Untamed cats that are older than 2,4000 ticks can despawn.
+- Untamed cats that are older than 2,400 ticks can despawn.
 - Chickens that spawned as part of a chicken jockey can despawn.
 
 Shulkers are considered golems for some reason, so they don't despawn.
@@ -386,3 +390,13 @@ When spawning one of the mobs listed in the tables below, the potential contribu
 | Enderman | 1.0          | 0.12   |
 
 If a mob does not contribute to the mob cap, it also does not contribute to spawn potentials. The conditions for this are documented [here](#mob-cap-quirks).
+
+# Other Resources
+
+If you want to keep learning about mob spawning, LogicalGeekBoy's video on mob spawning (featuring MethodZz) is a good place to start.
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/tD5Dd6VDr7c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+Gnembon also has an excellent video on the newly introduced spawn potential system.
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/4XNvnKDSoEw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
