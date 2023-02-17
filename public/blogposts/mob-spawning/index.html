@@ -193,7 +193,7 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 
 <p>Pack spawns can potentially spawn mobs very far away from the origin of the spawn attempt. For example, if the selected mob type&#39;s pack size is 4, the final spawn location could be anywhere within a 41x41 region around the original position. However, in practice, this is unlikely. Check out this heatmap showing the spatial distribution of spawn attempts.</p>
 <p><img loading="lazy" src="packspawn-heatmap.png" alt="pack spawn heatmap"></p>
-<p>As you can see, most of the attempts end up pretty close to the initial location; in fact, over 75% of all attempts are within 10 blocks of the initial location. We can find the cumulative distribution of pack spawn distance to determine how much overhang we need.</p>
+<p>Most of the attempts end up pretty close to the initial location; in fact, over 75% of all attempts are within 10 blocks of the initial location. We can find the cumulative distribution of pack spawn distance to determine how much overhang we need.</p>
 <p><img loading="lazy" src="distance-distr.png" alt="cumulative distribution of pack spawn distance"></p>
 <p>As you can see, bigger is better, but the benefit you get from building a bigger overhang gradually diminishes.</p>
 </aside>

@@ -164,7 +164,7 @@ Pack spawns can potentially spawn mobs very far away from the origin of the spaw
 
 ![pack spawn heatmap](packspawn-heatmap.png)
 
-As you can see, most of the attempts end up pretty close to the initial location; in fact, over 75% of all attempts are within 10 blocks of the initial location. We can find the cumulative distribution of pack spawn distance to determine how much overhang we need.
+Most of the attempts end up pretty close to the initial location; in fact, over 75% of all attempts are within 10 blocks of the initial location. We can find the cumulative distribution of pack spawn distance to determine how much overhang we need.
 
 ![cumulative distribution of pack spawn distance](distance-distr.png)
 

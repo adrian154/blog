@@ -70,8 +70,8 @@ If you're disappointed that this isn't a technical blogpost, don't worry&mdash;t
 - Bitcoin Explained
 - ExFAT Driver in Assembly
 - IP over Audio Jack
-- JPEG, Explained
-- Minecraft Mob Spawning
+- ~~JPEG, Explained~~
+- ~~Minecraft Mob Spawning~~
 - Analyzing Internet Background Noise
 - Optimally Solving Rubik's Cube
 - Minecraft Server Census 2.0
