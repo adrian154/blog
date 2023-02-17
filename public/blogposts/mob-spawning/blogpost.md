@@ -144,7 +144,7 @@ Unfortunately, if you build your farm very low in the world to maximize its rate
 
 Another thing to keep in mind is that the game doesn't try to spawn a mob directly at the selected location; instead, it picks random positions in a square surrounding the initial position using the rules outlined in the following section. This means that spawn attempts which begin outside of your farm may still contribute to its rates. This yields two more pieces of advice:
 
-* Build an overhang directly above the highest spawning platform in your mob farm to raise the heightmap in the columns surrounding the farm so that spawn attempts which occur there may produce spawns within the farm. 
+* Build an overhang directly above the highest spawning platform in your mob farm to raise the heightmap in the columns surrounding the farm, so that spawn attempts which occur there may produce spawns within the farm. 
 * Never place solid blocks at foot level around the farm, since they will instantly cause a spawn attempt to end.
 
 <figure style="max-width: 560px">

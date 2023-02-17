@@ -1,6 +1,6 @@
 If a mob category is not listed, no mobs in that category spawn for the biome.
 
-Also, check out the companion article about [mob spawning mechanics](mobspawning.html)!
+Also, check out the companion article about [mob spawning mechanics](../mob-spawning/)!
 
 # Overworld Biomes
 
