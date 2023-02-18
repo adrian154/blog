@@ -10,6 +10,30 @@ Today, we will be focusing on the stacking and postprocessing part of DSO astrop
 
 # Aberrations and Calibration
 
+Here's what it looks like if we lightly process one of the raw files straight out of the camera:
+
+*TODO-Lightly processed image*
+
+Okay, it looks kinda cool, but there are also some obvious issues with this image. First, there's a pretty strong vignette. Also, see those dark spots? Those are the result of dust particles on the sensor. Not pretty.
+
+Handling these problems is not that hard, surprisingly. The trick is to take a reference picture of a uniform white field (what astrophotographers call a *flat frame*) to characterize the non-uniformity of the optical system.
+
+*TODO-The flat frame*
+
+If we normalize these values and divide the image by the flat frame, we get this:
+
+*TODO-Corrected image*
+
+Look&mdash;the vignette and dust particles are practically gone! Now, let's turn our attention to the finer details.
+
+# All About Noise
+
+*TODO-Zoomed in noise shot*
+
+Astrophotographers hate nothing more than noise (except maybe light pollution or clouds). In order to effectively combat noise, we need a good understanding of the physical processes that give rise to noise.
+
+
+
 # Alignment and Stacking 
 
 # Post-processing
