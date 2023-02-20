@@ -8,9 +8,17 @@ const canvas = document.getElementById("shot-noise-demo"),
 const particles = new Set();
 let lastParticleY;
 
+// sensor count
+let count = 0
+    lastCount = 0,
+    counts = [],
+    frame = 0;
+
+let exposureTime = 60;
+
 const run = () => {
 
-    if(Math.random() < 0.1) {
+    if(Math.random() < 0.22) {
 
         let y;
         do {
@@ -22,19 +30,68 @@ const run = () => {
  
     }
 
-    // step particles
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#ff0000";
 
+    // draw detector
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(canvas.width - 30, 35, 10, 75);
+
+    ctx.fillStyle = "#ff0000";
     for(const particle of particles) {
         ctx.fillRect(particle.x - 2.5, particle.y * 7 - 2.5 + 40, 5, 5);
         particle.x += 5;
-        if(particle.x == canvas.width) {
+        if(particle.x >= canvas.width - 30) {
             particles.delete(particle);
+            count++;
         }
     }
 
+    // don't start recording counts until the first particles have had time to cross the field
+    if(frame % exposureTime == 0 && frame > canvas.width / 5) {
+
+        // add new count
+        counts.push(count);
+        if(counts.length > 20) {
+            counts.shift();
+        }
+
+        lastCount = count;
+        count = 0;
+
+    }
+
+    // draw line chart
+    ctx.strokeStyle = "#000000";
+    ctx.beginPath();
+    ctx.moveTo(20, 160);
+    ctx.lineTo(20, 280);
+    ctx.lineTo(580, 280);
+    ctx.stroke();
+    ctx.closePath();
+
+    const max = Math.max(...counts);
+    ctx.strokeStyle = "#0000ff";
+    ctx.beginPath();
+    for(let i = 0; i < counts.length; i++) {
+        const x = i * 28 + 20,
+              y = 280 - counts[i]/max*110;
+        if(i == 0)
+            ctx.moveTo(x, y);
+        else
+            ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.closePath();
+
+    // compute statistics
+    const mean = counts.reduce((a,c) => a + c, 0) / counts.length,
+          stddev = Math.sqrt(counts.reduce((a,c) => a + (c - mean)**2, 0) / (counts.length - 1));
+    ctx.fillStyle = "#000000";
+    ctx.font = "16px sans-serif";
+    ctx.fillText(`count=${lastCount}, \u03bc=${Number(mean || 0).toFixed(1)}, \u03c3=${Number(stddev || 0).toFixed(1)}, SNR=${Number(mean/stddev || 0).toFixed(1)}`, 20, 140);
+
+    frame++;
     requestAnimationFrame(run);
 
 };
