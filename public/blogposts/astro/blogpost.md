@@ -1,40 +1,46 @@
-As an amateur astrophotographer, I find deep-sky objects to be some of the most rewarding targets to capture. They display a stunning range of colors and structures that exemplify the beauty of the cosmos. Their characteristics also require highly unique imaging and processing techniques, presenting a challenge that I find very engaging.
+As an amateur astrophotographer, I find deep-sky objects to be some of the most rewarding targets to capture. They display a stunning range of colors and structures that exemplify the beauty of the cosmos. Their characteristics also demand highly unique imaging and processing techniques, presenting some interesting challenges that we'll be discussing today.
 
 So&hellip; what *is* a deep sky object, exactly? Broadly speaking, "DSO" encompasses everything outside of the Solar System (besides individual stars). This category includes objects such as star clusters, nebulae, and galaxies. DSOs vary wildly in apparent size, but they generally have one thing in common: they are very faint, meaning that very long exposures are necessary to fully bring out their details.
 
-The requirement for long exposure time brings us to another major obstacle: Earth is constantly rotating, causing the position of objects in the sky to constantly change! If we don't correct for this, all our images would be ruined by what is essentially extreme motion blur, not to mention the fact that the target would drift out of frame within minutes. Therefore, we must account for this motion by rotating our imaging setup along the *polar axis* against Earth's rotation. This is accomplished by attaching our camera to  an [equatorial mount](https://en.wikipedia.org/wiki/Equatorial_mount).
+The requirement for long exposure time brings us to our first major obstacle: objects in the sky appear to be in constant motion due to Earth's rotation. If we don't account for this, our images of the target will appear hopelessly smeared due to motion blur. The solution is to rotate our imaging setup along the *polar axis* in the opposite direction of Earth's rotation, which can be accomplished with the help of an [equatorial mount](https://en.wikipedia.org/wiki/Equatorial_mount). This will make the sky appear stationary to the camera. 
 
-Alas, tiny deviations in our mount's alignment are inevitable, which will show up as trailing in long exposures. This sets an upper limit on how long of an exposure we can take. To overcome this limitation, we'll take multiple exposures and combine them, in a process called *stacking*. Using many exposures also allows us to detect and exclude satellite trails from the final image.
+Unfortunately, tiny deviations in the mount's alignment are inevitable. As we push our exposure length longer and longer, these small errors will accumulate into trailing, which is unacceptable. This sets an upper limit on the exposure time of an individual frame. To overcome this limitation, we must combine ("stack") multiple exposures into a final image. Using many exposures also allows us to detect and exclude satellite trails from the final image.
 
-Today, we will be focusing on the stacking and postprocessing part of DSO astrophotography. We will be writing code to align, stack, and adjust the raw data to yield a beautiful image.
+Say we've acquired the data&mdash;what now? Well, this is where the fun begins.
 
-# Aberrations and Calibration
+# Calibration
 
-Here's what it looks like if we lightly process one of the raw files straight out of the camera:
+![comparison of ccd and cmos sensors](ccd-vs-cmos.jpg)
 
-*TODO-Lightly processed image*
+All modern DSLRs use either CCD or CMOS sensors to detect light and produce a digital readout. While these technologies have many important differences, they function on similar principles: photons strike photosites (what we call pixels) in the sensor, producing charges that are amplified and then digitized by an **analog-to-digital converter (ADC)**.
 
-Okay, it looks kinda cool, but there are also some obvious issues with this image. First, there's a pretty strong vignette. Also, see those dark spots? Those are the result of dust particles on the sensor. Not pretty.
+As a result, the noise produced by CCD/CMOS systems can be broken down into two categories:
 
-Handling these problems is not that hard, surprisingly. The trick is to take a reference picture of a uniform white field (what astrophotographers call a *flat frame*) to characterize the non-uniformity of the optical system.
+- **dark noise**, which is the product of charges spontaneously generated within the sensor
+- **read noise**, which is generated within the amplifiers and ADC
 
-*TODO-The flat frame*
+There is one additional source of noise in our images: **shot noise**. It stems from the fact that light is quantum, meaning that rather than being radiated continuously, it arrives in discrete packets of energy called photons. Over a finite timespan, there is always some uncertainty in the exact number of photons received from the target, giving rise to shot noise.
 
-If we normalize these values and divide the image by the flat frame, we get this:
+As an analogy, consider a bucket in the rain. If we were to repeatedly count the number of raindrops that fell into the bucket over a one-minute period, the number of drops would change from minute to minute, even if the overall rate of rain remained constant. The same holds for photons arriving at our detector. Even a perfect sensor is still constrained by shot noise.
 
-*TODO-Corrected image*
+<aside>
 
-Look&mdash;the vignette and dust particles are practically gone! Now, let's turn our attention to the finer details.
+From a calibration perspective, there's nothing we can do to correct for shot noise, because it's an inherent part of the signal.
 
-# All About Noise
+Shot noise follows a [Poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution), which describes the number of times an event occuring at a constant mean rate is expected to occur in a fixed interval.
 
-*TODO-Zoomed in noise shot*
+</aside>
 
-Astrophotographers hate nothing more than noise (except maybe light pollution or clouds). In order to effectively combat noise, we need a good understanding of the physical processes that give rise to noise.
+## Dark Noise
+
+## Read Noise
 
 
+## Flat-fielding
 
-# Alignment and Stacking 
+# Alignment
+
+# Stacking
 
 # Post-processing
 
