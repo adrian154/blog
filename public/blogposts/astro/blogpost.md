@@ -21,7 +21,11 @@ CCD/CMOS systems mainly suffer from two sources of noise:
 
 There is one additional source of noise in our images: **shot noise**. It stems from the fact that light is quantum, meaning that rather than being radiated continuously, it arrives in discrete packets of energy called photons. Over a finite timespan, there is always some uncertainty in the exact number of photons received from the target, giving rise to shot noise.
 
-<canvas id="shot-noise-demo" style="border: 1px solid #ccc" width="600" height="300"></canvas>
+<canvas id="shot-noise-demo" style="border: 1px solid #ccc" width="600" height="300"></canvas><br>
+<label for="exposure-time">Exposure time: </label><input type="range" min="0.5" max="4" step="0.5" value="1" id="exposure-time"><span id="exposure-time-text">
+
+Check out this demo, which simulates randomly emitted particles falling onto an ideal detector. Try playing around with the exposure time, and see how it affects the signal-to-noise ratio (SNR).
+
 <script src="shot-noise.js"></script>
  
 <aside>

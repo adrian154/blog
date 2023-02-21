@@ -96,4 +96,13 @@ const run = () => {
 
 };
 
+const updateText = () => document.getElementById("exposure-time-text").textContent = exposureTime/60+"s";
+updateText();
+
+document.getElementById("exposure-time").addEventListener("input", event => {
+    counts = [];
+    exposureTime = event.target.value * 60;
+    updateText();
+});
+
 run();
