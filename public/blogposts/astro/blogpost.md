@@ -30,20 +30,37 @@ Check out this demo, which simulates randomly emitted particles falling onto an 
  
 <aside>
 
-From a calibration perspective, there's nothing we can do to correct for shot noise, because it's an inherent part of the signal. However, it does have some interesting properties that can help us characterize various aspects of our sensor.
+Shot noise doesn't require any treatment in the calibration process, because it's an inherent part of the signal. However, it does have some interesting properties that can help us characterize the sensor.
 
-Photon emission events occur, for our purposes, independently of each other at a constant mean rate (which we will call $\lambda$). For processes meeting these criteria, the number of events observed over a fixed time interval is given by the [Poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution). When $\lambda$ is large, the Poisson distribution is closely approximated by a normal distribution with $\mu = \sigma^2 = \lambda$. Thus, we can say that the variance of the number of electrons is equal to the average number of electrons.
+For our purposes, we treat photon emission events as occuring independently of each other at a constant mean rate. This is a Poisson process, meaning that the number of events observed over a fixed time interval is given by the [Poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution). When $\lambda$ is large, the Poisson distribution is closely approximated by a normal distribution with $\mu = \sigma^2 = \lambda$. Thus, we can say that the variance of the number of electrons is equal to the average number of electrons.
 
-Of course, our RAW files don't tell us how many electrons were produced within a given pixel. Instead, they contain arbitrary integer quantities representing the output of the ADC. It doesn't make sense to assign a physical unit to these values, so for the sake of clarity we measure these values in **analog-to-digital units (ADUs)**.
+Of course, our RAW files don't tell us how many electrons were produced within the pixels. Instead, they contain arbitrary integer quantities representing the output of the ADC. It doesn't make sense to assign a physical unit to these values, so for the sake of clarity we measure these values in **analog-to-digital units (ADUs)**. There is some factor that gives the electrons per ADU, which we call the **gain**.
 
-To figure out the number of ADUs per electron, we can use the relationship we established just now based on the distribution of shot noise. If we plot the observed signal in ADUs against the variance of the signal, the slope will be equivalent to the ADUs/e<sup>-</sup>. This value tells us the gain of the sensor.
+The signal statistics in ADU and electrons are related by:
+
+$$\mu_\text{ADU} = \frac{\mu_\mathrm{e^-}}{\mathrm{gain}}$$
+
+$$\sigma_\text{ADU} = \frac{\sigma_\mathrm{e^-}}{\mathrm{gain}}$$
+
+We know that $\sigma_\mathrm{e^-} = \sqrt{\mu_\mathrm{e^-}}$ due to shot noise, allowing us to solve for gain:
+
+$$\mathrm{gain} = \frac{\mu_\mathrm{ADU}}{\sigma^2_\mathrm{ADU}}$$
 
 </aside>
 
-## Dark Noise
-
 ## Read Noise
 
+## Dark Noise
+
+Even in the absence of light, the photosites within a sensor will still produce some electrons due to thermal effects. This unwanted signal is known as **dark current**. Different pixels produce dark current at different rates, meaning that we much estimate the dark current level on a pixel-by-pixel basis. (Of course, dark current is also subject to shot noise, meaning that it varies randomly.)
+
+To estimate the dark current signal, we'll take some exposures with the same length and ISO as our light frames, but with the lens cap on. These are called *dark frames*. Multiple dark frames are necessary to reduce the effect of random variation; we can combine them using {median/average?}. We also need to subtract the master bias frame to eliminate read noise.
+
+<aside>
+
+Dark noise levels depend on temperature. 
+
+</aside>
 
 ## Flat-fielding
 

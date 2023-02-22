@@ -12,7 +12,7 @@ let lastParticleY;
 let count = 0
     lastCount = 0,
     counts = [],
-    frame = 0;
+    frame = -1;
 
 let exposureTime = 60;
 
@@ -44,21 +44,16 @@ const run = () => {
         if(particle.x >= canvas.width - 30) {
             particles.delete(particle);
             count++;
+            if(frame < 0) {
+                frame = 1;
+            }
         }
     }
 
-    // don't start recording counts until the first particles have had time to cross the field
-    if(frame % exposureTime == 0 && frame > canvas.width / 5) {
-
-        // add new count
+    if(frame % exposureTime == 0) {
         counts.push(count);
-        if(counts.length > 20) {
-            counts.shift();
-        }
-
         lastCount = count;
         count = 0;
-
     }
 
     // draw line chart
@@ -74,7 +69,7 @@ const run = () => {
     ctx.strokeStyle = "#0000ff";
     ctx.beginPath();
     for(let i = 0; i < counts.length; i++) {
-        const x = i * 28 + 20,
+        const x = i / Math.max(counts.length, 20) * 560 + 20,
               y = 280 - counts[i]/max*110;
         if(i == 0)
             ctx.moveTo(x, y);
@@ -91,7 +86,9 @@ const run = () => {
     ctx.font = "16px sans-serif";
     ctx.fillText(`count=${lastCount}, \u03bc=${Number(mean || 0).toFixed(1)}, \u03c3=${Number(stddev || 0).toFixed(1)}, SNR=${Number(mean/stddev || 0).toFixed(1)}`, 20, 140);
 
-    frame++;
+    if(frame >= 0) {
+        frame++;
+    }
     requestAnimationFrame(run);
 
 };
@@ -101,8 +98,18 @@ updateText();
 
 document.getElementById("exposure-time").addEventListener("input", event => {
     counts = [];
+    count = 0;
+    frame = -1;
     exposureTime = event.target.value * 60;
     updateText();
 });
 
-run();
+let running = false;
+ctx.font = "64px sans-serif";
+ctx.fillText("click to start demo", 16, 64);
+canvas.addEventListener("click", () => {
+    if(!running) {
+        running = true;
+        run();
+    }
+});
