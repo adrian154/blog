@@ -4,9 +4,19 @@ So&hellip; what *is* a deep sky object, exactly? Broadly speaking, "DSO" encompa
 
 The requirement for long exposure time brings us to our first major obstacle: objects in the sky appear to be in constant motion due to Earth's rotation. If we don't account for this, our images of the target will appear hopelessly smeared due to motion blur. The solution is to rotate our imaging setup along the *polar axis* in the opposite direction of Earth's rotation, which can be accomplished with the help of an [equatorial mount](https://en.wikipedia.org/wiki/Equatorial_mount). This will make the sky appear stationary to the camera. 
 
-Unfortunately, tiny deviations in the mount's alignment are inevitable. As we push our exposure length longer and longer, these small errors will accumulate into trailing, which is unacceptable. This sets an upper limit on the exposure time of an individual frame. To overcome this limitation, we must combine ("stack") multiple exposures into a final image. Using many exposures also allows us to detect and exclude satellite trails from the final image.
+Unfortunately, tiny deviations in the mount's alignment are inevitable. As we push our exposure length longer and longer, these small errors will accumulate into trailing, which is unacceptable. This sets an upper limit on the exposure time of an individual frame. To overcome this limitation, we must combine ("stack") multiple exposures into a final image. Using many exposures also allows us to detect and exclude defects like cosmic ray hits and satellite trails from the final image.
 
-Say we've acquired the data&mdash;what now? Well, this is where the fun begins.
+Once we've acquired the data&mdash;what now? Well, this is where the fun begins.
+
+# Housekeeping
+
+Before we can get to the cool sciencey stuff, we need to convert our images to a format that our code can actually digest. Most cameras use proprietary image formats whose implementation details are scarce and, besides, this blogpost is not about writing a RAW decoder. The easiest solution is to use [dcraw](https://www.dechifro.org/dcraw/), an open-source raw decoder. dcraw outputs [PGMs](https://en.wikipedia.org/wiki/Netpbm), an uncompressed image format that is trivial to read. Normally, dcraw performs quite a few adjustments to transform the raw files into normal-looking images, but we want to keep the data as untouched as possible so we include a few special arguments:
+
+```plaintext
+dcraw -4 -D image.NEF
+```
+* `-4`: output linear 16-bit values
+* `-D`: output a grayscale image; do not perform any interpolation such as [demosaicing](https://en.wikipedia.org/wiki/Demosaicing)
 
 # Calibration
 
@@ -21,10 +31,12 @@ CCD/CMOS systems mainly suffer from two sources of noise:
 
 There is one additional source of noise in our images: **shot noise**. It stems from the fact that light is quantum, meaning that rather than being radiated continuously, it arrives in discrete packets of energy called photons. Over a finite timespan, there is always some uncertainty in the exact number of photons received from the target, giving rise to shot noise.
 
-<canvas id="shot-noise-demo" style="border: 1px solid #ccc" width="600" height="300"></canvas><br>
-<label for="exposure-time">Exposure time: </label><input type="range" min="0.5" max="4" step="0.5" value="1" id="exposure-time"><span id="exposure-time-text">
-
 Check out this demo, which simulates randomly emitted particles falling onto an ideal detector. Try playing around with the exposure time, and see how it affects the signal-to-noise ratio (SNR).
+
+<div style="display: block; margin: auto; width: 600px;">
+<canvas id="shot-noise-demo" style="border: 1px solid #ccc;" width="600" height="300"></canvas><br>
+<label for="exposure-time">Exposure time: </label><input type="range" min="0.5" max="4" step="0.5" value="1" id="exposure-time"><span id="exposure-time-text">
+</div>
 
 <script src="shot-noise.js"></script>
  
@@ -32,7 +44,7 @@ Check out this demo, which simulates randomly emitted particles falling onto an 
 
 Shot noise doesn't require any treatment in the calibration process, because it's an inherent part of the signal. However, it does have some interesting properties that can help us characterize the sensor.
 
-For our purposes, we treat photon emission events as occuring independently of each other at a constant mean rate. This is a Poisson process, meaning that the number of events observed over a fixed time interval is given by the [Poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution). When $\lambda$ is large, the Poisson distribution is closely approximated by a normal distribution with $\mu = \sigma^2 = \lambda$. Thus, we can say that the variance of the number of electrons is equal to the average number of electrons.
+For our purposes, we treat photon emission events as occuring independently of each other at a constant mean rate. This is a Poisson process, meaning that the number of events observed over a fixed time interval is given by the [Poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution). When the rate of events $\lambda$ is large, the Poisson distribution is closely approximated by a normal distribution with $\mu = \sigma^2 = \lambda$. Thus, we can say that the variance of the number of electrons is equal to the average number of electrons. If we define signal-to-noise ratio as mean over standard deviation, this relation also explains why we need to quadruple our exposure time to double our SNR.
 
 Of course, our RAW files don't tell us how many electrons were produced within the pixels. Instead, they contain arbitrary integer quantities representing the output of the ADC. It doesn't make sense to assign a physical unit to these values, so for the sake of clarity we measure these values in **analog-to-digital units (ADUs)**. There is some factor that gives the electrons per ADU, which we call the **gain**.
 
@@ -46,13 +58,19 @@ We know that $\sigma_\mathrm{e^-} = \sqrt{\mu_\mathrm{e^-}}$ due to shot noise, 
 
 $$\mathrm{gain} = \frac{\mu_\mathrm{ADU}}{\sigma^2_\mathrm{ADU}}$$
 
+Using this method, we can calculate the sensor gain for various ISO values. We see that there is a strong linear relationship.
+
+![iso to gain scatterplot](iso-to-gain.png)
+
+At around ISO 200, we reach **unity gain**, where 1 electron corresponds to 1 ADU. (Note that these gain estimates are probably slightly underestimated since we have not accounted for variation due to other sources of noise, but this blogpost is long enough already&hellip;)
+
 </aside>
 
 ## Read Noise
 
 ## Dark Noise
 
-Even in the absence of light, the photosites within a sensor will still produce some electrons due to thermal effects. This unwanted signal is known as **dark current**. Different pixels produce dark current at different rates, meaning that we much estimate the dark current level on a pixel-by-pixel basis. (Of course, dark current is also subject to shot noise, meaning that it varies randomly.)
+Even in the absence of light, the photosites within a sensor will still produce some electrons due to thermal effects. This unwanted signal is known as **dark current**. Different pixels produce dark current at different rates, meaning that we must estimate the dark current level on a pixel-by-pixel basis. (Of course, dark current is also subject to shot noise, causing it to vary randomly.)
 
 To estimate the dark current signal, we'll take some exposures with the same length and ISO as our light frames, but with the lens cap on. These are called *dark frames*. Multiple dark frames are necessary to reduce the effect of random variation; we can combine them using {median/average?}. We also need to subtract the master bias frame to eliminate read noise.
 
