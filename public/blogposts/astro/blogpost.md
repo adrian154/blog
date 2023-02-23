@@ -92,15 +92,20 @@ Now that we understand all the problems affecting our image, we can start gettin
 
 Now let's zoom out&hellip;
 
+TODO-Image
+
 &hellip;yikes. We've got some pretty severe vignetting! This generally happens because our optics transmit less light towards the edges of the image. On a smaller level, our images also suffer from **photo response non-uniformity (PRNU)**, where different pixels have different sensitivity to light. We can correct both of these problems by taking pictures of a uniform source of illumination. This yields a **flat frame**, which we can divide our image by to neutralize the vignette and PRNU.
 
-Of course, the flat frames themselves need to be calibrated. Specifically, we need to take dark frames using the same settings as the flat frames and perform dark-frame subtraction.
+Of course, the flat frames themselves need to be calibrated. Specifically, we need to take dark frames using the same settings as the flat frames and perform dark-frame subtraction. This is what our final calibration pipeline looks like:
 
-## Flat-field Corrections
+TODO-Pipeline
 
 # Alignment
+
+Now that our light frames are calibrated, we are ready to combine them. There's one problem, though: due to tracking errors, our light frames may be at different alignments, which we must detect and adjust by translating or rotating the images. 
+
+To do that, we must first accurately detect the 
 
 # Stacking
 
 # Post-processing
-
