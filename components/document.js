@@ -36,7 +36,6 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
     
     ),
     body(
-        optional(!properties.document, header(a({href: "/"}, img({src: "/images/banner.jpg", alt: "blog banner"})))),
         ...content,
         footer(p(
             raw("&copy; 2022 "),

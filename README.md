@@ -1,3 +1,3 @@
 # blog
 
-[My blog](https://blog.bithole.dev/)
+I use this branch of my blog for notetaking.
