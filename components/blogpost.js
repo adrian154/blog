@@ -41,7 +41,7 @@ module.exports = (properties, src) => {
             optional(properties.interactive, noscript(p({style: "color: #ff0000"}, "Warning: If you are seeing this message, JS isn't supported; unfortunately, since this page relies on JS to dynamically generate content, parts of the page may be missing or brutally disfigured."))),
             optional(!properties.document, p({id: "date", class: "date"}, formatDate(new Date(properties.timestamp)))),
             h1({style: "margin-top: 0"}, properties.title),
-            tableOfContents(body.fragments),
+            optional(!properties.noContents, tableOfContents(body.fragments)),
             body,
             img({id: "img-view", style: "display: none"}),
             optional(!properties.document, [
