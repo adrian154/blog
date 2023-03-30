@@ -34,7 +34,8 @@ module.exports = (properties, src) => {
     return document(
         {
             ...properties,
-            canonicalURL: new URL(`/blogposts/${properties.id}`, baseURL).href
+            canonicalURL: new URL(`/blogposts/${properties.id}`, baseURL).href,
+            githubLink: `https://github.com/adrian154/blog/tree/main/public/blogposts/${properties.id}`
         },
         main(
             optional(properties.interactive, noscript(p({style: "color: #ff0000"}, "Warning: If you are seeing this message, JS isn't supported; unfortunately, since this page relies on JS to dynamically generate content, parts of the page may be missing or brutally disfigured."))),
