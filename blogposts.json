@@ -9,12 +9,14 @@
         "title": "I Hate MyLab Math",
         "timestamp": 1675745576931,
         "description": "It hates me right back.",
-        "document": true
+        "document": true,
+        "noContents": true
     },
     {
         "id": "gaussian-integral",
         "title": "The Gaussian Integral",
-        "document": true
+        "document": true,
+        "noContents": true
     },
     {
         "id": "rubiks",
@@ -30,7 +32,8 @@
         "id": "something-meaningful",
         "title": "Something Meaningful to Me",
         "timestamp": 1672967406350,
-        "document": true
+        "document": true,
+        "noContents": true
     },
     {
         "id": "2022-reflection",
@@ -83,7 +86,8 @@
     {
         "id": "404",
         "title": "404 Not Found",
-        "document": true
+        "document": true,
+        "noContents": true
     },
     {
         "id": "ip-over-audio-jack",

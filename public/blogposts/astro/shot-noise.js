@@ -18,7 +18,7 @@ let exposureTime = 60;
 
 const run = () => {
 
-    if(Math.random() < 0.22) {
+    if(Math.random() < 0.2) {
 
         let y;
         do {
@@ -84,6 +84,7 @@ const run = () => {
           stddev = Math.sqrt(counts.reduce((a,c) => a + (c - mean)**2, 0) / (counts.length - 1));
     ctx.fillStyle = "#000000";
     ctx.font = "16px sans-serif";
+    ctx.textAlign = "left";
     ctx.fillText(`count=${lastCount}, \u03bc=${Number(mean || 0).toFixed(1)}, \u03c3=${Number(stddev || 0).toFixed(1)}, SNR=${Number(mean/stddev || 0).toFixed(1)}`, 20, 140);
 
     if(frame >= 0) {
@@ -106,7 +107,8 @@ document.getElementById("exposure-time").addEventListener("input", event => {
 
 let running = false;
 ctx.font = "64px sans-serif";
-ctx.fillText("click to start demo", 16, 64);
+ctx.textAlign = "center";
+ctx.fillText("click to start demo", canvas.width / 2, canvas.height / 2 + 20);
 canvas.addEventListener("click", () => {
     if(!running) {
         running = true;

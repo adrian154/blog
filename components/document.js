@@ -44,7 +44,7 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
             raw(" &bull; "),
             a({href: "/rss.xml"}, "rss"),
             raw(" &bull; "),
-            a({href: "https://github.com/adrian154/blog"}, "source"),
+            a({href: properties.githubLink || "https://github.com/adrian154/blog"}, "source"),
             raw(" &bull; "),
             a({href: "https://creativecommons.org/licenses/by-sa/3.0/legalcode"},
             "CC BY-SA 3.0"
