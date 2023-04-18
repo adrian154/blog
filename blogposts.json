@@ -1,5 +1,10 @@
 [
     {
+        "id": "tuning",
+        "title": "The Trouble with Tuning Systems",
+        "description": "Exploring the mathematical impossibilities behind musical tuning."
+    },
+    {
         "id": "astro",
         "title": "The Science of Processing Astrophotos",
         "description": "Dipping our toes in the theory behind pretty space pictures"
