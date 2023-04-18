@@ -16,37 +16,11 @@ TODO-Spectrum
 
 There's a big peak representing the main frequency, but there are also a bunch of extra peaks, which are known as overtones or partials. The reason for their production has to do with the physics of string vibration. Essentially, a string that is fixed at both ends is limited to vibrating at integer multiples of its fundamental frequency; these patterns of vibration are called *resonant modes*. Together, these modes form the harmonic series.
 
+When a string is struck or plucked, the resulting vibration contains multiple of these resonant modes, creating a complex spectrum like the one that we observed. The same phenomenon is actualy exhibited by many other oscillating systems besides strings. For example, air in a tube is also confined to resonating at multiples of the tube's fundamental frequency. This is why, for a given fingering, a French horn player is restricted to playing notes within the harmonic series. 
 
-<figure style="max-width: 500px">
-    <img src="harmonics.png" alt="resonant modes of a string forming the harmonic series">
-</figure>
+TODO-Explain relationship between intervals and harmonic series.
 
-When a string is struck or plucked, the resulting vibration contains multiple of these resonant modes, creating a complex spectrum like the one that we observed.
-
-This phenomenon is exhibited by many other oscillating systems, not just strings. For example, air in a tube is also confined to resonating at multiples of the tube's fundamental frequency. This is why, for a given fingering, a French horn player is restricted to playing notes within the harmonic series. 
-
+<canvas id="harmonics" width="500" height="500"></canvas>
 <button onclick="play()">Play</button>
 
-<script>
-const audioCtx = new AudioContext();
-
-const gain = audioCtx.createGain();
-gain.gain.value = 0.5;
-gain.connect(audioCtx.destination);
-
-const osc = audioCtx.createOscillator();
-osc.type = "sine";
-osc.connect(gain);
-
-let freq = 110, i = 1;
-
-const play = () => {
-
-    osc.frequency.value = freq;
-    osc.start();
-    audioCtx.resume();
-
-    setInterval(() => osc.frequency.value = freq * ++i, 1000);
-
-}; 
-</script>
+<script src="main.js"></script>
