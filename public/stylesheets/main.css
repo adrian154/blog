@@ -328,3 +328,8 @@ kbd {
     padding: 2px 4px;
     white-space: nowrap;
 }
+
+audio {
+    display: block;
+    margin: auto;
+}
