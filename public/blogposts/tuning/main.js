@@ -13,6 +13,7 @@ const draw = harmonic => {
             ctx.strokeStyle = PALETTE[i - 1];
         else
             ctx.strokeStyle = "#000000";
+        ctx.fillStyle = "#000000";
         ctx.fillText(i, 25, i * 50 + 9);
         ctx.beginPath();
         ctx.moveTo(60, i * 50);
