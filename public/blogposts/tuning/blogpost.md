@@ -8,11 +8,14 @@ Of course, the burning question remains: how do we know what frequency to assign
 
 Now, let's do a little experiment. This is what it sounds like if I play A<sub>4</sub> on my piano.
 
-TODO-Audio
+<audio controls src="a4.mp3"></audio>
 
-Ironically, my piano is pretty badly out of tune, but that doesn't matter for this demonstration. I can use [a bit of math](https://en.wikipedia.org/wiki/Fourier_transform) to take the sound and dissect it into the individual frequencies that make it up, kind of like how a prism can split light into its monochromatic components:
+Ironically, my piano is pretty badly out of tune, but that doesn't matter for this demonstration. I can use [a bit of math](https://en.wikipedia.org/wiki/Fourier_transform) to take the sound and dissect it into the individual frequencies that make it up, kind of like how a prism can split light into its color components:
 
-TODO-Spectrum
+<figure>
+    <img src="spectrum.png" alt="spectral power distribution of piano note">
+    <figcaption>Disclaimer: the y-axis is a log scale. In reality, the harmonics after the first one are a lot weaker.</figcaption>
+</figure>
 
 There's a big peak representing the main frequency, but there are also a bunch of extra peaks, which are known as overtones or partials. The reason for their production has to do with the physics of string vibration. Essentially, a string that is fixed at both ends is limited to vibrating at integer multiples of its fundamental frequency; these patterns of vibration are called *resonant modes*. Together, these modes form the harmonic series.
 
@@ -20,7 +23,7 @@ When a string is struck or plucked, the resulting vibration contains multiple of
 
 TODO-Explain relationship between intervals and harmonic series.
 
-<canvas id="harmonics" width="500" height="500"></canvas>
+<canvas id="harmonics" width="700" height="700"></canvas>
 <button onclick="play()">Play</button>
 
 <script src="main.js"></script>

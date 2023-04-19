@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <body style="background-color: gray;">
+        <canvas id="spectrum" width="900" height="600"></canvas>
+        <script src="spectrum.js"></script>
+        <script>
+            const canvas = document.getElementById("spectrum"), ctx = canvas.getContext("2d");
+            const min  = spectrum.reduce((a,c)=>Math.min(a,c), 0);
+            for(let i = 0; i < spectrum.length; i++) spectrum[i] = Math.log(spectrum[i] + (1 - min)); 
+            //for(let i = 0; i < spectrum.length; i++) spectrum[i] = Math.pow(spectrum[i], 1/2);
+            const max = spectrum.reduce((a,c)=>Math.max(a,c),0);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.moveTo(10, 10);
+            ctx.lineTo(10, canvas.height - 25);
+            ctx.stroke();
+            ctx.moveTo(10, canvas.height - 25);
+            ctx.lineTo(canvas.width - 20, canvas.height - 25);
+            ctx.stroke();
+            ctx.strokeStyle = "rgba(0, 0, 255, 0.15)";
+            ctx.beginPath();
+            ctx.moveTo(10, canvas.height - 35);
+            for(let i = 0; i < spectrum.length; i++) {
+                ctx.lineTo(i / spectrum.length * (canvas.width - 30) + 10, canvas.height - 25 - spectrum[i] / max * (canvas.height - 35));
+            }
+            ctx.stroke();
+            ctx.closePath();
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = "#000000";
+            ctx.textAlign = "center";
+            ctx.strokeStyle = "#000000";
+            for(let i = 0; i <= 6; i++) {
+                ctx.font = "16px Arial";
+                ctx.fillText(i * 1000, i / 6 * (canvas.width - 30) + 10, canvas.height - 5);
+                ctx.beginPath();
+                ctx.moveTo(i / 6 * (canvas.width - 30) + 10, canvas.height - 25);
+                ctx.lineTo(i / 6 * (canvas.width - 30) + 10, canvas.height - 20);
+                ctx.closePath();
+                ctx.stroke();
+            }
+        </script>
+    </body>
+</html>
