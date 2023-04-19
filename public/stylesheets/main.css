@@ -333,3 +333,5 @@ audio {
     display: block;
     margin: auto;
 }
+
+canvas { max-width: 100%; }

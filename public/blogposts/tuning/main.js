@@ -66,6 +66,17 @@ const playNote = (freq, length, attack) => {
 
 };
 
+const playSequence = seq => {
+    let i = 0;
+    const play = () => {
+        playNote(seq[i], 0.75, 0.1);
+        i++;
+        if(i < seq.length)
+            setTimeout(play, 650);
+    };
+    play();
+};
+
 const play = () => {
     audioCtx.resume();
     let harmonic = 1;
@@ -90,3 +101,22 @@ const play = () => {
 };
 
 draw();
+
+const playChordJust = () => {
+    playNote(288, 2, 0.1);
+    playNote(364.5, 2, 0.1);
+    playNote(432, 2, 0.1);
+};
+
+const playChordPerfect = () => {
+    playNote(288, 2, 0.1);
+    playNote(288 * 5/4, 2, 0.1);
+    playNote(288 * 3/2, 2, 0.1);
+};
+
+const ratio = Math.pow(2, 1/12);
+const playChordET = () => {
+    playNote(288, 2, 0.1);
+    playNote(288 * ratio**4, 2, 0.1);
+    playNote(288 * ratio**7, 2, 0.1);
+};
