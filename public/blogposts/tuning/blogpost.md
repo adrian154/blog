@@ -63,7 +63,7 @@ If you give it a listen, you might say: *I can still hear beating&mdash;what's t
 
 Of course, just intonation's shortcomings did not stop composers from incorporating key changes into their music. To accomodate these pieces, instrument makers often added extra keys that split enharmonically equivalent notes into multiple pitches. Check out this organ with 14 keys per octave:
 
-<iframe class="yt-video" src="https://www.youtube-nocookie.com/embed/7GhAuZH6phs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe class="yt-video" width="100%" src="https://www.youtube-nocookie.com/embed/7GhAuZH6phs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 </aside>
 
@@ -75,18 +75,18 @@ Ethan Hein's [Tuning Is Hard](https://www.ethanhein.com/wp/2022/tuning-is-hard/)
 
 This video uses a digital keyboard to demonstrate the fundamental flaw of just intonation.
 
-<iframe class="yt-video" src="https://www.youtube-nocookie.com/embed/Yqa2Hbb_eIs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe class="yt-video" width="100%" src="https://www.youtube-nocookie.com/embed/Yqa2Hbb_eIs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 Remember how I claimed that tuning systems aren't as important for instruments that can change pitches on the fly? That's *mostly* true, but it's still impossible to play everything in perfect harmony. An Italian mathematician named Giambattista Benedetti demonstrated this phenomenon through a series of "puzzles"&mdash;repeating melodies whose pitch would become sharper and sharper if one attempted to play them using only pure intervals. Adam Neely made an excellent video on the subject:
 
-<iframe class="yt-video" src="https://www.youtube-nocookie.com/embed/TYhPAbsIqA8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe class="yt-video" width="100%" src="https://www.youtube-nocookie.com/embed/TYhPAbsIqA8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 Bach may have composed *The Well-Tempered Clavier* to demonstrate how [well temperament](https://en.wikipedia.org/wiki/Well_temperament) (a class of tuning systems that would eventually give rise to equal temperament) enabled music written in any key to sound good. Here is a performance of the first prelude in three different temperaments, accompanied by some very enlightening explanation of each tuning system.
 
-<iframe class="yt-video" src="https://www.youtube-nocookie.com/embed/kRui9apjWAY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe class="yt-video" width="100%" src="https://www.youtube-nocookie.com/embed/kRui9apjWAY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 Finally, MinutePhysics made a video seven years ago which first introduced me to the mathematical problems faced by tuning and inspired this article.
 
-<iframe class="yt-video" src="https://www.youtube-nocookie.com/embed/1Hqm0dYKUx4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe class="yt-video" width="100%" src="https://www.youtube-nocookie.com/embed/1Hqm0dYKUx4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 Also, [music numbers](https://www.youtube.com/watch?v=HXLltEn4O5E).

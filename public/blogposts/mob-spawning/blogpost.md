@@ -395,8 +395,8 @@ If a mob does not contribute to the mob cap, it also does not contribute to spaw
 
 If you want to keep learning about mob spawning, LogicalGeekBoy's video on mob spawning (featuring MethodZz) is a good place to start.
 
-<iframe class="yt-video" src="https://www.youtube-nocookie.com/embed/tD5Dd6VDr7c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe class="yt-video" width="100%" src="https://www.youtube-nocookie.com/embed/tD5Dd6VDr7c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 Gnembon also has an excellent video on the newly introduced spawn potential system.
 
-<iframe class="yt-video" src="https://www.youtube-nocookie.com/embed/4XNvnKDSoEw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe class="yt-video" width="100%" src="https://www.youtube-nocookie.com/embed/4XNvnKDSoEw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
