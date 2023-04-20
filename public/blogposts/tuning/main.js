@@ -109,9 +109,9 @@ const playChordPythagorean = () => {
 };
 
 const playChordPerfect = () => {
-    playNote(288, 2, 0.1);
-    playNote(288 * 5/4, 2, 0.1);
-    playNote(288 * 3/2, 2, 0.1);
+    playNote(273.38, 2, 0.1);
+    playNote(273.38 * 5/4, 2, 0.1);
+    playNote(273.38 * 3/2, 2, 0.1);
 };
 
 const ratio = Math.pow(2, 1/12);
