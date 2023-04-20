@@ -45,7 +45,9 @@ The rapid warbling sound you hear is an acoustic phenomenon known as [beating](h
 
 <button onclick="playChordPerfect()">Play Chord</button>
 
+Essentially, the problem is that a note's exact frequency may vary depending on what interval it's in. This isn't a problem if you play an instrument where you have full control over what pitch is being played, but on a piano, the frequencies of each note are fixed. Thus, it is impossible to tune a piano such that every interval remains pure. 
 
+Well. What do we do, then?
 
 # Further Reading (Watching?)
 
