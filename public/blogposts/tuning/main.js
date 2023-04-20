@@ -102,24 +102,10 @@ const play = () => {
 
 draw();
 
-const playChordJust = () => {
-    playNote(324, 2, 0.1);
+const playChordPythagorean = () => {
+    playNote(273.38, 2, 0.1);
+    playNote(345.99, 2, 0.1);
     playNote(410.06, 2, 0.1);
-    playNote(486, 2, 0.1);
-    /*
-    playNote(288, 2, 0.1);
-    playNote(364.5, 2, 0.1);
-    playNote(432, 2, 0.1);
-    */
-    /*
-    playNote(256, 2, 0.1, 0.2);
-    playNote(324, 2, 0.1, 0.2);
-    playNote(384, 2, 0.1, 0.2);*/
-};
-const playChord2 = () => {
-    playNote(288, 2, 0.1);
-    playNote(364.5, 2, 0.1);
-    playNote(432, 2, 0.1);
 };
 
 const playChordPerfect = () => {
@@ -130,7 +116,7 @@ const playChordPerfect = () => {
 
 const ratio = Math.pow(2, 1/12);
 const playChordET = () => {
-    playNote(288, 2, 0.1);
-    playNote(288 * ratio**4, 2, 0.1);
-    playNote(288 * ratio**7, 2, 0.1);
+    playNote(273.378, 2, 0.1);
+    playNote(273.38 * ratio**4, 2, 0.1);
+    playNote(273.38 * ratio**7, 2, 0.1);
 };

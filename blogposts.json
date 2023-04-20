@@ -2,7 +2,10 @@
     {
         "id": "tuning",
         "title": "The Trouble with Tuning Systems",
-        "description": "Exploring the mathematical impossibilities behind musical tuning."
+        "description": "Exploring the mathematical impossibilities behind musical tuning.",
+        "timestamp": 1681970192244,
+        "publish": true,
+        "interactive": true
     },
     {
         "id": "astro",

@@ -130,7 +130,7 @@ If you have ever used a program that allows you to export images as JPEG, you ma
 
 In the final step of JPEG compression, the DCT matrix is unraveled according to a zigzag pattern, and [Huffman coding](https://en.wikipedia.org/wiki/Huffman_coding) is applied to compress the data. How Huffman coding works is beyond the scope of this article, but if you want a concise, accessible explanation of the technique, I encourage you to check out Tom Scott's video on the subject.
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JsTptu56GM8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe class="yt-video" src="https://www.youtube-nocookie.com/embed/JsTptu56GM8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 # Conclusion
 
