@@ -46,14 +46,14 @@ const draw = harmonic => {
     }
 };
 
-const playNote = (freq, length, attack) => {
+const playNote = (freq, length, attack, gain) => {
     
     const envelope = audioCtx.createGain();
     const time = audioCtx.currentTime;
     envelope.gain.setValueAtTime(0, time);
-    envelope.gain.linearRampToValueAtTime(0.3, time + attack);
+    envelope.gain.linearRampToValueAtTime(gain || 0.3, time + attack);
     setTimeout(() => {
-        envelope.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        envelope.gain.setValueAtTime(gain || 0.3, audioCtx.currentTime);
         envelope.gain.linearRampToValueAtTime(0, audioCtx.currentTime + attack);
     }, 1000 * (length - attack));
     envelope.connect(audioCtx.destination);
@@ -103,6 +103,20 @@ const play = () => {
 draw();
 
 const playChordJust = () => {
+    playNote(324, 2, 0.1);
+    playNote(410.06, 2, 0.1);
+    playNote(486, 2, 0.1);
+    /*
+    playNote(288, 2, 0.1);
+    playNote(364.5, 2, 0.1);
+    playNote(432, 2, 0.1);
+    */
+    /*
+    playNote(256, 2, 0.1, 0.2);
+    playNote(324, 2, 0.1, 0.2);
+    playNote(384, 2, 0.1, 0.2);*/
+};
+const playChord2 = () => {
     playNote(288, 2, 0.1);
     playNote(364.5, 2, 0.1);
     playNote(432, 2, 0.1);
