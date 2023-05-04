@@ -1,6 +1,8 @@
 
 
-I had a spare [RockPi S](https://wiki.radxa.com/RockpiS) lying around from a previous project, so I decided to use it for my prototype. The first part to arrive was a little LCD screen, so I decided to try and get that working first. This turned out to be quite a painful experience that led me down a dark corridor full of footguns and bear-traps. (I'm a total n00b when it comes to electronics and embedded development, so a lot of the inconvenience I encountered was really due to me blindly stumbling around out of ignorance. Please forgive me.)
+I had a spare [RockPi S](https://wiki.radxa.com/RockpiS) lying around from a previous project, so I decided to use it for my prototype. It's a little single-board computer powered by a 64-bit ARM SoC, so kind of like a Raspberry Pi.
+
+The first part to arrive was a little LCD screen, so I decided to try and get that working first. This turned out to be quite a painful experience that led me down a dark corridor full of footguns and bear-traps. (I'm a total n00b when it comes to electronics and embedded development, so a lot of the inconvenience I encountered was really due to me blindly stumbling around out of ignorance. Please forgive me.)
 
 At first, things look pretty cut and dry. The screen uses SPI, which is perfect because the RockPi has two SPI buses, so all we need to do is connect a couple things and watch everything come to life. Wait&mdash;according to the pinout there's three buses, actually. The SCLK and CS pins for SPI0 aren't labeled, though, so I guess we're gonna go with SPI1.
 
