@@ -1,5 +1,9 @@
 [
     {
+        "id": "badge",
+        "title": "#badgelife struggles"
+    },
+    {
         "id": "tuning",
         "title": "The Trouble with Tuning Systems",
         "description": "Exploring the mathematical conundrum behind harmony.",
