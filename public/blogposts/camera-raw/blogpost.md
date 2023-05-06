@@ -1,1 +1,0 @@
-Photographers often speak of "raw" images.
