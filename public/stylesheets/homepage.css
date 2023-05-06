@@ -1,4 +1,4 @@
-body {
+main {
     max-width: 55rem;
     margin-top: 0;
     padding-top: 0;
@@ -6,7 +6,7 @@ body {
 
 h1 {
     display: inline-block;
-    margin: 0;
+    margin: 0 !important; /* FIXME */
     border: 0;
     padding: 0;
     cursor: pointer;
@@ -43,4 +43,8 @@ article p {
 footer {
     margin-top: 3.0em;
     text-align: center;
+}
+
+img {
+    margin-bottom: 0;
 }

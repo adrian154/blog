@@ -1,18 +1,10 @@
-const {script, h1, p, a, noscript, b, div, button, img, main, nav, raw} = require("html-generator");
+const {script, h1, p, a, noscript, b, div, img, main, header} = require("html-generator");
 const {commentsSettings} = require("../config.json");
 const renderMarkdown = require("./markdown.js");
 const formatDate = require("./format-date.js");
-const {optional} = require("./helpers");
 const {baseURL} = require("../config.json");
 const document = require("./document.js");
-
-const tableOfContents = fragments => nav( 
-    div({id: "contents"},
-        p("Table of Contents"),
-        Object.entries(fragments).map(entry => a({href: "#" + entry[0]}, p(raw(entry[1].title))))
-    ),
-    button({id: "show-toc"}, raw("&#9776; Contents"))
-);
+const {optional} = require("./helpers");
 
 const comments = properties => {
     const settings = Object.assign({}, commentsSettings);
@@ -37,11 +29,15 @@ module.exports = (properties, src) => {
             canonicalURL: new URL(`/blogposts/${properties.id}`, baseURL).href,
             githubLink: `https://github.com/adrian154/blog/tree/main/public/blogposts/${properties.id}`
         },
+        header(
+            div({id: "header-inner"}, 
+                optional(properties.timestamp, p({class: "date"}, formatDate(new Date(properties.timestamp)))),
+                h1({style: "margin-top: 0"}, properties.title),
+                p({id: "more-posts"}, a({href: "/"}, "more posts"))
+            )
+        ),
         main(
             optional(properties.interactive, noscript(p({style: "color: #ff0000"}, "Warning: If you are seeing this message, JS isn't supported; unfortunately, since this page relies on JS to dynamically generate content, parts of the page may be missing or brutally disfigured."))),
-            optional(!properties.document, p({id: "date", class: "date"}, formatDate(new Date(properties.timestamp)))),
-            h1({style: "margin-top: 0"}, properties.title),
-            optional(!properties.noContents, tableOfContents(body.fragments)),
             body,
             img({id: "img-view", style: "display: none"}),
             optional(!properties.document, [

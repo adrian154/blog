@@ -1,5 +1,5 @@
-const { html, head, meta, title, link, p, body, a, img, script, header, footer, raw } = require("html-generator");
-const { stylesheet, optional } = require("./helpers");
+const { html, head, meta, title, link, p, body, a, script, footer, raw} = require("html-generator");
+const { stylesheet } = require("./helpers");
 const fs = require("fs");
 
 const APPLY_SETTINGS_CODE = fs.readFileSync("public/scripts/apply-settings-stub.js", "utf-8");
@@ -36,7 +36,6 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
     
     ),
     body(
-        optional(!properties.document, header(a({href: "/"}, img({src: "/images/banner.jpg", alt: "blog banner"})))),
         ...content,
         footer(p(
             raw("&copy; 2022 "),

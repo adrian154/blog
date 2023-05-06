@@ -1,7 +1,7 @@
 [
     {
         "id": "badge",
-        "title": "#badgelife struggles"
+        "title": "WIP"
     },
     {
         "id": "tuning",
@@ -21,14 +21,12 @@
         "title": "I Hate MyLab Math",
         "timestamp": 1675745576931,
         "description": "It hates me right back.",
-        "document": true,
-        "noContents": true
+        "document": true
     },
     {
         "id": "gaussian-integral",
         "title": "The Gaussian Integral",
-        "document": true,
-        "noContents": true
+        "document": true
     },
     {
         "id": "rubiks",
@@ -44,8 +42,7 @@
         "id": "something-meaningful",
         "title": "Something Meaningful to Me",
         "timestamp": 1672967406350,
-        "document": true,
-        "noContents": true
+        "document": true
     },
     {
         "id": "2022-reflection",
@@ -57,7 +54,7 @@
     },
     {
         "id": "image-desaturation",
-        "title": "Why does my image look desaturated when I upload it online?",
+        "title": "What's Desaturating My Image?",
         "description": "It's probably a color profile issue.",
         "timestamp": 1664842628162,
         "publish": true
@@ -98,8 +95,7 @@
     {
         "id": "404",
         "title": "404 Not Found",
-        "document": true,
-        "noContents": true
+        "document": true
     },
     {
         "id": "ip-over-audio-jack",

@@ -9,7 +9,7 @@ const generator = require("./generate-site");
 const fs = require("fs");
 
 fs.watch("public/blogposts", {recursive: true}, (eventType, filename) => {
-    const blogposts = require("./blogposts.json");
+    const blogposts = JSON.parse(fs.readFileSync("blogposts.json", "utf-8"));
     const match = filename.match(/(.+)[\\\/]blogpost\.md/);
     if(match) {
         const id = match[1];
