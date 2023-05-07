@@ -17,7 +17,13 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p>Now when I upload the image to Discord, it ends up looking like this:</p>
 <img loading="lazy" style="max-width: 500px" src="srgb-bad-convert.jpg" alt="the same image, now washed out and yucky">
 
-<p>The colors have been noticeably screwed up, because Discord takes the raw values from the image, slaps them into a new image container, and labels them as sRGB without ever checking if it&#39;s <em>actually</em> sRGB. It&#39;s like trying to convert a measurement from inches to centimeters by just erasing &quot;inches&quot; and writing in &quot;centimeters&quot;; the end result is going to be wrong.</p>
+<p>If you&#39;re having a hard time seeing the difference, here&#39;s a side-by-side comparison.</p>
+<figure style="max-width: 500px">
+    <img loading="lazy" src="comparison.jpg" alt="side-by-side comparison of original image and improper convert">
+    <figcaption>Left: properly converted. Right: improperly converted.</figcaption>
+</figure>
+
+<p>The colors have been noticeably screwed up, because Discord takes the raw values from the image, slaps them into a new container, and labels them as sRGB without ever checking if it&#39;s <em>actually</em> sRGB. It&#39;s like trying to convert a measurement from inches to centimeters by just erasing &quot;inches&quot; and writing in &quot;centimeters&quot;; the end result is going to be wrong.</p>
 <h2 id="solution">Solution <a class="section-link" href="#solution">&sect;</a></h2><p>To prevent this, you need to properly convert your images to sRGB before uploading them to websites that don&#39;t properly handle color spaces. How you accomplish this will depend on what program you&#39;re using. For Photoshop CS6 (which is what I use)  you can do this by going to <kbd>Edit</kbd> &rarr; <kbd>Convert to Profile</kbd> and selecting sRGB.</p>
 <h1 id="further-reading">Further Reading <a class="section-link" href="#further-reading">&sect;</a></h1><ul>
 <li><a href="https://www.kenrockwell.com/tech/adobe-rgb.htm">Ken Rockwell - sRGB vs Adobe RGB</a></li>

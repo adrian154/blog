@@ -18,7 +18,14 @@ Now when I upload the image to Discord, it ends up looking like this:
 
 <img style="max-width: 500px" src="srgb-bad-convert.jpg" alt="the same image, now washed out and yucky">
 
-The colors have been noticeably screwed up, because Discord takes the raw values from the image, slaps them into a new image container, and labels them as sRGB without ever checking if it's *actually* sRGB. It's like trying to convert a measurement from inches to centimeters by just erasing "inches" and writing in "centimeters"; the end result is going to be wrong.
+If you're having a hard time seeing the difference, here's a side-by-side comparison.
+
+<figure style="max-width: 500px">
+    <img src="comparison.jpg" alt="side-by-side comparison of original image and improper convert">
+    <figcaption>Left: properly converted. Right: improperly converted.</figcaption>
+</figure>
+
+The colors have been noticeably screwed up, because Discord takes the raw values from the image, slaps them into a new container, and labels them as sRGB without ever checking if it's *actually* sRGB. It's like trying to convert a measurement from inches to centimeters by just erasing "inches" and writing in "centimeters"; the end result is going to be wrong.
 
 ## Solution
 
