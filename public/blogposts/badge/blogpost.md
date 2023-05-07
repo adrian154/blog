@@ -1,4 +1,6 @@
+One of [DEFCON](https://en.wikipedia.org/wiki/DEF_CON)'s most fascinating traditions is the badges&mdash;little electronic circuits you wear around your neck that do cool things. Every year, the convention has an official badge given to all attendees, but there are also dozens of unofficial ones created by individuals. This year will mark my second DEFCON, and this time, I wanted to have my own cool gadget to show off. So I set out to design and build my own badge.
 
+I started by brainstorming what I wanted the badge to do. Blinkenlights are cool, but it's not really my thing. 
 
 I had a spare [RockPi S](https://wiki.radxa.com/RockpiS) lying around from a previous project, so I decided to use it for my prototype. It's a little single-board computer powered by a 64-bit ARM SoC, so kind of like a Raspberry Pi.
 

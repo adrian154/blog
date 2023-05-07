@@ -1,26 +1,28 @@
-Have you ever uploaded an image to Reddit or Discord, only to find that the preview was noticeably desaturated from the original?
+Have you ever uploaded an image to Reddit or Discord, only to find that the result is markedly desaturated compared to the original?
 
 It's not just you. In this article, I'll be exploring the technical reason for why this happens, and how you can avoid it.
 
 # What's going wrong?
 
-Ultimately, this issue arises when your image is improperly converted from one color space to another; in my case, Adobe RGB is usually the culprit. Most decent photo editing tools (like Photoshop) will include the appropriate ICC color profile in the saved image, so everything will appear normal at first. The mangling occurs when you upload that image to a site that's not equipped to deal with non-sRGB images, which proceeds to directly dump those Adobe RGB values into a new file, now devoid of color profile metadata, all while neglecting to perform a proper conversion between color spaces.
+TL;DR: it's a color space issue. It is *not* due to "compression".
 
-Here's an example of this process in action. Suppose I have this picture, which I've adjusted and imported into Photoshop as 16-bit Adobe RGB.
+A color space is a theoretical model that relates the digital values in an image and the actual colors as seen by the human eye. There are many different color spaces for different applications. Most computer screens use a color space called sRGB, because it happens to align closely with the colors that regular computer monitors are capable of displaying. However, Adobe RGB is often preferred when working with images meant for print, because high-quality printers can produce a wider range of colors than sRGB can represent. To ensure that images are displayed properly across devices, most image formats support the inclusion of metadata stating what color space the image data represents.
 
-<img style="max-width: 500px" src="properly-converted.jpg" alt="an example image (two markers being thrown up into the air), showing vibrant colors">
+Most programs properly handle color space conversion, but some don't, resulting in colors being distorted in various ways. Suppose I have this picture, which is in Adobe RGB.
 
-I'm so excited about this shot that I immediately save the file as JPEG and send it to my friends over Discord, only to find that it now looks like... this.
+<img style="max-width: 500px" src="adobe-rgb.jpg" alt="an example image (two markers being thrown up into the air), showing vibrant colors">
 
-<img style="max-width: 500px" src="improperly-converted.jpg" alt="the same image, now washed out and yucky">
+This image contains colors that your monitor probably can't display. But your web browser recognizes that it needs to convert the colors to sRGB, meaning that all the colors your screen *can* display remain intact.
 
-It still looks *fine*, but the color quality is markedly diminished compared to the original. This happens because the Adobe RGB gamut spans a wider range of colors than sRGB, so directly reinterpreting Adobe RGB values as sRGB will result in desaturation.
+Now when I upload the image to Discord, it ends up looking like this:
 
-The steps you need to prevent this from happening strongly depend on what your workflow looks like, but for amateur photographers like me you generally have two options:
+<img style="max-width: 500px" src="srgb-bad-convert.jpg" alt="the same image, now washed out and yucky">
 
-- Work in Adobe RGB and convert to sRGB before saving your final copy. In Photoshop, you can do this by going to <kbd>Edit</kbd> &rarr; <kbd>Convert to Profile</kbd> and selecting sRGB.
+The colors have been noticeably screwed up, because Discord takes the raw values from the image, slaps them into a new image container, and labels them as sRGB without ever checking if it's *actually* sRGB. It's like trying to convert a measurement from inches to centimeters by just erasing "inches" and writing in "centimeters"; the end result is going to be wrong.
 
-- Import your RAW files as sRGB, and you won't have to worry about any of this stuff. The disadvantage is that the sRGB gamut may be smaller than what is supported by the media you plan on displaying the final product on (be that screen or print), resulting in lost color quality. 
+## Solution
+
+To prevent this, you need to properly convert your images to sRGB before uploading them to websites that don't properly handle color spaces. How you accomplish this will depend on what program you're using. For Photoshop CS6 (which is what I use)  you can do this by going to <kbd>Edit</kbd> &rarr; <kbd>Convert to Profile</kbd> and selecting sRGB.
 
 # Further Reading
 
