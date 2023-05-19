@@ -37,7 +37,8 @@
         "id": "mc-masscan-2023",
         "title": "Minecraft/Masscan Clarification",
         "timestamp": 1673492449673,
-        "description": "Was your Minecraft server recently joined by a user named \"masscan\", bringing you to my blog? It's not me!"
+        "description": "Was your Minecraft server recently joined by a user named \"masscan\", bringing you to my blog? It's not me!",
+        "document": true
     },
     {
         "id": "something-meaningful",
@@ -59,13 +60,6 @@
         "description": "It's probably a color profile issue.",
         "timestamp": 1664842628162,
         "publish": true
-    },
-    {
-        "id": "exfat-asm",
-        "title": "Reading ExFAT Volumes in Assembly",
-        "description": "A new episode in my OSDev saga.",
-        "scripts": ["/scripts/packetview.js"],
-        "stylesheets": ["/stylesheets/packetview.css"]
     },
     {
         "id": "internet-background-noise",
