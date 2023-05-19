@@ -17,7 +17,10 @@ module.exports = blogposts => document(
             blogposts.map(blogpost => [
                 span(format.format(new Date(blogpost.timestamp))),
                 div({class: "timeline-element"}),
-                article(a({href: `/blogposts/${blogpost.id}/`}, b(blogpost.title)), br(), blogpost.description)
+                article(
+                    a({href: `/blogposts/${blogpost.id}/`}, b(blogpost.title)),
+                    blogpost.description
+                )
             ])
         ),
     )

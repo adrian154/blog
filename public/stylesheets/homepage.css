@@ -16,26 +16,33 @@ main {
     display: block;
     position: absolute;
     left: -6px;
-    top: 0.75em;
+    top: 1em;
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background-color: #888;
+    background-color: #666;
     content: "";
 }
 
 .timeline-element {
     position: relative;
-    border-left: 3px solid #888;
+    border-left: 3px solid #999;
 }
 
-article, span {
-    padding: 0.5em;
+article {
+    padding: 0.8em 0.5em;
+}
+
+
+span {
+    padding: 0.8em;
 }
 
 article a {
+    display: block;
     color: #333;
     text-decoration: none;
+    margin-bottom: 5px;
 }
 
 article a:hover {
@@ -53,7 +60,7 @@ article { color: #777; }
 }
 
 .timeline-element:first-of-type {
-    margin-top: 0.7em;
+    margin-top: 1.1em;
 }
 
 .timeline-element:first-of-type::before {
