@@ -1,50 +1,71 @@
 main {
-    max-width: 55rem;
     margin-top: 0;
     padding-top: 0;
 }
 
-h1 {
-    display: inline-block;
-    margin: 0 !important; /* FIXME */
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-    font-size: 1.3em !important; /* FIXME */
-    font-weight: 500;
+#title {
+    font-family: monospace;
 }
 
-h1:hover {
-    text-decoration: underline;
-    color: var(--text-color)
-}
-
-#blog-intro {
-    padding: 1.0em;
-    background-color: #f0f0f0;
-}
-
-html.darkmode #blog-intro {
-    background-color: rgba(0, 0, 0, 50%);
-}
-
-#blogposts {
+#timeline {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 2em;
+    grid-template-columns: 5em 1em auto;
 }
 
-article p {
-    margin-top: 0.5em;
-    opacity: 85%;
-    font-size: 12pt;
+.timeline-element::before {
+    display: block;
+    position: absolute;
+    left: -6px;
+    top: 0.75em;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: #888;
+    content: "";
+}
+
+.timeline-element {
+    position: relative;
+    border-left: 3px solid #888;
+}
+
+article, span {
+    padding: 0.5em;
+}
+
+article a {
+    color: #333;
+    text-decoration: none;
+}
+
+article a:hover {
+    text-decoration: underline;
+}
+
+article { color: #777; }
+
+#timeline span {
+    text-align: right;
+    padding-right: 1.3em;
+    opacity: 50%;
+    font-size: 10pt;
+    margin-top: 0.3em;
+}
+
+.timeline-element:first-of-type {
+    margin-top: 0.7em;
+}
+
+.timeline-element:first-of-type::before {
+    top: 0;
+}
+
+.timeline-element:last-of-type {
+    height: 1.25em;
+    margin-bottom: auto;
 }
 
 footer {
-    margin-top: 3.0em;
+    margin-top: 1.0em;
     text-align: center;
-}
-
-img {
-    margin-bottom: 0;
 }

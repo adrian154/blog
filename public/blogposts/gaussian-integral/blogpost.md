@@ -3,7 +3,7 @@
     <figcaption><a href="https://www.reddit.com/r/mathmemes/comments/snleob/the_gaussian_integral/">Original by u/AlgebraPad</a></figcaption>
 </figure>
 
-Recently, I saw this video showing a proof of the [Gaussian integral](https://en.wikipedia.org/wiki/Gaussian_integral), set to DNCE's Cake By The Ocean. This inspired me to create a blogpost explaining what's being shown here.
+Recently, I saw this video showing a proof of the [Gaussian integral](https://en.wikipedia.org/wiki/Gaussian_integral), set to DNCE's Cake By The Ocean. It's pretty slick&mdash;I recommend watching with sound on. This inspired me to create a blogpost explaining what's being shown here.
 
 We start with the Gaussian integral:
 

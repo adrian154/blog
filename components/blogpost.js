@@ -41,7 +41,6 @@ module.exports = (properties, src) => {
             body,
             img({id: "img-view", style: "display: none"}),
             optional(!properties.document, [
-                h1("Comments"),
                 noscript(b("Please enable Javascript to view the comments on this post.")),
                 comments(properties)
             ])

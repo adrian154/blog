@@ -22,7 +22,7 @@ pre code.hljs {
   display: block;
   overflow-x: auto;
   padding: 1em;
-  font-size: 11pt;
+  font-size: 14px;
 }
 
 code.hljs {
@@ -32,7 +32,7 @@ code.hljs {
 .hljs {
   color: #383a42;
   background: #f3f3f3;
-  font-size: 11pt;
+  font-size: 14px;
 }
 
 .hljs-comment,

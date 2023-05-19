@@ -80,9 +80,7 @@ I've been in a bit of a rut recently when it comes to writing, but progress is s
 
 Oh, and if your name happens to be 2023, you'd better watch out. Because we're more ready than ever to kick your ass.
 
-<p style="float: right">
+<p style="text-align: right">
 Until next time,<br>
 Adrian Zhang
 </p>
-<br>
-<br>

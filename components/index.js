@@ -1,7 +1,8 @@
-const formatDate = require("./format-date.js");
 const { baseURL } = require("../config.json");
-const { h1, p, a, article, div, b, button, main, img } = require("html-generator");
+const { article, div, b, main, span, br, p, a, script } = require("html-generator");
 const document = require("./document.js");
+
+const format = new Intl.DateTimeFormat([], {dateStyle: "short"});
 
 module.exports = blogposts => document(
     {
@@ -11,17 +12,13 @@ module.exports = blogposts => document(
         stylesheets: ["/stylesheets/homepage.css"]
     },
     main(
-        img({src: "/images/banner.jpg", alt: "blog banner"}),
-        div({id: "blog-intro"},
-            p("Hi, I'm Adrian, and I like to write about stuff. Welcome to my blog."),
-            button({id: "toggle-serif"}, "Toggle serif"), " ", button({id: "toggle-darkmode"}, "Toggle darkmode")
+        p({id: "title"}, "blog@bithole.dev:~$"),
+        div({id: "timeline"},
+            blogposts.map(blogpost => [
+                span(format.format(new Date(blogpost.timestamp))),
+                div({class: "timeline-element"}),
+                article(a({href: `/blogposts/${blogpost.id}/`}, b(blogpost.title)), br(), blogpost.description)
+            ])
         ),
-        div({id: "blogposts"},
-            blogposts.map(blogpost => article(
-                p({class: "date"}, formatDate(new Date(blogpost.timestamp))),
-                a({href: `/blogposts/${blogpost.id}/`}, h1(blogpost.title)),
-                p(blogpost.description),
-            ))
-        )
     )
 );

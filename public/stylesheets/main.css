@@ -1,6 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap');
-
 html {
     scroll-behavior: smooth;
 }
@@ -13,8 +10,8 @@ body {
     color: var(--text-color);
 
     /* text*/
-    font-family: IBM Plex Sans, 'sans serif';
-    font-size: 1.1em;
+    font-family: sans-serif;
+    font-size: 16px;
 
     transition: background-color 0.3s;
 
@@ -51,7 +48,7 @@ header a:hover {
 }
 
 #header-inner, main, footer {
-    max-width: 47rem;
+    max-width: 35rem;
 }
 
 main {
@@ -120,7 +117,7 @@ figure img, figure video {
 }
 
 figcaption {
-    font-size: 10.5pt;
+    font-size: 13px;
     margin: 1.0em 0;
 }
 
@@ -142,10 +139,10 @@ footer p {
 }
 
 blockquote {
-    border-left: 3px solid #888;
-    opacity: 80%;
-    padding: 0.1em 1.0em;
-    margin: 0 1em;
+    border-left: 3px solid #ccc;
+    opacity: 60%;
+    padding: 0.1em 1.2em;
+    margin: 0;
 }
 
 a {
@@ -225,50 +222,6 @@ button {
     overflow: auto;
 }
 
-/* contents */
-nav {
-    position: fixed;
-    top: 0;
-    left: -15rem;
-    width: 15rem;
-    transition: 0.5s ease;
-    z-index: 2;
-}
-
-#contents {
-    padding: 0 1.0em;
-    color: var(--toc-text-color);
-    background-color: var(--toc-bg-color);
-    overflow-y: auto;
-    height: 100vh;
-}
-
-#contents > p:first-child {
-    text-decoration: underline;
-    font-weight: bold;
-}
-
-#contents a { text-decoration: none; color: var(--toc-text-color); }
-#contents a:hover { color: var(--toc-hover-color); }
-
-.shown {
-    left: 0 !important; /* couldn't be bothered to fix this priority issue
-                           cause i really needed to take a dump */
-}
-
-#show-toc {
-    position: absolute;
-    top: 0;
-    left: 100%;
-    background-color: var(--toc-bg-color);
-    border: none;
-    font-size: 12pt;
-    font-family: inherit;
-    width: 7em;
-    padding: 0.5em;
-    color: var(--toc-text-color);
-}
-
 /* imgview stuff */
 #img-view {
     position: fixed;
@@ -288,7 +241,7 @@ nav {
 
 img {cursor: pointer;}
 
-.katex { font-size: 1.15em; }
+.katex { font-size: 1.2em; }
 
 kbd {
     background-color: #eee;
@@ -316,32 +269,6 @@ canvas { max-width: 100%; }
     max-width: 560px;
     display: block;
     margin: 1em auto;
-}
-
-/* ----- SERIF MODE ----- */
-.serif body {
-    font-family: "Source Serif Pro", serif;
-    font-size: 14pt;
-}
-
-.serif p, li {
-    line-height: 1.5em;
-}
-
-.serif .date {
-    font-size: 12pt;
-}
-
-.serif h1 {
-    font-size: 1.7em;
-}
-
-.serif h1 {
-    margin-top: 1.0em;
-}
-
-.serif code {
-    font-size: 13pt;
 }
 
 /* ----- COLOR SCHEMES ----- */
@@ -379,14 +306,4 @@ html {
 
 .darkmode canvas {
     filter: invert(1);
-}
-
-.serif {
-    --text-color: #131313;
-    --link-color: #131313;
-}
-
-.serif.darkmode {
-    --text-color: #ffffff;
-    --link-color: #ffffff;
 }

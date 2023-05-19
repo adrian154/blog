@@ -29,5 +29,6 @@ const generateIndexes = () => {
 
 // render blogposts
 blogposts.forEach(post => renderPost(post, process.argv.includes("force")));
+generateIndexes();
 
 module.exports = {renderPost, generateIndexes};

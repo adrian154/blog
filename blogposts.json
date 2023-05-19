@@ -21,12 +21,13 @@
         "title": "I Hate MyLab Math",
         "timestamp": 1675745576931,
         "description": "It hates me right back.",
-        "document": true
+        "publish": true
     },
     {
         "id": "gaussian-integral",
         "title": "The Gaussian Integral",
-        "document": true
+        "publish": true,
+        "timestamp": 1673823000000
     },
     {
         "id": "rubiks",
@@ -42,7 +43,7 @@
         "id": "something-meaningful",
         "title": "Something Meaningful to Me",
         "timestamp": 1672967406350,
-        "document": true
+        "publish": true
     },
     {
         "id": "2022-reflection",
@@ -74,7 +75,7 @@
     {
         "id": "nginx-sqlite-log",
         "title": "Logging Requests with SQLite and Nginx",
-        "description": "A guide on how to configure Nginx to store requests in an SQLite table.",
+        "description": "An experiment in configuring Nginx to store requests in an SQLite table.",
         "timestamp": 1661106917570,
         "publish": true
     },  

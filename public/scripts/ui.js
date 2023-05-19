@@ -1,13 +1,5 @@
 (() => {
 
-    // toc show/hide
-    const contents = document.querySelector("nav");
-    if(contents) {
-        const button = document.getElementById("show-toc");
-        button.addEventListener("click", () => contents.classList.toggle("shown"));
-        button.addEventListener("focusout", () => contents.classList.remove("shown"));
-    }
-
     // click image to preview
     const imgView = document.getElementById("img-view");
     if(imgView) {
@@ -27,8 +19,17 @@
 
     }
 
-    const addToggle = name => document.getElementById("toggle-" + name)?.addEventListener("click", () => localStorage.setItem(name, document.documentElement.classList.toggle(name)));
-    addToggle("serif");
-    addToggle("darkmode");
-    
+    // homepage
+    const title = document.getElementById("title");
+    if(title) {
+        let state = false;
+        setInterval(() => {
+            if(state = !state) {
+                title.textContent = "blog@bithole.dev:~$";
+            } else {
+                title.textContent = "blog@bithole.dev:~$ \u2588";
+            }
+        }, 500);
+    }
+
 })();
