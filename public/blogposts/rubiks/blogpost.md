@@ -7,20 +7,18 @@ Before we even start concerning ourselves with solving the cube, let's take it a
     <figcaption>For those interested, the pictured cube is a MoYu RS3 M 2021.</figcaption>
 </figure>
 
-Upon disassembling the cube, we see that it is *not* composed of smaller cubes. Rather, it is made up of edge pieces and corner pieces, rotating around a fixed skeleton (to which the immobile center pieces are attached). Broadly speaking, our goal becomes to put each piece on the 
+Upon disassembling the cube, we see that it is *not* composed of smaller cubes. Rather, it is made up of edge pieces and corner pieces ("cubies"), rotating around a fixed skeleton to which the immobile center pieces are attached. Broadly speaking, our goal becomes to put each piece on the 
 correct position and facing the correct direction.
 
 ## A Quick Guide to Notation
 
 For those not familiar, the notation used by cubers to express moves on the cube is quite simple. Each move consists of a letter representing the face being turned (**U**p, **D**own, **L**eft, **R**ight, **F**ront, or **B**ack).
 
-After this letter, there *may* be a symbol indicating how much to turn. An unembellished letter is taken to mean a clockwise 90&deg; turn, while a "2" indicates a 180&deg; turn. Finally, an apostrophe (read as "prime", a convention taken from mathematics) signifies a counterclockwise 90&deg; turn.
+After this letter, there may be a symbol indicating how much to turn. An unembellished letter is taken to mean a clockwise 90&deg; turn, a "2" indicates a 180&deg; turn, and an apostrophe (read as "prime", a convention taken from mathematics) signifies a counterclockwise 90&deg; turn.
 
 # Thinking with Cubies
 
-*The moving pieces that comprise a Rubik's cube are referred to as "cubies" in the literature.*
-
-Now that we have some insight on the inner workings of the cube, we can start building an abstract representation of the puzzle that our solver can work with. We can store the position of each corner/edge cubie using arrays of length 8 and 12, respectively. However, the cubies can also be in different orientations, which we must keep track of. This requires us to establish some conventions.
+Now that we have some insight on the inner workings of the cube, we can start building an abstract representation of the puzzle that our solver can work with. We can store the position of each corner/edge cubie as an integer in an array. However, the cubies can also be in different orientations, which we must keep track of. This requires us to establish some conventions.
 
 ## Corner Orientation
 
@@ -36,7 +34,7 @@ If you find this explanation confusing, I encourage you to check out JPerm's [ZZ
 
 </aside>
 
-If you are an intermediate speedcuber, you likely already have some degree of familiarity with the concept of edge orientation, because EO has some implications for speedsolving. Specifically, an oriented edge can be solved (put into the correct position with the correct orientation) using only the moves $\braket{L, R, U, D, F^2, B^2}$. This property is quite useful because it allows many parts of the solve to be completed without rotations of the entire cube, making the ability to recognize and control edge orientation invaluable for speedcubers.
+If you are an intermediate speedcuber, you likely already have some degree of familiarity with the concept of edge orientation, because it has some implications for speedsolving. Specifically, an oriented edge can be solved (put into the correct position with the correct orientation) using only the moves $\braket{L, R, U, D, F^2, B^2}$. This property is quite useful because it allows many parts of the solve to be completed without rotations of the entire cube, making the ability to recognize and control edge orientation invaluable for speedcubers.
 
 Using this information, we can create a structure to represent a cube.
 

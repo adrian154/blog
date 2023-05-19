@@ -6,7 +6,7 @@
 };
 
 loadSetting("serif");
-loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/exfat-asm"></head><body><header><div id="header-inner"><h1 style="margin-top: 0">Reading ExFAT Volumes in Assembly</h1><p id="more-posts"><a href="/">more posts</a></p></div></header><main><p>About once a year, I&#39;m able to find the motivation to work on my <a href="https://github.com/adrian154/blueberry">OSDev project</a>. I&#39;ve been in need of some distraction recently, so now seems like a fitting time to try my hand at writing a bare-bones exFAT driver in assembly.</p>
+loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/exfat-asm"></head><body><header><p><a id="home-link" href="/">« more posts</a></p><h1 id="post-title">Reading ExFAT Volumes in Assembly</h1></header><main><p>About once a year, I&#39;m able to find the motivation to work on my <a href="https://github.com/adrian154/blueberry">OSDev project</a>. I&#39;ve been in need of some distraction recently, so now seems like a fitting time to try my hand at writing a bare-bones exFAT driver in assembly.</p>
 <p>The ultimate goal is to launch the kernel from a file on an exFAT-formatted partition. In order to accomplish this, a few things are necessary:</p>
 <ul>
 <li>Locate the partition</li>
