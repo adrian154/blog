@@ -20,13 +20,13 @@ main {
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background-color: #666;
+    background-color: #575757;
     content: "";
 }
 
 .timeline-element {
     position: relative;
-    border-left: 3px solid #999;
+    border-left: 3px solid #b2b2b2;
 }
 
 article {
