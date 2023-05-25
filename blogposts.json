@@ -1,5 +1,12 @@
 [
     {
+        "id": "blue-curtains",
+        "title": "The Parable of the Blue Curtains",
+        "description": "Thoughts on how literary analysis is taught.",
+        "timestamp": 1685006388909,
+        "publish": true
+    },
+    {
         "id": "badge",
         "title": "WIP"
     },
