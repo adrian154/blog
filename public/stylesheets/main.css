@@ -4,7 +4,9 @@ html {
 
 body {
 
-    margin: 0;
+    max-width: 33em;
+    margin: auto;
+    padding: 1em;
 
     background-color: var(--main-background-color);
     color: var(--text-color);
@@ -15,46 +17,6 @@ body {
 
     transition: background-color 0.3s;
 
-}
-
-header {
-    background-color: var(--header-bg-color);
-    color: var(--header-color);
-}
-
-#more-posts {
-    text-align: right;
-    margin-bottom: 0;
-    opacity: 50%;
-}
-
-#more-posts a { color: var(--header-color); }
-
-header a:hover {
-    text-decoration: underline;
-}
-
-#header-inner {
-    padding: 2em 1em;
-    padding-bottom: 1em;
-    margin: auto;
-}
-
-#header-inner h1 {
-    border-bottom: none;
-    font-size: 3em;
-    margin: 0;
-    padding: 0;
-}
-
-#header-inner, main, footer {
-    max-width: 35rem;
-}
-
-main {
-    margin: auto;
-    padding: 1em;
-    padding-bottom: 0;
 }
 
 p, li {
@@ -72,6 +34,14 @@ h2, h3, h4, h5, h6 {
 h1 {
     padding-bottom: 0.2em;
     border-bottom: 1px solid var(--header-border-color);
+}
+
+#post-title {
+    margin-bottom:  0;
+}
+
+#home-link {
+    opacity: 50%;
 }
 
 table {
@@ -133,9 +103,8 @@ footer p {
 
 .date {
     opacity: 50%;
-    font-size: 10pt;
-    margin-top: 2.0em;
-    margin-bottom: 0;
+    font-size: 11pt;
+    margin: 0.4em 0;
 }
 
 blockquote {
@@ -167,7 +136,7 @@ aside.warning {
 }
 
 code {
-    font-size: 12pt;
+    font-size: 14px;
 }
 
 button {
@@ -291,19 +260,21 @@ html {
     --header-color: #ffffff;
 }
 
-.darkmode {
-    color-scheme: dark;
-    --main-background-color: #18191E;
-    --text-color: #ffffff;
-    --header-border-color: #555555;
-    --table-header-border-color: #ffffff;
-    --table-cell-border-color: #555555;
-    --link-color: #ffffff;
-    --link-hover-color: #bbbbbb;
-    --toc-bg-color: #333333;
-    --header-bg-color: #282b33;
-}
+@media (prefers-color-scheme: dark) {
+    html {
+        color-scheme: dark;
+        --main-background-color: #212121;
+        --text-color: #ffffff;
+        --header-border-color: #555555;
+        --table-header-border-color: #ffffff;
+        --table-cell-border-color: #555555;
+        --link-color: #ffffff;
+        --link-hover-color: #bbbbbb;
+        --toc-bg-color: #333333;
+        --header-bg-color: #282b33;
+    }
 
-.darkmode canvas {
-    filter: invert(1);
+    canvas {
+        filter: invert(1);
+    }
 }

@@ -12,7 +12,7 @@
 .packet-hex, .preview {
     font-family: monospace;
     line-height: 1.9em;
-    font-size: 11pt;
+    font-size: 14px;
 }
 
 .hex-segment {
