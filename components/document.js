@@ -1,5 +1,5 @@
-const { html, head, meta, title, link, p, body, a, script, footer, raw} = require("html-generator");
-const { stylesheet } = require("./helpers");
+const { html, head, meta, title, link, p, body, a, script, footer, raw } = require("html-generator");
+const { stylesheet, optional } = require("./helpers");
 const fs = require("fs");
 
 const APPLY_SETTINGS_CODE = fs.readFileSync("public/scripts/apply-settings-stub.js", "utf-8");
@@ -37,16 +37,17 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
     ),
     body(
         ...content,
-        footer(p(
-            raw("&copy; 2022 "),
-            a({href: "https://bithole.dev/"}, "Adrian Zhang"),
-            raw(" &bull; "),
-            a({href: "/rss.xml"}, "rss"),
-            raw(" &bull; "),
-            a({href: properties.githubLink || "https://github.com/adrian154/blog"}, "source"),
-            raw(" &bull; "),
-            a({href: "https://creativecommons.org/licenses/by-sa/3.0/legalcode"},
-            "CC BY-SA 3.0"
-        )))
+        optional(!properties.bodyOnly, 
+            footer(p(
+                raw("&copy; 2022 "),
+                a({href: "https://bithole.dev/"}, "Adrian Zhang"),
+                raw(" &bull; "),
+                a({href: "/rss.xml"}, "rss"),
+                raw(" &bull; "),
+                a({href: properties.githubLink || "https://github.com/adrian154/blog"}, "source"),
+                raw(" &bull; "),
+                a({href: "https://creativecommons.org/licenses/by-sa/3.0/legalcode"}, "CC BY-SA 3.0")
+            ))
+        )
     )
 ).html;

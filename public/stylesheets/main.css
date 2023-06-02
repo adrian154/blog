@@ -278,3 +278,9 @@ html {
         filter: invert(1);
     }
 }
+
+@media print {
+    body {
+        max-width: 100%;
+    }
+}

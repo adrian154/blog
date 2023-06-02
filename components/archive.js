@@ -11,8 +11,6 @@ module.exports = blogposts => "<!DOCTYPE html>" + html(
         h1("Published"),
         ul(...blogposts.filter(blogpost => blogpost.publish).map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title), " ", `(${format.format(new Date(blogpost.timestamp))})`))),
         h1("Not Published"),
-        ul(...blogposts.filter(blogpost => !blogpost.publish && !blogpost.document).map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title)))),
-        h1("Documents"),
-        ul(...blogposts.filter(blogpost => blogpost.document).map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title)))),
+        ul(...blogposts.filter(blogpost => !blogpost.publish).map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title)))),
     )
 ).html;
