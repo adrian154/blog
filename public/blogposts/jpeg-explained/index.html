@@ -16,11 +16,11 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <h1 id="chroma-subsampling">Chroma Subsampling <a class="section-link" href="#chroma-subsampling">&sect;</a></h1><p>The first trick that JPEG employs to remove unnecessary information is a technique called <strong>chroma subsampling</strong>. This step exploits the fact that our eyes are much more sensitive to changes in brightness than changes in color. After all, our eyes have about 100 million brightness-sensitive rod cells versus just 5 million color-sensitive cones. Thus, we can store the color info in the image at a lower resolution without losing too much quality.</p>
 <p>In order to chroma subsample, we must first separate the color of a pixel from its brightness. JPEG accomplishes this by converting images to a color space called <a href="https://en.wikipedia.org/wiki/YCbCr">YCbCr</a>. Like RGB, YCbCr pixels also consist of three values; however, the meaning of the values are different. <strong>Y</strong> is the luminance (brightness) of the pixel, and <strong>Cb</strong> and <strong>Cr</strong> together represent the color of the pixel without any luminance info.</p>
 <p>But how is RGB mapped to YCbCr? In my opinion, the relationship between the two color spaces is best explained visually. Imagine a coordinate space where the <em>x</em>, <em>y</em>, and <em>z</em> axes represented R, G, and B, respectively. This would form a cube containing all possible RGB colors.</p>
-<p><video class="center" loop controls autoplay><source src="rgb-cube-animation.mp4" type="video/mp4"></video></p>
+<p><video class="center" loop muted autoplay><source src="rgb-cube-animation.mp4" type="video/mp4"></video></p>
 <p>This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. One can imagine a coordinate system where we align the cube such that the luminance component (Y) extends along this line. We can then extract a slice of the cube for any given luminance, and assign the remaining two degrees of freedom to Cb and Cr.</p>
 <p>This is essentially how YCbCr works, except the RGB cube is slightly deformed in order to fit all the values into a range of [0, 1]. Here&#39;s a demo that shows the Cb-Cr planes as we adjust Y. </p>
 <figure style="max-width: 480px">
-    <video loop controls autoplay><source src="ycbcr-slices.mp4" type="video/mp4"></video>
+    <video loop muted autoplay><source src="ycbcr-slices.mp4" type="video/mp4"></video>
     <figcaption>No, that Y is definitely not backwards.</figcaption>
 </figure>
 
