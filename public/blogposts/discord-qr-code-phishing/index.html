@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Discord QR Code Phishing</title><meta property="og:title" content="Discord QR Code Phishing"><meta property="og:type" content="website"><meta property="og:description" content="How your friends are getting pwned by Discord's terrible QR code login."><meta name="description" content="How your friends are getting pwned by Discord's terrible QR code login."><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><script>const loadSetting = name => {
+<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Discord QR Code Phishing</title><meta property="og:title" content="Discord QR Code Phishing"><meta property="og:type" content="website"><meta property="og:description" content="Learn to recognize a common Discord scam"><meta name="description" content="Learn to recognize a common Discord scam"><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><script>const loadSetting = name => {
     if(localStorage.getItem(name) === "true")
         document.documentElement.classList.add(name);
     else
@@ -6,7 +6,7 @@
 };
 
 loadSetting("serif");
-loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/discord-qr-code-phishing"></head><body><header><p><a id="home-link" href="/">« more posts</a></p><h1 id="post-title">Discord QR Code Phishing</h1><p class="date">Published May 9, 2022</p></header><main><p>Here&#39;s a guide on how to recognize the Discord QR code scam, which is probably the #1 way accounts get compromised nowadays.</p>
+loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/discord-qr-code-phishing"></head><body><header><p><a id="home-link" href="/">« more posts</a></p><h1 id="post-title">Discord QR Code Phishing</h1><p class="date">Published May 9, 2022</p></header><main><p>Here&#39;s a guide on how to recognize the Discord QR code scam, which is a common vector through which accounts are compromised.</p>
 <p>It usually starts with a friend DMing you a server invite unprompted.</p>
 <p><img loading="lazy" src="initial.png" alt="initial message"></p>
 <p>So you join the server, and you&#39;re greeted with a request for verification:</p>
@@ -17,9 +17,9 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <li>This attack <strong>bypasses 2FA</strong>.</li>
 <li>Even though the QR code points to an official discord.com URL, you will still be hacked!</li>
 </ul>
-<h1 id="why-does-this-work">Why does this work? <a class="section-link" href="#why-does-this-work">&sect;</a></h1><p>Some time ago, Discord introduced a feature that streamlines signing in on a new device. Essentially, when you go to sign in, a QR code is generated:</p>
+<h1 id="how-does-it-work">How does it work? <a class="section-link" href="#how-does-it-work">&sect;</a></h1><p>Some time ago, Discord introduced a feature that enables you to quickly sign in by scanning a QR code from a device where you&#39;re already signed in.</p>
 <p><img loading="lazy" src="signin-example.png" alt="signin screen"></p>
-<p>When you scan the QR code using a device where you&#39;re already signed into Discord, you&#39;re prompted over whether you want to log in.</p>
+<p>After scanning the code, you&#39;re prompted over whether you want to log in.</p>
 <img loading="lazy" style="max-width: 300px" src="phone-prompt.png" alt="phone prompt screen">
 
 <p>If you tap &quot;Yes, log me in&quot;, this triggers an authenticated request to Discord&#39;s servers, which then signs you in wherever the QR code was first generated. As you can see, this system is ripe for abuse when combined with a little bit of social engineering. If you are unlucky enough to sign in without heeding Discord&#39;s warning, this is what you&#39;re greeted with:</p>
@@ -31,4 +31,5 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <li>If a friend randomly sends you a server invite, don&#39;t join it! It&#39;s probably a scam&mdash;confirm that they still have control over the account first.</li>
 <li>Heed the warning given by the Discord app carefully. Never, ever click the &quot;Yes, log me in&quot; button unless the QR code you scanned came from the sign in page.</li>
 </ul>
+<p>For more information on attacks of this type, check out OWASP&#39;s page on <a href="https://owasp.org/www-community/attacks/Qrljacking">QRLJacking</a>.</p>
 <img id="img-view" style="display: none"><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" label="blog-post-comments" theme="preferred-color-scheme" issue-number="9"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="/rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog/tree/main/public/blogposts/discord-qr-code-phishing">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>

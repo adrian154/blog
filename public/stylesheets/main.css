@@ -111,7 +111,7 @@ blockquote {
     border-left: 3px solid #ccc;
     opacity: 60%;
     padding: 0.1em 1.2em;
-    margin: 0;
+    margin: 1em 0;
 }
 
 a {
@@ -209,8 +209,6 @@ button {
 }
 
 img {cursor: pointer;}
-
-.katex { font-size: 1.2em; }
 
 kbd {
     background-color: #eee;

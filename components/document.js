@@ -31,7 +31,7 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
         script({defer: null, src: "/scripts/ui.js"}),
 
         // misc.
-        link({rel: "icon", type: "image/png", sizes: "16x16", href: "/images/favicon.png"}),
+        link({rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon.png"}),
         properties.canonicalURL && link({rel: "canonical", href: properties.canonicalURL})
     
     ),

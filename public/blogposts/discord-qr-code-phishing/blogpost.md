@@ -1,4 +1,4 @@
-Here's a guide on how to recognize the Discord QR code scam, which is probably the #1 way accounts get compromised nowadays.
+Here's a guide on how to recognize the Discord QR code scam, which is a common vector through which accounts are compromised.
 
 It usually starts with a friend DMing you a server invite unprompted.
 
@@ -14,13 +14,13 @@ Some things to note:
 - This attack **bypasses 2FA**.
 - Even though the QR code points to an official discord.com URL, you will still be hacked!
 
-# Why does this work?
+# How does it work?
 
-Some time ago, Discord introduced a feature that streamlines signing in on a new device. Essentially, when you go to sign in, a QR code is generated:
+Some time ago, Discord introduced a feature that enables you to quickly sign in by scanning a QR code from a device where you're already signed in.
 
 ![signin screen](signin-example.png)
 
-When you scan the QR code using a device where you're already signed into Discord, you're prompted over whether you want to log in.
+After scanning the code, you're prompted over whether you want to log in.
 
 <img style="max-width: 300px" src="phone-prompt.png" alt="phone prompt screen">
 
@@ -38,3 +38,5 @@ And soon afterwards&hellip;
 
 - If a friend randomly sends you a server invite, don't join it! It's probably a scam&mdash;confirm that they still have control over the account first.
 - Heed the warning given by the Discord app carefully. Never, ever click the "Yes, log me in" button unless the QR code you scanned came from the sign in page.
+
+For more information on attacks of this type, check out OWASP's page on [QRLJacking](https://owasp.org/www-community/attacks/Qrljacking).
