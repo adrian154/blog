@@ -1,25 +1,25 @@
-For most people, solving a Rubik's cube alone is a virtually impossible task. That's hardly surprising&mdash;the humble puzzle can exist in over 43 quintillion states (an order of magnitude greater than the number of grains of sand on Earth!). Yet in just a few hours, you can train yourself to solve *every one* of those configurations using some basic intuition and a little bit of memorization. From here, the challenge becomes solving the cube quickly. 
+For most people, solving a Rubik's cube alone is a virtually impossible task. That's hardly surprising&mdash;the humble puzzle can exist in over 43 quintillion states (an order of magnitude greater than the number of grains of sand on Earth!). Yet in just a few hours, you can train yourself to solve *every one* of those configurations using some basic intuition and a little bit of memorization. A few more days of practice, and you might find yourself consistently solving the cube in under a minute.
 
-However, there is an even greater challenge than solving the cube in the shortest time: finding an **optimal** solution, i.e. the shortest sequence of moves that will solve the cube. This feat is essentially impossible for us mere mortals; we'll have to turn to computers if we want to solve this problem.
+However, there is an even greater challenge than solving the cube quickly: solving it using the fewest moves possible. Our ultimate goal is to identify the shortest solution possible, a feat that is virtually impossible for us mere mortals. We'll have to turn to computers if we want to solve this problem.
 
-Before we even start concerning ourselves with solving the cube, let's take it apart to get an idea of how it *really* works.
+Before we start worrying about how to solve the cube, let's take a moment to get acquainted with its mechanical inner workings.
 
 <figure style="max-width: 1080px">
     <img src="disassembled.jpg" alt="partially disassembled cube">
-    <figcaption>Disassembled MoYu RS3 M 2021</figcaption>
+    <figcaption>A disassembled MoYu RS3 M 2021</figcaption>
 </figure>
 
-Upon disassembling the cube, we see that it is *not* composed of smaller cubes. Rather, it is made up of edge pieces and corner pieces, rotating around a fixed skeleton to which the immobile center pieces are attached. Broadly speaking, our goal is to put each piece (or "cubie", in cuber notation) on the correct position and in the correct orientation.
+Upon disassembling the cube, we see that it is *not* composed of smaller cubes. Rather, at its core lies an immobile plastic skeleton to which the center pieces are attached. The centers are restricted to rotating in place, meaning that the position of the centers relative to each other never changes. Around the center are eight corner and twelve edge pieces (or "cubies", in cuber lingo). We will primarily be focused on the position and orientation of these mobile cubies.
 
 ## A Quick Guide to Notation
 
-For those not familiar, the notation used by cubers to express moves on the cube is quite simple. Each move consists of a letter representing the face being turned (**U**p, **D**own, **L**eft, **R**ight, **F**ront, or **B**ack).
+For those not familiar, the notation used by cubers to describe moves of the cube is quite simple. Each move consists of a letter representing the face being turned (**U**p, **D**own, **L**eft, **R**ight, **F**ront, or **B**ack).
 
-After this letter, there may be a symbol indicating how much to turn. An unembellished letter is taken to mean a clockwise 90&deg; turn, a "2" indicates a 180&deg; turn, and an apostrophe (read as "prime", a convention taken from mathematics) signifies a counterclockwise 90&deg; turn.
+After this letter, there may be a symbol indicating the degree of the turn. An unembellished letter is taken to mean a clockwise 90&deg; turn, a "2" indicates a 180&deg; turn, and an apostrophe (read as "prime", a convention taken from mathematics) signifies a counterclockwise 90&deg; turn.
 
 # Thinking with Cubies
 
-Now that we have some insight on the inner workings of the cube, we can start building an abstract representation of the puzzle that our solver can work with.  We can use an array of size 8 to record which corner piece occupies which corner slot, and do the same for the 12 edges. However, the cubies can also be in different orientations, which we must keep track of. This requires us to establish some conventions.
+Now that we have some insight on the inner workings of the cube, we can start building an abstract representation of the puzzle that our solver can work with. The position of the cubies can be easily tracked using arrays of size 8/12 to record which piece is occupying which slot. However, the cubies can also be in different orientations, which we must also keep track of. This requires us to establish some conventions.
 
 ## Corner Orientation
 
@@ -29,7 +29,7 @@ Each corner has three possible orientations. We call the default orientation the
 
 That' fine and dandy if all we're doing is twisting a corner in place, but actual moves also change the position of the pieces. How do we define a corner's orientation when it's not in its original spot?
 
-The key observation is that a corner cubie will always be in either the top (white) or the bottom (yellow) layer. If it's in its original layer, nothing changes; U and D moves don't affect corner orientation. If it's in the opposite layer, we pretend that the white sticker is yellow (or vice versa). Therefore, if the white sticker is facing down, the corner orientation is $0$. Thus, double moves do not affect corner orientation.
+The key observation is that a corner cubie will always be in either the top (white) or the bottom (yellow) layer. If it's in its original layer, nothing changes. If it's in the opposite layer, we pretend that the white sticker is yellow (or vice versa). Therefore, if the white sticker is facing down, the corner orientation is $0$. Thus, U/D moves and double moves do not affect corner orientation.
 
 ## Edge Orientation
 
@@ -58,44 +58,44 @@ We can also calculate the number of possible cubes:
 
 $$\underbrace{12! \times 2^{12}}_\text{edges} \times \underbrace{8! \times 3^8}_\text{corners} = 519,024,039,293,878,272,000$$
 
-*Wait a minute*, you might be asking. This result is clearly bigger than the 43 quintillion figure cited earlier. What gives? The answer is that not every combination of pieces can be solved. To understand these conditions, it helps to  know a little bit about abstract algebra.
+*Wait a minute*, you might be asking. This result is clearly bigger than the 43 quintillion figure cited earlier. What gives? The answer is that not every combination of pieces can be solved. Let's examine the conditions that determine whether a position can be solved.
 
 # Permutations
 
-For a second, let's ignore orientation and think only about permutation. In mathematics, a permutation is an ordered list of elements so that each element only appears once. Ignoring cubies for a moment, we can think of the 48 stickers on the surface of the Rubik's cube as members of a permutation.
+In mathematics, a permutation is an ordered list of elements so that each element only appears once. Ignoring cubies for a moment, we can think of the 48 stickers on the surface of the Rubik's cube as members of a permutation.
 
-How do we actually realize the notion of a permutation using just sets? For this, we treat permutations as functions. Suppose $S$ is the set of all elements contained in our permutation. A permutation would then be a bijection of $S$, or a function that maps members of $S$ onto $S$ so that
+How do we actually realize the notion of a permutation? We can accomplish this by treating permutations as functions. Suppose $S$ is the set of all elements contained in our permutation. A permutation would then be a bijection of $S$, or a function that maps every member of $S$ onto another member of $S$ so that
 
 * no two inputs map to the same output, and
-* no two outputs map to the same input (each input only maps to one output).
+* no two outputs map to the same input (each input only maps to one output)
 
 For example, the permutation $(3\;1\;2)$ can be written as a function $f$ where $f(1) = 3$, $f(2) = 1$, and $f(3) = 2$.
 
 ![bijection](bijection.png)
 
-Since permutations are just functions, they can be composed. The result is a bijection of $S \rightarrow S$, which is just another permutation. You can think of applying a move to the cube as composing the cube's permutation with another permutation (the move).
+Since permutations are just functions, they can be composed. The result is another bijection of $S \rightarrow S$, or another permutation. We can model applying a move to a cube as composing the permutation of the cube with the permutation of the move.
 
-If we consider the set of all permutations of $n$ objects, which we will call $G$, we notice that it has some interesting properties:
+Let's look at the set of all permutations with $n$ objects, which we'll call $G$. This set has some special properties:
 
-* Composing two elements of $G$ always yields another element of $G$. Furthermore, this operation is associative, or $a \cdot (b \cdot c) = (a \cdot b) \cdot c$ (since function composition is always associative).
-* There exists an element $e$ in $G$ so that, for every $x$ in $G$, $x \cdot e = e \cdot x = x$. We call this the identity element. If the elements of the permutation are the integers $1$ to $n$, this is the permutation $(1\;2\;3\;\ldots\;n)$.
-* For every $x$ in $G$, there is some element $x^{-1}$ (the inverse) so that $x \cdot x^{-1} = e$.
+* Composing two elements of $G$ always yields another element of $G$. Furthermore, this operation is associative, or $a \cdot (b \cdot c) = (a \cdot b) \cdot c$(since function composition is always associative).
+* There exists an element $e$ in $G$ so that, for every $x$ in $G$, $x \cdot e = e \cdot x = x$. We call this the identity element. For example, if the elements of the permutation are the integers $1$ to $n$, the identity permutation is $(1\;2\;3\;\ldots\;n)$.
+* For every $x$ in $G$, there is some element $x^{-1}$ (the inverse) so that $x \cdot x^{-1} = x^{-1} \cdot x = e$.
 
-Any set and binary operation that fulfill these properties forms a mathematical structure known as a [group](https://en.wikipedia.org/wiki/Group_(mathematics)). Indeed, the set of all Rubik's cube positions forms a group known as the [cube group](https://en.wikipedia.org/wiki/Rubik%27s_Cube_group). The cube group is a subgroup of $S_{48}$, which contains all permutations of size $48$.
+Any set and binary operation that fulfill these properties forms a mathematical structure known as a [group](https://en.wikipedia.org/wiki/Group_(mathematics)). Indeed, the set of all Rubik's cube positions forms a group known as the [cube group](https://en.wikipedia.org/wiki/Rubik%27s_Cube_group). The identity element is the solved cube, and any member of the cube group can be written as the product of the elements $\{U, D, L, R, B, F\}$ representing the six basic moves. The cube group is a subgroup of symmetric group $\mathrm{S}_{48}$, which contains all permutations of size $48$.
 
 <aside>
 
-[Cayley's theorem](https://en.wikipedia.org/wiki/Cayley%27s_theorem) states that *any* group is isomorphic to a subgroup of a permutation group. This isn't really important to know for our application, though.
+[Cayley's theorem](https://en.wikipedia.org/wiki/Cayley%27s_theorem) states that *any* group is isomorphic to a subgroup of a permutation group. This isn't really important to know for our application, but I think that it's a pretty cool insight.
 
 </aside>
 
-A permutation where two elements are swapped but all other elements remain the same is known as a **transposition**. Any permutation can be written as the product of a series of transpositions. This gives rise to an interesting result: every permutation can either be written as the product of an even number of transpositions or an odd number of transpositions. We call these permutations *even* and *odd*, respectively, and this quality of a permutation is known as its parity.
+A permutation where two elements are swapped but all other elements remain the same is known as a **transposition**. Any permutation can be written as the product of a series of transpositions. This gives rise to an interesting result: every permutation can either be written as the product of an even number of transpositions or an odd number of transpositions. We call these permutations *even* and *odd*, respectively, and this property of a permutation is known as its parity.
 
-From this, it follows that the product of two even permutations is always even. This, combined with the fact that the cube's initial parity is even (zero transpositions), and each of the basic moves that can be performed on the cube has even parity, means that the overall parity of the cube is always even. It is impossible to turn a position with odd parity into one with even parity by only composing even permutations, hence why half of all permutations are unsolvable.
+The parity of a permutation behaves similarly to the parity of integers. Specifically, the product of two even permutations is always even. We know that the permutation of a solved cube is even, since it is the result of zero transpositions. Furthermore, each of the elementary moves that can be performed on the cube has even parity, meaning that the overall parity of the cube is always even. Thus, a cube with odd parity can never be solved, since it is impossible to turn an odd permutation into an even one by composing even permutations.
 
 <figure style="max-width: 256px">
     <img src="parity.png" alt="unsolvable permutation (two edges swapped)">
-    <figcaption>If we disassemble a cube and swap two edges it will become unsolvable, since the position has odd parity.</figcaption>
+    <figcaption>This position where two edges have been switched is unsolvable, since it has odd parity.</figcaption>
 </figure>
 
 There are further restrictions on which positions are solvable due to piece orientation. For example, we know that quarter turns flip the orientation of every edge involved. Thus, the sum of the edge orientation values of the cube must always be even. Similarly, the overall change in corner orientation due to a move is always a multiple of three, meaning that the total corner orientation is always divisible by three.
@@ -109,7 +109,7 @@ With our newfound knowledge of the laws of the cube, we can rewrite our original
 
 $$\underbrace{\frac12}_\text{parity} \times \underbrace{12! \times 2^{11}}_\text{edges} \times \underbrace{8! \times 3^7}_\text{corners} = 43,252,003,274,489,856,000$$
 
-We know that all positions meeting our criteria can be solved, since we can devise sequences of moves ("algorithms" in cuber lingo) that manipulate portions of the cube while leaving the rest undisturbed. By repeatedly applying these algorithms, solving any state becomes trivial.
+We know that all positions meeting our criteria can be solved, since we can devise sequences of moves ("algorithms" in cuber lingo) that manipulate portions of the cube while leaving the rest undisturbed. By repeatedly applying these algorithms, solving any state becomes trivial, though of course the solution is not optimal.
 
 # The Search Algorithm
 
@@ -121,7 +121,7 @@ The problem is that the number of nodes we need to process grows exponentially w
 
 <aside>
 
-There are some optimizations that marginally reduce the branching factor, as outlined by Richard Korf in his seminal 1997 paper *Finding Optimal Solutions to Rubik's Cube Using Pattern Databases*:
+There are some simple optimizations that marginally reduce the branching factor, as outlined by Richard Korf in his seminal 1997 paper *Finding Optimal Solutions to Rubik's Cube Using Pattern Databases*:
 
 > Since twisting the same face twice in a row is redundant, ruling out such
 moves reduces the branching factor to 15 after the first move. Furthermore, twists of opposite faces of the cube are independent and commutative. For example, twisting the front face, then twisting the back face, leads to
@@ -129,22 +129,22 @@ the same state as performing the same twists in the opposite order. Thus, for ea
 
 </aside>
 
-Breadth-first search has no chance of working, since storing the search frontier in memory would become impossible once we reach around depth 10. (For reference, the median length of the optimal solution for a random position is 18.)
+Breadth-first search has no chance of working, since storing the search frontier in my computer's puny 16 GB of RAM would become infeasible once we reach around depth 10. (For reference, the median length of the optimal solution for a random position is 18.)
 
 The alternative is to use depth-first search. A simple DFS does not work because the tree is infinite, so we must set a depth limit. In order to guarantee optimality, we can start with a depth limit of zero and successively increase the limit until a solution is found. This algorithm is called [iterative deepening depth-first search](https://en.wikipedia.org/wiki/Iterative_deepening_depth-first_search) (IDDFS).
 
-IDDFS still explores every possible state, which is what we want to avoid. What we need is some heuristic which tells us which parts of the tree we don't need to search.
+IDDFS still explores every possible state, which we need to avoid if we want an answer within the next century. What we need is some heuristic that tells us which parts of the tree don't need to be searched.
 
 ## The Art of Pruning
 
 We can augment depth-first search using some function that gives a lower bound on the distance of a position from the solved state. When evaluating a node in our search, if the current search depth plus the value of the heuristic exceeds the depth limit, we know that the optimal solution cannot possibly be contained in a subtree of that node and can skip searching it. This combination of IDDFS and a heuristic is known as [iterative deepening A*](https://en.wikipedia.org/wiki/Iterative_deepening_A*) (IDA*).
 
 
-The heuristic must never overestimate the number of moves it will take to solve a position, or else we may accidentally stop searching a branch that contains a solution. This condition is called admissibility. How do we construct an admissible heuristic?
+The heuristic must never overestimate the number of moves it will take to solve a position, or else we may accidentally stop searching a branch that contains a solution. This condition is called *admissibility*. How do we construct an admissible heuristic?
 
 Ideally, we would have a lookup table that recorded the number of moves required to solve every possible state. However, such a table would be much too large to construct or store. Instead, we can compute the amount of moves necessary to solve *part* of the cube.
 
-For example, let's say we ignored the edges of the cube and focused our attention on the corners, essentially treating the cube as a 2x2x2. The corners can exist in $8! \times 3^7 = 88,179,840$ different configurations; we could run a BFS on the entire problem space in a short amount of time and save the resulting table. Then, during our search, we can look up the number of moves necessary to solve the corners of the state that we are currently considering and use that value as the heuristic. This value is clearly admissible since any solution that solves the cube will also solve the corners, and the values contained within our table are optimal.
+For example, let's say we ignored the edges of the cube and focused our attention on the corners, essentially treating the cube as a 2x2x2. The corners can exist in $8! \times 3^7 = 88,179,840$ different ways; we could explore the entire problem space in a short amount of time, producing a table that tells us the number of moves necessary to solve any configuration of corners. When solving the cube, we can use the value given by the table as our heuristic. This value is clearly admissible since the number of moves needed to solve the corners will always be less than or equal to the number of moves needed to solve the entire cube. 
 
 To accomplish this, we need to figure out a way to map the corner configuration of a cube to a table index. We can break this down into two subproblems:
 
@@ -170,13 +170,13 @@ We call these indexes "coordinates", the term used by most existing cube literat
 
 </aside>
 
-Encoding a permutation as an integer is slightly more challenging. How this can be accomplished is outside the scope of this article, although if you want to learn about the solution, the term you want to Google is [Lehmer code](https://en.wikipedia.org/wiki/Lehmer_code).
+Encoding a permutation as an integer is slightly more challenging. How this can be accomplished is outside the scope of this article, although if you want to learn about the solution, the term you want to Google is [Lehmer code](https://en.wikipedia.org/wiki/Lehmer_code). Ben Botto, who also made an optimal Rubik's cube solver, wrote a delightful [article](https://medium.com/@benjamin.botto/sequentially-indexing-permutations-a-linear-algorithm-for-computing-lexicographic-rank-a22220ffd6e3) going into the details of computing these codes.
 
 To generate the actual pruning table, we just perform a breadth-first search starting from the solved position until the table is full. Since we're operating on coordinates, we don't actually need to use a full cube representation in pruning table construction. Instead, we can construct lookup tables that map coordinates and moves to coordinates directly. This considerably speeds up pruning table generation.
 
 Of course, a pruning table based on the corners alone is too underpowered for our purposes. A table that incorporates more information about the cube's state will produce estimates closer to the true value of the heuristic function, which will enable us to prune more nodes from our search. 
 
-In practice, we quickly run into problems with memory usage. Adding edge orientation info to our table increases its size by 2048&times; to over 180 billion entries, which greatly exceeds the total memory of my computer. We'll need to take measures to reduce redunant information in the table.
+In practice, we quickly run into problems with memory usage. Adding edge orientation info to our table increases its size by 2048&times; to over 180 billion entries, which greatly exceeds the total memory of my computer. We'll need to take measures to shrink its size back down to something that I can feasibly use.
 
 # Symmetry Reduction
 
@@ -184,22 +184,106 @@ Here's a bit of an experiment that you can try if you happen to own two or more 
 
 ![picture of symmetric cubes](symmetry.jpg)
 
-Look carefully, and you'll see that the two cubes have same underlying pattern, but a different color scheme. Since these two symmetry-equivalent cubes can be solved by the same sequence of moves, they could be represented by a single entry in the pruning table.
+Look carefully, and you'll see that the two cubes have same underlying pattern, but a different color scheme. White is replaced with red, green with blue, yellow with orange, and so on. Intuitively, 
+they should be solvable in the same number of moves too, since there is a 1:1 correspondence on moves between the two cubes. Thus, they could be represented by a single entry in the pruning table.
 
-Just how many of these symmetry-equivalent variants exist for a given position? Well, there are 24 different ways we could hold the cube when scrambling, times two because can mirror the scrambling moves, yielding up to 48 symmetry-equivalent siblings. A small portion of positions have fewer than 48 symmetry equivalents because they remain unchanged under reflection/rotation from certain angles. If we only stored one entry for all the symmetry equivalents of a given state, we can effectively decrease the size of our pruning table by ~48&times;.
+Just how many of these symmetry-equivalent variants exist for a given position? Well, there are 24 different ways we could hold the cube when scrambling, times two because can mirror the scrambling moves, yielding up to 48 symmetry-equivalent siblings. A small portion of positions have fewer than 48 symmetry equivalents because they remain unchanged under reflection/rotation from certain angles. If we only stored one entry for all the symmetry equivalents of a given state, we can effectively decrease the size of our pruning table by almost 48&times;.
 
 Let's flesh out the details a little more. Let $A$ be the position represented by the scrambling moves that we applied to the cube earlier. If $S$ is one of the 48 symmetries, the position given by $SAS^{-1}$ will be symmetry-equivalent to $A$. This can be written as $A \sim B$.
 
 Symmetry-equivalence has the following properties:
 
-* Position $A$ is always symmetry-equivalent to itself.
-* If position $A \sim B$, $B \sim A$, since for every symmetry $S$ there exists an inverse symmetry $S^{-1}$.
-* If $A \sim B$ and $B \sim C$, $A \sim C$, since the symmetries are closed under multiplication.
+* **Reflexivity:** Position $A$ is always symmetry-equivalent to itself.
+* **Symmetry:** If position $A \sim B$, $B \sim A$.
+* **Transitivity:** If $A \sim B$ and $B \sim C$, $A \sim C$.
 
-This makes symmetry equivalence an [equivalence relation](https://en.wikipedia.org/wiki/Equivalence_relation), meaning that it partitions the cube group into disjoint sets of symmetry-equivalent cubes. We call these sets **equivalence classes**.
+Because symmetry-equivalence fulfills these three properties, it is an [equivalence relation](https://en.wikipedia.org/wiki/Equivalence_relation), meaning that it partitions the cube group into disjoint sets of symmetry-equivalent cubes. We call these sets **equivalence classes**.
 
-To actually apply 
+There are a number of things we need to do to actually incorporate symmetry into our table construction.
+
+## Reflection
+
+Right now, our corner orientation model is incapable of describing reflection. We need to extend it to support all 48 symmetries. 
+
+First, an interesting insight. The three possible corner orientations ($0$, $1$, and $2$) combined with the operation of addition mod 3 forms a group. We can describe the group operation using a table:
+
+<div class="table-1st-col-border">
+
+| $+$      | $0$ | $1$ | $2$ |
+|----------|-----|-----|-----|
+| $0$      | $0$ | $1$ | $2$ |
+| $1$      | $1$ | $2$ | $0$ |
+| $2$      | $2$ | $0$ | $1$ |
+
+</div>
+
+Such a table is called a [Cayley table](https://en.wikipedia.org/wiki/Cayley_table). The group operation is not necessarily commutative, so the first operand is taken to be the row, while the second represents the column.
+
+In order to handle reflection, we're going to invent three new corner orientations that exist solely in the "mirror world", which we will call $0_R$, $1_R$, and $2_R$. Our addition table now looks like this:
+
+<div class="table-1st-col-border">
+
+| $+$      |  $0$  |  $1$  |  $2$  | $0_R$ | $1_R$ | $2_R$ |
+|----------|-------|-------|-------|-------|-------|-------|
+| $0$      |  $0$  |  $1$  |  $2$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $1$      |  $1$  |  $2$  |  $0$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $2$      |  $2$  |  $0$  |  $1$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $0_R$    |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $1_R$    |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $2_R$    |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+
+</div>
+
+Now, we just need to fill out the rest of the table using some reasoning. For starters, $0$ is the identity element, so we can fill out all operations involving $0$.
+
+<div class="table-1st-col-border">
+
+| $+$      |  $0$  |  $1$  |  $2$  | $0_R$ | $1_R$ | $2_R$ |
+|----------|-------|-------|-------|-------|-------|-------|
+| $0$      |  $0$  |  $1$  |  $2$  |  $\color{blue}0_R$  |  $\color{blue}1_R$  |  $\color{blue}2_R$  |
+| $1$      |  $1$  |  $2$  |  $0$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $2$      |  $2$  |  $0$  |  $1$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $0_R$    |  $\color{blue}0_R$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $1_R$    |  $\color{blue}1_R$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $2_R$    |  $\color{blue}2_R$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+
+</div>
+
+When we reflect a position, we are composing the mirror image of the solved cube with that position. For corners, this amounts to adding the corner orientation to $0_R$.
+
+The main idea is that a regular clockwise twist of a corner is an anticlockwise twist in the mirror world. Thus, an orientation of $0$ is still $0_R$ when mirrored, while $1$ becomes $2_R$ and $2$ becomes $1_R$. We can put these results in the table:
+
+<div class="table-1st-col-border">
+
+| $+$      |  $0$  |  $1$  |  $2$  | $0_R$ | $1_R$ | $2_R$ |
+|----------|-------|-------|-------|-------|-------|-------|
+| $0$      |  $0$  |  $1$  |  $2$  |  $0_R$  |  $1_R$  |  $2_R$  |
+| $1$      |  $1$  |  $2$  |  $0$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $2$      |  $2$  |  $0$  |  $1$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $0_R$    |  $0_R$  |  $\color{blue}2_R$  |  $\color{blue}1_R$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $1_R$    |  $1_R$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+| $2_R$    |  $2_R$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |  $\color{red}?$  |
+
+</div>
+
+You can reason about the rest of the table, but honestly it's easier to use an actual Rubik's cube and mirror. Here's what the full table looks like:
+
+<div class="table-1st-col-border">
+
+| $+$      |  $0$  |  $1$  |  $2$  | $0_R$ | $1_R$ | $2_R$ |
+|----------|-------|-------|-------|-------|-------|-------|
+| $0$      |  $0$  |  $1$  |  $2$  |  $0_R$  |  $1_R$  |  $2_R$  |
+| $1$      |  $1$  |  $2$  |  $0$  |  $1_R$  |  $2_R$  |  $0_R$  |
+| $2$      |  $2$  |  $0$  |  $1$  |  $2_R$  |  $0_R$  |  $1_R$  |
+| $0_R$    |  $0_R$  |  $2_R$  |  $1_R$  |  $0$  |  $2$  |  $1$  |
+| $1_R$    |  $1_R$  |  $0_R$  |  $2_R$  |  $1$  |  $0$  |  $2$  |
+| $2_R$    |  $2_R$  |  $1_R$  |  $0_R$  |  $2$  |  $1$  |  $0$  |
+
+</div>
+
+There's actually a name for this type of group&mdash;$\mathrm{D}_3$, one of the [dihedral groups](https://en.wikipedia.org/wiki/Dihedral_group). Dihedral groups describe the symmetries of a regular polygon under reflection and rotation, so you can probably see how they are readily applicable to our use case.
 
 ## The Inverse
 
-There's one last trick up our sleeve that we can use to further boost our pruning. Suppose $S$ is the sequence of moves that creates some position. We know that there is some sequence of moves $S^{-1}$ such that $S \times S^{-1}$ produces the solved state. Because of this relationship, we call $S^{-1}$ the *inverse* of $S$. These two positions must be at the same distance, but our pruning table might have a greater value for $S^{-1}$ than $S$. Thus, we can look up both positions and take the maximum of both lookups as the value of the heuristic, potentially boosting our pruning.
+There's another trick that we can use to further boost our pruning. Suppose $S$ is the sequence of moves that creates some position. We know that there is some sequence of moves $S^{-1}$ such that $S \times S^{-1}$ produces the solved state. Because of this relationship, we call $S^{-1}$ the *inverse* of $S$. These two positions must be at the same distance, but our pruning table might have a greater value for $S^{-1}$ than $S$. Thus, we can look up both positions and take the maximum of both lookups as the value of the heuristic, potentially boosting our pruning.
+

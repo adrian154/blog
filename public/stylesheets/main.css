@@ -57,6 +57,11 @@ th {
     border-bottom: 1px solid var(--table-header-border-color);
 }
 
+.table-1st-col-border td:first-child,
+.table-1st-col-border th:first-child {
+    border-right: 1px solid var(--table-header-border-color);
+}
+
 tr:not(:last-child) td {
     border-bottom: 1px solid var(--table-cell-border-color);
 }
