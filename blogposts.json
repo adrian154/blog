@@ -1,5 +1,9 @@
 [
     {
+        "id": "renderer",
+        "title": "Coding a Renderer to Recreate a Meme"  
+    },
+    {
         "id": "blue-curtains",
         "title": "The Parable of the Blue Curtains",
         "description": "Thoughts on how literary analysis is taught.",
