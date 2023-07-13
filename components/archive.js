@@ -9,8 +9,12 @@ module.exports = blogposts => "<!DOCTYPE html>" + html(
     ),
     body(
         h1("Published"),
-        ul(...blogposts.filter(blogpost => blogpost.publish).map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title), " ", `(${format.format(new Date(blogpost.timestamp))})`))),
-        h1("Not Published"),
-        ul(...blogposts.filter(blogpost => !blogpost.publish).map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title)))),
+        ul(...blogposts.filter(blogpost => blogpost.status === "published").map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title), " ", `(${format.format(new Date(blogpost.timestamp))})`))),
+        h1("WIP"),
+        ul(...blogposts.filter(blogpost => blogpost.status === "wip").map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title)))),
+        h1("Hidden"),
+        ul(...blogposts.filter(blogpost => blogpost.status === "hidden").map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title)))),
+        h1("Pages"),
+        ul(...blogposts.filter(blogpost => blogpost.status === "page").map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title))))
     )
 ).html;

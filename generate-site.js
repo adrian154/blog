@@ -21,7 +21,7 @@ const renderPost = (post, force) => {
 };
 
 const generateIndexes = () => {
-    const published = blogposts.filter(post => post.publish).sort((a, b) => b.timestamp - a.timestamp);
+    const published = blogposts.filter(post => post.status === "published").sort((a, b) => b.timestamp - a.timestamp);
     fs.writeFileSync("public/index.html", indexTemplate(published), "utf-8");
     fs.writeFileSync("public/rss.xml", rssFeedTemplate(published), "utf-8");
     fs.writeFileSync("public/archive.html", archiveTemplate(blogposts), "utf-8");

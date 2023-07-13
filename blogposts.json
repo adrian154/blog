@@ -1,63 +1,77 @@
 [
     {
+        "id": "gfw",
+        "title": "Scaling the Great Firewall",
+        "status": "wip"
+    },
+    {
         "id": "renderer",
-        "title": "Coding a Renderer to Recreate a Meme"  
+        "title": "Coding a Renderer to Recreate a Meme",
+        "status": "wip" 
     },
     {
         "id": "blue-curtains",
         "title": "The Parable of the Blue Curtains",
         "description": "Thoughts on how literary analysis is taught.",
-        "timestamp": 1685006388909
+        "timestamp": 1685006388909,
+        "status": "hidden"
     },
     {
         "id": "badge",
-        "title": "WIP"
+        "title": "Badge",
+        "status": "wip"
     },
     {
         "id": "tuning",
         "title": "The Trouble with Tuning Systems",
         "description": "Exploring the mathematical conundrum behind harmony.",
         "timestamp": 1681970192244,
-        "publish": true,
+        "status": "published",
         "interactive": true
     },
     {
         "id": "astro",
         "title": "The Science of Processing Astrophotos",
-        "description": "Dipping our toes in the theory behind pretty space pictures"
+        "description": "Dipping our toes in the theory behind pretty space pictures",
+        "status": "wip"
     },
     {
         "id": "i-hate-mylabmath",
         "title": "I Hate MyLab Math",
         "timestamp": 1675745576931,
-        "description": "It hates me right back."
+        "description": "It hates me right back.",
+        "status": "hidden"
     },
     {
         "id": "gaussian-integral",
         "title": "The Gaussian Integral",
-        "timestamp": 1673823000000
+        "timestamp": 1673823000000,
+        "status": "hidden"
     },
     {
         "id": "rubiks",
-        "title": "Optimally Solving Rubik's Cube"
+        "title": "Optimally Solving Rubik's Cube",
+        "status": "wip"
     },  
     {
         "id": "mc-masscan-2023",
         "title": "Minecraft/Masscan Clarification",
         "timestamp": 1673492449673,
-        "description": "Was your Minecraft server recently joined by a user named \"masscan\", bringing you to my blog? It's not me!"
+        "description": "Was your Minecraft server recently joined by a user named \"masscan\", bringing you to my blog? It's not me!",
+        "status": "hidden"
     },
     {
         "id": "something-meaningful",
         "title": "Something Meaningful to Me",
-        "timestamp": 1672967406350
+        "timestamp": 1672967406350,
+        "status": "hidden"
     },
     {
         "id": "2022-reflection",
         "title": "So Long, 2022",
         "description": "You were a hell of a year.",
         "timestamp": 1672285356112,
-        "publish": true,
+        "status": "published",
         "stylesheets": ["styles.css"]
     },
     {
@@ -65,43 +79,45 @@
         "title": "What's Desaturating My Image?",
         "description": "It's probably a color profile issue.",
         "timestamp": 1664842628162,
-        "publish": true
+        "status": "published"
     },
     {
         "id": "internet-background-noise",
         "title": "Meet the Noisy Neighbors of the Internet",
-        "description": "An analysis of Internet background traffic"
+        "description": "An analysis of Internet background traffic",
+        "status": "wip"
     },
     {
         "id": "nginx-sqlite-log",
         "title": "Logging Requests with SQLite and Nginx",
         "description": "An experiment in configuring Nginx to store requests in an SQLite table.",
         "timestamp": 1661106917570,
-        "publish": true
+        "status": "published"
     },  
     {
         "id": "dc30",
         "title": "DEFCON Photo Dump",
         "description": "Some pictures we took at DEFCON 30.",
         "timestamp": 1660680609998,
-        "publish": true
+        "status": "published"
     },
     {
         "id": "random-float",
         "title": "Generating Random Floats in [0, 1)",
         "description": "It's time to get real. *badum tss*",
         "timestamp": 1659929750660,
-        "publish": true
+        "status": "published"
     },
     {
         "id": "404",
         "title": "404 Not Found",
-        "document": true
+        "status": "page"
     },
     {
         "id": "ip-over-audio-jack",
         "title": "IP over Audio Jack",
-        "description": "Browsing the Internet at a blazing 11 kbit/s"
+        "description": "Browsing the Internet at a blazing 11 kbit/s",
+        "status": "wip"
     },
     {
         "id": "detecting-dns-resolvers",
@@ -109,19 +125,20 @@
         "description": "Utilizing DNS tomfoolery for fun and profit. Well, actually, just fun.",
         "stylesheets": ["styles.css"],
         "timestamp": 1658683083044,
-        "publish": true
+        "status": "published"
     },
     {
         "id": "bitcoin-explained",
         "title": "Yet Another Bitcoin Explanation",
-        "description": "Because why not?"
+        "description": "Because why not?",
+        "status": "wip"
     },
     {
         "id": "discord-qr-code-phishing",
         "title": "Discord QR Code Phishing",
         "description": "Learn to recognize a common Discord scam",
         "timestamp": 1652162796067,
-        "publish": true,
+        "status": "published",
         "issueNumber": 9
     },
     {
@@ -129,7 +146,7 @@
         "title": "Dissecting a Log4Shell Attack",
         "description": "Taking apart an attempted Log4Shell attack on my Minecraft server, with some interesting discoveries.",
         "timestamp": 1642141626850,
-        "publish": true,
+        "status": "published",
         "issueNumber": 3
     },
     {
@@ -137,14 +154,14 @@
         "title": "DNS, Explained",
         "description": "Examining an often-overlooked component of the Internet: how are domains resolved, anyways?",
         "timestamp": 1643000114865,
-        "publish": true
+        "status": "published"
     },
     {
         "id": "internet-explained",
         "title": "The Internet, Explained",
         "description": "So what makes this thing tick, anyways?",
         "timestamp": 1641357338707,
-        "publish": true,
+        "status": "published",
         "issueNumber": 10,
         "scripts": ["/scripts/packetview.js"],
         "stylesheets": ["/stylesheets/packetview.css"]
@@ -157,7 +174,7 @@
         "stylesheets": ["styles.css"],
         "interactive": true,
         "issueNumber": 6,
-        "publish": true,
+        "status": "published",
         "timestamp": 1672342894058
     },
     {
@@ -165,7 +182,7 @@
         "title": "Minecraft Decompilation Guide",
         "description": "A tutorial on how to decompile modern versions of Minecraft using Mojang's official mappings.",
         "timestamp": 1655268355160, 
-        "publish": true,
+        "status": "published",
         "issueNumber": 12
     },
     {
@@ -174,7 +191,7 @@
         "description": "Searching four billion IP addresses for friends to play with.",
         "timestamp": 1648747843094,
         "stylesheets": ["styles.css"],
-        "publish": true,
+        "status": "published",
         "issueNumber": 8
     },
     {
@@ -182,34 +199,35 @@
         "title": "A Deep Dive into Minecraft Chat Reports",
         "description": "Deconstructing the new chat reporting feature to understand its implications for the game.",
         "timestamp": 1656104241340,
-        "publish": true,
+        "status": "published",
         "issueNumber": 11
     },
     {
         "id": "mob-spawning",
         "title": "Minecraft Mob Spawning",
         "description": "An outline of Minecraft mob spawning mechanics",
-        "publish": true,
+        "status": "published",
         "timestamp": 1676619564846
     },
     {
         "id": "mob-spawning-weights",
         "title": "Minecraft Mob Spawning Weights",
-        "document": true
+        "status": "page"
     },
     {
         "id": "wordle-es-wordlist",
         "title": "Retrieving the Spanish Wordle Wordlist",
         "description": "It's as stupid as it sounds.",
         "timestamp": 1644036481518,
-        "issueNumber": 4
+        "issueNumber": 4,
+        "status": "hidden"
     },
     {
         "id": "tls-explained",
         "title": "TLS, Demystified",
         "description": "Learn how TLS secures the modern web by examining a real session, down to the byte level.",
         "timestamp": 1645857396650,
-        "publish": true,
+        "status": "published",
         "interactive": true,
         "scripts": ["/scripts/packetview.js"],
         "stylesheets": ["/stylesheets/packetview.css"],

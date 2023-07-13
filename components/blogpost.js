@@ -40,7 +40,7 @@ module.exports = (properties, src) => {
             optional(properties.interactive, noscript(p({style: "color: #ff0000"}, "Warning: If you are seeing this message, JS isn't supported; unfortunately, since this page relies on JS to dynamically generate content, parts of the page may be missing or brutally disfigured."))),
             body,
             img({id: "img-view", style: "display: none"}),
-            optional(!properties.document, [
+            optional(properties.status === "published" || properties.status === "hidden", [
                 noscript(b("Please enable Javascript to view the comments on this post.")),
                 comments(properties)
             ])
