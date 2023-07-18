@@ -1,5 +1,11 @@
 [
     {
+        "id": "cosmic-ray",
+        "title": "Taking Pictures of Cosmic Rays",
+        "description": "Turn your camera into a radiation detector!",
+        "status": "wip"
+    },
+    {
         "id": "gfw",
         "title": "Scaling the Great Firewall",
         "status": "wip"

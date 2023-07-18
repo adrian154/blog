@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Taking Pictures of Cosmic Rays</title><meta property="og:title" content="Taking Pictures of Cosmic Rays"><meta property="og:type" content="website"><meta property="og:description" content="Turn your camera into a radiation detector!"><meta name="description" content="Turn your camera into a radiation detector!"><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><script>const loadSetting = name => {
+    if(localStorage.getItem(name) === "true")
+        document.documentElement.classList.add(name);
+    else
+        document.documentElement.classList.remove(name);
+};
+
+loadSetting("serif");
+loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/cosmic-ray"></head><body><header><p><a id="home-link" href="/">« more posts</a></p><h1 id="post-title">Taking Pictures of Cosmic Rays</h1></header><main><p>A blogpost? In this economy?! Yes, that&#39;s right. Today, we&#39;re going to be looking at how you can use an unmodified digital camera to detect cosmic rays. </p>
+<p>{TODO: Cosmic rays}</p>
+<p>First, what <em>is</em> a cosmic ray? Put simply, they&#39;re not actually &quot;rays&quot;; rather, they are high-energy particles, usually protons, that have found their way to Earth. Some come from the Sun, while others originate from outside our Solar System or even other galaxies.</p>
+<p>We call the original particle a primary cosmic ray, because it generally doesn&#39;t make it to the surface. Instead, when it collides with atoms in the atmosphere, a shower of secondary particles is produced. These particles are the ones which we&#39;ll be detecting. </p>
+<p>Speaking of which, how do we actually go about observing these particles? Well, it turns out that all you need is a plain old camera. As a charged particle flies through the silicon detector inside, electrons are ripped from the atoms of the photosites, producing charges that can be read out just like a regular image. This is also responsible for the speckles that often appear in photos of radioactive materials.</p>
+<figure style="max-width: 500px">
+    <img loading="lazy" src="rad-meme.jpg" alt="photo of radiation source with white dots">
+    <figcaption>&#9835; Dumb ways to dieee... &#9835;</figcaption>
+</figure>
+
+<p>Anyways, the procedure is very simple. Just put the lens cap on your camera, put it in a dark place with the sensor facing the zenith (straight up), and leave it to take some pictures. With a little luck, you&#39;ll be greeted by some cosmic ray tracks in your images when you come back!</p>
+<p>A few words about camera settings:</p>
+<ul>
+<li>In theory, a shorter exposure length offers many advantages, such as increased temporal resolution and less dark current. However, this comes at the cost of more data to process. I also didn&#39;t want to cause too many shutter actuations, so I settled for an exposure length of 1 minute.</li>
+<li>I used an ISO of 200, which corresponds to unity gain (i.e. 1 electron = 1 ADU) on my camera. ISO 100 would probably work well too. In general, a lower ISO is preferred since read noise is not a significant concern.</li>
+</ul>
+<p>One last tidbit: my camera, a Nikon D7000, applies some transformations to raw images such as black-point subtraction and channel scaling. This is great for photographic data, but for our purposes it&#39;s highly unwanted. Thankfully, there is a free <a href="https://nikonhacker.com/viewtopic.php?t=2319">tool</a> that instructs the camera to skip any of these adjustments.</p>
+<p>As a bonus, this hack will also make the camera include the optical black pixels in the saved image. These pixels reside on the edge of the sensor and are blocked from receiving any light. Normally, they are used to calibrate the sensor&#39;s black point and are cropped from the final image, but cosmic rays can pass right through the opaque layer. Thus, we actually gain a tiny bit of extra detector area. </p>
+<h1 id="post-processing">Post-processing <a class="section-link" href="#post-processing">&sect;</a></h1><p>I left my camera snapping away overnight, and woke up to 348 images. Let&#39;s open them up and take a look!</p>
+<p>Upon first inspection, the images look totally black, which is hardly surprising. You took a picture with the lens cap on. What did you expect? </p>
+<p>If we crank up the exposure a lot, some patterns start to appear:</p>
+<p><img loading="lazy" src="hot-pixels.png" alt="hot pixels"></p>
+<p>Wow, are those all cosmic rays? <em>No.</em> If you open up another exposure and go to the same spot, you will see the exact same patterns.</p>
+<p>What we&#39;re dealing with is hot pixels. Over time, electrons are spontaneously produced within the photosites due to thermal fluctuations, producing what is known as <em>dark current</em>. For most pixels, this is contained at about 0.1 electrons per second. However, due to flawed manufacturing, some pixels exhibit much higher dark current than others, manifesting as hot pixels.</p>
+<p>This phenomenon means that trying to identify cosmic rays by looking at a single frame at a time will yield unreliable results. A much better strategy is to analyze the value of a single pixel across frames. Hot pixels will remain hot, whereas a genuine cosmic ray hit will stand out as an outlier.</p>
+<img id="img-view" style="display: none"></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="/rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog/tree/main/public/blogposts/cosmic-ray">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>
