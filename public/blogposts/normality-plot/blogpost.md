@@ -17,7 +17,7 @@ If the distribution is really normal, the resulting points will fall on a straig
 
 So how do we actually compute that expected z-score I just mentioned? Well, we can start with the normal CDF, which we'll write as $\Phi(x)$. This function tells us the probability of a normally distributed random value being less than $x$.
 
-Notice that the CDF does the exact opposite of what we want. If we're considering the *n*th value of a set of size $N$, we know the probability of a normal random variable being smaller than the point we're looking at, and want to know the z-score. Therefore, we should use the *quantile function*, which is the inverse of the CDF. For this reason, we'll write it as $\Phi^{-1}(x)$.
+Notice that the CDF does the exact opposite of what we want. If we're considering the *n*th value of a set, we know the probability of a normal random variable being smaller than the point we're looking at, and want to know the z-score. Therefore, we should use the *quantile function*, which is the inverse of the CDF. For this reason, we'll write it as $\Phi^{-1}(x)$.
 
 <figure>
     <img src="quantile-function.png">
