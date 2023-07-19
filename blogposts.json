@@ -1,5 +1,12 @@
 [
     {
+        "id": "normality-plot",
+        "title": "Normal Probability Plots for Dummies",
+        "description": "How to qualitatively check if your dataset is normally distributed",
+        "status": "published",
+        "timestamp": 1689738880321
+    },
+    {
         "id": "cosmic-ray",
         "title": "Taking Pictures of Cosmic Rays",
         "description": "Turn your camera into a radiation detector!",
