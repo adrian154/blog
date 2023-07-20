@@ -67,9 +67,7 @@ We can apply this to our opentype.js output by evaluating `quadCurve` at regular
 
 The lines are smooth now, but the points are distributed unevenly. For example, look at the inner curves of the S. There are *way* too many points in those areas, much more than what's necessary to create the illusion of a smooth, continuous curve. These excess points will increase the complexity of our model and slow down our renderer. We can try reducing the amount of times we sample the curve for each segment, but this ends up leaving the larger curve segments with a jagged appearance.
 
-Ideally, we want to sample each curve at a regular interval *with respect to arc length*. To accomplish this, we need some function that maps distance traveled along the curve to $t$-values.
-
-For quadratic B&eacute;zier curves, a closed-form expression for arc length *does* exist, but it's rather&hellip; unwieldy:
+The problem is that the relationship between $t$ and the length of the curve up to $t$ is not linear, so our points are not spaced at regular intervals along the curve. We could solve this if we had a function that mapped arc length to $t$-values. For quadratic B&eacute;zier curves, a closed-form expression for arc length *does* exist, but it's rather&hellip; unwieldy:
 
 <figure>
     <img src="arclen-expression.png" alt="https://gamedev.stackexchange.com/a/6019/98873">
