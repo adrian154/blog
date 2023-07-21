@@ -16,7 +16,7 @@ To actually observe these particles, we'll be using a plain old digital camera. 
 Anyways, the procedure is very simple. Just put the lens cap on your camera, put it in a dark place with the sensor facing the zenith (straight up), and leave it to take some pictures. With a little luck, you'll be greeted by some cosmic ray tracks in your images when you come back!
 
 A few words about camera settings:
-- In theory, a shorter exposure length offers many advantages, such as increased temporal resolution and less time for dark current to accumulate. However, this comes at the cost of more data to process, and more wear on the shutter. I settled for an exposure length of 1 minute.
+- In theory, a shorter exposure length offers many advantages, such as increased temporal resolution and less time for dark current to accumulate. However, this comes at the cost of more data to process and more shutter wear. I settled for an exposure length of 1 minute.
 - I used an ISO of 200, which corresponds to about unity gain (i.e. 1 electron equals 1 ADU) on my camera. ISO 100 would probably work well too. In general, a lower ISO is preferred since read noise is not a significant concern. 
 
 One last tidbit: my camera, a Nikon D7000, applies some transformations to raw images such as black-point subtraction and channel scaling. This is great for regular photography, but it will screw up our data. Thankfully, there is a free [tool](https://nikonhacker.com/viewtopic.php?t=2319) that uses USB commands to disable these adjustments.
