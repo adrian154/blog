@@ -1,8 +1,8 @@
 A blogpost? In this economy?! Yes, that's right. Today, we're going to be looking at how you can use an unmodified digital camera to detect cosmic rays and other charged particles.
 
-{TODO: Cosmic rays}
+![four cosmic rays](title.png)
 
-First, what *is* a cosmic ray? Put simply, they're not actually "rays"; rather, they are high-energy particles, usually protons, that have found their way to Earth. Some come from the Sun, while others originate from outside our Solar System or even other galaxies.
+First, what *is* a cosmic ray? They're not actually rays; rather, they are high-energy particles, usually protons, that have traveled through space to Earth. Some come from the sun, while others may originate from more distance sources in our galaxy or even other galaxies.
 
 The original particle is called the primary cosmic ray, and it almost never makes it to the surface. Instead, when it collides with atoms in the atmosphere, a shower of secondary particles is produced. These particles are the ones which we'll be detecting. 
 
@@ -16,8 +16,8 @@ To actually observe these particles, we'll be using a plain old digital camera. 
 Anyways, the procedure is very simple. Just put the lens cap on your camera, put it in a dark place with the sensor facing the zenith (straight up), and leave it to take some pictures. With a little luck, you'll be greeted by some cosmic ray tracks in your images when you come back!
 
 A few words about camera settings:
-- In theory, a shorter exposure length offers many advantages, such as increased temporal resolution and less dark current. However, this comes at the cost of more data to process. I also didn't want to cause too many shutter actuations, so I settled for an exposure length of 1 minute.
-- I used an ISO of 200, which corresponds to unity gain (i.e. 1 electron equals 1 ADU) on my camera. ISO 100 would probably work well too. In general, a lower ISO is preferred since read noise is not a significant concern. 
+- In theory, a shorter exposure length offers many advantages, such as increased temporal resolution and less time for dark current to accumulate. However, this comes at the cost of more data to process, and more wear on the shutter. I settled for an exposure length of 1 minute.
+- I used an ISO of 200, which corresponds to about unity gain (i.e. 1 electron equals 1 ADU) on my camera. ISO 100 would probably work well too. In general, a lower ISO is preferred since read noise is not a significant concern. 
 
 One last tidbit: my camera, a Nikon D7000, applies some transformations to raw images such as black-point subtraction and channel scaling. This is great for regular photography, but it will screw up our data. Thankfully, there is a free [tool](https://nikonhacker.com/viewtopic.php?t=2319) that uses USB commands to disable these adjustments.
 
@@ -27,7 +27,7 @@ As a bonus, this hack will also make the camera include the optical black pixels
 
 I left my camera snapping away overnight, and woke up to 348 images. Let's open them up and take a look!
 
-Upon first inspection, the images look totally black, which is hardly surprising. You took a picture with the lens cap on. What did you expect? 
+Upon first inspection, the images look totally black, which is hardly surprising. It's a picture taken with the lens cap on. What did you expect? 
 
 If we crank up the exposure a lot, some patterns start to appear:
 
@@ -39,7 +39,7 @@ What we're dealing with is hot pixels. Every photosite will spontaneously produc
 
 It can be difficult to distinguish a hot pixel from a cosmic ray using just one frame of data, so instead we analyze the value of a pixel across multiple frames to check for anomalies. Hot pixels will show a consistent value in every frame, while a genuine cosmic ray hit will stand out.
 
-Okay, so let's write some code to go through all the images. First, however, we must convert them to a format that we can read. My camera outputs images in Nikon's proprietary NEF format, which is not very amenable to manipulation. Luckily, there's an open-source tool called [dcraw](https://www.dechifro.org/dcraw/) which will take our NEFs and produce [PGMs](https://en.wikipedia.org/wiki/Netpbm), which are basically just a short header followed by uncompressed pixel data.
+Before we can get to messing with the images, we must convert them to a format that our code can read. My camera outputs images in Nikon's proprietary NEF format, which is not very amenable to manipulation. Luckily, there's an open-source tool called [dcraw](https://www.dechifro.org/dcraw/) which will take our NEFs and produce [PGMs](https://en.wikipedia.org/wiki/Netpbm), which are basically just a short header followed by uncompressed pixel data.
 
 If you are replicating my experiment, here is an example dcraw invocation:
 
@@ -52,7 +52,10 @@ dcraw -4 -D *.NEF
 
 These flags are very important. dcraw is designed to work with photographic data, so it will normally apply some adjustments to convert the raw data into a viewable image. For example, in order to record color, every photosite in the camera sensor is covered with a tinted filter in a [repeating pattern](https://en.wikipedia.org/wiki/Color_filter_array).
 
-![illustration of color filter array](bayer-matrix.png)
+<figure style="max-width: 320px">
+    <img src="bayer-matrix.png" alt="illustration of color filter array">
+    <figcaption><a href="https://en.wikipedia.org/wiki/File:Bayer_pattern_on_sensor.svg">Image</a> by <a href="https://en.wikipedia.org/wiki/User:Cburnett">Cburnett</a> / <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.en">CC BY-SA</a></figcaption>
+</figure>
 
 dcraw will assign each pixel an (R,G,B) value by interpolating based on its neighbors, a process called [demosaicing](https://en.wikipedia.org/wiki/Demosaicing). However, the particles we're looking for aren't affected by the colored filters, so demosaicing will merely distort the data and thus must be avoided.
 
@@ -84,34 +87,69 @@ The two-pass solution is slower, but by saving the computed values to a file and
 
 After identifying the anomalies, I grouped them into clusters by simply finding all other anomalies within a 16-pixel radius. This worked remarkably well, and allowed me to quickly find the most extensive cosmic ray patterns.
 
-# Results
+## Cooling
+
+After collecting the first batch of data, I decided to do a little experiment. Recall that dark current is proportional to temperature. Therefore, by cooling the camera, we can significantly reduce the dark current level. I accomplished this by freezing my camera overnight.
+
+<figure>
+    <img src="camera-in-freezer.jpg" alt="camera, in ziploc bag, in freezer">
+    <figcaption>Warning: not for consumption.</figcaption>
+</figure>
+
+We can see just how much cooling affects noise by comparing the distribution of pixel values. I raised the exposure time to 10 minutes while in the freezer, so the variance of the real noise level is 10x lower.
+
+![histograms of pixels from warm and cold frames. warm bell curve is farther to right and more dispersed](dark-current-histogram.png)
+
+That's quite a reduction! Not only does the signal level go down, the distribution also becomes less dispersed. This is explained by the statistical properties of shot noise: its standard deviation is equal to the square root of the event rate. This can be used to determine the gain of the sensor at a given ISO; more on this in an upcoming blogpost!
 
 <aside>
 
-The raw data is available as CSV [here](anomalies.csv). The `value` column is the difference between the pixel's observed value and the mean for that pixel.
+The high pixel value of the particle tracks means that this mild improvement in noise doesn't increase the SNR much, so this experiment doesn't benefit much from cooling. It is a neat trick, though.
 
 </aside>
 
-At a confidence level of 6 sigma, I was left with 15,150 anomalous pixels and 2,083 clusters of at least size 2. At approximately one muon per cm<sup>2</sup> per minute, this is higher than the expected value of about 1,300 cosmic rays. This disparity can be explained by the fact that some of the particles may be of terrestrial origin (i.e. ambient radioactive decay).
+# Results
+
+At a confidence level of 6 sigma, I was left with 15,150 anomalous pixels and 2,083 clusters of at least size 2. The cosmic ray flux at sea level is about 1 muon/cm<sup>2</sup>/minute, so we should expect to have seen about 1,300 cosmic rays over the course of our experiment. This disparity can be explained by the fact that some of the particles may be of terrestrial origin (i.e. ambient radioactive decay).
 
 Cluster size appears to follow an exponential distribution:
 
 ![cluster size histogram showing that larger sizes rapidly become more uncommon](cluster-size-distribution.png)
 
-And without further ado... some images!
+Graphs are nice, but I wanted to see some actual images. So, I wrote a short script that would extract each identified cluster from the image, find the difference betweeh the value of each pixel and its mean (to correct for hot pixels), and plot the result. I co-opted one of [ehtplot](https://github.com/liamedeiros/ehtplot)'s colormaps for this purpose. I also applied some gamma correction at $\gamma = 0.7$ to enhance feature visibility. 
+
+Here are the long-awaited images:
 
 ![5x5 collage of cosmic rays](collage.png)
 
-What are these particles? The curved particles ("worms") are most likely electrons; their low mass makes them easily deflected, hence the curved trajectories. These electrons may be the result of Compton scattering of gamma rays produced by the decay of naturally occuring radionuclides, or they might be produced the direct result of beta decay.
+What are these particles? The curved particles ("worms") are most likely electrons; their low mass makes them easily deflected, hence the curved trajectories. These electrons are probably produced by Compton scattering of gamma rays emitted in the decay of naturally occuring radionuclides.
 
 ![curved electron path](worm.png)
 
 The straight paths are most likely muons, produced by high-altitude air showers due to cosmic rays. 
 
-# Bonus Round
+![straight muon path](line.png)
 
-Dark current is proportional to temperature. Therefore, to reduce dark current, we must cool the camera. My camera doesn't have any built-in cooling capabilities, so I needed an external source of cooling. Thankfully, I already have such an appliance.
+Distinguishing between the two is hardly an exact science, so... take all of this with a grain of salt.
 
-{TODO:Photo of camera in freezer}
+Here are some shots from the freezer dataset:
 
-Putting the camera in the freezer has the 
+![worm track split into three parts](44._DSC3441.pgm.9.png)
+
+![multiple particles](17._DSC3426.pgm.0.png)
+
+This next one's interesting: there's a trail, but it's dark. I did a little digging and discovered the cause of this artifact: a particle track occurred at that spot  in another frame, and its influence on the mean was so significant that when we subtracted it from the pixels, the imprint of that other track was left behind.
+
+![dark track](5._DSC3436.pgm.8.png)
+
+In some frames, we see not just one track but multiple spots. It's very likely that all of these particles were produced in the same air shower.
+
+![multiple particles](10._DSC3425.pgm.284.png)
+
+![multiple particles](15._DSC3426.pgm.354.png)
+
+# Closing Remarks
+
+I had a *lot* of fun with this project, and I'm really glad that it turned out as well as it did! 
+
+If you're interested in replicating my experiment, my code is available on [GitHub](https://github.com/adrian154/cosmic-ray-detector). Warning: this was all written in quite a rush, so it may take some prodding to get it working. If you have any questions please feel free to reach out or leave a comment. You can also download my processed data [here](data.zip).

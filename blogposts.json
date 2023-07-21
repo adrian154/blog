@@ -9,8 +9,9 @@
     {
         "id": "cosmic-ray",
         "title": "Taking Pictures of Cosmic Rays",
-        "description": "Turn your camera into a radiation detector!",
-        "status": "wip"
+        "description": "Turn any digital camera into a radiation detector!",
+        "status": "published",
+        "timestamp": 1689897249823
     },
     {
         "id": "gfw",
