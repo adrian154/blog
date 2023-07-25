@@ -11,9 +11,9 @@ Let's say we have some dataset. In my case, it's the value of a pixel in an imag
 | 2216  | 5    | -4.01   |
 | **...** | |
 
-Now, here's the trick. We can use some math to determine the *expected* z-score of the *n*th element. For example, we might say that the expected z-score of the 50th element in a sample of 100 normally distributed values is 0. Using this, we can create a plot of our points, where the x-axis is the expected z-score, and the y-axis is the actual z-score.
+Now, here's the trick. We can use some math to determine the *expected* z-score of the *n*th element in a normally distributed dataset with the same size as ours. For example, we might say that the expected z-score of the 50th element in a sample of 100 normally distributed values is 0.
 
-If the distribution is really normal, the resulting points will fall on a straight line. Any deviations may tell you information about the true distribution, such as its skewness.
+Using this, we can create a plot of our points where the x-axis is the expected z-score, and the y-axis is the actual z-score. If the distribution is really normal, the resulting points will fall on a straight line. Any deviations may tell you information about the true distribution, such as its skewness.
 
 So how do we actually compute that expected z-score I just mentioned? Well, we can start with the normal CDF, which we'll write as $\Phi(x)$. This function tells us the probability of a normally distributed random value being less than $x$.
 
