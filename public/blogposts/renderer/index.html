@@ -84,13 +84,13 @@ tToArclen[<span class="hljs-number">0</span>] = <span class="hljs-number">0</spa
     <figcaption>I wrote a quick <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">OBJ</a> exporter so I could preview the results in Windows' 3D viewer, but we won't be using that format in our actual renderer.</figcaption>
 </figure>
 
-<p>Now we need to fill in the front and back of our 3D text, meaning that we must <a href="https://en.wikipedia.org/wiki/Polygon_triangulation">triangulate</a> each letter. This is actually kind of tricky, especially since some letters like A have holes in them. Thankfully, I came across a <a href="https://alienryderflex.com/polygon_triangulation_with_hole.shtml">blogpost</a> by Darel Rex Finley that outlined a robust algorithm in a very understandable manner. If you are working on the same problem I cannot recommend his blogpost enough, but here&#39;s the gist of it:</p>
+<p>Now we need to fill in the front and back of our 3D text, meaning that we must triangulate each letter. This is actually kind of tricky, especially since some letters like A have holes in them. Thankfully, I came across a <a href="https://alienryderflex.com/polygon_triangulation_with_hole.shtml">blogpost</a> by Darel Rex Finley that outlined a robust algorithm in a very understandable manner. If you are working on the same problem I cannot recommend his blogpost enough, but here&#39;s the gist of it:</p>
 <p>In order to triangulate a polygon, we crawl around the edge looking for a suitable triangle. When one is found, we remove it from the working set of points and start over until all the points are accounted for. This is known as the <a href="https://en.wikipedia.org/wiki/Polygon_triangulation#Ear_clipping_method">ear-clipping method</a>.</p>
-<p>{TODO:GIF}</p>
+<p><video class="center" loop muted autoplay><source src="triangulate-c.mp4" type="video/mp4"></video></p>
 <p>How do we deal with holes? Well, it turns out that as long as the path is not self-intersecting, it&#39;s totally fine if there are some shared sides. Of course, due to the limitations of floating-point arithmetic, some fine tuning is necessary to get things working. Watch it at work:</p>
-<p>{TODO:GIF}</p>
+<p><video class="center" loop muted autoplay><source src="triangulate-a.mp4" type="video/mp4"></video></p>
 <p>Once we&#39;ve triangulated the front faces of the text, all that remains is for us to combine everything into one model and export it. This leaves us with the product of our efforts so far:</p>
 <p><img loading="lazy" src="final-mesh.png" alt="final exported mesh of GAY SEX"></p>
 <p>Beautiful.</p>
-<h1 id="the-renderer">The Renderer <a class="section-link" href="#the-renderer">&sect;</a></h1><p>Now that we h</p>
+<h1 id="the-renderer">The Renderer <a class="section-link" href="#the-renderer">&sect;</a></h1><p>We&#39;ve got the model&mdash;now, it&#39;s time to bring it to life.</p>
 <script src="bezier.js"></script><img id="img-view" style="display: none"></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="/rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog/tree/main/public/blogposts/renderer">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>

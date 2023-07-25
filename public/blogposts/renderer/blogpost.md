@@ -112,15 +112,15 @@ Building the side walls of our text is pretty simple. We basically extrude our o
     <figcaption>I wrote a quick <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">OBJ</a> exporter so I could preview the results in Windows' 3D viewer, but we won't be using that format in our actual renderer.</figcaption>
 </figure>
 
-Now we need to fill in the front and back of our 3D text, meaning that we must [triangulate](https://en.wikipedia.org/wiki/Polygon_triangulation) each letter. This is actually kind of tricky, especially since some letters like A have holes in them. Thankfully, I came across a [blogpost](https://alienryderflex.com/polygon_triangulation_with_hole.shtml) by Darel Rex Finley that outlined a robust algorithm in a very understandable manner. If you are working on the same problem I cannot recommend his blogpost enough, but here's the gist of it:
+Now we need to fill in the front and back of our 3D text, meaning that we must triangulate each letter. This is actually kind of tricky, especially since some letters like A have holes in them. Thankfully, I came across a [blogpost](https://alienryderflex.com/polygon_triangulation_with_hole.shtml) by Darel Rex Finley that outlined a robust algorithm in a very understandable manner. If you are working on the same problem I cannot recommend his blogpost enough, but here's the gist of it:
 
 In order to triangulate a polygon, we crawl around the edge looking for a suitable triangle. When one is found, we remove it from the working set of points and start over until all the points are accounted for. This is known as the [ear-clipping method](https://en.wikipedia.org/wiki/Polygon_triangulation#Ear_clipping_method).
 
-{TODO:GIF}
+<video class="center" loop muted autoplay><source src="triangulate-c.mp4" type="video/mp4"></video>
 
 How do we deal with holes? Well, it turns out that as long as the path is not self-intersecting, it's totally fine if there are some shared sides. Of course, due to the limitations of floating-point arithmetic, some fine tuning is necessary to get things working. Watch it at work:
 
-{TODO:GIF}
+<video class="center" loop muted autoplay><source src="triangulate-a.mp4" type="video/mp4"></video>
 
 Once we've triangulated the front faces of the text, all that remains is for us to combine everything into one model and export it. This leaves us with the product of our efforts so far:
 
@@ -130,6 +130,6 @@ Beautiful.
 
 # The Renderer
 
-Now that we h
+We've got the model&mdash;now, it's time to bring it to life.
 
 <script src="bezier.js"></script>
