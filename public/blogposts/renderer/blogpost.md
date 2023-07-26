@@ -47,7 +47,8 @@ Not *terrible*, but it's rather jagged. Let's fix this.
 
 A quadratic B&eacute;zier curve, simply put, is a way of defining a smooth curve in terms of two anchor points and a control point. They work by tracing a point on an imaginary line that spans between the lines connecting the two anchor points to the control point. Frankly, it's a rather tricky concept to put into words, so here's an interactive widget that demonstrates the principle.
 
-<canvas id="bezier-demo" style="width: 100%"></canvas>
+
+<!--<canvas id="bezier-demo" style="width: 100%"></canvas>-->
 <input type="range" id="bezier-t" style="width: 100%" min="0" max="100" step="1">  
 
 Mathematically, a B&eacute;zier curve is a parametric function, mapping a scalar input we call $t$ to 2D points along a path. We can obtain the point for a given $t$ value by first determining the coordinates of the points defining the blue line (obtained by linearly interpolating along the lines between the anchor points and the control points), and then linearly interpolating between those two points to get the point on the curve. Here is a rather crude implementation in JavaScript:

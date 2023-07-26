@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Coding a Renderer to Recreate a Meme</title><meta property="og:title" content="Coding a Renderer to Recreate a Meme"><meta property="og:type" content="website"><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><script>const loadSetting = name => {
+<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Coding a Renderer to Recreate a Meme</title><meta property="og:title" content="Coding a Renderer to Recreate a Meme"><meta property="og:type" content="website"><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><link rel="preconnect" href="https://rsms.me/"><link rel="stylesheet" href="https://rsms.me/inter/inter.css"><script>const loadSetting = name => {
     if(localStorage.getItem(name) === "true")
         document.documentElement.classList.add(name);
     else
@@ -6,7 +6,7 @@
 };
 
 loadSetting("serif");
-loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/renderer"></head><body><header><p><a id="home-link" href="/">« more posts</a></p><h1 id="post-title">Coding a Renderer to Recreate a Meme</h1></header><main><p>I am a big fan of 3D text reaction images. This is one of my favorites:</p>
+loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/renderer"></head><body><header><h1 id="post-title">Coding a Renderer to Recreate a Meme</h1></header><main><p>I am a big fan of 3D text reaction images. This is one of my favorites:</p>
 <figure style="max-width: 400px">
     <img loading="lazy" src="original.png" alt='3D render of text that reads "GAY SEX"'>
     <figcaption>3D render of text that reads "GAY SEX" &mdash; <a href="https://twitter.com/GlitchyPSI">@GlitchyPSI</a></figcaption>
@@ -39,8 +39,9 @@ loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><li
 <p><img loading="lazy" src="no-interpolation.png" alt="text rendered without bezier curve"></p>
 <p>Not <em>terrible</em>, but it&#39;s rather jagged. Let&#39;s fix this.</p>
 <p>A quadratic B&eacute;zier curve, simply put, is a way of defining a smooth curve in terms of two anchor points and a control point. They work by tracing a point on an imaginary line that spans between the lines connecting the two anchor points to the control point. Frankly, it&#39;s a rather tricky concept to put into words, so here&#39;s an interactive widget that demonstrates the principle.</p>
-<p><canvas id="bezier-demo" style="width: 100%"></canvas>
-<input type="range" id="bezier-t" style="width: 100%" min="0" max="100" step="1">  </p>
+<!--<canvas id="bezier-demo" style="width: 100%"></canvas>-->
+<input type="range" id="bezier-t" style="width: 100%" min="0" max="100" step="1">  
+
 <p>Mathematically, a B&eacute;zier curve is a parametric function, mapping a scalar input we call <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi></mrow><annotation encoding="application/x-tex">t</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6151em;"></span><span class="mord mathnormal">t</span></span></span></span> to 2D points along a path. We can obtain the point for a given <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi></mrow><annotation encoding="application/x-tex">t</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6151em;"></span><span class="mord mathnormal">t</span></span></span></span> value by first determining the coordinates of the points defining the blue line (obtained by linearly interpolating along the lines between the anchor points and the control points), and then linearly interpolating between those two points to get the point on the curve. Here is a rather crude implementation in JavaScript:</p>
 <pre><code class="hljs"><span class="hljs-comment">// linearly interpolate between points A and B for t in the range [0, 1]</span>
 <span class="hljs-keyword">const</span> <span class="hljs-title function_">lerp2</span> = (<span class="hljs-params">A, B, t</span>) =&gt; [
