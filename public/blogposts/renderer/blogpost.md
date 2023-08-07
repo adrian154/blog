@@ -47,8 +47,7 @@ Not *terrible*, but it's rather jagged. Let's fix this.
 
 A quadratic B&eacute;zier curve, simply put, is a way of defining a smooth curve in terms of two anchor points and a control point. They work by tracing a point on an imaginary line that spans between the lines connecting the two anchor points to the control point. Frankly, it's a rather tricky concept to put into words, so here's an interactive widget that demonstrates the principle.
 
-
-<!--<canvas id="bezier-demo" style="width: 100%"></canvas>-->
+<canvas id="bezier-demo" style="width: 100%"></canvas>
 <input type="range" id="bezier-t" style="width: 100%" min="0" max="100" step="1">  
 
 Mathematically, a B&eacute;zier curve is a parametric function, mapping a scalar input we call $t$ to 2D points along a path. We can obtain the point for a given $t$ value by first determining the coordinates of the points defining the blue line (obtained by linearly interpolating along the lines between the anchor points and the control points), and then linearly interpolating between those two points to get the point on the curve. Here is a rather crude implementation in JavaScript:
@@ -117,11 +116,11 @@ Now we need to fill in the front and back of our 3D text, meaning that we must t
 
 In order to triangulate a polygon, we crawl around the edge looking for a suitable triangle. When one is found, we remove it from the working set of points and start over until all the points are accounted for. This is known as the [ear-clipping method](https://en.wikipedia.org/wiki/Polygon_triangulation#Ear_clipping_method).
 
-<video class="center" loop muted autoplay><source src="triangulate-c.mp4" type="video/mp4"></video>
+<video class="center" loop muted autoplay playsinline><source src="triangulate-c.mp4" type="video/mp4"></video>
 
 How do we deal with holes? Well, it turns out that as long as the path is not self-intersecting, it's totally fine if there are some shared sides. Of course, due to the limitations of floating-point arithmetic, some fine tuning is necessary to get things working. Watch it at work:
 
-<video class="center" loop muted autoplay><source src="triangulate-a.mp4" type="video/mp4"></video>
+<video class="center" loop muted autoplay playsinline><source src="triangulate-a.mp4" type="video/mp4"></video>
 
 Once we've triangulated the front faces of the text, all that remains is for us to combine everything into one model and export it. This leaves us with the product of our efforts so far:
 
@@ -131,6 +130,210 @@ Beautiful.
 
 # The Renderer
 
-We've got the model&mdash;now, it's time to bring it to life.
+We've got the model&mdash;now, it's time to bring it to life. We will accomplish this through raytracing. The idea is that for each pixel, we shoot a ray into scene originating from the camera position and through the image plane. We then perform some calculations to determine the first surface hit by the ray, and then shade accordingly.
+
+Coding the renderer involves a lot of boilerplate, which I won't cover here. If you are interested in the implementation details, I recommend checking out Peter Shirley's [Ray Tracing In One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
+
+## Tracing Rays
+
+For now, let's focus on the geometric aspect of the problem: figuring out where the ray intersects our mesh (if at all). Our mesh is nothing more than a list of triangles, so the problem boils down to ray-triangle intersection.
+
+First, let's define all the inputs we're working with. We have a ray, which starts at a point $O$ and extends along direction $D$ infinitely. Therefore, we can express every point along the ray in terms of the equation $O + tD$, where $t \geq 0$. In addition, we have a triangle with vertices $A$, $B$, and $C$. 
+
+Our triangle is flat, meaning that there is some infinite plane containing it. The only case where our ray doesn't intersect with this plane is if it's parallel to it. We can check if our ray is parallel to triangle by computing the dot product of the ray's direction and the normal vector of the plane. If it's zero, we know that the ray does not intersect with the plane and thus cannot intersect with the triangle.
+
+```c
+Vec3 edge1 = sub(vertex1, vertex0);
+Vec3 edge2 = sub(vertex2, vertex0);
+float det = dot(ray->direction, cross(edge1, edge2));
+
+if(det > -EPSILON && det < EPSILON) {
+    return null;
+}
+```
+
+We check if the dot product is within a range very close to zero due to limited floating-point precision.
+
+If our ray *does* intersect with the plane, we need to check if the point is contained within the triangle. Because everything is now contained within the plane, we can work in two dimensions.
+
+Consider a triangle with vertices at $(0, 0)$, $(1, 0)$, and $(0, 1)$.
+
+![triangle with aformentioned vertices](unit-triangle.png)
+
+Let's look at the two edges originating from the origin. We'll call them $e_1 = (1, 0)$ and $e_2 = (0, 1)$. Any point in the triangle, and indeed any point in the plane, can be described as a linear combination of these two vectors:
+
+$$P = ue_1 + ve_2$$
+
+In linear algebra, we say that vectors $e_1$ and $e_2$ *span* the plane. What we've just done is created a coordinate system with basis vectors $e_1$ and $e_2$! This coordinate system has an important property: for all the points within our triangle, $u + v \leq 1$.
+
+Right now, this coordinate system isn't all that useful. After all, it's completely identical to the standard Euclidean plane. But here's the trick: we can deform it so that it matches any triangle we want.
+
+Let's look at a fancier triangle, with vertices at $(1,1)$, $(2,3)$, and $(3,2)$.
+
+![the second triangle](fancy-triangle.png)
+
+First, we need to pick a point to be our origin. Any point will work, so let's go with $(1,1)$. Then, the two edges which will serve as our basis vectors are $e_1 = (1,2)$ and $e_2 = (2,1)$.
+
+![the triangle, now shifted to origin and with edges e1 and e2 highlighted](coordinate-system.png)
+
+All that we've really done is stretch the coordinate space so that the first triangle becomes the second. (If I were better at Desmos I would animate this, but I don't know how, so you'll just have to imagine). In formal terms, we've applied a [linear transformation](https://en.wikipedia.org/wiki/Linear_map), which means that the new coordinate system is *isomorphic* to the first one. Thus, $u + v \leq 1$ still holds for all the points of our new triangle.
+
+By now, you might have a sense of where this is going. To check if the intersection point is contained within the triangle, all we have to do is compute the point's barycentric coordinates and check if $u + v \leq 1$.
+
+So, the problem becomes how to determine $t$, $u$, and $v$ so that
+
+$$O' + tD = ue_1 + ve_2$$
+
+or
+
+$$-tD + ue_1 + ve_2 = O'$$
+
+where $O' = O - A$. Remember that in our barycentric coordinate system the origin is at vertex $A$.
+
+There is a unique solution to this system, since there are three equations (one for $x$, $y$, and $z$) and three unknowns. We can represent this as a matrix multiplication:
+
+$$
+\begin{bmatrix}
+    -D & e_1 & e_2
+\end{bmatrix}
+\begin{bmatrix}
+    t \\
+    u \\
+    v
+\end{bmatrix}
+= O'
+$$
+
+(Remember that $D$, $e_1$, and $e_2$ are 3-component vectors, so the leftmost matrix is 3&times;3 and not 1&times;3.)
+
+To solve for the unknowns, we can use [Cramer's rule](https://en.wikipedia.org/wiki/Cramer%27s_rule). For a matrix equation of the form $Ax = b$, Cramer's rule says that the $i$th value of $x$ is given by
+
+$$x_i = \frac{\det A_i}{\det A}$$
+
+where $A_i$ is matrix $A$, except column $i$ has been replaced with $b$.
+
+If this doesn't make any sense to you, that's OK; Cramer's rule makes a lot more sense once you figure out *why* it actually works. I won't go into the derivation here, so check out the [MathWorld article](https://mathworld.wolfram.com/CramersRule.html) on Cramer's rule if you are interested.
+
+Applying Cramer's rule to our equation, we can solve for our unknowns:
+
+$$t = \frac{\det \begin{bmatrix}O' & e_1 & e_2\end{bmatrix}}{\det \begin{bmatrix}-D & e_1 & e_2\end{bmatrix}}$$
+
+$$u = \frac{\det \begin{bmatrix}-D & O' & e_2\end{bmatrix}}{\det \begin{bmatrix}-D & e_1 & e_2\end{bmatrix}}$$
+
+$$v = \frac{\det \begin{bmatrix}-D & e_1 & O'\end{bmatrix}}{\det \begin{bmatrix}-D & e_1 & e_2\end{bmatrix}}$$
+
+Helpfully, the determinant of matrix $\begin{bmatrix}a & b & c\end{bmatrix}$ is equal to its [triple product](https://en.wikipedia.org/wiki/Triple_product), or $a \cdot (b \times c)$. In fact, we've already computed the value of $D \cdot (e_1 \times e_2)$ to determine if the ray is parallel to the plane!
+
+Putting it all into code:
+
+```c
+void raytraceTriangle(const Vec3 *A, const Vec3 *B, const Vec3 *C, const Ray *ray, Hit *hit) {
+
+    // compute edges
+    Vec3 edge1 = (Vec3) {B->x - A->x, B->y - A->y, B->z - A->z};
+    Vec3 edge2 = (Vec3) {C->x - A->x, C->y - A->y, C->z - A->z};
+
+    // check if the ray is parallel to the triangle
+    Vec3 normal = cross(edge1, edge2);
+    float det = dot(ray->direction, normal);
+    if(det > -EPSILON && det < EPSILON) {
+        hit->hit = false;
+        return;
+    } 
+
+    // compute barycentric coordinates u and v via Cramer's rule; u + v <= 1
+    float invDet = -1 / det;
+    Vec3 origin = sub(ray->origin, *A);
+    float u = -dot(ray->direction, cross(origin, edge2)) * invDet;
+    if(u < 0 || u > 1) {
+        hit->hit = false;
+        return;
+    }
+
+    float v = -dot(ray->direction, cross(edge1, origin)) * invDet;
+    if(v < 0 || u + v > 1) {
+        hit->hit = false;
+        return;
+    }
+
+    // compute where the intersection is
+    float t = dot(origin, normal) * invDet;
+    
+    // if t is negative, the intersection point is behind the origin 
+    if(t < EPSILON) {
+        hit->hit = false;
+        return;
+    }
+
+    hit->hit = true;
+    hit->point = getRayPoint(ray, t);
+    hit->normal = normalize(normal);
+    hit->distance = t;
+    hit->u = u;
+    hit->v = v;
+
+
+}
+```
+
+If we combine this with some code that iterates over the pixels of the image, generates a camera ray for each pixel, and calls our code to test for an intersection, we get:
+
+![a triangle shaded according to uv](first-triangle.png)
+
+We've just raytraced our first triangle using the [M&ouml;ller-Trumbore](https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm) algorithm. I've gone ahead and shaded the pixels according to the U/V values, to add a little color.
+
+To render our model, we just need to loop through each triangle, test for an intersection, and return the closest intersection for each pixel, yielding a magnificent result:
+
+![our model, rendered with our raytracer](normals.png)
+
+I've shaded the model by scaling the components of the hit normals from $(-1, 1)$ to $(0, 1)$.
+
+You might notice that the edges of our model are quite rough; this is due to [aliasing](https://en.wikipedia.org/wiki/Aliasing). We'll fix this later. For now, we have a bigger problem: we test every ray against every triangle in the model, meaning that our efficiency is pretty bad! That last render alone involved 56,524,800 ray-triangle intersection tests.
+
+This isn't a big deal right now, since we're only tracing one ray per pixel, but once we introduce physically based rendering our render times will become painfully long. So, let's fix this.
+
+## Acceleration Structure
+
+How do we check if a ray intersects with the mesh without testing it against every triangle? One solution is to find a shape that contains the entire mesh (a [bounding volume](https://en.wikipedia.org/wiki/Bounding_volume)), and check if the ray intersects with it. If the ray does not intersect with the bounding volume, we can immediately return a miss, saving us a great deal of computational expense. 
+
+You could use any shape as a bounding volume, but an excellent choice is the **axis-aligned bounding box (AABB)**. An AABB is just a box whose planes are aligned to the axes of the coordinate system. These properties mean that an AABB can be defined using just two points, and intersection testing is efficient too.
+
+I won't explain the algorithm in full detail here; for that, I recommend checking out [Tavian's blogpost](https://tavianator.com/2011/ray_box.html). Basically, the idea is that we can treat the sides of the box as belonging to three pairs of parallel planes. Computing the intersection distance to any of these planes is as easy as solving an equation of one variable. 
+
+We can imagine the pairs of intersection distances as line segments on the ray. If the ray intersects with the box, there will be some location where all three segments overlap. We can check this with minimal branching using clever application of `fmin` and `fmax`.
+
+```c
+bool raytraceBox(const Box *box, const Ray *ray) {
+    
+    // find intersection distance with X-planes
+    float tx1 = (box->min.x - ray->origin.x) / ray->direction.x,
+          tx2 = (box->max.x - ray->origin.x) / ray->direction.x;
+
+    // determine which intersection point was closer or further
+    float tmin = fmin(tx1, tx2),
+          tmax = fmax(tx1, tx2);
+
+    float ty1 = (box->min.y - ray->origin.y) / ray->direction.y,
+          ty2 = (box->max.y - ray->origin.y) / ray->direction.y;
+
+    // clip intersecting segment using new values
+    tmin = fmax(tmin, fmin(ty1, ty2));
+    tmax = fmin(tmax, fmax(ty1, ty2));
+
+    float tz1 = (box->min.z - ray->origin.z) / ray->direction.z,
+          tz2 = (box->max.z - ray->origin.z) / ray->direction.z;
+
+    tmin = fmax(tmin, fmin(tz1, tz2));
+    tmax = fmin(tmax, fmax(tz1, tz2));
+
+    // if an unclipped segment remains, the ray intersects
+    return tmax >= tmin;
+
+}
+```
+
+Now, we can pre-compute the bounding box of our mesh, and test rays against it before launching into our old ray-mesh code.
+
+## Light Transport
 
 <script src="bezier.js"></script>
