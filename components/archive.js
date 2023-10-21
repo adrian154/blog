@@ -1,20 +1,29 @@
-const { html, head, meta, title, body, ul, li, a, p, h1 } = require("html-generator");
+const { html, head, meta, title, body, table, a, tr, th, thead, td, tbody, style, link } = require("html-generator");
 const format = new Intl.DateTimeFormat([], {dateStyle: "medium"});
 
 module.exports = blogposts => "<!DOCTYPE html>" + html(
     head(
         meta({charset: "utf-8"}),
         meta({name: "viewport", content: "width=device-width, initial-scale=1"}),
-        title("bithole.dev archive")
+        title("bithole.dev tracker"),
+        link({rel: "stylesheet", href: "/stylesheets/tracker.css"})
     ),
     body(
-        h1("Published"),
-        ul(...blogposts.filter(blogpost => blogpost.status === "published").map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title), " ", `(${format.format(new Date(blogpost.timestamp))})`))),
-        h1("WIP"),
-        ul(...blogposts.filter(blogpost => blogpost.status === "wip").map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title)))),
-        h1("Hidden"),
-        ul(...blogposts.filter(blogpost => blogpost.status === "hidden").map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title)))),
-        h1("Pages"),
-        ul(...blogposts.filter(blogpost => blogpost.status === "page").map(blogpost => li(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title))))
+        table(
+            thead(
+                tr(
+                    th("Blogpost"),
+                    th("Date"),
+                    th("Status")
+                )
+            ),
+            tbody(
+                ...blogposts.sort((a,b) => a.title.localeCompare(b.title)).map(blogpost => tr(
+                    td(a({href: `/blogposts/${blogpost.id}/`}, blogpost.title)),
+                    td(blogpost.timestamp ? format.format(new Date(blogpost.timestamp)) : ""),
+                    td({class: blogpost.status}, blogpost.status)
+                ))
+            )
+        )
     )
 ).html;

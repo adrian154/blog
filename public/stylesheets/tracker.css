@@ -1,0 +1,21 @@
+body {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+th {
+    text-align: left;
+}
+
+td {
+    padding: 5px 0; padding-right: 40px;
+}
+
+a, a:visited {
+    color: inherit;
+}
+
+.published { color: #00ff00; }
+.hidden    { color: #ff0000; }
+.wip       { color: #ff00ff; }
+.page      { color: #00ffff; }

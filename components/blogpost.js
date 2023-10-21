@@ -1,4 +1,4 @@
-const {script, h1, p, a, noscript, b, div, img, main, header} = require("html-generator");
+const {script, h1, p, a, noscript, b, div, img, main, header, raw} = require("html-generator");
 const {commentsSettings} = require("../config.json");
 const renderMarkdown = require("./markdown.js");
 const formatDate = require("./format-date.js");
@@ -31,9 +31,8 @@ module.exports = (properties, src) => {
         },
         optional(!properties.bodyOnly, 
             header(
-                p(a({id: "home-link", href: "/"}, "\u00ab more posts")),
                 h1({id: "post-title"}, properties.title),
-                optional(properties.timestamp, p({class: "date"}, "Published ", formatDate(new Date(properties.timestamp))))
+                optional(properties.timestamp, p({class: "date"}, "Published ", formatDate(new Date(properties.timestamp)), raw(" &bull; "), a({href: "/"}, "more posts")))
             )
         ),
         main(

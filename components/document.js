@@ -25,6 +25,10 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
         stylesheet("/stylesheets/main.css"),
         properties.stylesheets?.map(stylesheet),
 
+        // font
+        link({rel: "preconnect", href: "https://rsms.me/"}),
+        link({rel: "stylesheet", href: "https://rsms.me/inter/inter.css"}),
+
         // scripts
         properties.scripts?.map(scriptSrc => script({defer: null, src: scriptSrc})),
         script(raw(APPLY_SETTINGS_CODE)),

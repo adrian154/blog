@@ -15,14 +15,14 @@ In order to chroma subsample, we must first separate the color of a pixel from i
 
 But how is RGB mapped to YCbCr? In my opinion, the relationship between the two color spaces is best explained visually. Imagine a coordinate space where the *x*, *y*, and *z* axes represented R, G, and B, respectively. This would form a cube containing all possible RGB colors.
 
-<video class="center" loop muted autoplay><source src="rgb-cube-animation.mp4" type="video/mp4"></video>
+<video class="center" loop muted autoplay playsinline><source src="rgb-cube-animation.mp4" type="video/mp4"></video>
 
 This cube has one important property: there exists a line through the cube where the R, G, and B values are all equal. One can imagine a coordinate system where we align the cube such that the luminance component (Y) extends along this line. We can then extract a slice of the cube for any given luminance, and assign the remaining two degrees of freedom to Cb and Cr.
 
 This is essentially how YCbCr works, except the RGB cube is slightly deformed in order to fit all the values into a range of [0, 1]. Here's a demo that shows the Cb-Cr planes as we adjust Y. 
 
 <figure style="max-width: 480px">
-    <video loop muted autoplay><source src="ycbcr-slices.mp4" type="video/mp4"></video>
+    <video loop muted autoplay playsinline><source src="ycbcr-slices.mp4" type="video/mp4"></video>
     <figcaption>No, that Y is definitely not backwards.</figcaption>
 </figure>
 
