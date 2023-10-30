@@ -1,5 +1,11 @@
 [
     {
+        "id": "ctf-writeups/udctf-strong-primes",
+        "title": "UDCTF 2023 - Strong Primes",
+        "status": "hidden",
+        "timestamp": 1698628939528
+    },
+    {
         "id": "normality-plot",
         "title": "Normal Probability Plots for Dummies",
         "description": "How to qualitatively check if your dataset is normally distributed",
