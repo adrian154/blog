@@ -37,11 +37,6 @@
         "status": "hidden"
     },
     {
-        "id": "badge",
-        "title": "Badge",
-        "status": "wip"
-    },
-    {
         "id": "tuning",
         "title": "The Trouble with Tuning Systems",
         "description": "Exploring the mathematical conundrum behind harmony",
@@ -146,12 +141,6 @@
         "stylesheets": ["styles.css"],
         "timestamp": 1658683083044,
         "status": "published"
-    },
-    {
-        "id": "bitcoin-explained",
-        "title": "Yet Another Bitcoin Explanation",
-        "description": "Because why not?",
-        "status": "wip"
     },
     {
         "id": "discord-qr-code-phishing",

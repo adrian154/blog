@@ -9,18 +9,18 @@ First things first: we actually need to obtain some random integers. Easy, right
 
 rand() is known to have [a number of problems](https://stackoverflow.com/questions/52869166/why-is-the-use-of-rand-considered-bad); here's a short list:
 - If you use glibc like me, your `rand()` uses a [Linear Congruential Generator](https://en.wikipedia.org/wiki/Linear_congruential_generator). LCGs are very simple, but they are prone to subtle correlation issues that tend to manifest when applied to a multidimensional problem, such as Monte Carlo simulations.
-- `srand()` takes an `unsigned int`, restricting the number of possible sequences you can get from `rand()` to number of distinct seeds that you can provide. For reference most quality PRNGs have an internal state of at least 128 bits, which is almost certainly larger than the size of an `unsigned int` on your platform.
-- `rand()` is not thread safe; calling it will result in reads and writes to a shared location. Not only will this affect performance, it will also cause insidious randomness issues that may choose to emerge at the most inconvenient time. `rand_r()` allows the user to provide a pointer that will be used to store the PRNG's state, allowing thread-safe code to be written, but many programmers are seemingly not aware of this fact.
+- The number of distinct sequences that you can get from `rand()` is limited by the number of different seeds that you can provide. A quality PRNG usually has an internal state of at least 128 bits, but `srand()` only accepts an `unsigned int`, providing only 32 bits of seed material.
+- `rand()` is not thread safe. Calling it will result in reads and writes to a shared location, which will cause both performance problems and randomness problems. `rand_r()` allows the user to provide a pointer that will be used to the PRNG's state, allowing thread-safe code to be written, but it is rarely used.
 
-Okay, so `rand()` is not as *horrible* as I've made it out to be. Don't get me wrong&mdash;`rand()` is pretty crappy, but if you generated 100 random numbers and stared at it, it would probably look pretty random. So `rand()` might be okay for use cases where high quality randomness is not required (such as a game), but if you try subjecting it to [rigorous statistical tests](https://en.wikipedia.org/wiki/TestU01) it crumples like wet toilet paper.
+Okay, so `rand()` is not as *horrible* as I've made it out to be. Don't get me wrong&mdash;`rand()` is pretty crappy&mdash;but if you generated 100 random numbers and stared at it, it would probably look pretty random. So `rand()` might be okay for use cases where high quality randomness is not required (such as a game), but if you try subjecting it to [rigorous statistical tests](https://en.wikipedia.org/wiki/TestU01) it crumples like wet toilet paper.
 
 <aside>
 
-Aside from `rand()`'s inherent issues, common practices associated with it are often the source of additional evil. Common culprits are seeding the PRNG with unsuitable values or using the modulo operator to generate random numbers within a certain range. That's right&mdash;unless `RAND_MAX` is an exact multiple of your range, you are actually introducing a small amount of bias. But I digress&hellip;
+Aside from `rand()`'s inherent issues, common practices associated with it are often the source of additional evil. Culprits include seeding the PRNG with unsuitable values or using the modulo operator to generate random numbers within a certain range, which actually introduces bias unless your range happens to be divisible by `RAND_MAX`.
 
 </aside>
 
-Today, we're going to be using [xoshiro128+](https://prng.di.unimi.it/xoshiro128plus.c) as our PRNG. Admittedly, the choice of PRNG is not actually that important, which may come as a surprise after my rant about `rand()`. However, as long as you are not using a crappy or obscure generator, there are plenty of very fast, well-proven generators that are probably sufficient for your application.
+Today, we're going to be using [xoshiro128+](https://prng.di.unimi.it/xoshiro128plus.c) as our PRNG. PCG is another viable alternative.
 
 # Introducing Floating Point
 
@@ -53,11 +53,11 @@ Check out this [nifty online demo](https://www.h-schmidt.net/FloatConverter/IEEE
 
 # Actually Generating Floats
 
-As usual, I've managed to stretch what ought to be a simple blogpost into a long-winded rag about unrelated stuff... bummer. Okay, let's actually generate some floats.
+Time to actually generate the floats!
 
 We can start by drawing 23 bits from our PRNG for the fraction part. This is easy enough; we just take a 32-bit value and shift it right 9 bits. This gives us a random fraction value between $1.000\ldots_2 = 1$ and $1.111\ldots_2 \approx 2$.
 
-If we set the exponent portion to 0, the fraction portion will be multipled with $2^0 = 1$, giving us a random number in the range $[1, 2)$. We can easily turn into our desired value in range $[0, 1)$ by subtracting 1.
+If we set the exponent portion to 0, the fraction portion will be multipled with $2^0 = 1$, giving us a random number in the range $[1, 2)$. Subtracting 1 yields a number in the range $[0, 1)$.
 
 Here's the actual code:
 
