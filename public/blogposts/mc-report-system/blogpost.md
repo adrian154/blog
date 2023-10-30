@@ -4,7 +4,7 @@
 
 </aside>
 
-Mojang recently announced that a [chat report system](https://www.minecraft.net/en-us/article/minecraft-1-19-1-pre-release-1) would be coming to Minecraft in 1.19.1, which has sparked a great deal of controversy amongst players. I'm not going to discuss whether this is a good idea in this article; instead, we're going to be taking a look at how exactly the reporting system works and what this means for server operators. Hopefully this will allow for some more enlightened discussion.
+Mojang recently announced that a [chat report system](https://www.minecraft.net/en-us/article/minecraft-1-19-1-pre-release-1) would be coming to Minecraft in 1.19.1, which has sparked a great deal of controversy amongst players. I'm not going to discuss whether this is a good idea in this article except at the end; instead, we're going to be taking a look at how exactly the reporting system works and what this means for server operators. Hopefully this will allow for some more enlightened discussion.
 
 # Crypto Background: Digital Signatures
 
