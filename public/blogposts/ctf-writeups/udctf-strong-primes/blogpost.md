@@ -37,12 +37,12 @@ for(const factor of factorize(order)) {
 }
 ```
 
-To determine $x \bmod r$, we start by transforming our $g$ and $g^x$ to elements of a cyclic group of order $r$:
+To determine $x \bmod r$, we start by transforming our $g$ and $y = g^x$ to elements of a cyclic group of order $r$:
 
 $$g' = g^\frac{p - 1}{r}$$
 $$y' = y^\frac{p - 1}{r}$$
 
-Then, we just need to solve $(g')^{x'} = y'$ for $x'$. For this I made a small implementation of the [baby-step giant-step algorithm](https://en.wikipedia.org/wiki/Baby-step_giant-step) since there wasn't one for JS, but you can easily accomplish this using tools like SageMath.
+Then, we just need to solve $(g')^{x'} = y'$ for $x'$. For this I made a small implementation of the [baby-step giant-step algorithm](https://en.wikipedia.org/wiki/Baby-step_giant-step) since there wasn't one for JS, but you can easily accomplish this using tools like SageMath. Because $r$ is small, this process is fast.
 
 ```js
 const discreteLog = (g, y, p, order) => {
@@ -88,7 +88,6 @@ if(powMod(g, ans, p) == y) {
 
 Once we have Alice's secret, we can use it to compute the encryption key and decrypt any ciphertext of your choosing from auth.log.
 
-
 ```py
 import hashlib
 from Crypto.Cipher import AES
@@ -97,15 +96,16 @@ from Crypto.Util import Padding
 # fill in parameters from auth.log
 # p = ...
 # B = ...
+# iv = bytes.fromhex('...')
 # ct = bytes.fromhex('...')
 
 g = 2
 aliceSecret = ...
 ss = pow(B,aliceSecret,p)
 key = hashlib.sha256(ss.to_bytes(2048//8,'big')).digest()[:16]
-cipher = AES.new(key,AES.MODE_CBC,iv=ct[:AES.block_size])
+cipher = AES.new(key,AES.MODE_CBC,iv)
 
-print(Padding.unpad(cipher.decrypt(ct[AES.block_size:]),AES.block_size).decode('utf-8'))
+print(Padding.unpad(cipher.decrypt(ct),AES.block_size).decode('utf-8'))
 ```
 
 yielding
