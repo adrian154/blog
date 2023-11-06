@@ -4,9 +4,9 @@ Okay, that's not quite true. You *can* tune a piano, but only approximately. It 
 
 Let's start with the basics. Behind every key on a piano are 1&ndash;3 strings, which have been tensioned so that when the strings are struck they will ring out at a specific frequency. Each note is associated with a distinct frequency, and keys are arranged such that the pitch of the notes increases from left to right.
 
-Of course, the burning question remains: how do we know what frequency to assign to each note? The answer to this is pretty nuanced, but luckily we get one freebie. Every tuning system requires us to start by assigning a specific frequency to an arbitrary key to use as a reference point; we call this the pitch standard. The most common pitch standard in modern times is A440, which sets the frequency of the first A above middle C to 440 Hz.
+So what determines the frequency of each key? In a nutshell, we start from a reference note which we assign a specific frequency to, and figure out the frequency of the rest of the notes based on their harmonic relationships. The initial note is known as the *pitch standard*. In modern times, the most common pitch standard is A<sub>4</sub> = 440 Hz, or just A440.
 
-Now, let's do a little experiment. This is what it sounds like if I play A<sub>4</sub> on my piano.
+This is what A<sub>4</sub> sounds like on my piano:
 
 <audio controls src="a4.mp3"></audio>
 
@@ -17,11 +17,11 @@ Ironically, my piano is pretty badly out of tune, but that doesn't matter for th
     <figcaption>Disclaimer: the y-axis is a log scale.</figcaption>
 </figure>
 
-There's a big peak representing the main frequency, but there are also a bunch of extra peaks, which are known as overtones, or partials. The reason for their production has to do with the physics of string vibration. Essentially, a string that is fixed at both ends is limited to vibrating at integer multiples of its fundamental frequency. For example, in this case, we see additional peaks at 880 Hz, 1320 Hz, 1760 Hz, and so on. These patterns of vibration are called *resonant modes*, and collectively, they form the harmonic series.
+There's a big peak representing the fundamental frequency, but there are also a bunch of extra peaks, which are known as overtones or partials. Notice that the peaks are evenly spaced! This is a result of the physics of standing waves: whenever a wave is confined to a finite space, the resulting pattern of oscillation will be the sum of a series of *normal modes*, whose frequencies are integer multiples of the fundamental frequency. In this case, we see overtones at 880 Hz, 1320 Hz, 1760 Hz, and so on. The fundamental frequency and its overtones form the *harmonic series*.
 
-When a string is struck or plucked, the resulting vibration contains many of these resonant modes, creating a complex spectrum like the one that we observed. The same phenomenon is actually exhibited by many other oscillating systems besides strings. For example, air in a tube is also confined to resonating at multiples of the tube's fundamental frequency. This is why, for a given fingering, a French horn player is restricted to playing notes within the harmonic series. 
+The same phenomenon is actually exhibited by many other oscillating systems besides strings. For example, air in a tube is also confined to resonating at multiples of the tube's fundamental frequency. This is why, for a given fingering, a French horn player is restricted to playing notes within the harmonic series. In fact, even the quartz oscillators that are so ubiquitous in modern electronics can be made to vibrate at a multiple of its fundamental frequency.
 
-When two tones from the harmonic series are played together, we generally perceive the result to be fairly pleasant, or *consonant* (as opposed to dissonant). While much of what we perceive to be harmonious is subjective and dependent on cultural context, it is true that our ears usually interpet notes which share a lot of overtones as more consonant. This phenomenon was known to many early musicians such as the Ancient Greeks, who went on to incorporate these intervals in their composition. Indeed, there is a widely circulated story recounting how Pythagoras was brought to this epiphany after listening to four blacksmiths striking anvils which produced tones of different pitches, though like most stories involving Pythagoras, there is no evidence that it actually happened.
+The harmonic series is crucial to the Western tradition of music, where notes that share a lot of overtones are generally perceived as more consonant (as opposed to dissonant). As a result, the relationships between successive members of the harmonic series essentially serve as the building blocks of harmony, and they've been assigned names to reflect their importance.
 
 Try it for yourself&mdash;click the Play button to hear the intervals formed by the harmonic series!
 
@@ -31,11 +31,11 @@ Try it for yourself&mdash;click the Play button to hear the intervals formed by 
 
 <script src="main.js"></script>
 
-Okay, so we're making some real progress. We know from the [circle of fifths](https://en.wikipedia.org/wiki/Circle_of_fifths) that we can start from any note and advance in perfect fifths to cycle through the other 12 notes before returning to the starting note. This is the idea behind [Pythagorean tuning]().
+Okay, so we're making some real progress. We know from the [circle of fifths](https://en.wikipedia.org/wiki/Circle_of_fifths) that we can start from any note and advance in perfect fifths to cycle through the other 12 notes before returning to the starting note. This is the idea behind [Pythagorean tuning](https://en.wikipedia.org/wiki/Pythagorean_tuning).
 
 If you actually try this, you will realize that it doesn't quite work. We saw in the previous demo that a perfect fifth is represented by a frequency ratio of 3:2. So if we multiply the frequency of a note by 3/2 twelve times, we would expect to come back to the same note a few octaves up. Yet (3/2)<sup>12</sup> is approximately 129.746, which is not a power of two!
 
-The reason for this is mathematical. The square root of two is irrational, meaning that it is impossible to create it by multiplying together rational numbers (i.e. fractions of integers). In fact, pretty much all the intervals are *slightly* wrong. The problem becomes very apparent when you try to play chords using our accursed tuning system:
+The reason for this is mathematical. The square root of two is irrational, meaning that it is impossible to create it by multiplying together rational numbers like 3/2. In fact, pretty much all the intervals are *slightly* wrong. The problem becomes very apparent when you try to play chords using our DIY tuning system:
 
 <button onclick="playChordPythagorean()">Play Chord</button>
 
@@ -49,7 +49,7 @@ Well. What do we do, then?
 
 # The "Solution"
 
-Over the centuries, a littany of different tuning systems have been devised. Each system dealt with the unavoidable compromises of harmony in different ways to suit the needs of composers of their time, and in turn, their limitations influenced how music was written. However, in the modern era, one particular scheme has come to dominate music: **equal temperament**. Why "temperament"? I think [Wikipedia](https://en.wikipedia.org/wiki/Musical_temperament) provides an excellent, succinct definition:
+Over the centuries, a littany of different tuning systems have been devised to deal with this problem. Each system dealt with the unavoidable compromises of harmony in different ways to suit the needs of composers of their time, and in turn, their limitations influenced how music was written. However, in the modern era, one particular scheme has come to dominate music: **equal temperament**. What's a temperament? I think [Wikipedia](https://en.wikipedia.org/wiki/Musical_temperament) provides an excellent, succinct definition:
 
 > A temperament is a tuning system that slightly compromises the pure intervals of just intonation to meet other requirements.
 
@@ -57,7 +57,7 @@ Equal temperament does not use integer ratios. Instead, a semitone is defined to
 
 <button onclick="playChordET()">Play Chord</button>
 
-If you give it a listen, you might say: *I can still hear beating&mdash;what's the big idea?* You're right; under equal temperament, *every* interval besides the octave is a little bit impure. And given the existence of systems like [5-limit tuning](https://en.wikipedia.org/wiki/Five-limit_tuning), which minimizes the number of impure intervals, equal temperament seems like a waste of time, but it has an ace up its sleeve: equal temperament sounds acceptable when playing in any key, while most tuning systems based on just intonation become severely dissonant when playing in any key besides the one they're based on. This is a dealbreaker for modern music, which often makes use of modulation. Having to retune your piano every time you want to play in a different key is rather inconvenient!
+If you give it a listen, you might say: *I can still hear beating&mdash;what's the big idea?* You're right; under equal temperament, *every* interval besides the octave is a little bit impure. But this is where equal temperament shines: it sounds acceptable when playing in any key, while most tuning systems based on just intonation become severely dissonant in keys other than the one they're based on. This is a dealbreaker for modern music, which often makes use of modulation. Having to retune your piano every time you want to play in a different key is rather inconvenient!
 
 <aside>
 

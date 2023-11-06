@@ -24,7 +24,7 @@ Let's start with modular arithmetic. It all starts with a *modulus*, or some int
 
 the result is another integer from that set. In fact, if $p$ is prime, then the product of any two integers from the set mod $p$ must also be a member of the set. In mathematical terms, we say that the set is closed under multiplication mod $p$.
 
-This combination a set (which we will call $G$) and a binary operation forms a mathematical structure called a [group](https://en.wikipedia.org/wiki/Group_(mathematics)), because it fulfills the following criteria:
+This combination of a set (which we will call $G$) and a binary operation forms a mathematical structure called a [group](https://en.wikipedia.org/wiki/Group_(mathematics)), because it fulfills the following criteria:
 - Associativity: $a \times (b \times c)$ = $(a \times b) \times c$ for all members of $G$.
 - Identity element: there is an element $e$ such that for any $a$ in $G$, $a \times e = e \times a = a$. In this case, $e = 1$.
 - Inverse element: for every element $a$ in $G$, there exists an element $a^{-1}$ so that $a \times a^{-1} = a^{-1} \times a = e$.
@@ -33,7 +33,7 @@ The idea of a group can be used to describe many things: everything from the per
 
 In our case, we have the multiplicative group of integers mod $p$. It is known that if $p$ is prime then this group is *cyclic*, meaning that it contains some element $g$ such that any member of the group can be written as a power of $g$. In other words, by repeatedly multiplying $g$ by itself, we can step through every element of the group before arriving back at $g$. For this reason, $g$ is known as a *generator* of the group.
 
-A useful property of cyclic groups is that they are always Abelian, which simply means that the group operation is commutative. This is important for Diffie-Hellman!
+A useful property of cyclic groups is that they are always abelian, which simply means that the group operation is commutative. This is important for Diffie-Hellman!
 
 Okay, so let's envision how we can apply this new knowledge to key exchange. Alice and Bob start by agreeing on a prime modulus $p$ and generator $g$; for TLS, these values have been [standardized](https://www.rfc-editor.org/rfc/rfc7919.html) and are built into TLS libraries. Next, each party generates some secret value, which we will call $A$ and $B$. Alice computes $g^A$, and Bob computes $g^B$. These secondary values are exchanged.
 

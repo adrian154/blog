@@ -170,7 +170,7 @@
         "title": "The Internet, Explained",
         "description": "So what makes this thing tick, anyways?",
         "timestamp": 1641357338707,
-        "status": "published",
+        "status": "hidden",
         "issueNumber": 10,
         "scripts": ["/scripts/packetview.js"],
         "stylesheets": ["/stylesheets/packetview.css"]
