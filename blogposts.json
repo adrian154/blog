@@ -1,5 +1,11 @@
 [
     {
+        "id": "ctf-writeups/squarectf-nauseous-process",
+        "title": "SquareCTF 2023 - Nauseous Process",
+        "status": "published",
+        "timestamp": 1700343715888
+    },
+    {
         "id": "ctf-writeups/udctf-strong-primes",
         "title": "UDCTF 2023 - Strong Primes",
         "status": "published",

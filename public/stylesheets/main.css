@@ -73,6 +73,10 @@ tr:not(:last-child) td {
     border-bottom: 1px solid var(--table-cell-border-color);
 }
 
+.gist tr td {
+    border-bottom: unset;
+}
+
 .section-link {
     opacity: 50%;
     font-weight: normal;
@@ -292,4 +296,8 @@ html {
     body {
         max-width: 100%;
     }
+}
+
+.gist {
+    color-scheme: light;
 }
