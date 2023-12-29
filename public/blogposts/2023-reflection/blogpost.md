@@ -53,7 +53,7 @@
     </div>
 </div>
 
-This might be the part where I whine about my various misgivings about this past year, but I figure that the time has come to set them aside before they are committed to the historical record. So I'm just going to say that I still think I got a lot out of this year. I met a lot of friends, made a number of cherished memories, and discovered a lot of new interests that I would have probably never anticipated.
+This might be the part where I whine about my various misgivings about this past year, but I figure that the time has come to set them aside before they are committed to the historical record. So I'm just going to say that I still think I got a lot out of this year. I met a lot of friends, made a number of cherished memories, and discovered a lot of new interests that I would have probably never anticipated. And really, isn't that what it's all about?
 
 # Upcoming Blogposts
 
