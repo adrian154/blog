@@ -82,5 +82,5 @@ Oh, and if your name happens to be 2023, you'd better watch out. Because we're m
 
 <p style="text-align: right">
 Until next time,<br>
-Adrian Zhang
+Adrian
 </p>

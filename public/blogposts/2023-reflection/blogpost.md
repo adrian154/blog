@@ -72,5 +72,5 @@ So.. stay tuned. Because there's always more to come :-)
 
 <p style="text-align: right">
 Until next time,<br>
-Adrian Zhang
+Adrian
 </p>
