@@ -1,6 +1,6 @@
 <aside class="warning">
 
-<b>Warning!</b> Dopey contemplation ahead. Proceed at your own peril.
+<b>Warning!</b> Dopey contemplation ahead. Proceed at your own peril. (Also, this site page look a little fucked up on mobile&hellip; sorry)
 
 </aside>
 

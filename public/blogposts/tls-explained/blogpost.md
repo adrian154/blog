@@ -1380,11 +1380,17 @@ And, at long last, the client and server have a secure channel which they can co
 
 # Epilogue
 
-This article only shows part of what makes TLS tick. There's much more beneath the surface; things like 0-RTT messages, client authentication, SNI, ALPN, the list goes on. Not to mention the fact that TLS 1.3 is vastly different from TLS 1.2 in many ways&mdash;though I specifically chose TLS 1.3 since it is more elegant than TLS 1.2, which is more nuanced thanks to several well-known security holes. To learn more, the RFCs are your best friend. Skip ahead to the Further Reading section for some good references.
+This article only covers a small portion of the TLS 1.3 protocol. Notable omissions include:
+- session resumption and 0-RTT
+- [server name indication](https://en.wikipedia.org/wiki/Server_Name_Indication)
+- client authentication
+- pre-shared keys
 
-# Behind the Scenes 
+Also, much of the Internet still runs on TLS 1.2, which differs from TLS 1.3 in *many* ways. A full description of TLS and its many nuances is just a *tad* too long for a blogpost, so skip ahead to the Further Reading section for some good references.
 
-Making the interactive TLS session turned out to be surprisingly tricky. I ended up modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here's the patch I applied before rebuilding:
+## Behind the Scenes 
+
+Recording the example TLS session turned out to be surprisingly tricky. I ended up modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here's the patch I applied before rebuilding:
 
 ```patch
 diff --git a/deps/openssl/openssl/ssl/statem/extensions_clnt.c b/deps/openssl/openssl/ssl/statem/extensions_clnt.c
@@ -1395,7 +1401,7 @@ index 7b46074232..bd765f43f0 100644
          }
      }
  
-+    /* print out the key like the sneaky devils we are */
++    /* print out the key >:) */
 +    BIO *bp = BIO_new_fp(stdout, BIO_NOCLOSE);
 +    EVP_PKEY_print_private(bp, key_share_key, 1, NULL);
 +    BIO_free(bp);
@@ -1422,7 +1428,7 @@ index 0b6e843e8a..757c49190c 100644
 
 ```
 
-Turns out, that was enough instrumentation to figure out all the other secrets used in the handshake. A couple weeks of banging my head on various RFCs was enough to piece together the rest of the puzzle. After that, it was a simple matter of using NodeJS to create a TLS client and server, then capturing the exchange using `tcpdump`. Here's the client/server code.
+That was enough instrumentation to figure out all the other secrets used in the handshake. A couple weeks of banging my head on various RFCs was enough to piece together the rest of the puzzle. After that, it was a simple matter of using NodeJS to create a TLS client and server, then capturing the exchange using `tcpdump`. Here's the client/server code.
 
 ```js
 // run with --tls-keylog=...

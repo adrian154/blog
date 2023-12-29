@@ -1,5 +1,18 @@
 [
     {
+        "id": "2023-reflection",
+        "title": "So Long, 2023",
+        "description": "You won't be missed.",
+        "status": "published",
+        "stylesheets": ["/stylesheets/year-in-review.css"],
+        "timestamp": 1703851682103
+    },
+    {
+        "id": "rocket-project-log",
+        "title": "Rocket Project Log",
+        "status": "wip"
+    },
+    {
         "id": "normality-plot",
         "title": "Normal Probability Plots for Dummies",
         "description": "How to qualitatively check if your dataset is normally distributed",

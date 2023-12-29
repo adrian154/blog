@@ -31,3 +31,7 @@
     padding: 2em;
     font-size: 18px;
 }
+
+body {
+    max-width: 38em;
+}

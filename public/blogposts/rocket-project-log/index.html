@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Rocket Project Log</title><meta property="og:title" content="Rocket Project Log"><meta property="og:type" content="website"><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><link rel="preconnect" href="https://rsms.me/"><link rel="stylesheet" href="https://rsms.me/inter/inter.css"><script>const loadSetting = name => {
+    if(localStorage.getItem(name) === "true")
+        document.documentElement.classList.add(name);
+    else
+        document.documentElement.classList.remove(name);
+};
+
+loadSetting("serif");
+loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/rocket-project-log"></head><body><header><h1 id="post-title">Rocket Project Log</h1></header><main><h1 id="2023-dec-25-initial-thoughts">2023 Dec 25: Initial Thoughts <a class="section-link" href="#2023-dec-25-initial-thoughts">&sect;</a></h1><p>I want to build a pump-fed bipropellant rocket! Why? Because not many people have done it, mainly. Tons of amateurs have fired solid rocket motors, not many have built liquid-fueled engines, and even fewer have ventured outside the realm of pressure-fed systems.</p>
+<p>The pumps will probably be driven by electric motors. I think trying to design a turbopump will push this project into the realm of implausibility.</p>
+<p>A pump-fed arrangement has many advantages for a flight vehicle (lighter tanks since they don’t need to hold pressure, possibility of running at a higher chamber pressure, simpler vehicle operations since there are no high pressures at rest), but trying to design a flight-capable engine will only add more complexity to an already difficult project. That can come later.</p>
+<p>Ultimate goals: pump-fed, regeneratively cooled engine with a thrust of 1 kN.</p>
+<p>The best fuel/oxidizer will be determined primarily by availability and safety. For those reasons, I am thinking ethanol and liquid oxygen. Both are fairly easy to obtain, not especially toxic, and less dangerous to handle compared to other fuels, while still offering decent performance. It’s also a very well characterized combo with a long history of use in both professional and amateur engines.</p>
+<p>(Some more background on my thought process while deciding fuel/ox combo: first, oxidizers are realistically limited to liquid oxygen and nitrous oxide. Nitrous oxide is self-pressurizing, but since our goal is to have our tanks at ambient pressure, it loses its advantage over liquid oxygen. So we will be dealing with at least one cryogenic propellant; let’s not have two! This limits our fuels to substances that are liquid at room temperature, so really just the alcohols and kerosene. These are both still viable options, but I have a preference for ethanol since it burns cooler and is probably more consistent than kerosene since it’s a pure substance.)</p>
+<p>Things that need to be figured out, roughly ordered by dependency:</p>
+<ul>
+<li>basic chamber properties (pressure, mass flow rate, nozzle dimensions)</li>
+<li>how will the chamber be cooled</li>
+<li>injector design</li>
+<li>cryogenic plumbing, especially the valves</li>
+<li>pump design</li>
+<li>geometry (impeller and volute)</li>
+<li>sealing</li>
+<li>fabrication of everything</li>
+<li>igniter and test stand</li>
+<li>(further iteration depending on results of tests)</li>
+</ul>
+<p>There is also the possibility of adapting an off-the-shelf pump for use in the system. This seems more viable for the fuel pump, since I suspect there probably aren’t any affordable pumps matching our requirements that can operate at cryogenic temperatures. Need to investigate.</p>
+<p>It might be a good idea to develop the thrust chamber first. Then we can approach pump design in a more informed manner, since we’ll have real pressure drop and flow measurements to work from. The thrust chamber can be tested using a pressure-fed setup before the pumps are ready. Need to investigate how hydrostatic testing of the thrust chamber + injector assembly could be done.</p>
+<p>Biggest hurdles I anticipate:</p>
+<ul>
+<li>Chamber cooling. This is probably the most important challenge to overcome. Options include film cooling, regenerative cooling, and ablative cooling. Ablative cooling is undoubtedly the easiest option but seems cumbersome to work with, and I would rather not. The other two options would be very difficult to design and manufacture. Finding out that cooling was insufficient during a hot fire would be suboptimal, so good analysis is crucial.</li>
+<li>Pump design. Will most likely be a centrifugal pump. Must produce sufficient flow at design pressure without leaks. Must be reliable. Must be able to fabricate the design using available facilities. Cryogenic seals may prove to be very difficult. Also, achieving good efficiency may be challenging. Cavitation could be an issue. Impeller will need to be balanced, this may be difficult.</li>
+<li>Injector design. Must provide good mixing and atomization without creating hotspots which could lead to thrust chamber failure. Injector pressure drop directly influences pump specifications. Manufacturability will be a very important factor. I think it will probably end up being a pintle or impinging-jet design.</li>
+</ul>
+<p>Instrumentation will probably include pressure transducers, temperature gauges, and of course the load cell to measure thrust. I don’t foresee DAQ being a huge problem.</p>
+<p>With regards to control, the most non-trivial part is probably the pumps. I am not sure if this will require closed-loop control.</p>
+<p>This is all very ambitious, but I figure that it can be done with some persistence. So let’s see!</p>
+<p>Some other people’s projects that I’m taking inspiration from:</p>
+<ul>
+<li><a href="https://www.watzlavick.com/robert/rocket/regenChamber3/index.html">250 lbf regeneratively cooled chamber by Robert Watzlavick</a></li>
+<li><a href="https://liquidrocketproject.blogspot.com/">50 lbf rocket build log by Jared Brewer</a></li>
+<li><a href="https://www.speedwayspaceproject.space/">300 lbf pump-fed keralox engine by Ben Juenger</a></li>
+<li><a href="https://www.kechuang.org/u/426/profile/timeline">1 kN pump-fed ethalox engine by Yuchong Li</a></li>
+</ul>
+<h1 id="2023-dec-26-nerdsniped">2023 Dec 26: Nerdsniped <a class="section-link" href="#2023-dec-26-nerdsniped">&sect;</a></h1><p>Spent the day patching RPA to remove the free trial limitations, even though this was <em>absolutely</em> not necessary. It took an unreasonably long time because I am pretty lousy at reverse engineering, although I guess I learned a lot about Qt&#39;s internals and also got to use x64dbg for the first time. It&#39;s not even December 26th anymore. I&#39;m going to bed.</p>
+<h1 id="2023-dec-28-preliminary-calculations">2023 Dec 28: Preliminary Calculations <a class="section-link" href="#2023-dec-28-preliminary-calculations">&sect;</a></h1><p>Since this is meant to be an educational project, I thought it would be fun to do my own combustion analysis and compare the results produced by RPA and NASA&#39;s CEA.</p>
+<p>Our input parameters are the same in all cases:</p>
+<ul>
+<li>1 kN thrust </li>
+<li>1 atm ambient pressure</li>
+<li>20 bar chamber pressure</li>
+<li>Ethanol/LOX fuel, O/F ratio 1.0&ndash;2.0</li>
+</ul>
+<p>(Disclaimer: the chamber pressure of 20 bar is picked arbitrarily for the sake of this exercise.)</p>
+<p>We know that the thrust produced is equal to</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>F</mi><mo>=</mo><mover accent="true"><mi>m</mi><mo>˙</mo></mover><msub><mi>v</mi><mi>e</mi></msub></mrow><annotation encoding="application/x-tex">F = \dot{m}v_e</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8179em;vertical-align:-0.15em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6679em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">m</span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.1389em;"><span class="mord">˙</span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span></p>
+<p>where </p>
+<ul>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>m</mi><mo>˙</mo></mover></mrow><annotation encoding="application/x-tex">\dot{m}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6679em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6679em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">m</span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.1389em;"><span class="mord">˙</span></span></span></span></span></span></span></span></span></span> is mass flow rate</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>e</mi></msub></mrow><annotation encoding="application/x-tex">v_e</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> is the effective exhaust velocity</li>
+</ul>
+<p>The <a href="https://en.wikipedia.org/wiki/Isentropic_nozzle_flow">isentropic nozzle flow</a> equations enable us to determine the gas conditions (temperature, pressure, velocity) at any position along the flow. However, to use these equations, we need to know the temperature and ratio of specific heats <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi></mrow><annotation encoding="application/x-tex">\gamma</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.05556em;">γ</span></span></span></span> of the gas entering the nozzle. Both of these values will depend on the combustion process. </p>
+<p>Once we know these two values, we can calculate the exhaust velocity of the nozzle, as well as the exit-to-throat area ratio. From there we can determine the necessary mass flow rate to reach our target thrust using the first equation, as well as the actual dimensions of the nozzle and chamber.</p>
+<p>(divergence loss)</p>
+<p>(shifting equilibrium)</p>
+<img id="img-view" style="display: none"></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="/rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog/tree/main/public/blogposts/rocket-project-log">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>

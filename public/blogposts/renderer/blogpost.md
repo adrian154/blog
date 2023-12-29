@@ -334,6 +334,10 @@ bool raytraceBox(const Box *box, const Ray *ray) {
 
 Now, we can pre-compute the bounding box of our mesh, and test rays against it before launching into our old ray-mesh code.
 
+1L BVH: 
+
+33,328,000 91824
+
 ## Light Transport
 
 <script src="bezier.js"></script>

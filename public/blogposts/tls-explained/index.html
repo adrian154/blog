@@ -1191,8 +1191,15 @@ serverApplicationIV = <span class="hljs-title function_">hkdfExpandLabel</span>(
 </div>
 
 <p>And, at long last, the client and server have a secure channel which they can communicate through.</p>
-<h1 id="epilogue">Epilogue <a class="section-link" href="#epilogue">&sect;</a></h1><p>This article only shows part of what makes TLS tick. There&#39;s much more beneath the surface; things like 0-RTT messages, client authentication, SNI, ALPN, the list goes on. Not to mention the fact that TLS 1.3 is vastly different from TLS 1.2 in many ways&mdash;though I specifically chose TLS 1.3 since it is more elegant than TLS 1.2, which is more nuanced thanks to several well-known security holes. To learn more, the RFCs are your best friend. Skip ahead to the Further Reading section for some good references.</p>
-<h1 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h1><p>Making the interactive TLS session turned out to be surprisingly tricky. I ended up modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
+<h1 id="epilogue">Epilogue <a class="section-link" href="#epilogue">&sect;</a></h1><p>This article only covers a small portion of the TLS 1.3 protocol. Notable omissions include:</p>
+<ul>
+<li>session resumption and 0-RTT</li>
+<li><a href="https://en.wikipedia.org/wiki/Server_Name_Indication">server name indication</a></li>
+<li>client authentication</li>
+<li>pre-shared keys</li>
+</ul>
+<p>Also, much of the Internet still runs on TLS 1.2, which differs from TLS 1.3 in <em>many</em> ways. A full description of TLS and its many nuances is just a <em>tad</em> too long for a blogpost, so skip ahead to the Further Reading section for some good references.</p>
+<h2 id="behind-the-scenes">Behind the Scenes <a class="section-link" href="#behind-the-scenes">&sect;</a></h2><p>Recording the example TLS session turned out to be surprisingly tricky. I ended up modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here&#39;s the patch I applied before rebuilding:</p>
 <pre><code class="hljs"><span class="hljs-comment">diff --git a/deps/openssl/openssl/ssl/statem/extensions_clnt.c b/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>
 <span class="hljs-comment">index 7b46074232..bd765f43f0 100644</span>
 <span class="hljs-comment">--- a/deps/openssl/openssl/ssl/statem/extensions_clnt.c</span>
@@ -1201,7 +1208,7 @@ serverApplicationIV = <span class="hljs-title function_">hkdfExpandLabel</span>(
          }
      }
  
-<span class="hljs-addition">+    /* print out the key like the sneaky devils we are */</span>
+<span class="hljs-addition">+    /* print out the key &gt;:) */</span>
 <span class="hljs-addition">+    BIO *bp = BIO_new_fp(stdout, BIO_NOCLOSE);</span>
 <span class="hljs-addition">+    EVP_PKEY_print_private(bp, key_share_key, 1, NULL);</span>
 <span class="hljs-addition">+    BIO_free(bp);</span>
@@ -1225,7 +1232,7 @@ serverApplicationIV = <span class="hljs-title function_">hkdfExpandLabel</span>(
          /* Generate encoding of server key */
          encoded_pt_len = EVP_PKEY_get1_encoded_public_key(skey, &amp;encodedPoint);
          if (encoded_pt_len == 0) {
-</code></pre><p>Turns out, that was enough instrumentation to figure out all the other secrets used in the handshake. A couple weeks of banging my head on various RFCs was enough to piece together the rest of the puzzle. After that, it was a simple matter of using NodeJS to create a TLS client and server, then capturing the exchange using <code>tcpdump</code>. Here&#39;s the client/server code.</p>
+</code></pre><p>That was enough instrumentation to figure out all the other secrets used in the handshake. A couple weeks of banging my head on various RFCs was enough to piece together the rest of the puzzle. After that, it was a simple matter of using NodeJS to create a TLS client and server, then capturing the exchange using <code>tcpdump</code>. Here&#39;s the client/server code.</p>
 <pre><code class="hljs"><span class="hljs-comment">// run with --tls-keylog=...</span>
 
 <span class="hljs-keyword">const</span> tls = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;tls&quot;</span>);
