@@ -1,4 +1,4 @@
-The Internet is, by default, not secure. In TCP and below, everything is transferred in plaintext; an attacker could snoop on your communications or, worse, masquerade as the person you think you're talking to. Yet today, most users don't have to worry about those kinds of attacks. Why not? The answer is the **Transport Layer Security** protocol, which transparently secures much of the modern Web. Strap in, because we're about to learn some cryptography.
+The Internet is, by default, not secure. In TCP and below, everything is transferred in plaintext; an attacker could snoop on your communications or, worse, masquerade as the person you think you're talking to. Yet today, most users don't have to worry about those kinds of attacks. Why not? The answer is the **Transport Layer Security** protocol, which transparently secures much of the modern Web. Strap in!
 
 # Conceptual Overview
 
@@ -6,7 +6,7 @@ TLS aims to create a secure channel with three properties: **confidentiality**, 
 
 ## Confidentiality
 
-It's pretty easy to see why confidentiality is important: nobody wants a third party to be able to read your communications. The solution is to encrypt your data with a cipher, an algorithm which accepts a plaintext and a key and produces a ciphertext, such that it is easy to retrieve the plaintext if you have the key, but virtually impossible without it. When a cipher uses the same key to encrypt and decrypt data, it is called a [symmetric cipher](https://en.wikipedia.org/wiki/Symmetric-key_algorithm).
+It's pretty easy to see why confidentiality is important: nobody wants a third party to be able to read your communications. The solution is to encrypt your data with a cipher, an algorithm which accepts a plaintext and a key and produces a ciphertext, such that it is easy to retrieve the plaintext if you have the key, but virtually impossible without it. Ciphers that use the same key to encrypt and decrypt data are known as [symmetric ciphers](https://en.wikipedia.org/wiki/Symmetric-key_algorithm).
 
 Symmetric ciphers are great because they're usually very fast and very secure, but they do have one weakness: key exchange. The two communicating parties need to figure out a way to share a secret key without the possibility of anyone else obtaining it. This creates a bit of a chicken-and-egg problem; after all, they can't establish a private means of communication without negotiating a key first, which just brings us back to square one. To solve this problem, we need to get a little more clever.
 
@@ -16,28 +16,30 @@ Enter the [Diffie-Hellman Key Exchange](https://en.wikipedia.org/wiki/Diffie%E2%
 
 <br>
 
-We can make this model a little more rigorous by replacing the paints with variables. Suppose `C` is some common value that both Alice and Bob know. The paint-mixing can be modeled as an operation which we will call `*`, with the following properties:
+Mixing paints is a wonderful analogy that conveys the properties of DHKE in a very intuitive way, but it abstracts away the mathematical details, which you may be interested in. So here's a little cryptography primer.
 
-* It is easy to compute `x * y`, but even if the value of `x` or `y` is known, it should be very difficult to retrieve the operands from the result of the operation. Examples of such operations will be discussed later.
-* The operation must be associative, i.e. `(x * y) * z` = `(x * z) * y`.
+Let's start with modular arithmetic. It all starts with a *modulus*, or some integer which we will call $p$. If we take two elements $a$ and $b$ from the set $(1, 2, 3, \dots, p - 1)$ and take the product 
 
-(Don't let the notation confuse you. `*` does *not* represent regular multiplication, which wouldn't work for this process since it doesn't fulfill our first requirement.)
+ $$a \times b \mod p$$
 
-Now, we're ready to do the key exchange. Alice generates a random secret `A`, and Bob generates a random secret `B`. Alice sends Bob `A * C` and Bob sends Alice `B * C`. Now, Alice can compute `A * (B * C)` and Bob can compute `B * (A * C)`. Because the operation is associative, Alice and Bob arrive at the same value, which they can now use as the key to a symmetric cipher.
+the result is another integer from that set. In fact, if $p$ is prime, then the product of any two integers from the set mod $p$ must also be a member of the set. In mathematical terms, we say that the set is closed under multiplication mod $p$.
 
-However, if an attacker could observe the key exchange between Alice and Bob, they would only obtain `A * C` and `B * C`. The attacker probably knows `C`, but because reversing the operation is hard, the attacker cannot calculate `A` or `B`, and thus cannot determine the shared secret.
+This combination of a set (which we will call $G$) and a binary operation forms a mathematical structure called a [group](https://en.wikipedia.org/wiki/Group_(mathematics)), because it fulfills the following criteria:
+- Associativity: $a \times (b \times c)$ = $(a \times b) \times c$ for all members of $G$.
+- Identity element: there is an element $e$ such that for any $a$ in $G$, $a \times e = e \times a = a$. In this case, $e = 1$.
+- Inverse element: for every element $a$ in $G$, there exists an element $a^{-1}$ so that $a \times a^{-1} = a^{-1} \times a = e$.
 
-<aside>
+The idea of a group can be used to describe many things: everything from the permutations of a Rubik's cube to the symmetries of a crystal lattice, and much more. By representing some structure as a group, we can study its structure using the theorems and techniques of group theory.
 
-Diffie-Hellman key exchange is where mathematical concepts such as [groups](https://en.wikipedia.org/wiki/Group_(mathematics)) become very useful. A group is a structure consisting of a set of elements and an operation which accepts two elements and produces one element. This operation must be associative (among other requirements).
+In our case, we have the multiplicative group of integers mod $p$. It is known that if $p$ is prime then this group is *cyclic*, meaning that it contains some element $g$ such that any member of the group can be written as a power of $g$. In other words, by repeatedly multiplying $g$ by itself, we can step through every element of the group before arriving back at $g$. For this reason, $g$ is known as a *generator* of the group.
 
-The characteristics of certain groups make them useful for key exchange, and cryptography in general. For example, [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) uses a [multiplicative group of integers modulo *n*](https://en.wikipedia.org/wiki/Multiplicative_group_of_integers_modulo_n) where the modulus is a large semiprime. RSA's security relies on the fact that there are currently no effective algorithms for [factoring large integers](https://en.wikipedia.org/wiki/Integer_factorization); hence, reversing the group operation remains difficult. Incidentally, this is why quantum computers spell the end for RSA, since they are capable of factoring integers in [O\(\(log n\)^3\)](https://en.wikipedia.org/wiki/Shor%27s_algorithm). Thankfully, there are no quantum computers fast enough to pose a threat to RSA... yet.
+A useful property of cyclic groups is that they are always abelian, which simply means that the group operation is commutative. This is important for Diffie-Hellman!
 
-Today, cryptosystems based on [elliptic curve groups](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) have become popular since they offer similar security to RSA, but with much smaller and thus more convenient keys. These constructions make use of a property which certain elliptic curve groups possess: if a starting point *P* is added to itself *n* times, it is very difficult to determine *n* even if both the starting point and the ending point are known. This is known as the elliptic curve discrete logarithm problem, and so far very little progress has been made in the way of attacking it.
+Okay, so let's envision how we can apply this new knowledge to key exchange. Alice and Bob start by agreeing on a prime modulus $p$ and generator $g$; for TLS, these values have been [standardized](https://www.rfc-editor.org/rfc/rfc7919.html) and are built into TLS libraries. Next, each party generates some secret value, which we will call $A$ and $B$. Alice computes $g^A$, and Bob computes $g^B$. These secondary values are exchanged.
 
-I'm really terrible at explaining group theory, so if you want to learn more check out this [short introduction](https://math.mit.edu/~jwellens/Group%20Theory%20Forum.pdf).
+Now, Alice can compute $(g^B)^A$, and Bob can compute $(g^A)^B$. These two must be equal, meaning that they have arrived at a shared secret! Crucially, an observer *cannot* do the same, because while they know the value of $g$ to the power of the secret values they do not know the secret values themselves. Furthermore, if $p$ is sufficiently large, there are no known methods to quickly determine $x$ from the value of  $g^x \bmod p$. This is known as the [discrete logarithm problem](https://en.wikipedia.org/wiki/Discrete_logarithm), and its difficulty forms the basis of many modern cryptosystems.
 
-</aside>
+The method we have just described is known as finite-field Diffie-Hellman key exchange, but it is also common practice to use groups defined by [elliptic curves](https://en.wikipedia.org/wiki/Elliptic_curve) rather than modular arithmetic. These groups have more complex structure, so the same level of security can be achieved with fewer bits. For finite-field Diffie-Hellman, you are usually dealing with primes of at least 2048 bits in length.
 
 ## Authenticity
 
@@ -47,29 +49,20 @@ Digital signatures are a form of [public key cryptography](https://en.wikipedia.
 
 To create a digital signature, the client uses the signing algorithm to convert their private key and a piece of data into a short output known as a signature. Signatures are useful since they have the following properties:
 * Anyone can prove that a signature is valid using just the public key and the data.
-* The signature won't validate if the data doesn't match what was originally signed.
+* The signature won't validate if the data doesn't *exactly* match what was originally signed.
 * No one can create a signature without possessing the private key.
 
-One can imagine a scheme involving a trusted third party that leverages the power of digital signatures to associate a public key with a real-world identity. Suppose Bob wants to send a message to Alice, but he wants to assure Alice that the message was actually sent by him and not an impostor. Sure, he could sign the message, but what good is that if Alice doesn't know his public key? This becomes the goal of authentication: establishing a relationship between a useful identity and a public key.
+So, suppose Bob wants to send a message to Alice, while also providing reassurance that the message was actually sent by him and not an impostor. He could sign the message, but Alice needs some way of knowing that the key he signed it with actually belongs to Bob. 
 
-Here's how TLS approaches this problem. Bob is friends with Carol, who's so famous that everybody knows her public key. Bob asks Carol to sign the following statement:
+TLS relies on the services of a trusted third party&mdash;we'll call her Carol&mdash;to provide authenticity. Both Alice and Bob trust Carol, and know her public key. So Bob asks Carol to sign a statement asserting that Bob's public key is &lt;ABC&gt;, and includes the signed statement when initiating communications with Alice. Now, Alice can verify that Bob's public key really belongs to Bob. This "signed statement" is known as a *certificate*.
 
-> Bob's public key is 123456789.
-
-Carol makes sure that the person she's talking to is actually Bob, and signs Bob's statement (which is known as a *certificate* in cryptography). Now, Bob can send Alice his certificate, allowing Alice to be sure of Bob's public key. Now Bob can sign all his messages, preventing an attacker from tricking Alice into accepting a message that isn't from Bob thanks to their inability to craft a valid signature.
-
-This, in essence, is how TLS performs authentication. Carol represents a group of organizations known as [certificate authorities](https://en.wikipedia.org/wiki/Certificate_authority), whose public keys are hardcoded into web browsers. Certificates on the web generally don't link a human name to a public key; instead, the "useful identity" they try to anchor is usually a domain name. Furthermore, the CA may not directly sign a website's certificate. Instead, they may sign the certificate for an *intermediate* keypair, which does the task of actually signing end user certificates. This sequence can extend for as many signatures as necessary, creating a **chain of trust**.
-
-<figure style="max-width: 1280px">
-    <img src="certificate-chain-of-trust.png" alt="chain of trust diagram">
-    <figcaption>A rough diagram showing how a verifiable chain of trust is created using digital signatures. <a href="https://en.wikipedia.org/wiki/File:Chain_Of_Trust.svg">Image</a> by Yukhih / <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA</a>.</figcaption>
-</figure>
+This, in essence, is how TLS performs authentication. In reality, Carol's job is performed by a group of organizations known as [certificate authorities](https://en.wikipedia.org/wiki/Certificate_authority), whose public keys are hardcoded into web browsers. The job of a CA is to respond to requests for certificates by verifying ownership of a domain (usually through methods like DNS) and then issuing a signed certificate. 
 
 You can see this at play for pretty much any website you visit. If you're on Chrome, simply click the padlock button next to the address bar in your browser, and you'll see the option to view the website's certification path. Here's what you would probably see for this page:
 
 ![picture of the ssl cert for this site](windows-cert-view.png)
 
-During the TLS handshake process, all three of these certificates were sent from my server to your browser. The first certificate (bithole.dev) contains my server's public key, as well as a reference to `R3`'s public key and a signature made with that public key. In turn, R3 is signed by ISRG Root X1, whose fingerprint is hardcoded into your browser as one of several trusted **root certificates**. Your browser can follow this chain of signatures and verify that each certificate is valid.
+Notice that my website's certificate is not directly signed using a root certificate (ISRG Root X1). Instead, my CA (Let's Encrypt) has chosen to issue an intermediate keypair, R1, which it uses to sign certificates. This is done to minimize usage of the root keypair; it's a lot less of a headache to revoke an intermediate keypair than to try and get millions of users to adopt a new root certificate.
 
 Simply receiving a valid certificate doesn't prevent man-in-the-middle attacks, though. Certificates are public knowledge; my webserver has to actually prove ownership of the corresponding private key somehow. To solve this, TLS makes the server sign the hash of all the messages sent before certificate verification. This assures the client that at no point during the handshake did an attacker mingle in their communications.
 
@@ -96,9 +89,9 @@ As you can see, changing a single character ends up producing two distinct hashe
 
 </aside>
 
-*If a CA issued a certificate to a hacker, wouldn't my computer blindly trust it?* you might ask. The answer is yes, unfortunately. That's why there are so few root CAs, which are audited frequently. This is also why most sites' certificates aren't directly signed by the root certificate. The root certificate is kept offline for maximum security, and all signing is done with an intermediate signed by the root instead. In the event that the intermediate certificate is compromised, things are *bad* but not *really bad*; the CA can simply issue a new intermediate instead of trying to get every user to adopt a new root certificate.
+This is all well and good, but it leaves an elephant in the room: what's stopping a CA from issuing certificates for malicious purposes? For many years this was considered one of the most severe blemishes on TLS's security, but today, technologies have been developed that enable auditing of the certificates issued by a CA. We'll learn more about how this is achieved later.
 
-In theory, a trusted CA should ony issue certificates to people who can actually prove ownership of a domain&mdash;for example, Let's Encrypt checks if a specific DNS record has been deployed for verification&mdash;but ultimately, you cannot be 100% sure that these entities will not try to attack your TLS connections. In response, some organizations choose to run their own internal CA and issue their own certificates. This removes the dependence on an external entity, but requires that all users manually add the CA's root certificate to their computer's list of trusted certificates. As a result, it's only really feasible to secure closed systems like enterprise environments this way.
+It's also possible to run your own CA and issue your own certificates, though of course they will only be accepted by computers to which you have added your root certificate. This scheme is quite common in enterprise environments.
 
 Here's a conversational illustration of all these concepts at play in a TLS handshake.
 
@@ -126,11 +119,11 @@ Here's a conversational illustration of all these concepts at play in a TLS hand
 
 ## Integrity
 
-Even if you have authenticated with a server and established a secure channel, there still remains a problem: an attacker who controls the network between you and your destination can still modify the ciphertext messages being exchanged. The attacker doesn't need to be able to decipher the messages; for example, simply resending the same ciphertext could result in a request being repeated if the proper protections aren't in place. This is known as a [replay attack](https://en.wikipedia.org/wiki/Replay_attack).
+Even if you have authenticated with a server and established an encrypted channel, there remains a problem: an attacker who controls the network between you and your destination can still modify the ciphertexts being exchanged. Even though the attacker can't see the original message, if they know the position of some value within the ciphertext, they can simply blindly modify the messages until the desired effect is achieved.
 
-A system vulnerable to such an attack would be unacceptable for many applications. Ideally, we also want some strong cryptographic guarantee that the message wasn't tampered with in transit. TLS accomplishes this using [authenticated encryption](https://en.wikipedia.org/wiki/Authenticated_encryption).
+This possibility obviously not acceptable. We want some cryptographic guarantee that the message was not tampered with in transit, which is offered by [authenticated encryption](https://en.wikipedia.org/wiki/Authenticated_encryption) schemes.
 
-In TLS 1.3, integrity is handled by only using ciphers which include **authenticated encryption with associated data (AEAD)**. When encrypting data using an AEAD cipher, an authentication tag is produced in addition to the ciphertext. The auth tag allows clients to verify that the plaintext matches what was originally encrypted. In addition, the auth tag can also guarantee the validity of some associated data not included within the ciphertext, the *associated data*. All of this is done without leaking any information about the encrypted data itself.
+In TLS 1.3, integrity is handled by only using ciphers which include **authenticated encryption with associated data (AEAD)**. When encrypting data using an AEAD cipher, a value known as an authentication tag is produced in addition to the ciphertext. The authentication tag allows clients to verify that the plaintext matches what was originally encrypted. In addition, the auth tag can also guarantee the validity of some associated data not included within the ciphertext, the *associated data*. Crucially, all of this is done without leaking any information about the encrypted data itself.
 
 With all of that being said, let's actually examine a recorded TLS session and see how all of these cryptographic concepts are implemented.
 
@@ -521,9 +514,7 @@ Create the handshake secret using the shared value from key exchange and the der
 handshakeSecret = hkdfExtract(derivedSecret, sharedSecret);
 ```
 
-For the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to `deriveSecret` in a parameter called the *context*. This is why the Random field is included in the Hello messages: to prevent replay attacks. The Random fields change between handshakes, and thus, so does the context. Without this protection, an attacker could simply record a client connecting to the server and replay the handshake in an attempt to extract the key; however, since the Random field sent by the server in the attacker's session would be different from the value sent in the previous session, the handshake context changes, and different keys are derived.
-
-`handshakeContext` is created by applying a cryptographic hash function to the raw data of the ClientHello and Server Hello messages, excluding the record header.
+For the next part, we need to pass the hash of the previously exchanged ClientHello and ServerHello messages to `deriveSecret` in a parameter called `handshakeContext`, which is created by applying a cryptographic hash function to the raw data of the ClientHello and Server Hello messages (excluding the record header).
 
 ```js
 // client side
@@ -545,19 +536,17 @@ serverHandshakeKey = hkdfExpandLabel(serverHandshakeTrafficSecret, "key", Buffer
 serverHandshakeIV = hkdfExpandLabel(serverHandshakeTrafficSecret, "iv", Buffer.alloc(0), 12);
 ```
 
-The initialization vector (IV) ensures that every ciphertext is unique. Without a unique IV for each message, encrypting the same plaintext would produce the same ciphertext, which exposes a ton of information to attackers.
+The initialization vector (IV) ensures that every ciphertext is unique. For AES-GCM (and AES in general), IV reuse can have [severe consequences](https://crypto.stackexchange.com/questions/26790/how-bad-it-is-using-the-same-iv-twice-with-aes-gcm).
 
 The code used to explain this section is available [here](https://github.com/adrian154/blog/blob/main/public/blogposts/tls-explained/key-schedule.js). 
 
 ## Perfect Forward Secrecy
 
-One important property offered by this complex key schedule is [perfect forward secrecy](https://en.wikipedia.org/wiki/Forward_secrecy): even if the server's certificate private key is eventually compromised, a client cannot decrypt recorded TLS traffic sent before the compromise. It's easy to see why this is the case: the public key the server sent in its key_share has nothing to do with the keypair in the server's certificate, so the keys used to calculate the shared secret are referred to as *ephemeral*. As long as these ephemeral keys aren't saved in a place where an attacker could obtain them eventually, the forward secrecy remains unbroken. Indeed, the TLS 1.3 RFC recommends immediately overwriting these values in  memory to reduce potential exposures.  
-
-The only reason we're able to decrypt the capture is because I passed a flag to OpenSSL telling it to log some of the values used in key exchange (such as the handshake traffic secrets) to a text file that can be parsed by tools such as [Wireshark](https://www.wireshark.org/).
+One important property offered by this complex key schedule is [perfect forward secrecy](https://en.wikipedia.org/wiki/Forward_secrecy): even if the server's stored keypair is eventually compromised, a client cannot decrypt recorded TLS traffic sent before the compromise. It's easy to see why this is the case: the public key the server sent in its key_share has nothing to do with the keypair in the server's certificate; they are *ephemeral*. As long as these ephemeral keys aren't saved somewhere (which should never happen under natural circumstances), the forward secrecy remains unbroken. Indeed, the TLS 1.3 RFC recommends immediately overwriting these values in  memory to reduce potential for exposure.  The only reason we're able to decrypt the capture is because I passed a flag to OpenSSL telling it to log some of the values used in key exchange (such as the handshake traffic secrets) to a text file that can be parsed by tools such as [Wireshark](https://www.wireshark.org/).
 
 # S → C: Change Cipher Spec
 
-Next, the server sends the Change Cipher Spec message. This isn't used in TLS 1.3, but to avoid confusing intermediate nodes, this message is still sent. From this point on, the rest of the handshake is encrypted.
+This message does nothing in TLS 1.3 and is only sent for compatibility purposes.
 
 <div class="server packet">
 <div class="segment" data-hex="140303000101" data-name="Record Header">
@@ -938,13 +927,12 @@ This extension describes where to access the issuer's Certificate Practice State
 </div>
 <div class="segment" data-hex="30820104060a2b06010401d6790204020481f50481f200f00076006f5376ac31f03119d89900a45115ff77151c11d902c10029068db2089a37d9130000017f0bd084e50000040300473045022100eee2822add6ff5c9cc507f0a8a5f174551205becfbf0031e962d8f4ce916090b022049cf3e53e653385c0745902e8c7901e4971b25b436eafb22f2b83c222747b3c500760046a555eb75fa912030b5a28969f4f37d112c4174befd49b885abf2fc70fe6d470000017f0bd084e10000040300473045022018c8aee5cff4fdc7b19232bc8533de5890f75820f85ac40d11c5696e9ab9912e022100a1dddb603ec9b815f067ac0ac6a5229146fdcf932b5ad4ff28ae892aee813caa" data-name="Extension: Certificate Transparency" data-x="1">
 
-[Certificate Transparency](https://certificate.transparency.dev/) is a standard for... well... certificate transparency! The idea is for CAs to permanently log every certificate they issue, making it easier to track down malicious or mistakenly issued certificates. There are three types of groups involved in CT:
+[Certificate Transparency](https://certificate.transparency.dev/) is a standard for... well... certificate transparency! Here's how it works:
 
-* CAs, who submit certificates to logs
-* Logs, which validate certificates and log them, returning a Signed Certificate Timestamp (a promise that the certificate will be added to the log). The data structure which logs store issuances in (a [Merkle Tree](https://en.wikipedia.org/wiki/Merkle_tree)) is constructed using cryptographic primitives such that it is impossible to remove an entry without consumers of the log noticing.
-* Monitors, which receive updates from logs and ensure that the logs are not misbehaving. Monitors may also offer services that contact you when a new certificate is issued for one of your domains.
+* CAs submit certificates to logs, who return a Signed Certificate TImestamp (a promise that the certificate will be added to the log within a certain period). Logs record certificate issuances in a cryptographic structure known as a [Merkle Tree](https://en.wikipedia.org/wiki/Merkle_tree), which ensures that logs cannot remove an entry after the fact.
+* Monitors receive updates from logs and ensure that they are not misbehaving. Many monitors also offer services that notify admins when a new certificate is issued.
 
-Certificate Transparency is further strengthened by the fact that some browsers (such as [Chrome](https://chromium.googlesource.com/chromium/src/+/master/net/docs/certificate-transparency.md)) now display an SSL error if a certificate lacks Certificate Transparency information, preventing CAs from issuing certificates off the record.
+Today, most browsers (including Chrome) require certificates to contain Certificate Transparency information, preventing CAs from issuing certificates off the record.
 
 This is all a very surface-level description of the Certificate Transparency ecosystem. For more information, you should check out the [official website](https://certificate.transparency.dev/howctworks/).
 
@@ -997,7 +985,9 @@ The actual signature of the certificate.
 </div>
 </div>
 
-This certificate contains some information about where to proceed next in the chain of trust. The easiest way is to probably look for the certificate whose subject key identifier matches the authority key identifier listed here, which is `142eb31...14c2c6`. If we look at R3, we'll see that its subject key identifier has that value; we can then validate the signature included in `test.bithole.dev` using R3's public key. Repeat the process, and we reach ISRG Root X1, which is signed by itself since it's a root certificate.
+While most of the certificate is pretty unremarkable, I recommend checking out the Certificate Transparency section&mdash;this is how CAs are audited today!
+
+Each certificate contains some information about where to proceed next in the chain of trust. In this case, the certificate lists an authority key identifier of `142eb31...14c2c6`, which matches the subject key identifier of R3. A client can then validate the signature and repeat the process until it reaches the trust root.
 
 The three certificates are available for download: [test.bithole.dev](cert1.crt), [R3](cert2.crt), and [ISRG Root X1](cert3.crt). You can dump information about these certificates using OpenSSL from the terminal:
 
@@ -1226,7 +1216,7 @@ This part of the handshake relies on [HMAC](https://en.wikipedia.org/wiki/HMAC),
 
 # C → S: Change Cipher Spec
 
-The client also sends a Change Cipher Spec message to the server, which is ignored in TLS 1.3. The byte-level analysis is omitted since it is identical to the one [sent by the server](#s--c-change-cipher-spec) earlier in the handshake.
+The client also sends a Change Cipher Spec message to the server, which is similarly ignored in TLS 1.3. The byte-level analysis is omitted since it is identical to the one [sent by the server](#s--c-change-cipher-spec) earlier in the handshake.
 
 # C → S: Finished
 
@@ -1380,17 +1370,11 @@ And, at long last, the client and server have a secure channel which they can co
 
 # Epilogue
 
-This article only covers a small portion of the TLS 1.3 protocol. Notable omissions include:
-- session resumption and 0-RTT
-- [server name indication](https://en.wikipedia.org/wiki/Server_Name_Indication)
-- client authentication
-- pre-shared keys
+This article only shows a small portion of TLS's many capabilities, which includes things like 0-RTT messages, client authentication, SNI, ALPN, and so on. Furthermore, TLS 1.3 is vastly different from TLS 1.2 in many ways&mdash;I specifically chose TLS 1.3 since it is more elegant than TLS 1.2, being designed to avoid the pitfalls of past standards. To learn more, the RFCs are your best friend. Skip ahead to the Further Reading section for some good references.
 
 Also, much of the Internet still runs on TLS 1.2, which differs from TLS 1.3 in *many* ways. A full description of TLS and its many nuances is just a *tad* too long for a blogpost, so skip ahead to the Further Reading section for some good references.
 
-## Behind the Scenes 
-
-Recording the example TLS session turned out to be surprisingly tricky. I ended up modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here's the patch I applied before rebuilding:
+Recording the TLS session turned out to be a little tricky. I ended up modifying OpenSSL to log the private keys used in the handshake key exchange process and rebuilding NodeJS from source. Here's the patch I applied before rebuilding:
 
 ```patch
 diff --git a/deps/openssl/openssl/ssl/statem/extensions_clnt.c b/deps/openssl/openssl/ssl/statem/extensions_clnt.c

@@ -13,6 +13,18 @@
         "status": "wip"
     },
     {
+        "id": "ctf-writeups/squarectf-nauseous-process",
+        "title": "SquareCTF 2023 - Nauseous Process",
+        "status": "published",
+        "timestamp": 1700343715888
+    },
+    {
+        "id": "ctf-writeups/udctf-strong-primes",
+        "title": "UDCTF 2023 - Strong Primes",
+        "status": "published",
+        "timestamp": 1698628939528
+    },
+    {
         "id": "normality-plot",
         "title": "Normal Probability Plots for Dummies",
         "description": "How to qualitatively check if your dataset is normally distributed",
@@ -39,19 +51,14 @@
     {
         "id": "blue-curtains",
         "title": "The Parable of the Blue Curtains",
-        "description": "Thoughts on how literary analysis is taught.",
+        "description": "Thoughts on how literary analysis is taught",
         "timestamp": 1685006388909,
         "status": "hidden"
     },
     {
-        "id": "badge",
-        "title": "Badge",
-        "status": "wip"
-    },
-    {
         "id": "tuning",
         "title": "The Trouble with Tuning Systems",
-        "description": "Exploring the mathematical conundrum behind harmony.",
+        "description": "Exploring the mathematical conundrum behind harmony",
         "timestamp": 1681970192244,
         "status": "published",
         "interactive": true
@@ -117,16 +124,16 @@
     {
         "id": "nginx-sqlite-log",
         "title": "Logging Requests with SQLite and Nginx",
-        "description": "An experiment in configuring Nginx to store requests in an SQLite table.",
+        "description": "An experiment in configuring Nginx to store requests in an SQLite table",
         "timestamp": 1661106917570,
         "status": "published"
     },  
     {
         "id": "dc30",
         "title": "DEFCON Photo Dump",
-        "description": "Some pictures we took at DEFCON 30.",
+        "description": "Some pictures we took at DEFCON 30",
         "timestamp": 1660680609998,
-        "status": "published"
+        "status": "hidden"
     },
     {
         "id": "random-float",
@@ -149,16 +156,10 @@
     {
         "id": "detecting-dns-resolvers",
         "title": "Detecting Users' DNS Resolvers",
-        "description": "Utilizing DNS tomfoolery for fun and profit. Well, actually, just fun.",
+        "description": "Utilizing DNS tomfoolery for fun and profit. Well, actually, just fun",
         "stylesheets": ["styles.css"],
         "timestamp": 1658683083044,
         "status": "published"
-    },
-    {
-        "id": "bitcoin-explained",
-        "title": "Yet Another Bitcoin Explanation",
-        "description": "Because why not?",
-        "status": "wip"
     },
     {
         "id": "discord-qr-code-phishing",
@@ -171,7 +172,7 @@
     {
         "id": "dissecting-log4shell",
         "title": "Dissecting a Log4Shell Attack",
-        "description": "Taking apart an attempted Log4Shell attack on my Minecraft server, with some interesting discoveries.",
+        "description": "Taking apart an attempted Log4Shell attack on my Minecraft server, with some interesting discoveries",
         "timestamp": 1642141626850,
         "status": "published",
         "issueNumber": 3
@@ -188,7 +189,7 @@
         "title": "The Internet, Explained",
         "description": "So what makes this thing tick, anyways?",
         "timestamp": 1641357338707,
-        "status": "published",
+        "status": "hidden",
         "issueNumber": 10,
         "scripts": ["/scripts/packetview.js"],
         "stylesheets": ["/stylesheets/packetview.css"]
@@ -196,7 +197,7 @@
     {
         "id": "jpeg-explained",
         "title": "What's In a JPEG?",
-        "description": "The fascinating algorithms behind the quintessential image format.",
+        "description": "The fascinating algorithms behind the quintessential image format",
         "scripts": ["1d-dct-demo.js"],
         "stylesheets": ["styles.css"],
         "interactive": true,
@@ -207,7 +208,7 @@
     {
         "id": "decompiling-minecraft",
         "title": "Minecraft Decompilation Guide",
-        "description": "A tutorial on how to decompile modern versions of Minecraft using Mojang's official mappings.",
+        "description": "A tutorial on how to decompile modern versions of Minecraft using Mojang's official mappings",
         "timestamp": 1655268355160, 
         "status": "published",
         "issueNumber": 12
@@ -215,7 +216,7 @@
     {
         "id": "mc-census",
         "title": "A Census of Minecraft Servers",
-        "description": "Searching four billion IP addresses for friends to play with.",
+        "description": "Searching four billion IP addresses for friends to play with",
         "timestamp": 1648747843094,
         "stylesheets": ["styles.css"],
         "status": "published",
@@ -224,7 +225,7 @@
     {
         "id": "mc-report-system",
         "title": "A Deep Dive into Minecraft Chat Reports",
-        "description": "Deconstructing the new chat reporting feature to understand its implications for the game.",
+        "description": "Deconstructing the new chat reporting feature to understand its implications for the game",
         "timestamp": 1656104241340,
         "status": "published",
         "issueNumber": 11
@@ -244,7 +245,7 @@
     {
         "id": "wordle-es-wordlist",
         "title": "Retrieving the Spanish Wordle Wordlist",
-        "description": "It's as stupid as it sounds.",
+        "description": "It's as stupid as it sounds",
         "timestamp": 1644036481518,
         "issueNumber": 4,
         "status": "hidden"

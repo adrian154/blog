@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="en" class="serif"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SquareCTF 2023 - Nauseous Process</title><meta property="og:title" content="SquareCTF 2023 - Nauseous Process"><meta property="og:type" content="website"><link rel="stylesheet" href="/stylesheets/highlight-style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"><link rel="stylesheet" href="/stylesheets/main.css"><link rel="preconnect" href="https://rsms.me/"><link rel="stylesheet" href="https://rsms.me/inter/inter.css"><script>const loadSetting = name => {
+    if(localStorage.getItem(name) === "true")
+        document.documentElement.classList.add(name);
+    else
+        document.documentElement.classList.remove(name);
+};
+
+loadSetting("serif");
+loadSetting("darkmode");</script><script defer src="/scripts/ui.js"></script><link rel="icon" type="image/png" sizes="16x16" href="/favicon.png"><link rel="canonical" href="https://blog.bithole.dev/blogposts/ctf-writeups/squarectf-nauseous-process"></head><body><header><h1 id="post-title">SquareCTF 2023 - Nauseous Process</h1><p class="date">Published November 18, 2023 &bull; <a href="/">more posts</a></p></header><main><blockquote>
+<p>I&#39;ve been talking to this obnoxious elf binary, he&#39;s super talkative but I think he mentioned he wanted to give you a flag or something.</p>
+</blockquote>
+<p>The challenge consists of a program that offers to read and print out 8 bytes from an array at a user-provided index, allowing us to read from anywhere in memory. We can also tell the program to execute a function at a user-provided address. Our goal is to locate a <code>get_flag</code> function loaded from a shared library.</p>
+<p>The <a href="nauseous.c">source</a> is provided, so the first thing I did was get the program running locally. You can do this by writing a stub implementation of <code>get_flag</code> and compiling your own version of the shared library, and replacing the reference to <code>get_flag.h</code> in the code with the prototype of <code>get_flag</code>. Then, we just need to set <code>LD_LIBRARY_PATH</code> so Linux can find the shared object.</p>
+<pre><code class="hljs"><span class="hljs-comment">// getflag.c</span>
+<span class="hljs-type">char</span> *<span class="hljs-title function_">get_flag</span><span class="hljs-params">()</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;flag{placeholder}&quot;</span>;
+}</code></pre><pre><code class="hljs">gcc -fPIC -shared -o libgetflag.so getflag.c
+gcc nauseous.c -L. -lgetflag
+<span class="hljs-built_in">export</span> LD_LIBRARY_PATH=.</code></pre><p>Normally, when calling a shared library function from position-independent code, the program first performs a RIP-relative jump to a procedure in the .plt section. The procedure in .plt then jumps to an address stored in the .got section. </p>
+<p>We can see this process in action by tracing a simpler program:</p>
+<pre><code class="hljs"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
+
+<span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> {
+        <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;The HORSE is a noble animal.&quot;</span>);
+        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}</code></pre><p>This is what <code>main</code> looks like after compilation.</p>
+<pre><code class="hljs">(gdb) disas main
+Dump of assembler code for function main:
+   0x0000000000001149 &lt;+0&gt;:     endbr64
+   0x000000000000114d &lt;+4&gt;:     push   rbp
+   0x000000000000114e &lt;+5&gt;:     mov    rbp,rsp
+   0x0000000000001151 &lt;+8&gt;:     lea    rax,[rip+0xeac]        # 0x2004
+   0x0000000000001158 &lt;+15&gt;:    mov    rdi,rax
+   0x000000000000115b &lt;+18&gt;:    call   0x1050 &lt;puts@plt&gt;
+   0x0000000000001160 &lt;+23&gt;:    mov    eax,0x0
+   0x0000000000001165 &lt;+28&gt;:    pop    rbp
+   0x0000000000001166 &lt;+29&gt;:    ret</code></pre><p>Keep in mind that the CALL is RIP-relative, GDB just assumes an offset of 0 initially. If we actually run the program and disassemble again it will fill in the CALL addresses with the actual offsets.</p>
+<p>Let&#39;s disassemble <code>puts@plt</code>:</p>
+<pre><code class="hljs">(gdb) disas 0x1050
+Dump of assembler code for function puts@plt:
+   0x0000000000001050 &lt;+0&gt;:     endbr64
+   0x0000000000001054 &lt;+4&gt;:     bnd jmp QWORD PTR [rip+0x2f75]        # 0x3fd0 &lt;puts@got.plt&gt;
+   0x000000000000105b &lt;+11&gt;:    nop    DWORD PTR [rax+rax*1+0x0]</code></pre><p>Basically, the real address of <code>puts</code> is read from the GOT and jumped to. The GOT is filled by the ELF loader before the program is started. </p>
+<p>So, now we know what we need to do: we need to read the GOT section, which contains the address of <code>get_flag</code>. How do we do this?</p>
+<p>The problem is that our reads are relative to a stack-allocated buffer whose position is not fixed relative to the GOT. Luckily, the stack frame of the current function is right above the buffer, so we get the value of RBP and a return address in .text. Using these values, we can compute an index that enables us to start reading from .text, and if we keep incrementing the index we will eventually reach the GOT.</p>
+<p>How do we know where the GOT starts? Interestingly, I noticed that the first 8 bytes of the GOT always seem to contain the offset of the .dynamic section, which in this case is 0x3d48. So we can just keep reading memory until we encounter this value. I am honestly not sure why this is the case, but it works.</p>
+<p>Here&#39;s the script I used to solve the challenge:</p>
+<script src="https://gist.github.com/adrian154/5a8dd8911cbbda4710062053ff45f531.js"></script>
+
+<p>Running it yields</p>
+<p><code>flag{man_linux_binaries_are_gr0ss}</code></p>
+<h1 id="resources">Resources <a class="section-link" href="#resources">&sect;</a></h1><p><a href="https://www.technovelty.org/linux/plt-and-got-the-key-to-code-sharing-and-dynamic-libraries.html">PLT and GOT - the key to code sharing and dynamic libraries</a></p>
+<p><a href="https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html">GOT and PLT for pwning</a></p>
+<img id="img-view" style="display: none"><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="preferred-color-scheme"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="/rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog/tree/main/public/blogposts/ctf-writeups/squarectf-nauseous-process">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>
