@@ -49,19 +49,13 @@ Some other people’s projects that I’m taking inspiration from:
 
 Spent the day patching RPA to remove the free trial limitations, even though this was *absolutely* not necessary. It took an unreasonably long time because I am pretty lousy at reverse engineering, although I guess I learned a lot about Qt's internals and also got to use x64dbg for the first time. It's not even December 26th anymore. I'm going to bed.
 
-# 2023 Dec 28: Preliminary Calculations
+# 2023 Dec 29: Preliminary Calculations
 
-Since this is meant to be an educational project, I thought it would be fun to do my own combustion analysis and compare the results produced by RPA and NASA's CEA.
+Okay, so I'm going to exposit a little about basic rocketry since I feel like that's a good way to strengthen your understanding of a subject. (If you are reading this, I highly highly recommend reading Sutton's *Rocket Propulsion Elements*! It covers these topics in a very approachable way without cutting corners.)
 
-Our input parameters are the same in all cases:
-- 1 kN thrust 
-- 1 atm ambient pressure
-- 20 bar chamber pressure
-- Ethanol/LOX fuel, O/F ratio 1.0&ndash;2.0
+A rocket produces thrust by expelling matter (exhaust) against the desired direction of motion, which produces an equal and opposite reaction force as predicted by Newton's third law. The stuff we are exhausting is known as the *reaction mass*.
 
-(Disclaimer: the chamber pressure of 20 bar is picked arbitrarily for the sake of this exercise.)
-
-We know that the thrust produced is equal to
+For a chemical rocket all the reaction mass is carried onboard, so the impulse (total momentum change) delivered to the vehicle is equal to that mass times the exhaust velocity. Furthermore, we know that $F = \frac{dp}{dt}$, so the thrust is given by
 
 $$F = \dot{m}v_e$$
 
@@ -69,11 +63,41 @@ where
 * $\dot{m}$ is mass flow rate
 * $v_e$ is the effective exhaust velocity
 
-The [isentropic nozzle flow](https://en.wikipedia.org/wiki/Isentropic_nozzle_flow) equations enable us to determine the gas conditions (temperature, pressure, velocity) at any position along the flow. However, to use these equations, we need to know the temperature and ratio of specific heats $\gamma$ of the gas entering the nozzle. Both of these values will depend on the combustion process. 
+We control mass flow rate, which is equal to the rate of fuel/oxidizer flow into the chamber, so the quantity of interest is the exhaust velocity. In order to maximize the impulse delivered to our rocket, we want the highest possible exhaust velocity.
 
-Once we know these two values, we can calculate the exhaust velocity of the nozzle, as well as the exit-to-throat area ratio. From there we can determine the necessary mass flow rate to reach our target thrust using the first equation, as well as the actual dimensions of the nozzle and chamber.
+When we combust fuel and oxidizer together in a confined environment (like the thrust chamber), the result is a high-temperature gas. Conversion of the thermal energy of the gas to kinetic energy is accomplished through a [converging-diverging nozzle](https://en.wikipedia.org/wiki/De_Laval_nozzle).
 
-(divergence loss)
+In order to analyze the flow in our rocket, we're going to make a few simplifying assumptions (see part 3.1 of Sutton):
 
-(shifting equilibrium)
+* The exhaust is homogenous, gaseous, and obeys the perfect gas law
+* There is no heat transfer between the exhaust and the environment
+* There are no shocks in the exhaust
+* The gas properties are uniform across any "slice" normal to the nozzle axis (quasi-1D)
+* The composition of the exhaust does not change within the nozzle
+
+This type of flow is known as [isentropic nozzle flow](https://en.wikipedia.org/wiki/Isentropic_nozzle_flow), and it has the useful property that the gas conditions at any two positions along the flow are related by a few simple equations. So, if we know the conditions at one position, we can calculate the conditions anywhere else. In addition, we also get an equation describing the ideal exhaust velocity:
+
+$$v = \sqrt{\frac{2\gamma R T_c}{(\gamma - 1)M} \left[1 - \left(\frac{p_e}{p_c}\right)^{\frac{\gamma-1}\gamma}\right]}$$
+
+where
+
+* $v$ is exhaust velocity
+* $\gamma$ is the ratio of specific heats
+* $R$ is the universal gas constant
+* $T_c$ is the chamber temperature
+* $M$ is the exhaust molecular mass
+* $p_e$ is the exit pressure 
+* $p_c$ is the chamber pressure
+
+Usually, we specify the chamber pressure $p_c$ as a design parameter. $\gamma$ and $M$ depend on the composition of the combustion products, and similarly $T_c$ is determined by the thermochemical properties of our fuel/oxidizer.
+
+Knowing all this, we can get a rough idea of how the sizing process will go:
+
+* Inputs: thrust, chamber pressure, ambient pressure, oxidizer/fuel properties and ratio
+* Determine $\gamma$, $M$, $T_c$ using combustion model
+* Compute nozzle throat/exit area ratio using isentropic flow equations
+* Compute necessary mass flow rate and throat area
+* Determine chamber dimensions using characteristic length and other rules of thumb (more on this later)
+
+Since this is meant to be an educational project, I thought it would be fun to do my own combustion analysis and compare the results to those produced by existing solvers (RPA and NASA's CEA).
 
