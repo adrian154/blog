@@ -35,7 +35,7 @@ document.getElementById("button").addEventListener("click", async event => {
     while(true) {
 
         // hmm
-        const name = `${randomid()}.g4vmltbq.xyz.`
+        const name = `${randomid()}.dnslogger.bithole.dev.`
         await fetch(`https://${name}/`).catch(() => {});
         
         i++;
@@ -109,9 +109,9 @@ server.on("message", (data, rinfo) => {
 });
 ```
 
-As you can see, this server is not very smart. The only thing it is capable of is blindly responding to all A requests with a fixed IP. However, for our case, that's sufficient.
+As you can see, this server is not very smart. The only thing it is capable of is blindly responding to all queries for A records with a fixed IP address. However, for our case, that's sufficient.
 
-The client code is even simpler. If you open up the network tab for this page and click the button again, you can see it at work; it simply generates a long random domain name, triggers a DNS query for that domain by initiating a request via `fetch`, and asks our crappy DNS server about which IPs have queried for those domains. To make it all work, I bought a cheap domain (g4vmltbq.xyz) and added a wildcard NS record pointing resolvers to my DNS server.
+The client code is even simpler. If you open up the network tab for this page and click the button again, you can see it at work; it simply generates a long random domain name, triggers a DNS query for that domain by initiating a request via `fetch`, and asks our crappy DNS server about which IPs have queried for those domains.
 
 # Applications
 

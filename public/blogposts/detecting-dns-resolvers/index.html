@@ -38,7 +38,7 @@ document.getElementById("button").addEventListener("click", async event => {
     while(true) {
 
         // hmm
-        const name = `${randomid()}.g4vmltbq.xyz.`
+        const name = `${randomid()}.dnslogger.bithole.dev.`
         await fetch(`https://${name}/`).catch(() => {});
         
         i++;
@@ -104,7 +104,7 @@ document.getElementById("button").addEventListener("click", async event => {
     <span class="hljs-keyword">const</span> buf = response.<span class="hljs-title function_">build</span>();
     server.<span class="hljs-title function_">send</span>(buf, <span class="hljs-number">0</span>, buf.<span class="hljs-property">length</span>, rinfo.<span class="hljs-property">port</span>, rinfo.<span class="hljs-property">address</span>);
 
-});</code></pre><p>As you can see, this server is not very smart. The only thing it is capable of is blindly responding to all A requests with a fixed IP. However, for our case, that&#39;s sufficient.</p>
-<p>The client code is even simpler. If you open up the network tab for this page and click the button again, you can see it at work; it simply generates a long random domain name, triggers a DNS query for that domain by initiating a request via <code>fetch</code>, and asks our crappy DNS server about which IPs have queried for those domains. To make it all work, I bought a cheap domain (g4vmltbq.xyz) and added a wildcard NS record pointing resolvers to my DNS server.</p>
+});</code></pre><p>As you can see, this server is not very smart. The only thing it is capable of is blindly responding to all queries for A records with a fixed IP address. However, for our case, that&#39;s sufficient.</p>
+<p>The client code is even simpler. If you open up the network tab for this page and click the button again, you can see it at work; it simply generates a long random domain name, triggers a DNS query for that domain by initiating a request via <code>fetch</code>, and asks our crappy DNS server about which IPs have queried for those domains.</p>
 <h1 id="applications">Applications <a class="section-link" href="#applications">&sect;</a></h1><p>What could this be useful for? I have no idea, to be honest, but I would like to hear what you think in the comments :)</p>
 <img id="img-view" style="display: none"><noscript><b>Please enable Javascript to view the comments on this post.</b></noscript><script src="https://utteranc.es/client.js" crossorigin="anonymous" repo="adrian154/blog" issue-term="title" label="blog-post-comments" theme="preferred-color-scheme"></script></main><footer><p>&copy; 2022 <a href="https://bithole.dev/">Adrian Zhang</a> &bull; <a href="/rss.xml">rss</a> &bull; <a href="https://github.com/adrian154/blog/tree/main/public/blogposts/detecting-dns-resolvers">source</a> &bull; <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">CC BY-SA 3.0</a></p></footer></body></html>
