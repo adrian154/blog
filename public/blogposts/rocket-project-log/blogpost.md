@@ -18,8 +18,8 @@ Things that need to be figured out, roughly ordered by dependency:
 * injector design
 * cryogenic plumbing, especially the valves
 * pump design
-* geometry (impeller and volute)
-* sealing
+    * geometry (impeller and volute)
+    * sealing
 * fabrication of everything
 * igniter and test stand
 * (further iteration depending on results of tests)
@@ -49,11 +49,23 @@ Some other people’s projects that I’m taking inspiration from:
 
 Spent the day patching RPA to remove the free trial limitations, even though this was *absolutely* not necessary. It took an unreasonably long time because I am pretty lousy at reverse engineering, although I guess I learned a lot about Qt's internals and also got to use x64dbg for the first time. It's not even December 26th anymore. I'm going to bed.
 
-# 2023 Dec 29: Preliminary Calculations
+# 2024 Jan 31: Preliminary Calculations
 
-Okay, so I'm going to exposit a little about basic rocketry since I feel like that's a good way to strengthen your understanding of a subject. (If you are reading this, I highly highly recommend reading Sutton's *Rocket Propulsion Elements*! It covers these topics in a very approachable way without cutting corners.)
+I started this log entry last year, but I got distracted by other things and sort of forgot about the project until now. So I'm going to start with some thoughts I've had in the meantime, and then jump into the original content of the entry.
 
-A rocket produces thrust by expelling matter (exhaust) against the desired direction of motion, which produces an equal and opposite reaction force as predicted by Newton's third law. The stuff we are exhausting is known as the *reaction mass*.
+Cooling could be a showstopper depending on how we go about it. Boiling in the regenerative cooling channels is catastrophic since vapor is far less capable of carrying away heat, which puts a limit on how much heat our fuel can absorb. Based on the figures from RPA for a 1 kN ethalox engine, we have a mass flow rate of 0.16 kg/s; this amount of flow, heated up to the brink of the boiling point, can only carry away 23 kW of heat. I'm not sure if this will be enough.
+
+We could probably alleviate this problem by diluting the fuel with water, or running more fuel-rich. It would also be less severe for a more powerful engine (heat transfer is proportional to second power of engine dimension, but mass flow rate is proportional to the third power), but I doubt this is a worthy tradeoff at this stage.
+
+On a semi-related note, I have also been thinking about replacing ethanol with isopropyl alcohol or methanol, mainly due to availability/cost concerns. I have also heard that denaturants in ethanol may cause problems. The substances are all quite similar, so I think it's worth doing a more in-depth comparison later down the road.
+
+Lastly, I think the oxidizer pump may prove to be an extreme headache (considerably worse than the fuel pump). Based on some preliminary research I think a canned motor design is the best way forward, since designing a dynamic seal for liquid oxygen sounds *not fun*. If we can eliminate the seal entirely then we might be able to get away with using dry bearings. But this might be a total delusion... we'll see.
+
+---
+
+Okay, so I'm going to exposit a little about basic rocketry for the sake of enhancing my own understanding of the subject. (If you are reading this, I highly highly recommend reading Sutton's *Rocket Propulsion Elements*! It covers these topics in a very approachable way without cutting corners.)
+
+A rocket produces thrust by accelerating matter (exhaust) against the desired direction of motion, which produces an equal and opposite reaction force (as predicted by Newton's third law). The stuff we are exhausting is known as the *reaction mass*.
 
 For a chemical rocket all the reaction mass is carried onboard, so the impulse (total momentum change) delivered to the vehicle is equal to that mass times the exhaust velocity. Furthermore, we know that $F = \frac{dp}{dt}$, so the thrust is given by
 
@@ -89,15 +101,15 @@ where
 * $p_e$ is the exit pressure 
 * $p_c$ is the chamber pressure
 
-Usually, we specify the chamber pressure $p_c$ as a design parameter. $\gamma$ and $M$ depend on the composition of the combustion products, and similarly $T_c$ is determined by the thermochemical properties of our fuel/oxidizer.
+$p_c$ is constrained by various engineering factors such as material limitations, chamber mass, etc. We need a model of the combustion reaction to determine the values of $\gamma$, $M$, and $T_c$.
 
-Knowing all this, we can get a rough idea of how the sizing process will go:
+Knowing all this, we can get a rough idea of how the basic engine design process should work:
 
 * Inputs: thrust, chamber pressure, ambient pressure, oxidizer/fuel properties and ratio
 * Determine $\gamma$, $M$, $T_c$ using combustion model
 * Compute nozzle throat/exit area ratio using isentropic flow equations
-* Compute necessary mass flow rate and throat area
-* Determine chamber dimensions using characteristic length and other rules of thumb (more on this later)
+ * Compute necessary mass flow rate and throat area
+* Determine remaining chamber dimensions based on some heuristics (more on this later)
 
-Since this is meant to be an educational project, I thought it would be fun to do my own combustion analysis and compare the results to those produced by existing solvers (RPA and NASA's CEA).
+Since this is meant to be an educational project, I thought it would be fun to do my own combustion analysis and compare the results to those produced by existing solvers (RPA and CEA).
 

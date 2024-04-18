@@ -1,4 +1,4 @@
-Recently, I set out to create my own photo organizer, a project which eventually bloomed into [Photobox](https://github.com/adrian154/photobox). In the process, I spent a lot of time experimenting with various image formats, which led me to an epiphany: JPEGs are ridiculously good at compressing image data, far beyond what seems possible! Take this picture, for example:
+Recently, I set out to create my own photo organizer. In the process, I spent a lot of time experimenting with various image formats, which led me to an epiphany: JPEGs are ridiculously good at compressing image data, far beyond what you'd expect! Take this picture, for example:
 
 <figure style="max-width: 299px">
     <img src="test-compressed.jpg" alt="a cormorant">
