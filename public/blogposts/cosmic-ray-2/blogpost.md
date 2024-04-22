@@ -14,4 +14,4 @@ I was honestly surprised to see that the experiment had actually worked, but it'
 
 And if you're not happy with just one dose of radiation, I also made my phone record its journey through the airport's X-ray machine.
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/penNi1pGmiw?si=OYGkxegSKm5P3qXf" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe class="yt-video" width="560" height="315" src="https://www.youtube-nocookie.com/embed/penNi1pGmiw?si=OYGkxegSKm5P3qXf" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
