@@ -10,6 +10,6 @@ Once you've found your way to the course homepage, the nightmare really begins. 
 - Feeling stuck? No problem. There's a "Help me solve this" button at the bottom, offering hopes of guidance and consolation. Except when you click it, the problem is immediately marked as wrong, and there is absolutely nothing you can do to reverse that. Sirens go off at the Pearson headquarters as a disciplinary unit is dispatched to your home address with directions to use lethal force. At no point are you warned that any of this will happen.
 - It is incredibly easy to get a question wrong if you don't input the answer in a very specific way. So if you made the utterly irresponsible choice of not being born a mind-reader, then *shame* on you! You buffoon. You slovenly imbecile. Your arrogance disgusts me.
 
-And all of this is rivaled by the banality of the actual problems you're doing. You want me to manually invert a 5&times;5 matrix? I think my time would be better spent shoving red-hot needles up my urethra, but I think you have to pay $85 for that option, so here we are.
+And all of this is rivaled by the banality of the actual problems you're doing. You want me to manually invert a 5&times;5 matrix? I think my time would be better spent shoving red-hot needles up my urethra, but I'm pretty sure Pearson charges $85 for that option, so here we are.
 
 Someone save me from this torture. I can't take much more of this.
