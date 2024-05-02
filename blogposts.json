@@ -1,5 +1,11 @@
 [
     {
+        "id": "whats-at-stake",
+        "title": "What's At Stake",
+        "status": "published",
+        "timestamp": 1714642213298
+    },
+    {
         "id": "cosmic-ray-2",
         "title": "More Cosmic Ray Hijinks",
         "description": "Measuring space radiation on a plane",
@@ -87,8 +93,7 @@
         "id": "i-hate-mylabmath",
         "title": "I Hate MyLab Math",
         "timestamp": 1675745576931,
-        "description": "It hates me right back.",
-        "status": "hidden"
+        "description": "It hates me right back."
     },
     {
         "id": "gaussian-integral",

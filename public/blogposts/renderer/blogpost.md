@@ -50,7 +50,7 @@ A quadratic B&eacute;zier curve, simply put, is a way of defining a smooth curve
 <canvas id="bezier-demo" style="width: 100%"></canvas>
 <input type="range" id="bezier-t" style="width: 100%" min="0" max="100" step="1">  
 
-Mathematically, a B&eacute;zier curve is a parametric function, mapping a scalar input we call $t$ to 2D points along a path. We can obtain the point for a given $t$ value by first determining the coordinates of the points defining the blue line (obtained by linearly interpolating along the lines between the anchor points and the control points), and then linearly interpolating between those two points to get the point on the curve. Here is a rather crude implementation in JavaScript:
+Mathematically, a B&eacute;zier curve is a parametric function, mapping a scalar input $t$ to 2D points along a path. We can obtain the point for a given $t$ value by first determining the coordinates of the points defining the blue line (obtained by linearly interpolating along the lines between the anchor points and the control points), and then linearly interpolating between those two points to get the point on the curve. Here is a rather crude implementation in JavaScript:
 
 ```js
 // linearly interpolate between points A and B for t in the range [0, 1]
@@ -68,7 +68,7 @@ We can apply this to our opentype.js output by evaluating `quadCurve` at regular
 
 The lines are smooth now, but the points are distributed unevenly. For example, look at the inner curves of the S. There are *way* too many points in those areas, much more than what's necessary to create the illusion of a smooth, continuous curve. These excess points will increase the complexity of our model and slow down our renderer. If we increase the sampling interval to bring down the number of points, we end up with too few points on the larger curve segments. 
 
-The problem is that the relationship between $t$ and the length of the curve up to $t$, which we call $s$, is not linear. We want our samples to be evenly distributed along $s$, so we need a function mapping $s$ to $t$. For quadratic B&eacute;zier curves, a closed-form expression for arc length *does* exist, but it's rather&hellip; unwieldy:
+The problem is that the relationship between $t$ and the length of the curve up to $t$, which we'll call $s$, is not linear. We want our samples to be evenly distributed along $s$, so we need a function mapping $s$ to $t$. For quadratic B&eacute;zier curves, a closed-form expression for arc length *does* exist, but it's rather&hellip; unwieldy:
 
 <figure>
     <img src="arclen-expression.png" alt="https://gamedev.stackexchange.com/a/6019/98873">
@@ -103,7 +103,7 @@ In `arclenToT`, we simply use linear interpolation to find the approximate value
 
 Much better.
 
-The next step is to convert our 2D outlines into a 3D model. The preferred representation for 3D objects in computer graphics is a *polygon mesh*, which is just a thin surface defined by a collection of polygons (usually triangles). We will be storing our mesh as an array of 3D points, followed by a list of triangles whose vertices are provided as indices into the array  of points. This allows us to take advantage of the fact that the same vertex is usually shared by multiple triangles to reduce memory usage.
+The next step is to convert our 2D outlines into a 3D model. The preferred representation for 3D objects in computer graphics is a *polygon mesh*, which is just a thin surface defined by a collection of polygons (usually triangles). Our mesh will consist of a list of 3D points, following by a list of triangles (where each triangle is a 3-tuple of indices into the points list). Since most vertices are shared between several triangles, this considerably reduces our memory usage. 
 
 Building the side walls of our text is pretty simple. We basically extrude our outlines into 3D surfaces by copying the points, shifting them to however thick we want our text to be, then connecting them to the front points with triangles. 
 
@@ -114,7 +114,7 @@ Building the side walls of our text is pretty simple. We basically extrude our o
 
 Now we need to fill in the front and back of our 3D text, meaning that we must triangulate each letter. This is actually kind of tricky, especially since some letters like A have holes in them. Thankfully, I came across a [blogpost](https://alienryderflex.com/polygon_triangulation_with_hole.shtml) by Darel Rex Finley that outlined a robust algorithm in a very understandable manner. If you are working on the same problem I cannot recommend his blogpost enough, but here's the gist of it:
 
-In order to triangulate a polygon, we crawl around the edge looking for a suitable triangle. When one is found, we remove it from the working set of points and start over until all the points are accounted for. This is known as the [ear-clipping method](https://en.wikipedia.org/wiki/Polygon_triangulation#Ear_clipping_method).
+In order to triangulate a polygon, we crawl around the edge looking for a suitable triangle. When one is found, we create the triangle remove its vertices from the working set of points, and start over until all the points are accounted for. This is known as the [ear-clipping method](https://en.wikipedia.org/wiki/Polygon_triangulation#Ear_clipping_method).
 
 <video class="center" loop muted autoplay playsinline><source src="triangulate-c.mp4" type="video/mp4"></video>
 
@@ -126,11 +126,11 @@ Once we've triangulated the front faces of the text, all that remains is for us 
 
 ![final exported mesh of GAY SEX](final-mesh.png)
 
-Beautiful.
+That's some solid progress, if you ask me!
 
 # The Renderer
 
-We've got the model&mdash;now, it's time to bring it to life. We will accomplish this through raytracing. The idea is that for each pixel, we shoot a ray into scene originating from the camera position and through the image plane. We then perform some calculations to determine the first surface hit by the ray, and then shade accordingly.
+We've got the model&mdash;now, it's time to bring it to life. We will accomplish this through raytracing. The idea is that for each pixel, we shoot a ray into scene originating from the camera position and through the image plane. We then perform some calculations to determine the first surface hit by the ray, and then shoot out more rays from the hit point towards the light sources to figure out the shading.
 
 Coding the renderer involves a lot of boilerplate, which I won't cover here. If you are interested in the implementation details, I recommend checking out Peter Shirley's [Ray Tracing In One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 
@@ -140,7 +140,7 @@ For now, let's focus on the geometric aspect of the problem: figuring out where 
 
 First, let's define all the inputs we're working with. We have a ray, which starts at a point $O$ and extends along direction $D$ infinitely. Therefore, we can express every point along the ray in terms of the equation $O + tD$, where $t \geq 0$. In addition, we have a triangle with vertices $A$, $B$, and $C$. 
 
-Our triangle is flat, meaning that there is some infinite plane containing it. The only case where our ray doesn't intersect with this plane is if it's parallel to it. We can check if our ray is parallel to triangle by computing the dot product of the ray's direction and the normal vector of the plane. If it's zero, we know that the ray does not intersect with the plane and thus cannot intersect with the triangle.
+Our triangle is flat, meaning that it is contained within an infinite plane. The only case where our ray doesn't intersect with this plane is if it's parallel to it. We can check if our ray is parallel to triangle by computing the dot product of the ray's direction and the normal vector of the plane. If it's zero, we know that the ray does not intersect with the plane and thus cannot intersect with the triangle.
 
 ```c
 Vec3 edge1 = sub(vertex1, vertex0);
@@ -152,9 +152,9 @@ if(det > -EPSILON && det < EPSILON) {
 }
 ```
 
-We check if the dot product is within a range very close to zero due to limited floating-point precision.
+(Instead of directly comparing with `0.0`, we check if `det` is in the range of (-epsilon,epsilon), where epsilon is a small fudge factor. This accounts for the limited precision of floating-point math.)
 
-If our ray *does* intersect with the plane, we need to check if the point is contained within the triangle. Because everything is now contained within the plane, we can work in two dimensions.
+If our ray *does* intersect with the plane, then we can effectively reduce this problem to 2D, since everything is now contained within the plane. We just need to check if the hit point is contained within the triangle.
 
 Consider a triangle with vertices at $(0, 0)$, $(1, 0)$, and $(0, 1)$.
 
@@ -164,9 +164,9 @@ Let's look at the two edges originating from the origin. We'll call them $e_1 = 
 
 $$P = ue_1 + ve_2$$
 
-In linear algebra, we say that vectors $e_1$ and $e_2$ *span* the plane. What we've just done is created a coordinate system with basis vectors $e_1$ and $e_2$! This coordinate system has an important property: for all the points within our triangle, $u + v \leq 1$.
+Essentially, what we have done is create a new coordinate system, one which has a very important characteristic: for all the points within our triangle, $u + v \leq 1$.
 
-Right now, this coordinate system isn't all that useful. After all, it's completely identical to the standard Euclidean plane. But here's the trick: we can deform it so that it matches any triangle we want.
+For the example triangle I showed above, this isn't super interesting since the resulting coordinate system is the exact same as the regular Cartesian plane. But with a tad more math, we can do this with any triangle we want!
 
 Let's look at a fancier triangle, with vertices at $(1,1)$, $(2,3)$, and $(3,2)$.
 
@@ -176,21 +176,19 @@ First, we need to pick a point to be our origin. Any point will work, so let's g
 
 ![the triangle, now shifted to origin and with edges e1 and e2 highlighted](coordinate-system.png)
 
-All that we've really done is stretch the coordinate space so that the first triangle becomes the second. (If I were better at Desmos I would animate this, but I don't know how, so you'll just have to imagine). In formal terms, we've applied a [linear transformation](https://en.wikipedia.org/wiki/Linear_map), which means that the new coordinate system is *isomorphic* to the first one. Thus, $u + v \leq 1$ still holds for all the points of our new triangle.
+All that we've really done is stretch the coordinate space so that the first triangle becomes the second. (If I were better at Desmos I would animate this, but I don't know how, so you'll just have to imagine). But since this transformation is linear, pretty much all the properties of the original space are preserved.
 
-By now, you might have a sense of where this is going. To check if the intersection point is contained within the triangle, all we have to do is compute the point's barycentric coordinates and check if $u + v \leq 1$.
+By now, you might have a sense of where this is going. To check if the intersection point is contained within the triangle, all we have to do is compute the point's coordinates in our skewed system and check if $u + v \leq 1$.
 
-So, the problem becomes how to determine $t$, $u$, and $v$ so that
+So, let us put these concepts to practice. We have a triangle defined by vectors $A, B, C$. Let's pick $A$ to act as the origin, so our two edges are given by $e_1 = B-A$ and $e_2 = C-A$. Similarly, the point where our ray intersects with the plane is given by $(O-A) + tD$ (we subtract $A$ from $O$ to reflect the fact that $A$ is the origin of our new coordinate system). So, the problem becomes how to determine $t$, $u$, and $v$ so that
 
-$$O' + tD = ue_1 + ve_2$$
+$$(O-A) + tD = ue_1 + ve_2$$
 
 or
 
-$$-tD + ue_1 + ve_2 = O'$$
+$$-tD + ue_1 + ve_2 = (O-A)$$
 
-where $O' = O - A$. Remember that in our barycentric coordinate system the origin is at vertex $A$.
-
-There is a unique solution to this system, since there are three equations (one for $x$, $y$, and $z$) and three unknowns. We can represent this as a matrix multiplication:
+This one equation is actually three separate equations in disguise, since we're dealing with 3-component vectors. Because there are three equations for our three unknowns, then we may be able to find a unique solution. We can represent this as a matrix multiplication:
 
 $$
 \begin{bmatrix}
@@ -201,26 +199,26 @@ $$
     u \\
     v
 \end{bmatrix}
-= O'
+= (O-A)
 $$
 
-(Remember that $D$, $e_1$, and $e_2$ are 3-component vectors, so the leftmost matrix is 3&times;3 and not 1&times;3.)
+(Since $D$, $e_1$, and $e_2$ are 3-component vectors, the leftmost matrix is 3&times;3 and not 1&times;3.)
 
-To solve for the unknowns, we can use [Cramer's rule](https://en.wikipedia.org/wiki/Cramer%27s_rule). For a matrix equation of the form $Ax = b$, Cramer's rule says that the $i$th value of $x$ is given by
+To solve for the unknowns, we can use [Cramer's rule](https://en.wikipedia.org/wiki/Cramer%27s_rule). Cramer's rule says that for a matrix equation of the form $Ax = b$, the $i$th component of $x$ is given by
 
 $$x_i = \frac{\det A_i}{\det A}$$
 
-where $A_i$ is matrix $A$, except column $i$ has been replaced with $b$.
+where $A_i$ is matrix $A$, except column $i$ is replaced with $b$.
 
-If this doesn't make any sense to you, that's OK; Cramer's rule makes a lot more sense once you figure out *why* it actually works. I won't go into the derivation here, so check out the [MathWorld article](https://mathworld.wolfram.com/CramersRule.html) on Cramer's rule if you are interested.
+If this doesn't make any sense to you, that's OK; we can use it without fully understanding it. If you are interested in why it works, check out this [MathWorld article](https://mathworld.wolfram.com/CramersRule.html).
 
 Applying Cramer's rule to our equation, we can solve for our unknowns:
 
-$$t = \frac{\det \begin{bmatrix}O' & e_1 & e_2\end{bmatrix}}{\det \begin{bmatrix}-D & e_1 & e_2\end{bmatrix}}$$
+$$t = \frac{\det \begin{bmatrix}(O-A) & e_1 & e_2\end{bmatrix}}{\det \begin{bmatrix}-D & e_1 & e_2\end{bmatrix}}$$
 
-$$u = \frac{\det \begin{bmatrix}-D & O' & e_2\end{bmatrix}}{\det \begin{bmatrix}-D & e_1 & e_2\end{bmatrix}}$$
+$$u = \frac{\det \begin{bmatrix}-D & (O-A) & e_2\end{bmatrix}}{\det \begin{bmatrix}-D & e_1 & e_2\end{bmatrix}}$$
 
-$$v = \frac{\det \begin{bmatrix}-D & e_1 & O'\end{bmatrix}}{\det \begin{bmatrix}-D & e_1 & e_2\end{bmatrix}}$$
+$$v = \frac{\det \begin{bmatrix}-D & e_1 & (O-A)\end{bmatrix}}{\det \begin{bmatrix}-D & e_1 & e_2\end{bmatrix}}$$
 
 Helpfully, the determinant of matrix $\begin{bmatrix}a & b & c\end{bmatrix}$ is equal to its [triple product](https://en.wikipedia.org/wiki/Triple_product), or $a \cdot (b \times c)$. In fact, we've already computed the value of $D \cdot (e_1 \times e_2)$ to determine if the ray is parallel to the plane!
 
@@ -241,7 +239,7 @@ void raytraceTriangle(const Vec3 *A, const Vec3 *B, const Vec3 *C, const Ray *ra
         return;
     } 
 
-    // compute barycentric coordinates u and v via Cramer's rule; u + v <= 1
+    // compute coordinates u and v via Cramer's rule; u + v <= 1
     float invDet = -1 / det;
     Vec3 origin = sub(ray->origin, *A);
     float u = -dot(ray->direction, cross(origin, edge2)) * invDet;
@@ -286,7 +284,7 @@ To render our model, we just need to loop through each triangle, test for an int
 
 ![our model, rendered with our raytracer](normals.png)
 
-I've shaded the model by scaling the components of the hit normals from $(-1, 1)$ to $(0, 1)$.
+Here, the color of each pixel is simply determined by treating the normal vector at each hit point as an RGB triplet (with a bit of rescaling).
 
 You might notice that the edges of our model are quite rough; this is due to [aliasing](https://en.wikipedia.org/wiki/Aliasing). We'll fix this later. For now, we have a bigger problem: we test every ray against every triangle in the model, meaning that our efficiency is pretty bad! That last render alone involved 56,524,800 ray-triangle intersection tests.
 
@@ -298,7 +296,7 @@ How do we check if a ray intersects with the mesh without testing it against eve
 
 You could use any shape as a bounding volume, but an excellent choice is the **axis-aligned bounding box (AABB)**. An AABB is just a box whose planes are aligned to the axes of the coordinate system. These properties mean that an AABB can be defined using just two points, and intersection testing is efficient too.
 
-I won't explain the algorithm in full detail here; for that, I recommend checking out [Tavian's blogpost](https://tavianator.com/2011/ray_box.html). Basically, the idea is that we can treat the sides of the box as belonging to three pairs of parallel planes. Computing the intersection distance to any of these planes is as easy as solving an equation of one variable. 
+I won't explain the algorithm in full detail here; for that, I recommend checking out [Tavian's blogpost](https://tavianator.com/2011/ray_box.html). Basically, the idea is that we can treat the sides of the box as belonging to three pairs of parallel planes. Computing the intersection distance to any of these planes consists of solving a linear equation of one variable. 
 
 We can imagine the pairs of intersection distances as line segments on the ray. If the ray intersects with the box, there will be some location where all three segments overlap. We can check this with minimal branching using clever application of `fmin` and `fmax`.
 
