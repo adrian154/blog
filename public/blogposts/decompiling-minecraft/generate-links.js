@@ -9,13 +9,10 @@ const template = rows => `<!DOCTYPE html><head><meta charset="utf-8"><title>Mine
     const versionManifest = await (await fetch("https://launchermeta.mojang.com/mc/game/version_manifest.json")).json();
 
     console.log("downloading versions...");
-    /*const versions = await Promise.all(versionManifest.versions.map(version => fetch(version.url).then(resp => resp.json()).then(version => {
+    const versions = await Promise.all(versionManifest.versions.map(version => fetch(version.url).then(resp => resp.json()).then(version => {
         console.log("downloaded " + version.id);
         return version;
     })));
-    fs.writeFileSync("cached-versions.json", JSON.stringify(versions));*/
-    
-    versions = require("./cached-versions.json");
 
     const cell = download => download ? `<td><a href="${download.url}">download</a></td>` : '<td></td>';
     fs.writeFileSync("links.html", template(versions.map(version => [

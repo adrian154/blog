@@ -136,7 +136,7 @@ In the final step of JPEG compression, the DCT matrix is unraveled according to 
 
 If you've reached this point, congratulations; you now have a high-level understanding of the processes that take place every time you save an image as a JPEG.
 
-There is a lot that isn't covered here; if you want to know more about the mathematics of the Fourier transform, or explore the actual implementation details of the JPEG standard, I've included some links that you can follow to continue learning about the fascinating enigma that is the JPEG format.
+There's a lot that isn't covered here. If you want to know more about the mathematics of the Fourier transform, or explore the actual implementation details of the JPEG standard, I've included some links that you can follow to continue learning about the fascinating enigma that is the JPEG format.
 
 # Further Reading
 

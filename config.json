@@ -4,6 +4,6 @@
         "repo": "adrian154/blog",
         "issue-term": "title",
         "label": "blog-post-comments",
-        "theme": "preferred-color-scheme"
+        "theme": "github-light"
     }
 }

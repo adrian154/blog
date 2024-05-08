@@ -11,7 +11,8 @@
         "title": "More Cosmic Ray Hijinks",
         "description": "Measuring space radiation on a plane",
         "status": "published",
-        "timestamp": 1713411376618
+        "timestamp": 1713411376618,
+        "image": "track.png"
     },
     {
         "id": "iso",
@@ -179,7 +180,7 @@
         "description": "Utilizing DNS tomfoolery for fun and profit. Well, actually, just fun",
         "stylesheets": ["styles.css"],
         "timestamp": 1658683083044,
-        "status": "published"
+        "status": "hidden"
     },
     {
         "id": "discord-qr-code-phishing",

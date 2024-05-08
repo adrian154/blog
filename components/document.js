@@ -18,6 +18,10 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
             meta({property: "og:description", content: properties.description}),
             meta({name: "description", content: properties.description})
         ],
+        properties.image && [
+            meta({property: "og:image", content: properties.image}),
+            meta({name: "twitter:card", content: "summary_large_image"})
+        ],
 
         // stylesheets
         stylesheet("/stylesheets/highlight-style.css"),

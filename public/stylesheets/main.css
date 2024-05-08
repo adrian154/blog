@@ -9,7 +9,7 @@ html {
 
 body {
 
-    max-width: 31em;
+    max-width: 38em;
     margin: auto;
     padding: 1em;
 
@@ -25,7 +25,7 @@ body {
 }
 
 p, li {
-    line-height: 24px;
+    line-height: 1.5;
 }
 
 h1 {
@@ -198,7 +198,7 @@ button {
 
 .conversation-center {
     flex-basis: 100%;
-    text-align: center !important; /* too lazy to grok the priorities at play  here */
+    text-align: center !important; /* too lazy to grok the priority rules for this */
 }
 
 .limited-height-code pre {
@@ -273,6 +273,7 @@ html {
     --header-color: #ffffff;
 }
 
+/*
 @media (prefers-color-scheme: dark) {
     html {
         color-scheme: dark;
@@ -291,12 +292,7 @@ html {
         filter: invert(1);
     }
 }
-
-@media print {
-    body {
-        max-width: 100%;
-    }
-}
+*/
 
 .gist {
     color-scheme: light;
