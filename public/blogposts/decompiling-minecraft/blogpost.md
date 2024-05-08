@@ -1,4 +1,4 @@
-Sometimes, for one reason or another, you might want to take a look at Minecraft's source code to get a better understanding of the game's inner workings. This is a guide on how to decompile the game to view its code.
+Sometimes, for one reason or another, you might want to take a look at Minecraft's source code to get a better understanding of the game's inner workings. This is a guide on how to accomplish just that.
 
 To start, you need to obtain the game JAR as well as the deobfuscation mappings. I've compiled links to all of these resources [here](links.html).
 
@@ -22,7 +22,7 @@ Decompiling the server requires an extra step, since the `server.jar` you downlo
 Once the JAR is remapped, it's ready to be decompiled. There are a number of decompilers that will all work fine, but my preference is [Vineflower](https://github.com/Vineflower/vineflower). All you need to do is download the [latest release](https://github.com/Vineflower/vineflower/releases/latest), put the decompiler JAR in the same folder as the remapped JAR, and begin the decompilation:
 
 ```plaintext
-java -jar quiltflower-1.8.1.jar <remapped JAR> src/
+java -jar vineflower-1.10.1.jar <remapped JAR> src/
 ```
 
 Once the decompiler finishes, you're all set!
