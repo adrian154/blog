@@ -1,5 +1,6 @@
 const { html, head, meta, title, link, p, body, a, script, footer, raw } = require("html-generator");
 const { stylesheet, optional } = require("./helpers");
+const { baseURL } = require("../config.json");
 const fs = require("fs");
 
 const APPLY_SETTINGS_CODE = fs.readFileSync("public/scripts/apply-settings-stub.js", "utf-8");
@@ -19,7 +20,7 @@ module.exports = (properties, ...content) => "<!DOCTYPE html>" + html({lang: "en
             meta({name: "description", content: properties.description})
         ],
         properties.image && [
-            meta({property: "og:image", content: properties.image}),
+            meta({property: "og:image", content: new URL(`/blogposts/${properties.id}/${properties.image}`, baseURL)}),
             meta({name: "twitter:card", content: "summary_large_image"})
         ],
 
