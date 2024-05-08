@@ -8,7 +8,7 @@ I needed a device with a public IP for this project, so I spun up a VPS from Dig
 
 It's easy enough to see *who's* sending you traffic and what protocols and ports they're using, but I wanted to capture the payloads, too. This is easy for UDP, which is stateless, but TCP requires us to accept the connection first before we can see what the other party is trying to send us. We could accomplish this by listening on all 65,536 ports, but a cleaner solution is to use iptables to redirect every TCP connection to the probe IP to one port:
 
-```
+```plaintext
 sudo iptables -t nat -A PREROUTING -p tcp -d 10.48.0.5/32 -m multiport --dports 1:65535 -j REDIRECT --to-port 1337
 ```
 

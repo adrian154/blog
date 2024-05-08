@@ -1,8 +1,8 @@
-In case you haven't realized, I am a big fan of SQLite. In my opinion, the balance between convenience and flexibility that it offers is simply not matched by any other database out there. Since most of my projects are small and will likely remain small, I often find myself gravitating towards SQLite. Thus, one day I landed upon the idea of getting Nginx to store requests within an SQLite database instead of logging them to a text file, for two reasons:
+I am a big fan of SQLite. In my opinion, the balance between convenience and flexibility that it offers is simply not matched by any other database out there. Thus, one day I landed upon the idea of getting Nginx to store requests within an SQLite database instead of logging them to a text file, for two reasons:
 - I am super bad at not accidentally deleting things, and having one file is a whole lot easier than dozens of logs scattered all over the place.
 - Consolidating all log messages into one place makes it a lot easier to perform analysis on them, and also makes them readily consumable by other applications.
 
-Googling revealed multiple solutions that enabled me to accomplish my goals to great degree of customizability. But I didn't feel like using any of them. For no reason. Some bizarre, neurotic, obsessive-compulsive tendency within me screamed to waste time reinventing the wheel instead of taking the easy way out, and the rest of my brain simply caved to its siren call. (It didn't help that Twitter wasn't loading on my computer at the time.)
+Googling revealed multiple solutions that enabled me to accomplish my goals to great degree of customizability. But I didn't feel like using any of them. For no reason. Some bizarre, neurotic, obsessive-compulsive tendency within me demanded that I waste time reinventing the wheel instead of taking the sensible way out, and the rest of my brain simply caved to its siren call. (It didn't help that Twitter wasn't loading on my computer at the time.)
 
 Well, my sleep schedule was bound to deterioriate on its own anyways. Let's get to work.
 
@@ -97,4 +97,4 @@ server.bind(process.env.SYSLOG_PORT);
 
 If you are content with using my shitty code, it is available on GitHub as [syslog2sqlite](https://github.com/adrian154/syslog2sqlite). There is also a Docker image available on Docker Hub as [adrian154/syslog2sqlite](https://hub.docker.com/r/adrian154/syslog2sqlite). However, you are probably better off using existing syslog tooling like syslog-ng.
 
-That's all, folks!
+That's all!

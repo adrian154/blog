@@ -19,7 +19,8 @@
         "title": "The Real Relationship Between ISO and Noise",
         "description": "It might not be what you thought!",
         "status": "published",
-        "timestamp": 1704431809975
+        "timestamp": 1704431809975,
+        "image": "iso-comparison.png"
     },
     {
         "id": "2023-reflection",
@@ -27,7 +28,8 @@
         "description": "You won't be missed.",
         "status": "published",
         "stylesheets": ["/stylesheets/year-in-review.css"],
-        "timestamp": 1703851682103
+        "timestamp": 1703851682103,
+        "image": "thumbnail.jpg"
     },
     {
         "id": "rocket-project-log",
@@ -51,14 +53,16 @@
         "title": "Normal Probability Plots for Dummies",
         "description": "How to qualitatively check if your dataset is normally distributed",
         "status": "published",
-        "timestamp": 1689738880321
+        "timestamp": 1689738880321,
+        "image": "quantile-function.png"
     },
     {
         "id": "cosmic-ray",
         "title": "Taking Pictures of Cosmic Rays",
         "description": "Turn any digital camera into a radiation detector!",
         "status": "published",
-        "timestamp": 1689897249823
+        "timestamp": 1689897249823,
+        "image": "collage.png"
     },
     {
         "id": "gfw",
@@ -83,7 +87,8 @@
         "description": "Exploring the mathematical conundrum behind harmony",
         "timestamp": 1681970192244,
         "status": "published",
-        "interactive": true
+        "interactive": true,
+        "image": "reo.png"
     },
     {
         "id": "astro",
@@ -106,7 +111,8 @@
     {
         "id": "rubiks",
         "title": "Optimally Solving Rubik's Cube",
-        "status": "wip"
+        "status": "wip",
+        "image": "disassembled.jpg"
     },  
     {
         "id": "mc-masscan-2023",
@@ -127,14 +133,16 @@
         "description": "You were a hell of a year.",
         "timestamp": 1672285356112,
         "status": "published",
-        "stylesheets": ["/stylesheets/year-in-review.css"]
+        "stylesheets": ["/stylesheets/year-in-review.css"],
+        "image": "thumbnail.jpg"
     },
     {
         "id": "image-desaturation",
         "title": "What's Desaturating My Image?",
         "description": "It's probably a color profile issue.",
         "timestamp": 1664842628162,
-        "status": "published"
+        "status": "published",
+        "image": "comparison.jpg"
     },
     {
         "id": "internet-background-noise",
@@ -196,7 +204,8 @@
         "description": "Taking apart an attempted Log4Shell attack on my Minecraft server, with some interesting discoveries",
         "timestamp": 1642141626850,
         "status": "published",
-        "issueNumber": 3
+        "issueNumber": 3,
+        "image": "log4shell-bitcraft.png"
     },
     {
         "id": "dns-explained",
@@ -224,7 +233,8 @@
         "interactive": true,
         "issueNumber": 6,
         "status": "published",
-        "timestamp": 1672342894058
+        "timestamp": 1672342894058,
+        "image": "dct-example.png"
     },
     {
         "id": "decompiling-minecraft",
@@ -241,7 +251,8 @@
         "timestamp": 1648747843094,
         "stylesheets": ["styles.css"],
         "status": "published",
-        "issueNumber": 8
+        "issueNumber": 8,
+        "image": "hilbert-map.png"
     },
     {
         "id": "mc-report-system",
@@ -256,7 +267,8 @@
         "title": "Minecraft Mob Spawning",
         "description": "An outline of Minecraft mob spawning mechanics",
         "status": "published",
-        "timestamp": 1676619564846
+        "timestamp": 1676619564846,
+        "image": "packspawn-heatmap.png"
     },
     {
         "id": "mob-spawning-weights",
@@ -280,6 +292,7 @@
         "interactive": true,
         "scripts": ["/scripts/packetview.js"],
         "stylesheets": ["/stylesheets/packetview.css"],
-        "issueNumber": 5
+        "issueNumber": 5,
+        "image": "certificate-chain-of-trust.png"
     }
 ]
