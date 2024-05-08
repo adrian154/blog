@@ -74,13 +74,6 @@
         "status": "wip" 
     },
     {
-        "id": "blue-curtains",
-        "title": "The Parable of the Blue Curtains",
-        "description": "Thoughts on how literary analysis is taught",
-        "timestamp": 1685006388909,
-        "status": "hidden"
-    },
-    {
         "id": "tuning",
         "title": "The Trouble with Tuning Systems",
         "description": "Exploring the mathematical conundrum behind harmony",
