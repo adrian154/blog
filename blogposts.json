@@ -99,7 +99,8 @@
         "id": "i-hate-mylabmath",
         "title": "I Hate MyLab Math",
         "timestamp": 1675745576931,
-        "description": "It hates me right back."
+        "description": "It hates me right back.",
+        "status": "hidden"
     },
     {
         "id": "gaussian-integral",
