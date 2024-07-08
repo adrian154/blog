@@ -8,11 +8,15 @@ const template = rows => `<!DOCTYPE html><head><meta charset="utf-8"><title>Mine
     console.log("downloading version manifest...");
     const versionManifest = await (await fetch("https://launchermeta.mojang.com/mc/game/version_manifest.json")).json();
 
+    // request each manifest sequentially to avoid bombarding server with requests
     console.log("downloading versions...");
-    const versions = await Promise.all(versionManifest.versions.map(version => fetch(version.url).then(resp => resp.json()).then(version => {
+    const versions = [];
+    for(const version of versionManifest.versions) {
+        const req = await fetch(version.url);
+        const resp = await req.json();
+        versions.push(resp);
         console.log("downloaded " + version.id);
-        return version;
-    })));
+    }
 
     const cell = download => download ? `<td><a href="${download.url}">download</a></td>` : '<td></td>';
     fs.writeFileSync("links.html", template(versions.map(version => [
