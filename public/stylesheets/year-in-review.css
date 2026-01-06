@@ -8,20 +8,18 @@
     flex-direction: row;
 }
 
-.left div:first-child, .right div:nth-child(2) {
+.highlights > div > div {
     display: flex;
     flex-grow: 1;
 }
 
-.left div { background-color: #f0f0f0; }
-.right div { background-color: #e5e5e5; }
+.highlights > div:nth-child(odd) { background-color: #f0f0f0; }
+.highlights > div:nth-child(even) { background-color: #e5e5e5; }
 
-/*
-@media (prefers-color-scheme: dark) {
-    .left div { background-color: #333333; }
-    .right div { background-color: #222222; }
-}
-*/
+.highlights > div:nth-child(odd) > img { order: 0; }
+.highlights > div:nth-child(odd) > div { order: 1; }
+.highlights > div:nth-child(even) > img { order: 1; }
+.highlights > div:nth-child(even) > div { order: 0; }
 
 .highlights img {
     margin: 0;
