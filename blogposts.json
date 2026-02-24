@@ -1,5 +1,11 @@
 [
     {
+        "id": "emag-notes",
+        "title": "EM Notes",
+        "description": "Random notes from electromagnetics",
+        "status": "hidden"
+    },
+    {
         "id": "2024-reflection",
         "title": "So Long, 2024",
         "description": "You really took us for a spin.",
