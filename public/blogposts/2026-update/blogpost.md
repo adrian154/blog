@@ -12,4 +12,4 @@ But also, thanks for sticking around. There are things in the pipeline, I promis
 
 (And if you are from the future and I still haven't posted, I give you advance authorization to find me and conduct a summary execution. <span style="font-variant: small-caps">Long Live The Empire!</span>)
 
-4
+4 + U just lost the game 
