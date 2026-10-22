@@ -1,5 +1,12 @@
 [
     {
+        "id": "2026-update",
+        "title": "Is this thing on?",
+        "description": "I'm alive, guys!",
+        "status": "published",
+        "timestamp": 1792665168848
+    },
+    {
         "id": "emag-notes",
         "title": "EM Notes",
         "description": "Random notes from electromagnetics",
