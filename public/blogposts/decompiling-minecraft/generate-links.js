@@ -1,5 +1,4 @@
-const fetch = require("node-fetch"),
-      fs = require("fs");
+const fs = require("fs");
 
 const template = rows => `<!DOCTYPE html><head><meta charset="utf-8"><title>Minecraft Download Links</title><link rel="stylesheet" href="styles.css"></head><body><p>Last updated: ${new Date().toDateString()}</p><table><tr><th>Version</th><th>Client</th><th>Client Mappings</th><th>Server</th><th>Server Mappings</th></tr>${rows}</table></body></html>`;
 
